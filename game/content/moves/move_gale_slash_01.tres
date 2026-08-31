@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="MoveData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/move_data.gd" id="1_move"]
+
+[resource]
+script = ExtResource("1_move")
+id = &"move_gale_slash_01"
+display_name = "Gale Slash"
+description = "A blade of compressed air."
+type = 3
+power = 35
+accuracy = 90
+cooldown_turns = 2
+priority = 0

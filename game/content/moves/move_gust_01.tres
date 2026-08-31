@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="MoveData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/move_data.gd" id="1_move"]
+
+[resource]
+script = ExtResource("1_move")
+id = &"move_gust_01"
+display_name = "Gust"
+description = "A fast cutting wind that strikes before slower moves."
+type = 3
+power = 20
+accuracy = 100
+cooldown_turns = 0
+priority = 1

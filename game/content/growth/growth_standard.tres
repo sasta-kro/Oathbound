@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="GrowthCurve" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/growth_curve.gd" id="1_growth"]
+
+[resource]
+script = ExtResource("1_growth")
+id = &"growth_standard"
+display_name = "Standard Growth"
+xp_base = 12.0
+xp_exponent = 2.2
+stat_growth_per_level = 0.06
+hp_growth_per_level = 0.09
+hp_flat_per_level = 2.0

@@ -1,0 +1,47 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/creature_species.gd" id="1_species"]
+[ext_resource type="Script" path="res://scripts/creatures/learnset_entry.gd" id="2_entry"]
+[ext_resource type="Resource" path="res://content/growth/growth_standard.tres" id="3_growth"]
+[ext_resource type="Resource" path="res://content/moves/move_water_jet_01.tres" id="4_water_jet"]
+[ext_resource type="Resource" path="res://content/moves/move_venom_spit_01.tres" id="5_venom_spit"]
+[ext_resource type="Resource" path="res://content/moves/move_tide_crash_01.tres" id="6_tide_crash"]
+[ext_resource type="Resource" path="res://content/moves/move_guard_stance_01.tres" id="7_guard_stance"]
+[ext_resource type="Resource" path="res://content/abilities/ability_toxic_ward.tres" id="8_toxic_ward"]
+[ext_resource type="Resource" path="res://content/abilities/ability_swiftfoot.tres" id="9_swiftfoot"]
+
+[sub_resource type="Resource" script_class="LearnsetEntry" id="Learn_water_jet_1"]
+script = ExtResource("2_entry")
+level = 1
+move = ExtResource("4_water_jet")
+
+[sub_resource type="Resource" script_class="LearnsetEntry" id="Learn_venom_spit_8"]
+script = ExtResource("2_entry")
+level = 8
+move = ExtResource("5_venom_spit")
+
+[sub_resource type="Resource" script_class="LearnsetEntry" id="Learn_tide_crash_14"]
+script = ExtResource("2_entry")
+level = 14
+move = ExtResource("6_tide_crash")
+
+[sub_resource type="Resource" script_class="LearnsetEntry" id="Learn_guard_stance_20"]
+script = ExtResource("2_entry")
+level = 20
+move = ExtResource("7_guard_stance")
+
+[resource]
+script = ExtResource("1_species")
+id = &"creature_water_01"
+display_name = "Rillfin"
+primary_type = 2
+has_secondary_type = false
+secondary_type = 1
+base_hp = 46
+base_attack = 44
+base_defense = 44
+base_speed = 46
+growth = ExtResource("3_growth")
+learnset = Array[LearnsetEntry]([SubResource("Learn_water_jet_1"), SubResource("Learn_venom_spit_8"), SubResource("Learn_tide_crash_14"), SubResource("Learn_guard_stance_20")])
+ability_pool = Array[AbilityData]([ExtResource("8_toxic_ward"), ExtResource("9_swiftfoot")])
+base_bind_chance = 0.45

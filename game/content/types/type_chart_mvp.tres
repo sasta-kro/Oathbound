@@ -1,0 +1,57 @@
+[gd_resource type="Resource" script_class="TypeChart" load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/type_chart.gd" id="1_chart"]
+[ext_resource type="Script" path="res://scripts/creatures/type_matchup.gd" id="2_matchup"]
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_fire_water"]
+script = ExtResource("2_matchup")
+attacking = 0
+defending = 2
+multiplier = 0.5
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_fire_wind"]
+script = ExtResource("2_matchup")
+attacking = 0
+defending = 3
+multiplier = 2.0
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_earth_water"]
+script = ExtResource("2_matchup")
+attacking = 1
+defending = 2
+multiplier = 2.0
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_earth_wind"]
+script = ExtResource("2_matchup")
+attacking = 1
+defending = 3
+multiplier = 0.5
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_water_fire"]
+script = ExtResource("2_matchup")
+attacking = 2
+defending = 0
+multiplier = 2.0
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_water_earth"]
+script = ExtResource("2_matchup")
+attacking = 2
+defending = 1
+multiplier = 0.5
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_wind_fire"]
+script = ExtResource("2_matchup")
+attacking = 3
+defending = 0
+multiplier = 0.5
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_wind_earth"]
+script = ExtResource("2_matchup")
+attacking = 3
+defending = 1
+multiplier = 2.0
+
+[resource]
+script = ExtResource("1_chart")
+same_type_attack_bonus = 1.5
+matchups = Array[TypeMatchup]([SubResource("Matchup_fire_water"), SubResource("Matchup_fire_wind"), SubResource("Matchup_earth_water"), SubResource("Matchup_earth_wind"), SubResource("Matchup_water_fire"), SubResource("Matchup_water_earth"), SubResource("Matchup_wind_fire"), SubResource("Matchup_wind_earth")])

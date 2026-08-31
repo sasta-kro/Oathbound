@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="MoveData" format=3 uid="uid://yy88er3s78cw"]
+
+[ext_resource type="Script" uid="uid://bq5p2dxnovb0r" path="res://scripts/creatures/move_data.gd" id="1_move"]
+[ext_resource type="Script" uid="uid://c8yppijv6s6vv" path="res://scripts/creatures/stat_modifier.gd" id="2_modifier"]
+
+[sub_resource type="Resource" id="Modifier_guard"]
+script = ExtResource("2_modifier")
+stat = 2
+percent = 40
+duration_turns = 3
+
+[resource]
+script = ExtResource("1_move")
+id = &"move_guard_stance_01"
+display_name = "Guard Stance"
+description = "The user braces, sharply raising its Defense for a few turns."
+type = 1
+cooldown_turns = 3
+stat_modifiers = Array[ExtResource("2_modifier")]([SubResource("Modifier_guard")])

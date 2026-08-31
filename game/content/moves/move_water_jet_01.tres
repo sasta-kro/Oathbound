@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="MoveData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/move_data.gd" id="1_move"]
+
+[resource]
+script = ExtResource("1_move")
+id = &"move_water_jet_01"
+display_name = "Water Jet"
+description = "A narrow jet of pressurised water. Always finds its mark."
+type = 2
+power = 20
+accuracy = 100
+cooldown_turns = 0
+priority = 0

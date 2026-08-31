@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="MoveData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/move_data.gd" id="1_move"]
+
+[resource]
+script = ExtResource("1_move")
+id = &"move_venom_spit_01"
+display_name = "Venom Spit"
+description = "A weak spatter of venom that poisons far more often than it hurts."
+type = 1
+power = 10
+accuracy = 90
+cooldown_turns = 3
+priority = 0
+status_id = &"status_poison"
+status_chance = 60
+status_duration_turns = 3

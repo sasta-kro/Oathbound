@@ -1,0 +1,44 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://ce02g38a68kfl"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_5dyf1"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="1_species"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="2_entry"]
+[ext_resource type="Resource" path="res://content/growth/growth_standard.tres" id="3_growth"]
+[ext_resource type="Resource" path="res://content/moves/move_ember_01.tres" id="4_ember"]
+[ext_resource type="Resource" uid="uid://yy88er3s78cw" path="res://content/moves/move_guard_stance_01.tres" id="5_guard_stance"]
+[ext_resource type="Resource" path="res://content/moves/move_flame_burst_01.tres" id="6_flame_burst"]
+[ext_resource type="Resource" path="res://content/moves/move_quake_step_01.tres" id="7_quake_step"]
+[ext_resource type="Resource" path="res://content/abilities/ability_ember_body.tres" id="8_ember_body"]
+[ext_resource type="Resource" path="res://content/abilities/ability_searing_touch.tres" id="9_searing_touch"]
+
+[sub_resource type="Resource" id="Learn_ember_1"]
+script = ExtResource("2_entry")
+move = ExtResource("4_ember")
+
+[sub_resource type="Resource" id="Learn_guard_stance_6"]
+script = ExtResource("2_entry")
+level = 6
+move = ExtResource("5_guard_stance")
+
+[sub_resource type="Resource" id="Learn_flame_burst_12"]
+script = ExtResource("2_entry")
+level = 12
+move = ExtResource("6_flame_burst")
+
+[sub_resource type="Resource" id="Learn_quake_step_20"]
+script = ExtResource("2_entry")
+level = 20
+move = ExtResource("7_quake_step")
+
+[resource]
+script = ExtResource("1_species")
+id = &"creature_fire_02"
+display_name = "Cinderclaw"
+base_hp = 60
+base_attack = 70
+base_defense = 52
+base_speed = 58
+growth = ExtResource("3_growth")
+learnset = Array[ExtResource("2_entry")]([SubResource("Learn_ember_1"), SubResource("Learn_guard_stance_6"), SubResource("Learn_flame_burst_12"), SubResource("Learn_quake_step_20")])
+ability_pool = Array[ExtResource("1_5dyf1")]([ExtResource("8_ember_body"), ExtResource("9_searing_touch")])
+base_bind_chance = 0.22
