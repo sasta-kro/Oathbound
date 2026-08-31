@@ -1,0 +1,92 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="Script" path="res://scripts/area_one_room.gd" id="2_area_one"]
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
+[ext_resource type="PackedScene" path="res://scenes/world_actor.tscn" id="4_actor"]
+[ext_resource type="PackedScene" path="res://scenes/dialogue_panel.tscn" id="5_dialogue"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_horizontal_wall"]
+size = Vector2(1056, 48)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vertical_wall"]
+size = Vector2(48, 624)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_block_wall"]
+size = Vector2(240, 48)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_right_wall"]
+size = Vector2(48, 144)
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_main")
+
+[node name="Area1" type="Node2D" parent="."]
+script = ExtResource("2_area_one")
+
+[node name="NorthWall" type="StaticBody2D" parent="Area1"]
+position = Vector2(0, -288)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area1/NorthWall"]
+shape = SubResource("RectangleShape2D_horizontal_wall")
+
+[node name="SouthWall" type="StaticBody2D" parent="Area1"]
+position = Vector2(0, 288)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area1/SouthWall"]
+shape = SubResource("RectangleShape2D_horizontal_wall")
+
+[node name="WestWall" type="StaticBody2D" parent="Area1"]
+position = Vector2(-528, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area1/WestWall"]
+shape = SubResource("RectangleShape2D_vertical_wall")
+
+[node name="EastWall" type="StaticBody2D" parent="Area1"]
+position = Vector2(480, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area1/EastWall"]
+shape = SubResource("RectangleShape2D_vertical_wall")
+
+[node name="CenterWall" type="StaticBody2D" parent="Area1"]
+position = Vector2(0, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area1/CenterWall"]
+shape = SubResource("RectangleShape2D_block_wall")
+
+[node name="RightWall" type="StaticBody2D" parent="Area1"]
+position = Vector2(192, 144)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area1/RightWall"]
+shape = SubResource("RectangleShape2D_right_wall")
+
+[node name="Player" parent="Area1" instance=ExtResource("3_player")]
+position = Vector2(-288, 144)
+
+[node name="Camera2D" type="Camera2D" parent="Area1/Player"]
+limit_left = -552
+limit_top = -312
+limit_right = 504
+limit_bottom = 312
+
+[node name="Knight" parent="Area1" instance=ExtResource("4_actor")]
+position = Vector2(-288, -48)
+dialogue_line = "Knight: The northern ruins remain sealed. Keep to the marked path."
+
+[node name="Body" parent="Area1/Knight" index="0"]
+color = Color(0.247059, 0.72549, 0.34902, 1)
+
+[node name="Label" parent="Area1/Knight" index="1"]
+text = "KNIGHT"
+
+[node name="Creature" parent="Area1" instance=ExtResource("4_actor")]
+position = Vector2(144, 144)
+dialogue_line = "Creature: A quiet violet creature studies the room."
+
+[node name="Body" parent="Area1/Creature" index="0"]
+color = Color(0.584314, 0.317647, 0.803922, 1)
+
+[node name="Label" parent="Area1/Creature" index="1"]
+text = "CREATURE"
+
+[node name="DialoguePanel" parent="." instance=ExtResource("5_dialogue")]
