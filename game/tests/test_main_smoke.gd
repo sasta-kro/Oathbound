@@ -91,24 +91,110 @@ func test_world_actors_are_centered_in_grid_cells() -> void:
 		)
 
 
-func test_right_wall_collision_matches_visible_geometry() -> void:
+func test_world_actors_occupy_complete_grid_cells() -> void:
+	var main_scene: Node2D = autofree(MAIN_SCENE.instantiate())
+	add_child(main_scene)
+
+	var half_grid_size: float = AreaOneRoom.GRID_SIZE / 2.0
+	var expected_body_polygon: PackedVector2Array = PackedVector2Array(
+		[
+			Vector2(-half_grid_size, -half_grid_size),
+			Vector2(half_grid_size, -half_grid_size),
+			Vector2(half_grid_size, half_grid_size),
+			Vector2(-half_grid_size, half_grid_size),
+		]
+	)
+	var actor_paths: Array[NodePath] = [
+		NodePath("Area1/Player"),
+		NodePath("Area1/Knight"),
+		NodePath("Area1/Creature"),
+	]
+	for actor_path: NodePath in actor_paths:
+		var body: Polygon2D = main_scene.get_node(NodePath("%s/Body" % actor_path))
+		var collision_shape: CollisionShape2D = main_scene.get_node(
+			NodePath("%s/CollisionShape2D" % actor_path)
+		)
+		var rectangle: RectangleShape2D = collision_shape.shape as RectangleShape2D
+		assert_eq(
+			body.polygon,
+			expected_body_polygon,
+			"%s placeholder must fill one complete grid cell." % actor_path,
+		)
+		assert_eq(
+			rectangle.size,
+			Vector2(AreaOneRoom.GRID_SIZE, AreaOneRoom.GRID_SIZE),
+			"%s must occupy one complete grid cell." % actor_path,
+		)
+
+
+func test_blocked_grid_movement_never_partially_moves_the_player() -> void:
 	var main_scene: Node2D = autofree(MAIN_SCENE.instantiate())
 	add_child(main_scene)
 	await get_tree().physics_frame
 
 	var player: GridPlayer = main_scene.get_node("Area1/Player")
 	player.global_position = Vector2(144, 96)
-	var visible_wall_collision: KinematicCollision2D = player.move_and_collide(
-		Vector2.RIGHT * player.grid_size
+	var position_before_movement: Vector2 = player.global_position
+
+	assert_false(
+		player.attempt_grid_move(Vector2i.RIGHT),
+		"A wall must reject movement into its occupied cell.",
 	)
-	assert_not_null(
-		visible_wall_collision, "The player must not move through the visible right wall."
+	assert_eq(
+		player.global_position,
+		position_before_movement,
+		"Rejected movement must leave the player at the original cell center.",
 	)
 
-	player.global_position = Vector2(144, -96)
-	var open_tile_collision: KinematicCollision2D = player.move_and_collide(
-		Vector2.RIGHT * player.grid_size
+
+func test_player_can_move_into_an_empty_cell_next_to_an_actor() -> void:
+	var main_scene: Node2D = autofree(MAIN_SCENE.instantiate())
+	add_child(main_scene)
+	await get_tree().physics_frame
+
+	var player: GridPlayer = main_scene.get_node("Area1/Player")
+	player.global_position = Vector2(-336, 0)
+
+	assert_true(
+		player.attempt_grid_move(Vector2i.RIGHT),
+		"Touching an actor at the cell boundary must not block an empty adjacent cell.",
 	)
-	assert_null(
-		open_tile_collision, "The player must move through tiles outside the visible right wall."
+	assert_eq(player.global_position, Vector2(-288, 0))
+
+
+func test_player_moves_exactly_one_cell_diagonally() -> void:
+	var main_scene: Node2D = autofree(MAIN_SCENE.instantiate())
+	add_child(main_scene)
+	await get_tree().physics_frame
+
+	var player: GridPlayer = main_scene.get_node("Area1/Player")
+	player.global_position = Vector2(-192, 96)
+	assert_true(
+		player.attempt_grid_move(Vector2i(-1, 1)),
+		"An open diagonal destination must accept movement.",
+	)
+	assert_eq(
+		player.global_position,
+		Vector2(-240, 144),
+		"Diagonal movement must end at the exact destination cell center.",
+	)
+
+
+func test_diagonal_movement_cannot_cut_through_a_blocked_corner() -> void:
+	var main_scene: Node2D = autofree(MAIN_SCENE.instantiate())
+	add_child(main_scene)
+	await get_tree().physics_frame
+
+	var player: GridPlayer = main_scene.get_node("Area1/Player")
+	player.global_position = Vector2(-144, 0)
+	var position_before_movement: Vector2 = player.global_position
+
+	assert_false(
+		player.attempt_grid_move(Vector2i(1, 1)),
+		"Diagonal movement must fail when an orthogonal path is blocked.",
+	)
+	assert_eq(
+		player.global_position,
+		position_before_movement,
+		"A blocked corner must not displace the player.",
 	)

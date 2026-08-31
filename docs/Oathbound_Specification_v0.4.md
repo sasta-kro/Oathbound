@@ -210,7 +210,7 @@ Species may overlap between areas. Later areas should generally contain higher-l
 ### 6.1 Player Movement
 
 - Movement is grid-based.
-- Movement uses four directions: up, down, left, right.
+- Movement uses eight directions: up, down, left, right, and the four diagonals.
 - The player can interact with NPCs and world objects from adjacent tiles.
 - The player does not personally fight in combat.
 - The player has a fixed visual identity but chooses their name.

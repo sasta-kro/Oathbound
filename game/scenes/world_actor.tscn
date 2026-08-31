@@ -3,19 +3,19 @@
 [ext_resource type="Script" path="res://scripts/world_actor.gd" id="1_world_actor"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_actor"]
-size = Vector2(38, 38)
+size = Vector2(48, 48)
 
 [node name="WorldActor" type="CharacterBody2D"]
 script = ExtResource("1_world_actor")
 
 [node name="Body" type="Polygon2D" parent="."]
-polygon = PackedVector2Array(-19, -19, 19, -19, 19, 19, -19, 19)
+polygon = PackedVector2Array(-24, -24, 24, -24, 24, 24, -24, 24)
 
 [node name="Label" type="Label" parent="."]
 offset_left = -40.0
-offset_top = -39.0
+offset_top = -44.0
 offset_right = 40.0
-offset_bottom = -19.0
+offset_bottom = -24.0
 theme_override_colors/font_color = Color(0.941176, 0.976471, 0.92549, 1)
 theme_override_colors/font_outline_color = Color(0.054902, 0.0901961, 0.0509804, 1)
 theme_override_constants/outline_size = 3
