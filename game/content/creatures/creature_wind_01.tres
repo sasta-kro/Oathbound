@@ -1,0 +1,47 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/creature_species.gd" id="1_species"]
+[ext_resource type="Script" path="res://scripts/creatures/learnset_entry.gd" id="2_entry"]
+[ext_resource type="Resource" path="res://content/growth/growth_standard.tres" id="3_growth"]
+[ext_resource type="Resource" path="res://content/moves/move_gust_01.tres" id="4_gust"]
+[ext_resource type="Resource" path="res://content/moves/move_stone_toss_01.tres" id="5_stone_toss"]
+[ext_resource type="Resource" path="res://content/moves/move_gale_slash_01.tres" id="6_gale_slash"]
+[ext_resource type="Resource" path="res://content/moves/move_quake_step_01.tres" id="7_quake_step"]
+[ext_resource type="Resource" path="res://content/abilities/ability_swiftfoot.tres" id="8_swiftfoot"]
+[ext_resource type="Resource" path="res://content/abilities/ability_windrider.tres" id="9_windrider"]
+
+[sub_resource type="Resource" script_class="LearnsetEntry" id="Learn_gust_1"]
+script = ExtResource("2_entry")
+level = 1
+move = ExtResource("4_gust")
+
+[sub_resource type="Resource" script_class="LearnsetEntry" id="Learn_stone_toss_7"]
+script = ExtResource("2_entry")
+level = 7
+move = ExtResource("5_stone_toss")
+
+[sub_resource type="Resource" script_class="LearnsetEntry" id="Learn_gale_slash_13"]
+script = ExtResource("2_entry")
+level = 13
+move = ExtResource("6_gale_slash")
+
+[sub_resource type="Resource" script_class="LearnsetEntry" id="Learn_quake_step_19"]
+script = ExtResource("2_entry")
+level = 19
+move = ExtResource("7_quake_step")
+
+[resource]
+script = ExtResource("1_species")
+id = &"creature_wind_01"
+display_name = "Gustpip"
+primary_type = 3
+has_secondary_type = true
+secondary_type = 1
+base_hp = 40
+base_attack = 42
+base_defense = 38
+base_speed = 58
+growth = ExtResource("3_growth")
+learnset = Array[LearnsetEntry]([SubResource("Learn_gust_1"), SubResource("Learn_stone_toss_7"), SubResource("Learn_gale_slash_13"), SubResource("Learn_quake_step_19")])
+ability_pool = Array[AbilityData]([ExtResource("8_swiftfoot"), ExtResource("9_windrider")])
+base_bind_chance = 0.5

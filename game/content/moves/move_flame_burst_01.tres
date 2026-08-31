@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="MoveData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/move_data.gd" id="1_move"]
+
+[resource]
+script = ExtResource("1_move")
+id = &"move_flame_burst_01"
+display_name = "Flame Burst"
+description = "A bursting flame that can leave the target burning."
+type = 0
+power = 35
+accuracy = 90
+cooldown_turns = 2
+priority = 0
+status_id = &"status_burn"
+status_chance = 30
+status_duration_turns = 3

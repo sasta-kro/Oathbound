@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="AbilityData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/ability_data.gd" id="1_ability"]
+
+[resource]
+script = ExtResource("1_ability")
+id = &"ability_ember_body"
+display_name = "Ember Body"
+description = "The creature burns hot from within, striking harder with Fire moves."
+damage_dealt_multiplier = 1.2
+has_dealt_type_filter = true
+dealt_type_filter = 0

@@ -1,0 +1,47 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/creature_species.gd" id="1_species"]
+[ext_resource type="Script" path="res://scripts/creatures/learnset_entry.gd" id="2_entry"]
+[ext_resource type="Resource" path="res://content/growth/growth_bulky.tres" id="3_growth"]
+[ext_resource type="Resource" path="res://content/moves/move_stone_toss_01.tres" id="4_stone_toss"]
+[ext_resource type="Resource" path="res://content/moves/move_guard_stance_01.tres" id="5_guard_stance"]
+[ext_resource type="Resource" path="res://content/moves/move_venom_spit_01.tres" id="6_venom_spit"]
+[ext_resource type="Resource" path="res://content/moves/move_quake_step_01.tres" id="7_quake_step"]
+[ext_resource type="Resource" path="res://content/abilities/ability_stonewall.tres" id="8_stonewall"]
+[ext_resource type="Resource" path="res://content/abilities/ability_thick_hide.tres" id="9_thick_hide"]
+
+[sub_resource type="Resource" script_class="LearnsetEntry" id="Learn_stone_toss_1"]
+script = ExtResource("2_entry")
+level = 1
+move = ExtResource("4_stone_toss")
+
+[sub_resource type="Resource" script_class="LearnsetEntry" id="Learn_guard_stance_5"]
+script = ExtResource("2_entry")
+level = 5
+move = ExtResource("5_guard_stance")
+
+[sub_resource type="Resource" script_class="LearnsetEntry" id="Learn_venom_spit_11"]
+script = ExtResource("2_entry")
+level = 11
+move = ExtResource("6_venom_spit")
+
+[sub_resource type="Resource" script_class="LearnsetEntry" id="Learn_quake_step_18"]
+script = ExtResource("2_entry")
+level = 18
+move = ExtResource("7_quake_step")
+
+[resource]
+script = ExtResource("1_species")
+id = &"creature_earth_01"
+display_name = "Loambuck"
+primary_type = 1
+has_secondary_type = false
+secondary_type = 1
+base_hp = 56
+base_attack = 46
+base_defense = 58
+base_speed = 30
+growth = ExtResource("3_growth")
+learnset = Array[LearnsetEntry]([SubResource("Learn_stone_toss_1"), SubResource("Learn_guard_stance_5"), SubResource("Learn_venom_spit_11"), SubResource("Learn_quake_step_18")])
+ability_pool = Array[AbilityData]([ExtResource("8_stonewall"), ExtResource("9_thick_hide")])
+base_bind_chance = 0.4

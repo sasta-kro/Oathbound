@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="MoveData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/move_data.gd" id="1_move"]
+
+[resource]
+script = ExtResource("1_move")
+id = &"move_stone_toss_01"
+display_name = "Stone Toss"
+description = "A hurled stone. Simple and dependable."
+type = 1
+power = 20
+accuracy = 95
+cooldown_turns = 0
+priority = 0

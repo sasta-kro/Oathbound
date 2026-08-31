@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="MoveData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/move_data.gd" id="1_move"]
+
+[resource]
+script = ExtResource("1_move")
+id = &"move_quake_step_01"
+display_name = "Quake Step"
+description = "A ground-splitting stomp that can leave the target reeling."
+type = 1
+power = 35
+accuracy = 85
+cooldown_turns = 2
+priority = 0
+status_id = &"status_stun"
+status_chance = 20
+status_duration_turns = 1

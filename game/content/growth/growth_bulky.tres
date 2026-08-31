@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="GrowthCurve" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/growth_curve.gd" id="1_growth"]
+
+[resource]
+script = ExtResource("1_growth")
+id = &"growth_bulky"
+display_name = "Bulky Growth"
+xp_base = 14.0
+xp_exponent = 2.25
+stat_growth_per_level = 0.05
+hp_growth_per_level = 0.11
+hp_flat_per_level = 3.0

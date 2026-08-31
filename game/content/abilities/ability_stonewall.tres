@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="AbilityData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/ability_data.gd" id="1_ability"]
+[ext_resource type="Script" path="res://scripts/creatures/stat_modifier.gd" id="2_modifier"]
+
+[sub_resource type="Resource" script_class="StatModifier" id="Modifier_0"]
+script = ExtResource("2_modifier")
+stat = 2
+target = 0
+percent = 20
+duration_turns = 0
+
+[resource]
+script = ExtResource("1_ability")
+id = &"ability_stonewall"
+display_name = "Stonewall"
+description = "The creature plants itself, holding its ground far better than its build suggests."
+passive_stat_modifiers = Array[StatModifier]([SubResource("Modifier_0")])

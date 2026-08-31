@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="MoveData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/move_data.gd" id="1_move"]
+
+[resource]
+script = ExtResource("1_move")
+id = &"move_tide_crash_01"
+display_name = "Tide Crash"
+description = "A heavy wall of water crashes over the target."
+type = 2
+power = 35
+accuracy = 90
+cooldown_turns = 2
+priority = 0
