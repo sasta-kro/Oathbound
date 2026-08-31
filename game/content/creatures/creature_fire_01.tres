@@ -10,6 +10,7 @@
 [ext_resource type="Resource" path="res://content/abilities/ability_ember_body.tres" id="7_ember_body"]
 [ext_resource type="Resource" path="res://content/abilities/ability_swiftfoot.tres" id="8_swiftfoot"]
 [ext_resource type="Resource" uid="uid://ce02g38a68kfl" path="res://content/creatures/creature_fire_02.tres" id="9_evo"]
+[ext_resource type="SpriteFrames" path="res://content/sprites/creature_fire_01_battle.tres" id="10_battle_sprite"]
 
 [sub_resource type="Resource" id="Learn_ember_1"]
 script = ExtResource("2_entry")
@@ -39,3 +40,4 @@ evolves_into = ExtResource("9_evo")
 evolution_level = 16
 ability_pool = Array[ExtResource("1_105ew")]([ExtResource("7_ember_body"), ExtResource("8_swiftfoot")])
 base_bind_chance = 0.45
+battle_sprite = ExtResource("10_battle_sprite")

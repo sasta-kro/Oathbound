@@ -7,6 +7,10 @@ extends Node2D
 ## text as well. Animated placeholders visibly cycle a frame counter so timing
 ## and state transitions can be tested before real sprites exist.
 
+## Emitted when a non-looping placeholder animation reaches its last frame, so
+## callers can sequence one-shot states the same way they do with real sprites.
+signal finished
+
 enum Category { PLAYER, FRIENDLY_NPC, HOSTILE_OATHKEEPER, BOSS, CREATURE, INTERACTABLE, UI }
 
 const CATEGORY_COLORS: Dictionary = {
@@ -44,12 +48,19 @@ const CATEGORY_COLORS: Dictionary = {
 @export_range(0, 32) var frame_count: int = 0:
 	set(value):
 		frame_count = value
-		_frame = 0
-		_refresh_text()
+		_restart()
 @export_range(0.1, 30.0) var frames_per_second: float = 4.0
+## When false, the placeholder holds its last frame and emits [signal finished]
+## instead of cycling forever.
+@export var loops: bool = true:
+	set(value):
+		loops = value
+		_restart()
 
 var _frame: int = 0
 var _elapsed: float = 0.0
+## True once a non-looping animation has run out, so it holds its last frame.
+var _spent: bool = false
 var _background: ColorRect
 var _label: Label
 
@@ -76,7 +87,6 @@ func _ready() -> void:
 
 	_refresh_layout()
 	_refresh_text()
-	set_process(frame_count > 1)
 
 
 func _process(delta: float) -> void:
@@ -86,6 +96,12 @@ func _process(delta: float) -> void:
 	var frame_duration := 1.0 / maxf(0.1, frames_per_second)
 	while _elapsed >= frame_duration:
 		_elapsed -= frame_duration
+		if not loops and _frame >= frame_count - 1:
+			_elapsed = 0.0
+			_spent = true
+			set_process(false)
+			finished.emit()
+			return
 		_frame = (_frame + 1) % frame_count
 		_refresh_text()
 
@@ -110,7 +126,15 @@ func _refresh_layout() -> void:
 	_label.size = size
 
 
+## Rewinds to the first frame, used whenever the animation itself changes.
+func _restart() -> void:
+	_frame = 0
+	_elapsed = 0.0
+	_spent = false
+	_refresh_text()
+
+
 func _refresh_text() -> void:
 	if _label != null:
 		_label.text = placeholder_text()
-	set_process(frame_count > 1)
+	set_process(frame_count > 1 and not _spent)
