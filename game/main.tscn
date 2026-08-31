@@ -1,12 +1,13 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/area_one_room.gd" id="2_area_one"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
 [ext_resource type="PackedScene" path="res://scenes/world_actor.tscn" id="4_actor"]
 [ext_resource type="PackedScene" path="res://scenes/dialogue_panel.tscn" id="5_dialogue"]
-[ext_resource type="Script" path="res://scripts/visual/creature_visual.gd" id="6_creature_visual"]
-[ext_resource type="Resource" uid="uid://d2gd7n0v6nkw5" path="res://content/creatures/creature_fire_01.tres" id="7_emberling"]
+[ext_resource type="PackedScene" path="res://scenes/settings_menu.tscn" id="6_settings"]
+[ext_resource type="Script" path="res://scripts/visual/creature_visual.gd" id="7_creature_visual"]
+[ext_resource type="Resource" uid="uid://d2gd7n0v6nkw5" path="res://content/creatures/creature_fire_01.tres" id="8_emberling"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_horizontal_wall"]
 size = Vector2(1056, 48)
@@ -94,7 +95,9 @@ text = "EMBERLING"
 
 [node name="CreatureVisual" type="Node2D" parent="Area1/Creature"]
 scale = Vector2(1.6, 1.6)
-script = ExtResource("6_creature_visual")
-species = ExtResource("7_emberling")
+script = ExtResource("7_creature_visual")
+species = ExtResource("8_emberling")
 
 [node name="DialoguePanel" parent="." instance=ExtResource("5_dialogue")]
+
+[node name="SettingsMenu" parent="." instance=ExtResource("6_settings")]

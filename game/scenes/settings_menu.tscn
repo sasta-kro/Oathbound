@@ -1,0 +1,117 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/settings_menu.gd" id="1_settings_menu"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_settings_background"]
+bg_color = Color(0.0588235, 0.0862745, 0.109804, 0.98)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.72549, 0.682353, 0.321569, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="SettingsMenu" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1_settings_menu")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Backdrop" type="ColorRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="Panel" type="PanelContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -230.0
+offset_top = -120.0
+offset_right = 230.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_settings_background")
+
+[node name="Margin" type="MarginContainer" parent="Root/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 20
+
+[node name="Rows" type="VBoxContainer" parent="Root/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="Root/Panel/Margin/Rows"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72549, 0.682353, 0.321569, 1)
+theme_override_font_sizes/font_size = 24
+text = "SETTINGS"
+horizontal_alignment = 1
+
+[node name="DisplaySection" type="Label" parent="Root/Panel/Margin/Rows"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94902, 0.94902, 0.901961, 1)
+theme_override_font_sizes/font_size = 16
+text = "Display"
+
+[node name="DisplayRows" type="GridContainer" parent="Root/Panel/Margin/Rows"]
+layout_mode = 2
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 12
+columns = 2
+
+[node name="WindowSizeLabel" type="Label" parent="Root/Panel/Margin/Rows/DisplayRows"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.94902, 0.94902, 0.901961, 1)
+text = "Window size"
+
+[node name="WindowSizeOptions" type="OptionButton" parent="Root/Panel/Margin/Rows/DisplayRows"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+fit_to_longest_item = false
+
+[node name="FullscreenLabel" type="Label" parent="Root/Panel/Margin/Rows/DisplayRows"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.94902, 0.94902, 0.901961, 1)
+text = "Fullscreen"
+
+[node name="FullscreenToggle" type="CheckButton" parent="Root/Panel/Margin/Rows/DisplayRows"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Hint" type="Label" parent="Root/Panel/Margin/Rows"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.658824, 0.658824, 0.639216, 1)
+theme_override_font_sizes/font_size = 13
+text = "F11 or Alt+Enter toggles fullscreen. Esc closes this menu."
+autowrap_mode = 2
+
+[node name="CloseButton" type="Button" parent="Root/Panel/Margin/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Close"

@@ -19,6 +19,7 @@ func test_required_input_actions_exist() -> void:
 		"move_left",
 		"move_right",
 		"interact",
+		"toggle_fullscreen",
 	]
 
 	for action_name: StringName in required_actions:
@@ -35,9 +36,40 @@ func test_display_scales_from_the_configured_base_viewport() -> void:
 	)
 	assert_eq(
 		ProjectSettings.get_setting("display/window/stretch/aspect"),
-		"expand",
-		"The viewport must support fullscreen aspect ratios.",
+		"keep",
+		"The logical aspect ratio is fixed, so mismatched screens letterbox.",
 	)
+	assert_true(
+		bool(ProjectSettings.get_setting("display/window/size/resizable")),
+		"The window must be resizable.",
+	)
+	assert_eq(
+		Vector2i(
+			int(ProjectSettings.get_setting("display/window/size/viewport_width")),
+			int(ProjectSettings.get_setting("display/window/size/viewport_height")),
+		),
+		DisplayService.BASE_VIEWPORT_SIZE,
+		"DisplayService must scale windows from the configured base viewport.",
+	)
+
+
+func test_base_viewport_uses_the_specified_sixteen_by_nine_aspect() -> void:
+	var base_size: Vector2i = DisplayService.BASE_VIEWPORT_SIZE
+	assert_almost_eq(
+		float(base_size.x) / float(base_size.y),
+		16.0 / 9.0,
+		0.001,
+		"Specification 22.3 fixes the logical aspect ratio at 16:9.",
+	)
+
+
+func test_ui_anchors_to_the_viewport_edges_rather_than_fixed_pixels() -> void:
+	var main_scene: Node2D = autofree(MAIN_SCENE.instantiate())
+	add_child(main_scene)
+
+	var panel: PanelContainer = main_scene.get_node("DialoguePanel/Panel")
+	assert_eq(panel.anchor_bottom, 1.0, "The dialogue panel must anchor to the viewport bottom.")
+	assert_eq(panel.anchor_right, 1.0, "The dialogue panel must stretch to the viewport width.")
 
 
 func test_world_actors_are_centered_in_grid_cells() -> void:

@@ -7,13 +7,27 @@ var creature_has_spoken: bool = false
 @onready var creature: WorldActor = $Area1/Creature
 @onready var creature_visual: CreatureVisual = $Area1/Creature/CreatureVisual
 @onready var dialogue_panel: DialoguePanel = $DialoguePanel
+@onready var settings_menu: SettingsMenu = $SettingsMenu
 
 
 func _ready() -> void:
 	player.moved.connect(_on_player_moved)
+	settings_menu.opened.connect(_on_settings_opened)
+	settings_menu.closed.connect(_on_settings_closed)
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed(&"open_settings"):
+		get_viewport().set_input_as_handled()
+		if settings_menu.is_open():
+			settings_menu.close()
+		else:
+			settings_menu.open()
+		return
+
+	if settings_menu.is_open():
+		return
+
 	if not event.is_action_pressed(&"interact"):
 		return
 
@@ -27,6 +41,16 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif _is_adjacent_to(creature):
 		# Milestone demo: shows the creature's one-shot attack returning to idle.
 		creature_visual.play_attack()
+
+
+func _on_settings_opened() -> void:
+	player.movement_enabled = false
+
+
+## Dialogue also owns movement, so closing the menu must not hand control back
+## while a line is still on screen.
+func _on_settings_closed() -> void:
+	player.movement_enabled = not dialogue_panel.is_open()
 
 
 func _on_player_moved() -> void:
