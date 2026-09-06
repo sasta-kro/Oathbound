@@ -1,12 +1,12 @@
-class_name AreaOneRoom
+class_name AreaOneGenerator
 extends Node2D
 
-## Paints Area 1 into its TileMapLayer children.
+## Paints the starting layout of Area 1 into its TileMapLayer children.
 ##
-## The room is generated rather than hand-painted so the art always agrees with
-## the collision shapes in `main.tscn`: `WALL_RECTANGLES` below is the same
-## footprint the StaticBody2D nodes cover, and everything else is laid out
-## around it.
+## Development only. `bake_area_one.gd` runs this once to produce the
+## hand-editable `res://areas/area_one.tscn`; from then on the map is painted
+## in the editor and this script is just the record of how the first version
+## was laid out.
 
 const GRID_SIZE: int = 48
 const ROOM_RECTANGLE: Rect2 = Rect2(-552, -312, 1056, 624)
@@ -88,44 +88,45 @@ const PATH_TILES: Dictionary = {
 const FLIPPED_PATH_MASK: int = 13
 const FLIPPED_PATH_TILE := Vector2i(4, 7)
 
-## Scattered dressing, largest first. `clearance` is how much free grass the
-## sprite needs around its cell; `spacing` only keeps a batch from clumping
-## against itself.
+## Scattered dressing, largest first, by sprite name from the repacked sheet
+## manifests (`assets/tilesets/props.json`, `plant.json`). `clearance` is how
+## much free grass the sprite needs around its cell; `spacing` only keeps a
+## batch from clumping against itself.
 const DECOR_BATCHES: Array[Dictionary] = [
-	{"source": PROP_SOURCE, "tiles": [Vector2i(13, 11)], "count": 1, "clearance": 1, "spacing": 2},
+	{"source": PROP_SOURCE, "tiles": ["prop_31"], "count": 1, "clearance": 1, "spacing": 2},
 	{
 		"source": PROP_SOURCE,
-		"tiles": [Vector2i(3, 0), Vector2i(5, 0), Vector2i(5, 2)],
+		"tiles": ["prop_02", "prop_32", "prop_04"],
 		"count": 3,
 		"clearance": 1,
 		"spacing": 3,
 	},
 	{
 		"source": PROP_SOURCE,
-		"tiles": [Vector2i(5, 4), Vector2i(5, 6), Vector2i(5, 10)],
+		"tiles": ["prop_13", "prop_12", "prop_21"],
 		"count": 3,
 		"clearance": 1,
 		"spacing": 3,
 	},
-	{"source": PROP_SOURCE, "tiles": [Vector2i(0, 13)], "count": 2, "clearance": 1, "spacing": 3},
+	{"source": PROP_SOURCE, "tiles": ["prop_01"], "count": 2, "clearance": 1, "spacing": 3},
 	{
 		"source": PLANT_SOURCE,
-		"tiles": [Vector2i(6, 5), Vector2i(10, 5)],
+		"tiles": ["plant_03", "plant_06"],
 		"count": 9,
 		"clearance": 1,
 		"spacing": 2,
 	},
 	{
 		"source": PROP_SOURCE,
-		"tiles": [Vector2i(3, 5), Vector2i(3, 7)],
+		"tiles": ["prop_18", "prop_23"],
 		"count": 2,
 		"clearance": 0,
 		"spacing": 2,
 	},
-	{"source": PROP_SOURCE, "tiles": [Vector2i(5, 9)], "count": 2, "clearance": 0, "spacing": 3},
+	{"source": PROP_SOURCE, "tiles": ["prop_27"], "count": 2, "clearance": 0, "spacing": 3},
 	{
 		"source": PLANT_SOURCE,
-		"tiles": [Vector2i(1, 6), Vector2i(3, 6)],
+		"tiles": ["plant_07", "plant_08"],
 		"count": 14,
 		"clearance": 0,
 		"spacing": 1,
@@ -133,8 +134,8 @@ const DECOR_BATCHES: Array[Dictionary] = [
 	{
 		"source": PROP_SOURCE,
 		"tiles": [
-			Vector2i(0, 15), Vector2i(1, 15), Vector2i(2, 15), Vector2i(3, 15),
-			Vector2i(4, 15), Vector2i(5, 15), Vector2i(7, 15), Vector2i(8, 15), Vector2i(9, 15),
+			"prop_33", "prop_34", "prop_35", "prop_36", "prop_37",
+			"prop_38", "prop_39", "prop_40", "prop_41",
 		],
 		"count": 18,
 		"clearance": 0,
@@ -143,16 +144,19 @@ const DECOR_BATCHES: Array[Dictionary] = [
 	{
 		"source": PLANT_SOURCE,
 		"tiles": [
-			Vector2i(0, 12), Vector2i(1, 12), Vector2i(2, 12), Vector2i(3, 12),
-			Vector2i(0, 13), Vector2i(1, 13), Vector2i(2, 13), Vector2i(3, 13),
-			Vector2i(0, 14), Vector2i(1, 14), Vector2i(2, 14), Vector2i(3, 14),
-			Vector2i(0, 15), Vector2i(1, 15), Vector2i(2, 15),
+			"plant_09", "plant_10", "plant_11", "plant_12", "plant_13", "plant_14", "plant_15",
+			"plant_16", "plant_17", "plant_18", "plant_19", "plant_20", "plant_21", "plant_22",
 		],
 		"count": 64,
 		"clearance": 0,
 		"spacing": 0,
 	},
 ]
+
+const MANIFESTS: Dictionary = {
+	PLANT_SOURCE: "res://assets/tilesets/plant.json",
+	PROP_SOURCE: "res://assets/tilesets/props.json",
+}
 
 ## Fixed so the room looks the same every run.
 const DECOR_SEED: int = 0x0A7B0
@@ -165,6 +169,8 @@ const PLACEMENT_ATTEMPTS: int = 600
 
 var _wall_cells: Dictionary = {}
 var _path_cells: Dictionary = {}
+## Source id -> sprite name -> atlas cell.
+var _sprite_cells: Dictionary = {}
 
 
 static func cell_to_world(cell: Vector2i) -> Vector2:
@@ -175,33 +181,12 @@ static func cell_to_world(cell: Vector2i) -> Vector2:
 func _ready() -> void:
 	_wall_cells = _cells_in(WALL_RECTANGLES)
 	_path_cells = _cells_in(PATH_RECTANGLES)
+	for source: int in MANIFESTS:
+		_sprite_cells[source] = _load_sprite_cells(MANIFESTS[source])
 	_paint_ground()
 	_paint_path()
 	_paint_walls()
 	_paint_decor()
-
-
-func _draw() -> void:
-	# Ground tiles cover the whole room, so this only needs the onboarding hint.
-	var hint_position := Vector2(-500, -240)
-	draw_string(
-		ThemeDB.fallback_font,
-		hint_position + Vector2(1, 2),
-		"WASD: MOVE    E: INTERACT",
-		HORIZONTAL_ALIGNMENT_LEFT,
-		-1,
-		14,
-		Color(0.0, 0.0, 0.0, 0.45),
-	)
-	draw_string(
-		ThemeDB.fallback_font,
-		hint_position,
-		"WASD: MOVE    E: INTERACT",
-		HORIZONTAL_ALIGNMENT_LEFT,
-		-1,
-		14,
-		Color("f4f1dc"),
-	)
 
 
 func _paint_ground() -> void:
@@ -283,9 +268,9 @@ func _paint_decor() -> void:
 				continue
 			_claim(cell, clearance, occupied)
 			_claim(cell, int(batch["spacing"]), spread)
-			decor_layer.set_cell(
-				cell, int(batch["source"]), tiles[random.randi() % tiles.size()]
-			)
+			var source: int = int(batch["source"])
+			var sprite_name: String = tiles[random.randi() % tiles.size()]
+			decor_layer.set_cell(cell, source, _sprite_cells[source][sprite_name])
 			placed += 1
 
 
@@ -304,6 +289,14 @@ func _claim(cell: Vector2i, radius: int, cells: Dictionary) -> void:
 	for offset_y: int in range(-radius, radius + 1):
 		for offset_x: int in range(-radius, radius + 1):
 			cells[cell + Vector2i(offset_x, offset_y)] = true
+
+
+func _load_sprite_cells(path: String) -> Dictionary:
+	var cells: Dictionary = {}
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	for sprite: Dictionary in parsed:
+		cells[sprite["name"]] = Vector2i(int(sprite["cell"][0]), int(sprite["cell"][1]))
+	return cells
 
 
 func _cells_in(rectangles: Array[Rect2i]) -> Dictionary:

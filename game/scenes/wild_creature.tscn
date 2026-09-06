@@ -1,0 +1,31 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/wild_creature.gd" id="1_wild_creature"]
+[ext_resource type="Script" path="res://scripts/visual/creature_visual.gd" id="2_creature_visual"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_creature"]
+size = Vector2(40, 40)
+
+[node name="WildCreature" type="CharacterBody2D" groups=["world_actors"]]
+script = ExtResource("1_wild_creature")
+
+[node name="CreatureVisual" type="Node2D" parent="."]
+scale = Vector2(1.6, 1.6)
+script = ExtResource("2_creature_visual")
+context = 1
+placeholder_size = Vector2(40, 40)
+
+[node name="Label" type="Label" parent="."]
+offset_left = -40.0
+offset_top = -44.0
+offset_right = 40.0
+offset_bottom = -24.0
+theme_override_colors/font_color = Color(0.941176, 0.976471, 0.92549, 1)
+theme_override_colors/font_outline_color = Color(0.054902, 0.0901961, 0.0509804, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 14
+text = "CREATURE"
+horizontal_alignment = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_creature")

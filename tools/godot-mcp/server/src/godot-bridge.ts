@@ -13,6 +13,7 @@ interface PendingRequest {
 export class GodotBridge {
   private wss: WebSocketServer | null = null;
   private client: WebSocket | null = null;
+  private sockets: Set<WebSocket> = new Set();
   private pending = new Map<number, PendingRequest>();
   private nextId = 1;
   private heartbeatTimer: ReturnType<typeof setInterval> | null = null;
@@ -27,14 +28,24 @@ export class GodotBridge {
 
     this.wss = new WebSocketServer({ port: this.port, host: "127.0.0.1" });
     this.wss.on("connection", (ws) => {
+      // The newest socket is the active editor. Older sockets are kept so a
+      // short-lived connection (a headless Godot run that loads the plugin)
+      // hands control back to the editor when it closes instead of leaving
+      // the bridge with no client.
+      this.sockets.add(ws);
       this.client = ws;
       console.error(`[godot-mcp] Godot editor connected on port ${this.port}`);
 
       ws.on("message", (data) => this.onMessage(data.toString()));
       ws.on("close", () => {
+        this.sockets.delete(ws);
         if (this.client === ws) {
-          this.client = null;
-          console.error("[godot-mcp] Godot editor disconnected");
+          this.client = this.lastOpenSocket();
+          if (this.client) {
+            console.error("[godot-mcp] Active socket closed; falling back to an earlier editor connection");
+          } else {
+            console.error("[godot-mcp] Godot editor disconnected");
+          }
         }
         this.rejectAll(new Error("Godot editor disconnected"));
       });
@@ -52,6 +63,14 @@ export class GodotBridge {
 
   get connected(): boolean {
     return this.client?.readyState === WebSocket.OPEN;
+  }
+
+  private lastOpenSocket(): WebSocket | null {
+    let found: WebSocket | null = null;
+    for (const socket of this.sockets) {
+      if (socket.readyState === WebSocket.OPEN) found = socket;
+    }
+    return found;
   }
 
   async call(method: string, params: Record<string, unknown> = {}): Promise<unknown> {

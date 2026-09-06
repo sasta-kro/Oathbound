@@ -2,14 +2,30 @@ extends GutTest
 
 const MAIN_SCENE: PackedScene = preload("res://main.tscn")
 
+const PLAYER_START_CELL := Vector2i(5, 9)
+const KNIGHT_CELL := Vector2i(5, 5)
 
-func test_main_scene_instantiates_with_player() -> void:
-	var main_scene: Node = autofree(MAIN_SCENE.instantiate())
+
+## Tests that await physics_frame resume inside the physics step. Freeing
+## tile bodies and moving creatures from there can crash the physics server,
+## so every test settles on an idle frame before GUT tears the scene down.
+func after_each() -> void:
+	await get_tree().process_frame
+
+
+func _load_main() -> Node2D:
+	var main_scene: Node2D = autofree(MAIN_SCENE.instantiate())
 	add_child(main_scene)
+	return main_scene
 
-	var player: Node = main_scene.get_node_or_null("Area1/Player")
-	assert_not_null(player, "Main scene must provide an Area1 player.")
-	assert_true(player is Player, "Area1 player must use the analog Player controller.")
+
+func test_main_scene_instantiates_with_area_and_player() -> void:
+	var main_scene: Node2D = _load_main()
+
+	var area: Node = main_scene.get_node_or_null("Area")
+	assert_true(area is WorldArea, "Main must instance a WorldArea scene as Area.")
+	var player: Node = main_scene.get_node_or_null("Player")
+	assert_true(player is Player, "Main must provide the analog Player controller.")
 
 
 func test_required_input_actions_exist() -> void:
@@ -64,87 +80,58 @@ func test_base_viewport_uses_the_specified_sixteen_by_nine_aspect() -> void:
 
 
 func test_ui_anchors_to_the_viewport_edges_rather_than_fixed_pixels() -> void:
-	var main_scene: Node2D = autofree(MAIN_SCENE.instantiate())
-	add_child(main_scene)
+	var main_scene: Node2D = _load_main()
 
 	var panel: PanelContainer = main_scene.get_node("DialoguePanel/Panel")
 	assert_eq(panel.anchor_bottom, 1.0, "The dialogue panel must anchor to the viewport bottom.")
 	assert_eq(panel.anchor_right, 1.0, "The dialogue panel must stretch to the viewport width.")
 
 
-func test_world_actors_are_centered_in_grid_cells() -> void:
-	var main_scene: Node2D = autofree(MAIN_SCENE.instantiate())
-	add_child(main_scene)
+func test_player_starts_on_the_area_marker_and_actors_sit_on_cell_centers() -> void:
+	var main_scene: Node2D = _load_main()
+	var area: WorldArea = main_scene.get_node("Area")
 
-	var expected_actor_cells: Dictionary[NodePath, Vector2i] = {
-		NodePath("Area1/Player"): Vector2i(5, 9),
-		NodePath("Area1/Knight"): Vector2i(5, 5),
-		NodePath("Area1/Creature"): Vector2i(14, 9),
-	}
-	for actor_path: NodePath in expected_actor_cells:
-		var actor: Node2D = main_scene.get_node(actor_path)
-		var expected_position: Vector2 = AreaOneRoom.cell_to_world(expected_actor_cells[actor_path])
-		assert_eq(
-			actor.position,
-			expected_position,
-			"%s must be centered in its grid cell." % actor_path,
-		)
-
-
-func test_world_actors_occupy_complete_grid_cells() -> void:
-	var main_scene: Node2D = autofree(MAIN_SCENE.instantiate())
-	add_child(main_scene)
-
-	var half_grid_size: float = AreaOneRoom.GRID_SIZE / 2.0
-	var expected_body_polygon: PackedVector2Array = PackedVector2Array(
-		[
-			Vector2(-half_grid_size, -half_grid_size),
-			Vector2(half_grid_size, -half_grid_size),
-			Vector2(half_grid_size, half_grid_size),
-			Vector2(-half_grid_size, half_grid_size),
-		]
+	var player: Player = main_scene.get_node("Player")
+	assert_eq(
+		player.global_position,
+		area.cell_to_world(PLAYER_START_CELL),
+		"The player must start on the area's PlayerStart marker.",
 	)
-	var actor_paths: Array[NodePath] = [
-		NodePath("Area1/Player"),
-		NodePath("Area1/Knight"),
-		NodePath("Area1/Creature"),
-	]
-	for actor_path: NodePath in actor_paths:
-		var body: Polygon2D = main_scene.get_node(NodePath("%s/Body" % actor_path))
-		assert_eq(
-			body.polygon,
-			expected_body_polygon,
-			"%s placeholder must fill one complete grid cell." % actor_path,
-		)
-
-	for actor_path: NodePath in [NodePath("Area1/Knight"), NodePath("Area1/Creature")]:
-		var rectangle: RectangleShape2D = _collision_rectangle(main_scene, actor_path)
-		assert_eq(
-			rectangle.size,
-			Vector2(AreaOneRoom.GRID_SIZE, AreaOneRoom.GRID_SIZE),
-			"%s must occupy one complete grid cell." % actor_path,
-		)
-
-	# The player slides freely, so its hitbox is inset a little from the visual
-	# to keep it from snagging on cell-wide gaps.
-	var player_rectangle: RectangleShape2D = _collision_rectangle(
-		main_scene, NodePath("Area1/Player")
+	var knight: Node2D = area.get_node("Knight")
+	assert_eq(
+		knight.global_position,
+		area.cell_to_world(KNIGHT_CELL),
+		"The knight must be centered in its grid cell.",
 	)
-	assert_true(
-		(
-			player_rectangle.size.x < AreaOneRoom.GRID_SIZE
-			and player_rectangle.size.y < AreaOneRoom.GRID_SIZE
-		),
-		"The player's hitbox must be inset from the grid cell.",
-	)
+
+
+func test_camera_limits_follow_the_painted_ground() -> void:
+	var main_scene: Node2D = _load_main()
+	var area: WorldArea = main_scene.get_node("Area")
+	var camera: Camera2D = main_scene.get_node("Player/Camera2D")
+
+	var limits: Rect2 = area.bounds()
+	assert_eq(limits, Rect2(-552, -312, 1056, 624), "Area 1 is a 22x13 room of 48 px cells.")
+	assert_eq(camera.limit_left, -552)
+	assert_eq(camera.limit_top, -312)
+	assert_eq(camera.limit_right, 504)
+	assert_eq(camera.limit_bottom, 312)
+
+
+func test_area_knows_which_cells_are_ground() -> void:
+	var main_scene: Node2D = _load_main()
+	var area: WorldArea = main_scene.get_node("Area")
+
+	assert_true(area.is_on_ground(area.cell_to_world(Vector2i(3, 3))), "Inside the room is ground.")
+	assert_false(area.is_on_ground(area.cell_to_world(Vector2i(-1, 3))), "Left of the room is not.")
+	assert_false(area.is_on_ground(area.cell_to_world(Vector2i(22, 3))), "Right of the room is not.")
 
 
 func test_player_moves_continuously_rather_than_by_whole_cells() -> void:
-	var main_scene: Node2D = autofree(MAIN_SCENE.instantiate())
-	add_child(main_scene)
+	var main_scene: Node2D = _load_main()
 	await get_tree().physics_frame
 
-	var player: Player = main_scene.get_node("Area1/Player")
+	var player: Player = main_scene.get_node("Player")
 	player.global_position = Vector2(-336, 0)
 	var position_before_movement: Vector2 = player.global_position
 
@@ -160,11 +147,10 @@ func test_player_moves_continuously_rather_than_by_whole_cells() -> void:
 
 
 func test_diagonal_movement_is_normalized() -> void:
-	var main_scene: Node2D = autofree(MAIN_SCENE.instantiate())
-	add_child(main_scene)
+	var main_scene: Node2D = _load_main()
 	await get_tree().physics_frame
 
-	var player: Player = main_scene.get_node("Area1/Player")
+	var player: Player = main_scene.get_node("Player")
 	player.global_position = Vector2(-192, 96)
 	var position_before_movement: Vector2 = player.global_position
 
@@ -175,18 +161,18 @@ func test_diagonal_movement_is_normalized() -> void:
 	assert_eq(player.facing_direction, Vector2i(1, 1), "Facing must follow the diagonal.")
 
 
-func test_walls_stop_the_player_and_let_it_slide_along_them() -> void:
-	var main_scene: Node2D = autofree(MAIN_SCENE.instantiate())
-	add_child(main_scene)
-	await get_tree().physics_frame
+func test_painted_walls_stop_the_player_and_let_it_slide_along_them() -> void:
+	var main_scene: Node2D = _load_main()
+	for _frame: int in 3:
+		await get_tree().physics_frame
 
-	var player: Player = main_scene.get_node("Area1/Player")
-	# RightWall spans x 168..216; the player's hitbox is 40 wide.
+	var player: Player = main_scene.get_node("Player")
+	# The wall column at cell x 15 spans world x 168..216; the hitbox is 40 wide.
 	player.global_position = Vector2(144, 96)
 	for _step: int in 60:
 		player.move_with(Vector2.RIGHT)
 	var blocked_x: float = player.global_position.x
-	assert_lt(blocked_x, 168.0, "The player's hitbox must stay outside the wall.")
+	assert_lt(blocked_x, 168.0, "The player's hitbox must stay outside the wall tiles.")
 	assert_gt(blocked_x, 144.0, "The player must close the gap up to the wall.")
 
 	var y_before_slide: float = player.global_position.y
@@ -198,12 +184,30 @@ func test_walls_stop_the_player_and_let_it_slide_along_them() -> void:
 	assert_lt(player.global_position.y, y_before_slide, "The player must slide up the wall.")
 
 
-func test_moved_signal_only_fires_when_the_player_actually_moves() -> void:
-	var main_scene: Node2D = autofree(MAIN_SCENE.instantiate())
-	add_child(main_scene)
+func test_hero_sprite_walks_and_faces_the_way_it_moves() -> void:
+	var main_scene: Node2D = _load_main()
 	await get_tree().physics_frame
 
-	var player: Player = main_scene.get_node("Area1/Player")
+	var player: Player = main_scene.get_node("Player")
+	var sprite: AnimatedSprite2D = player.get_node("Sprite")
+	assert_not_null(sprite.sprite_frames, "The player must carry the hero sprite frames.")
+	assert_true(sprite.sprite_frames.has_animation(&"walk"))
+	assert_true(sprite.sprite_frames.has_animation(&"idle"))
+
+	player.global_position = Vector2(-336, 0)
+	player.move_with(Vector2.LEFT)
+	assert_eq(sprite.animation, &"walk", "Moving plays the walk cycle.")
+	assert_true(sprite.flip_h, "Moving left mirrors the side-view hero.")
+	player.move_with(Vector2.ZERO)
+	assert_eq(sprite.animation, &"idle", "Standing still returns to idle.")
+	assert_true(sprite.flip_h, "Standing still keeps the last facing.")
+
+
+func test_moved_signal_only_fires_when_the_player_actually_moves() -> void:
+	var main_scene: Node2D = _load_main()
+	await get_tree().physics_frame
+
+	var player: Player = main_scene.get_node("Player")
 	player.global_position = Vector2(-336, 0)
 	watch_signals(player)
 
@@ -215,16 +219,15 @@ func test_moved_signal_only_fires_when_the_player_actually_moves() -> void:
 
 
 func test_disabled_movement_ignores_held_input() -> void:
-	var main_scene: Node2D = autofree(MAIN_SCENE.instantiate())
-	add_child(main_scene)
+	var main_scene: Node2D = _load_main()
 	await get_tree().physics_frame
 
-	var player: Player = main_scene.get_node("Area1/Player")
+	var player: Player = main_scene.get_node("Player")
 	player.global_position = Vector2(-336, 0)
 	player.movement_enabled = false
 	Input.action_press(&"move_right")
-	await get_tree().physics_frame
-	await get_tree().physics_frame
+	for _frame: int in 3:
+		await get_tree().physics_frame
 	Input.action_release(&"move_right")
 
 	assert_eq(
@@ -235,25 +238,39 @@ func test_disabled_movement_ignores_held_input() -> void:
 
 
 func test_interaction_reach_covers_touching_actors_from_any_side() -> void:
-	var main_scene: Node2D = autofree(MAIN_SCENE.instantiate())
-	add_child(main_scene)
+	var main_scene: Node2D = _load_main()
 
-	var player: Player = main_scene.get_node("Area1/Player")
-	var knight: WorldActor = main_scene.get_node("Area1/Knight")
-	var touching_offset: float = (AreaOneRoom.GRID_SIZE + 40) / 2.0
+	var player: Player = main_scene.get_node("Player")
+	var knight: WorldActor = main_scene.get_node("Area/Knight")
+	var touching_offset: float = (WorldArea.GRID_SIZE + 40) / 2.0
 
 	player.global_position = knight.global_position + Vector2(touching_offset, 0)
 	assert_true(main_scene._is_adjacent_to(knight), "Touching from the side is in reach.")
+	assert_eq(main_scene.nearest_actor_in_reach(), knight, "The knight is the nearest actor.")
 
 	player.global_position = knight.global_position + Vector2(touching_offset, touching_offset)
 	assert_true(main_scene._is_adjacent_to(knight), "Touching at a corner is in reach.")
 
-	player.global_position = knight.global_position + Vector2(2 * AreaOneRoom.GRID_SIZE, 0)
+	player.global_position = knight.global_position + Vector2(2 * WorldArea.GRID_SIZE, 0)
 	assert_false(main_scene._is_adjacent_to(knight), "Two cells away is out of reach.")
+	assert_null(main_scene.nearest_actor_in_reach(), "Nothing else is within reach there.")
 
 
-func _collision_rectangle(main_scene: Node, actor_path: NodePath) -> RectangleShape2D:
-	var collision_shape: CollisionShape2D = main_scene.get_node(
-		NodePath("%s/CollisionShape2D" % actor_path)
-	)
-	return collision_shape.shape as RectangleShape2D
+func test_dialogue_freezes_the_player_and_every_roaming_creature() -> void:
+	var main_scene: Node2D = _load_main()
+	for _frame: int in 3:
+		await get_tree().physics_frame
+
+	var player: Player = main_scene.get_node("Player")
+	var creatures: Array[Node] = get_tree().get_nodes_in_group(WildCreature.CREATURE_GROUP)
+	assert_gt(creatures.size(), 0, "The sample map must spawn creatures.")
+
+	main_scene._open_dialogue("Hello")
+	assert_false(player.movement_enabled)
+	for creature: WildCreature in creatures:
+		assert_false(creature.roaming_enabled, "%s must stop while dialogue is open." % creature.name)
+
+	main_scene._close_dialogue()
+	assert_true(player.movement_enabled)
+	for creature: WildCreature in creatures:
+		assert_true(creature.roaming_enabled, "%s must resume after dialogue." % creature.name)

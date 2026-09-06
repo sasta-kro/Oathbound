@@ -199,7 +199,11 @@ func _on_animation_finished() -> void:
 	play(STATE_IDLE)
 
 
+## Overworld art is optional: a species with only battle frames shows those
+## in the world rather than a placeholder.
 func _sprite_frames() -> SpriteFrames:
 	if species == null:
 		return null
-	return species.battle_sprite if context == Context.BATTLE else species.overworld_sprite
+	if context == Context.OVERWORLD and species.overworld_sprite != null:
+		return species.overworld_sprite
+	return species.battle_sprite

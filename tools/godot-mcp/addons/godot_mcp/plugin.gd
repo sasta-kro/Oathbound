@@ -14,6 +14,11 @@ var auto_dismiss_dialogs: bool = false
 
 
 func _enter_tree() -> void:
+	# Headless runs (tests, bake scripts, imports) load editor plugins too.
+	# They must not connect to the MCP server, or the server would treat
+	# their exit as the editor going away.
+	if DisplayServer.get_name() == "headless":
+		return
 	_inject_autoloads()
 	_command_router = preload("res://addons/godot_mcp/command_router.gd").new()
 	_command_router.name = "MCPCommandRouter"
@@ -29,6 +34,8 @@ func _enter_tree() -> void:
 
 
 func _exit_tree() -> void:
+	if DisplayServer.get_name() == "headless":
+		return
 	_remove_autoloads()
 	if _websocket_client:
 		_websocket_client.stop()

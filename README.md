@@ -16,6 +16,8 @@ tools/     External development tools, including the Godot MCP server.
 
 `AGENTS.md` defines repository workflow and codebase conventions for human and agent contributors.
 
+`docs/map_authoring.md` explains how to paint areas and place creature spawn zones in the Godot editor.
+
 Implementation files must not silently change the specification. Conflicts, missing decisions, and non-trivial assumptions should be reported for review.
 
 ## Godot project
@@ -26,6 +28,7 @@ Important locations:
 
 ```text
 game/main.tscn          Launch scene.
+game/areas/             Hand-painted overworld areas (one scene per area).
 game/scenes/            Reusable Godot scenes.
 game/scripts/            Typed GDScript gameplay code.
 game/tests/              GUT tests.
