@@ -1,0 +1,289 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/battle/battle_scene.gd" id="1_battle_scene"]
+[ext_resource type="Script" path="res://scripts/visual/creature_visual.gd" id="2_creature_visual"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_window"]
+bg_color = Color(0.0588235, 0.0862745, 0.109804, 0.96)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.72549, 0.682353, 0.321569, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bar_background"]
+bg_color = Color(0.156863, 0.184314, 0.211765, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_fill"]
+bg_color = Color(0.298039, 0.760784, 0.376471, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xp_fill"]
+bg_color = Color(0.360784, 0.611765, 0.909804, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[node name="BattleScene" type="CanvasLayer"]
+layer = 5
+script = ExtResource("1_battle_scene")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Sky" type="ColorRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.113725, 0.152941, 0.207843, 1)
+
+[node name="Ground" type="ColorRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 0.6
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+color = Color(0.164706, 0.247059, 0.176471, 1)
+
+[node name="Horizon" type="ColorRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 10
+anchor_top = 0.6
+anchor_right = 1.0
+anchor_bottom = 0.6
+offset_bottom = 3.0
+grow_horizontal = 2
+color = Color(0.294118, 0.407843, 0.262745, 1)
+
+[node name="Stage" type="Node2D" parent="Root"]
+
+[node name="PlayerShadow" type="Node2D" parent="Root/Stage"]
+position = Vector2(250, 342)
+scale = Vector2(1, 0.32)
+
+[node name="EnemyShadow" type="Node2D" parent="Root/Stage"]
+position = Vector2(710, 342)
+scale = Vector2(1, 0.32)
+
+[node name="PlayerVisual" type="Node2D" parent="Root/Stage"]
+unique_name_in_owner = true
+position = Vector2(250, 296)
+script = ExtResource("2_creature_visual")
+placeholder_size = Vector2(96, 96)
+art_scale = 5.0
+
+[node name="EnemyVisual" type="Node2D" parent="Root/Stage"]
+unique_name_in_owner = true
+position = Vector2(710, 296)
+script = ExtResource("2_creature_visual")
+placeholder_size = Vector2(96, 96)
+flip_h = true
+art_scale = 5.0
+
+[node name="PlayerPanel" type="PanelContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 32.0
+offset_top = 24.0
+offset_right = 352.0
+offset_bottom = 122.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_window")
+
+[node name="Margin" type="MarginContainer" parent="Root/PlayerPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 10
+
+[node name="Rows" type="VBoxContainer" parent="Root/PlayerPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="NameRow" type="HBoxContainer" parent="Root/PlayerPanel/Margin/Rows"]
+layout_mode = 2
+
+[node name="PlayerName" type="Label" parent="Root/PlayerPanel/Margin/Rows/NameRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.94902, 0.94902, 0.901961, 1)
+theme_override_font_sizes/font_size = 20
+text = "EMBERLING"
+
+[node name="PlayerLevel" type="Label" parent="Root/PlayerPanel/Margin/Rows/NameRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72549, 0.682353, 0.321569, 1)
+theme_override_font_sizes/font_size = 18
+text = "Lv 5"
+
+[node name="PlayerTypes" type="Label" parent="Root/PlayerPanel/Margin/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.658824, 0.658824, 0.639216, 1)
+theme_override_font_sizes/font_size = 13
+text = "FIRE"
+
+[node name="PlayerHpBar" type="ProgressBar" parent="Root/PlayerPanel/Margin/Rows"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_background")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_fill")
+value = 100.0
+show_percentage = false
+
+[node name="PlayerHp" type="Label" parent="Root/PlayerPanel/Margin/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94902, 0.94902, 0.901961, 1)
+theme_override_font_sizes/font_size = 14
+text = "48 / 48"
+horizontal_alignment = 2
+
+[node name="PlayerXpBar" type="ProgressBar" parent="Root/PlayerPanel/Margin/Rows"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 5)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_background")
+theme_override_styles/fill = SubResource("StyleBoxFlat_xp_fill")
+show_percentage = false
+
+[node name="EnemyPanel" type="PanelContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -352.0
+offset_top = 24.0
+offset_right = -32.0
+offset_bottom = 112.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_window")
+
+[node name="Margin" type="MarginContainer" parent="Root/EnemyPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 10
+
+[node name="Rows" type="VBoxContainer" parent="Root/EnemyPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="NameRow" type="HBoxContainer" parent="Root/EnemyPanel/Margin/Rows"]
+layout_mode = 2
+
+[node name="EnemyName" type="Label" parent="Root/EnemyPanel/Margin/Rows/NameRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.94902, 0.94902, 0.901961, 1)
+theme_override_font_sizes/font_size = 20
+text = "LOAMBUCK"
+
+[node name="EnemyLevel" type="Label" parent="Root/EnemyPanel/Margin/Rows/NameRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72549, 0.682353, 0.321569, 1)
+theme_override_font_sizes/font_size = 18
+text = "Lv 4"
+
+[node name="EnemyTypes" type="Label" parent="Root/EnemyPanel/Margin/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.658824, 0.658824, 0.639216, 1)
+theme_override_font_sizes/font_size = 13
+text = "EARTH"
+
+[node name="EnemyHpBar" type="ProgressBar" parent="Root/EnemyPanel/Margin/Rows"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_background")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_fill")
+value = 100.0
+show_percentage = false
+
+[node name="EnemyHp" type="Label" parent="Root/EnemyPanel/Margin/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94902, 0.94902, 0.901961, 1)
+theme_override_font_sizes/font_size = 14
+text = "62 / 62"
+horizontal_alignment = 2
+
+[node name="BottomBar" type="HBoxContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 32.0
+offset_top = -160.0
+offset_right = -32.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 12
+
+[node name="CommandPanel" type="PanelContainer" parent="Root/BottomBar"]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_window")
+
+[node name="Margin" type="MarginContainer" parent="Root/BottomBar/CommandPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 8
+
+[node name="CommandList" type="VBoxContainer" parent="Root/BottomBar/CommandPanel/Margin"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="MessagePanel" type="PanelContainer" parent="Root/BottomBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_window")
+
+[node name="Margin" type="MarginContainer" parent="Root/BottomBar/MessagePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 14
+
+[node name="MessageLabel" type="Label" parent="Root/BottomBar/MessagePanel/Margin"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94902, 0.94902, 0.901961, 1)
+theme_override_font_sizes/font_size = 20
+text = "A wild Loambuck appeared!"
+autowrap_mode = 2

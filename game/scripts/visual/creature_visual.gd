@@ -45,6 +45,20 @@ const PLACEHOLDER_FPS: Dictionary[StringName, float] = {
 @export var context: Context = Context.BATTLE
 ## Placeholder box size used when the species has no sprite.
 @export var placeholder_size: Vector2 = Vector2(64, 64)
+## Mirrors the sprite so a side-view creature faces left. Placeholders are
+## text, so they never mirror.
+@export var flip_h: bool = false:
+	set(value):
+		flip_h = value
+		if _visual is AnimatedSprite2D:
+			(_visual as AnimatedSprite2D).flip_h = value
+## Scales the sprite art only. The placeholder keeps [member placeholder_size]
+## so its label stays readable.
+@export_range(0.25, 8.0, 0.25) var art_scale: float = 1.0:
+	set(value):
+		art_scale = value
+		if _visual is AnimatedSprite2D:
+			(_visual as AnimatedSprite2D).scale = Vector2.ONE * value
 
 ## Species shown. Assignable from a scene so a room can place a creature
 ## without code; runtime callers use [method set_species] or
@@ -127,6 +141,8 @@ func _rebuild() -> void:
 	if frames != null:
 		var sprite := AnimatedSprite2D.new()
 		sprite.sprite_frames = frames
+		sprite.flip_h = flip_h
+		sprite.scale = Vector2.ONE * art_scale
 		sprite.animation_finished.connect(_on_animation_finished)
 		_visual = sprite
 	else:

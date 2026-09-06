@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="CreatureSpecies" load_steps=14 format=3]
+[gd_resource type="Resource" script_class="CreatureSpecies" load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://scripts/creatures/creature_species.gd" id="1_species"]
 [ext_resource type="Script" path="res://scripts/creatures/learnset_entry.gd" id="2_entry"]
@@ -9,6 +9,7 @@
 [ext_resource type="Resource" path="res://content/moves/move_quake_step_01.tres" id="7_quake_step"]
 [ext_resource type="Resource" path="res://content/abilities/ability_stonewall.tres" id="8_stonewall"]
 [ext_resource type="Resource" path="res://content/abilities/ability_thick_hide.tres" id="9_thick_hide"]
+[ext_resource type="SpriteFrames" path="res://content/sprites/creature_earth_01_battle.tres" id="10_battle_sprite"]
 
 [sub_resource type="Resource" script_class="LearnsetEntry" id="Learn_stone_toss_1"]
 script = ExtResource("2_entry")
@@ -45,3 +46,4 @@ growth = ExtResource("3_growth")
 learnset = Array[LearnsetEntry]([SubResource("Learn_stone_toss_1"), SubResource("Learn_guard_stance_5"), SubResource("Learn_venom_spit_11"), SubResource("Learn_quake_step_18")])
 ability_pool = Array[AbilityData]([ExtResource("8_stonewall"), ExtResource("9_thick_hide")])
 base_bind_chance = 0.4
+battle_sprite = ExtResource("10_battle_sprite")

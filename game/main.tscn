@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/area_one_room.gd" id="2_area_one"]
@@ -7,7 +7,9 @@
 [ext_resource type="PackedScene" path="res://scenes/dialogue_panel.tscn" id="5_dialogue"]
 [ext_resource type="PackedScene" path="res://scenes/settings_menu.tscn" id="6_settings"]
 [ext_resource type="Script" path="res://scripts/visual/creature_visual.gd" id="7_creature_visual"]
-[ext_resource type="Resource" uid="uid://d2gd7n0v6nkw5" path="res://content/creatures/creature_fire_01.tres" id="8_emberling"]
+[ext_resource type="Resource" path="res://content/creatures/creature_earth_01.tres" id="8_loambuck"]
+[ext_resource type="Script" path="res://scripts/wild_creature.gd" id="10_wild_creature"]
+[ext_resource type="PackedScene" path="res://scenes/battle_scene.tscn" id="11_battle_scene"]
 [ext_resource type="TileSet" path="res://assets/tilesets/area_one.tres" id="9_tileset"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_horizontal_wall"]
@@ -109,20 +111,26 @@ text = "KNIGHT"
 
 [node name="Creature" parent="Area1" instance=ExtResource("4_actor")]
 position = Vector2(144, 144)
-dialogue_line = "Emberling: The small ember-lit creature watches you, then settles again."
+script = ExtResource("10_wild_creature")
+dialogue_line = "A wild Loambuck bristles and paws the ground. It will fight if you press E."
+species = ExtResource("8_loambuck")
+level = 3
+ability_index = 1
 
 [node name="Body" parent="Area1/Creature" index="0"]
 visible = false
 color = Color(0.584314, 0.317647, 0.803922, 1)
 
 [node name="Label" parent="Area1/Creature" index="1"]
-text = "EMBERLING"
+text = "LOAMBUCK"
 
 [node name="CreatureVisual" type="Node2D" parent="Area1/Creature"]
 scale = Vector2(1.6, 1.6)
 script = ExtResource("7_creature_visual")
-species = ExtResource("8_emberling")
+species = ExtResource("8_loambuck")
 
 [node name="DialoguePanel" parent="." instance=ExtResource("5_dialogue")]
 
 [node name="SettingsMenu" parent="." instance=ExtResource("6_settings")]
+
+[node name="BattleScene" parent="." instance=ExtResource("11_battle_scene")]
