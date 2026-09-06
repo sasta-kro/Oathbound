@@ -41,6 +41,15 @@ The project targets Godot 4.7.2 Stable with the Compatibility renderer. The proj
 
 The MCP bridge is optional for command-line validation. Godot CLI, GUT, `gdformat`, and `gdlint` remain usable without an active MCP connection.
 
+The server is registered for this repository in `.mcp.json` and runs from a local build that is not committed. Build it once per checkout, from the repository root:
+
+```bash
+npm --prefix tools/godot-mcp/server install
+npm --prefix tools/godot-mcp/server run build
+```
+
+Agent tools reach the editor only while the Godot editor is open on `game/` with the `godot_mcp` plugin enabled. The addon and the server meet on `GODOT_MCP_PORT` (6505 by default).
+
 ## Validation
 
 Run commands from `game/`:

@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/area_one_room.gd" id="2_area_one"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" path="res://scenes/settings_menu.tscn" id="6_settings"]
 [ext_resource type="Script" path="res://scripts/visual/creature_visual.gd" id="7_creature_visual"]
 [ext_resource type="Resource" uid="uid://d2gd7n0v6nkw5" path="res://content/creatures/creature_fire_01.tres" id="8_emberling"]
+[ext_resource type="TileSet" path="res://assets/tilesets/area_one.tres" id="9_tileset"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_horizontal_wall"]
 size = Vector2(1056, 48)
@@ -26,6 +27,30 @@ script = ExtResource("1_main")
 
 [node name="Area1" type="Node2D" parent="."]
 script = ExtResource("2_area_one")
+
+[node name="Ground" type="TileMapLayer" parent="Area1"]
+position = Vector2(-552, -312)
+scale = Vector2(1.5, 1.5)
+z_index = -1
+tile_set = ExtResource("9_tileset")
+
+[node name="Path" type="TileMapLayer" parent="Area1"]
+position = Vector2(-552, -312)
+scale = Vector2(1.5, 1.5)
+z_index = -1
+tile_set = ExtResource("9_tileset")
+
+[node name="Walls" type="TileMapLayer" parent="Area1"]
+position = Vector2(-552, -312)
+scale = Vector2(1.5, 1.5)
+z_index = -1
+tile_set = ExtResource("9_tileset")
+
+[node name="Decor" type="TileMapLayer" parent="Area1"]
+position = Vector2(-552, -312)
+scale = Vector2(1.5, 1.5)
+z_index = -1
+tile_set = ExtResource("9_tileset")
 
 [node name="NorthWall" type="StaticBody2D" parent="Area1"]
 position = Vector2(0, -288)
