@@ -22,8 +22,8 @@ extends Resource
 @export_range(-5, 5) var priority: int = 0
 
 @export_group("Status Effect")
-## Status applied on hit, or an empty name for none. See [StatusIds].
-@export var status_id: StringName = StatusIds.NONE
+## Status applied on hit, or NONE.
+@export var status: StatusIds.Status = StatusIds.NONE
 @export_range(0, 100) var status_chance: int = 0
 @export_range(1, 5) var status_duration_turns: int = 3
 
@@ -42,7 +42,7 @@ func is_damaging() -> bool:
 
 
 func applies_status() -> bool:
-	return status_id != StatusIds.NONE and status_chance > 0
+	return status != StatusIds.NONE and status_chance > 0
 
 
 ## Content problems for this move, empty when valid.
@@ -52,9 +52,7 @@ func validate() -> Array[String]:
 		problems.append("Move at '%s' has no id." % resource_path)
 	if display_name.is_empty():
 		problems.append("Move '%s' has no display name." % id)
-	if status_id != StatusIds.NONE and not StatusIds.is_known(status_id):
-		problems.append("Move '%s' applies unknown status '%s'." % [id, status_id])
-	if status_id != StatusIds.NONE and status_chance <= 0:
+	if status != StatusIds.NONE and status_chance <= 0:
 		problems.append("Move '%s' declares a status but a 0%% chance." % id)
 	if not is_damaging() and not applies_status() and stat_modifiers.is_empty():
 		problems.append("Move '%s' has no damage, status or stat effect." % id)

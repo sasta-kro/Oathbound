@@ -7,4 +7,4 @@ script = ExtResource("1_ability")
 id = &"ability_toxic_ward"
 display_name = "Toxic Ward"
 description = "The creature's blood neutralises venom before it spreads."
-immune_status_ids = Array[StringName]([&"status_poison"])
+immune_statuses = Array[int]([1])

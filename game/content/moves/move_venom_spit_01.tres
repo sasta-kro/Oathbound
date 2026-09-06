@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="MoveData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="MoveData" format=3 uid="uid://dywchce8ppf42"]
 
-[ext_resource type="Script" path="res://scripts/creatures/move_data.gd" id="1_move"]
+[ext_resource type="Script" uid="uid://bq5p2dxnovb0r" path="res://scripts/creatures/move_data.gd" id="1_move"]
+[ext_resource type="Script" uid="uid://c8yppijv6s6vv" path="res://scripts/creatures/stat_modifier.gd" id="2_msyq5"]
 
 [resource]
 script = ExtResource("1_move")
@@ -11,7 +12,5 @@ type = 1
 power = 10
 accuracy = 90
 cooldown_turns = 3
-priority = 0
-status_id = &"status_poison"
+status = 1
 status_chance = 60
-status_duration_turns = 3

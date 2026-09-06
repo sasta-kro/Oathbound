@@ -73,7 +73,7 @@ func _all_of(events: Array[BattleEvent], kind: BattleEvent.Kind) -> Array[Battle
 
 ## A test-only move so a rule can be isolated from the shipped content.
 func _custom_move(
-	power: int, type: Elements.Type, priority: int = 0, status: StringName = StatusIds.NONE
+	power: int, type: Elements.Type, priority: int = 0, status: StatusIds.Status = StatusIds.NONE
 ) -> MoveData:
 	var move := MoveData.new()
 	move.id = &"move_test_%d_%d" % [power, priority]
@@ -83,7 +83,7 @@ func _custom_move(
 	move.accuracy = 100
 	move.priority = priority
 	if status != StatusIds.NONE:
-		move.status_id = status
+		move.status = status
 		move.status_chance = 100
 		move.status_duration_turns = 3
 	return move

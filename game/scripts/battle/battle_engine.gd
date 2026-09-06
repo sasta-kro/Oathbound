@@ -319,8 +319,8 @@ func _use_move(side: int, move: MoveData, events: Array[BattleEvent]) -> void:
 func _try_apply_status(
 	user: Battler, target: Battler, move: MoveData, events: Array[BattleEvent]
 ) -> void:
-	var status_name: String = _status_display_name(move.status_id)
-	if target.creature.ability != null and target.creature.ability.blocks_status(move.status_id):
+	var status_name: String = StatusIds.display_name(move.status)
+	if target.creature.ability != null and target.creature.ability.blocks_status(move.status):
 		events.append(
 			BattleEvent.create(
 				BattleEvent.Kind.STATUS_BLOCKED,
@@ -331,20 +331,20 @@ func _try_apply_status(
 			)
 		)
 		return
-	if target.has_status(move.status_id):
+	if target.has_status(move.status):
 		return
 	var chance: int = move.status_chance
 	if user.creature.ability != null:
 		chance += user.creature.ability.inflicted_status_chance_bonus
 	if not _percent_roll_passes(chance):
 		return
-	target.apply_status(move.status_id, move.status_duration_turns)
+	target.apply_status(move.status, move.status_duration_turns)
 	events.append(
 		BattleEvent.create(
 			BattleEvent.Kind.STATUS_APPLIED,
 			target.side,
-			"%s was %s!" % [_label(target), _status_applied_verb(move.status_id)],
-			{"status": move.status_id},
+			"%s was %s!" % [_label(target), StatusIds.applied_verb(move.status)],
+			{"status": move.status},
 		)
 	)
 
@@ -546,26 +546,26 @@ func _end_of_turn(events: Array[BattleEvent]) -> void:
 
 
 func _tick_statuses(battler: Battler, events: Array[BattleEvent]) -> void:
-	for status_id: StringName in battler.damaging_statuses():
-		var text := "%s is hurt by %s!" % [_label(battler), _status_display_name(status_id)]
+	for status: StatusIds.Status in battler.damaging_statuses():
+		var text := "%s is hurt by %s!" % [_label(battler), StatusIds.display_name(status)]
 		_deal_damage(
 			battler,
-			battler.status_damage(status_id),
+			battler.status_damage(status),
 			BattleEvent.Kind.STATUS_DAMAGE,
 			text,
-			{"status": status_id},
+			{"status": status},
 			events,
 		)
 		if battler.is_fainted():
 			_check_battle_end(events)
 			return
-		if battler.tick_status(status_id):
+		if battler.tick_status(status):
 			events.append(
 				BattleEvent.create(
 					BattleEvent.Kind.STATUS_ENDED,
 					battler.side,
-					"%s's %s wore off." % [_label(battler), _status_display_name(status_id)],
-					{"status": status_id},
+					"%s's %s wore off." % [_label(battler), StatusIds.display_name(status)],
+					{"status": status},
 				)
 			)
 
@@ -658,25 +658,3 @@ func _label(battler: Battler) -> String:
 	if config.is_wild:
 		return "Wild %s" % battler.display_name()
 	return "Foe %s" % battler.display_name()
-
-
-func _status_display_name(status_id: StringName) -> String:
-	match status_id:
-		StatusIds.POISON:
-			return "poison"
-		StatusIds.BURN:
-			return "burn"
-		StatusIds.STUN:
-			return "stun"
-	return String(status_id)
-
-
-func _status_applied_verb(status_id: StringName) -> String:
-	match status_id:
-		StatusIds.POISON:
-			return "poisoned"
-		StatusIds.BURN:
-			return "burned"
-		StatusIds.STUN:
-			return "stunned"
-	return "afflicted"

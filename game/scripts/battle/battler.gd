@@ -33,7 +33,7 @@ var creature: CreatureInstance
 var side: int = 0
 ## Move -> turns until it is ready again. Absent means ready.
 var cooldowns: Dictionary = {}
-## Status id -> turns remaining. Stun is cleared by use, not by time.
+## [enum StatusIds.Status] -> turns remaining. Stun is cleared by use, not by time.
 var statuses: Dictionary = {}
 var modifiers: Array[ActiveModifier] = []
 ## True once this creature has fought in the current battle, which is what
@@ -170,40 +170,40 @@ func tick_modifiers() -> void:
 # --- Statuses (Specification 12) ---------------------------------------------
 
 
-func has_status(status_id: StringName) -> bool:
-	return statuses.has(status_id)
+func has_status(status: StatusIds.Status) -> bool:
+	return statuses.has(status)
 
 
-func apply_status(status_id: StringName, duration_turns: int) -> void:
-	statuses[status_id] = maxi(1, duration_turns)
+func apply_status(status: StatusIds.Status, duration_turns: int) -> void:
+	statuses[status] = maxi(1, duration_turns)
 
 
-func clear_status(status_id: StringName) -> void:
-	statuses.erase(status_id)
+func clear_status(status: StatusIds.Status) -> void:
+	statuses.erase(status)
 
 
 ## Statuses that deal damage at the end of the creature's turn, in a stable
 ## order so presentation is repeatable.
-func damaging_statuses() -> Array[StringName]:
-	var out: Array[StringName] = []
-	for status_id: StringName in StatusIds.ALL:
-		if has_status(status_id) and STATUS_DAMAGE_FRACTIONS.has(status_id):
-			out.append(status_id)
+func damaging_statuses() -> Array[StatusIds.Status]:
+	var out: Array[StatusIds.Status] = []
+	for status: StatusIds.Status in StatusIds.ALL:
+		if has_status(status) and STATUS_DAMAGE_FRACTIONS.has(status):
+			out.append(status)
 	return out
 
 
-func status_damage(status_id: StringName) -> int:
-	var fraction: float = float(STATUS_DAMAGE_FRACTIONS.get(status_id, 0.0))
+func status_damage(status: StatusIds.Status) -> int:
+	var fraction: float = float(STATUS_DAMAGE_FRACTIONS.get(status, 0.0))
 	return maxi(1, int(floor(float(creature.max_hp()) * fraction)))
 
 
 ## Counts down one turn and reports whether the status has just expired.
-func tick_status(status_id: StringName) -> bool:
-	if not has_status(status_id):
+func tick_status(status: StatusIds.Status) -> bool:
+	if not has_status(status):
 		return false
-	statuses[status_id] = int(statuses[status_id]) - 1
-	if int(statuses[status_id]) <= 0:
-		statuses.erase(status_id)
+	statuses[status] = int(statuses[status]) - 1
+	if int(statuses[status]) <= 0:
+		statuses.erase(status)
 		return true
 	return false
 

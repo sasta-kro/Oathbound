@@ -1,8 +1,10 @@
 extends Node2D
 
+const INTERACTION_REACH_IN_CELLS: float = 1.5
+
 var creature_has_spoken: bool = false
 
-@onready var player: GridPlayer = $Area1/Player
+@onready var player: Player = $Area1/Player
 @onready var knight: WorldActor = $Area1/Knight
 @onready var creature: WildCreature = $Area1/Creature
 @onready var dialogue_panel: DialoguePanel = $DialoguePanel
@@ -63,10 +65,12 @@ func _on_player_moved() -> void:
 		_open_dialogue(creature.dialogue_line)
 
 
+## Movement is analog, so "adjacent" means within reach rather than on a
+## neighbouring cell: close enough to touch the actor from any side or corner,
+## but not from two tiles away.
 func _is_adjacent_to(actor: WorldActor) -> bool:
-	var position_difference: Vector2 = actor.global_position - player.global_position
-	var tile_distance: float = abs(position_difference.x) + abs(position_difference.y)
-	return is_equal_approx(tile_distance, float(player.grid_size))
+	var reach: float = player.grid_size * INTERACTION_REACH_IN_CELLS
+	return player.global_position.distance_to(actor.global_position) <= reach
 
 
 func _start_wild_battle() -> void:

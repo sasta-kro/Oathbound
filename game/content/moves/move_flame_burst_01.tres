@@ -12,6 +12,6 @@ power = 35
 accuracy = 90
 cooldown_turns = 2
 priority = 0
-status_id = &"status_burn"
+status = 2
 status_chance = 30
 status_duration_turns = 3

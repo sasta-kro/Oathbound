@@ -1,16 +1,16 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene format=3 uid="uid://cfnw2slgjv2iw"]
 
-[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
-[ext_resource type="Script" path="res://scripts/area_one_room.gd" id="2_area_one"]
+[ext_resource type="Script" uid="uid://cylbrubh17ryi" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="Script" uid="uid://dq1pxf537nktg" path="res://scripts/area_one_room.gd" id="2_area_one"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
 [ext_resource type="PackedScene" path="res://scenes/world_actor.tscn" id="4_actor"]
 [ext_resource type="PackedScene" path="res://scenes/dialogue_panel.tscn" id="5_dialogue"]
 [ext_resource type="PackedScene" path="res://scenes/settings_menu.tscn" id="6_settings"]
-[ext_resource type="Script" path="res://scripts/visual/creature_visual.gd" id="7_creature_visual"]
+[ext_resource type="Script" uid="uid://qllilmb3q8ye" path="res://scripts/visual/creature_visual.gd" id="7_creature_visual"]
 [ext_resource type="Resource" path="res://content/creatures/creature_earth_01.tres" id="8_loambuck"]
-[ext_resource type="Script" path="res://scripts/wild_creature.gd" id="10_wild_creature"]
-[ext_resource type="PackedScene" path="res://scenes/battle_scene.tscn" id="11_battle_scene"]
 [ext_resource type="TileSet" path="res://assets/tilesets/area_one.tres" id="9_tileset"]
+[ext_resource type="Script" uid="uid://d0fgyjkk01sn2" path="res://scripts/wild_creature.gd" id="10_wild_creature"]
+[ext_resource type="PackedScene" path="res://scenes/battle_scene.tscn" id="11_battle_scene"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_horizontal_wall"]
 size = Vector2(1056, 48)
@@ -24,82 +24,81 @@ size = Vector2(240, 48)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_right_wall"]
 size = Vector2(48, 144)
 
-[node name="Main" type="Node2D"]
+[node name="Main" type="Node2D" unique_id=1915249078]
 script = ExtResource("1_main")
 
-[node name="Area1" type="Node2D" parent="."]
+[node name="Area1" type="Node2D" parent="." unique_id=1625042630]
 script = ExtResource("2_area_one")
 
-[node name="Ground" type="TileMapLayer" parent="Area1"]
+[node name="Ground" type="TileMapLayer" parent="Area1" unique_id=1337203502]
+z_index = -1
 position = Vector2(-552, -312)
 scale = Vector2(1.5, 1.5)
-z_index = -1
 tile_set = ExtResource("9_tileset")
 
-[node name="Path" type="TileMapLayer" parent="Area1"]
+[node name="Path" type="TileMapLayer" parent="Area1" unique_id=3692159]
+z_index = -1
 position = Vector2(-552, -312)
 scale = Vector2(1.5, 1.5)
-z_index = -1
 tile_set = ExtResource("9_tileset")
 
-[node name="Walls" type="TileMapLayer" parent="Area1"]
+[node name="Walls" type="TileMapLayer" parent="Area1" unique_id=1934291183]
+z_index = -1
 position = Vector2(-552, -312)
 scale = Vector2(1.5, 1.5)
-z_index = -1
 tile_set = ExtResource("9_tileset")
 
-[node name="Decor" type="TileMapLayer" parent="Area1"]
+[node name="Decor" type="TileMapLayer" parent="Area1" unique_id=465964181]
+z_index = -1
 position = Vector2(-552, -312)
 scale = Vector2(1.5, 1.5)
-z_index = -1
 tile_set = ExtResource("9_tileset")
 
-[node name="NorthWall" type="StaticBody2D" parent="Area1"]
+[node name="NorthWall" type="StaticBody2D" parent="Area1" unique_id=2114155756]
 position = Vector2(0, -288)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area1/NorthWall"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area1/NorthWall" unique_id=94705355]
 shape = SubResource("RectangleShape2D_horizontal_wall")
 
-[node name="SouthWall" type="StaticBody2D" parent="Area1"]
+[node name="SouthWall" type="StaticBody2D" parent="Area1" unique_id=1893065441]
 position = Vector2(0, 288)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area1/SouthWall"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area1/SouthWall" unique_id=530727182]
 shape = SubResource("RectangleShape2D_horizontal_wall")
 
-[node name="WestWall" type="StaticBody2D" parent="Area1"]
+[node name="WestWall" type="StaticBody2D" parent="Area1" unique_id=954105254]
 position = Vector2(-528, 0)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area1/WestWall"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area1/WestWall" unique_id=105675265]
 shape = SubResource("RectangleShape2D_vertical_wall")
 
-[node name="EastWall" type="StaticBody2D" parent="Area1"]
+[node name="EastWall" type="StaticBody2D" parent="Area1" unique_id=1114127082]
 position = Vector2(480, 0)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area1/EastWall"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area1/EastWall" unique_id=1788537988]
 shape = SubResource("RectangleShape2D_vertical_wall")
 
-[node name="CenterWall" type="StaticBody2D" parent="Area1"]
-position = Vector2(0, 0)
+[node name="CenterWall" type="StaticBody2D" parent="Area1" unique_id=570653749]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area1/CenterWall"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area1/CenterWall" unique_id=1430048066]
 shape = SubResource("RectangleShape2D_block_wall")
 
-[node name="RightWall" type="StaticBody2D" parent="Area1"]
+[node name="RightWall" type="StaticBody2D" parent="Area1" unique_id=613417939]
 position = Vector2(192, 144)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area1/RightWall"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area1/RightWall" unique_id=1960655360]
 shape = SubResource("RectangleShape2D_right_wall")
 
-[node name="Player" parent="Area1" instance=ExtResource("3_player")]
+[node name="Player" parent="Area1" unique_id=456314207 instance=ExtResource("3_player")]
 position = Vector2(-288, 144)
 
-[node name="Camera2D" type="Camera2D" parent="Area1/Player"]
+[node name="Camera2D" type="Camera2D" parent="Area1/Player" unique_id=997557740]
 limit_left = -552
 limit_top = -312
 limit_right = 504
 limit_bottom = 312
 
-[node name="Knight" parent="Area1" instance=ExtResource("4_actor")]
+[node name="Knight" parent="Area1" unique_id=217491462 instance=ExtResource("4_actor")]
 position = Vector2(-288, -48)
 dialogue_line = "Knight: The northern ruins remain sealed. Keep to the marked path."
 
@@ -109,13 +108,13 @@ color = Color(0.247059, 0.72549, 0.34902, 1)
 [node name="Label" parent="Area1/Knight" index="1"]
 text = "KNIGHT"
 
-[node name="Creature" parent="Area1" instance=ExtResource("4_actor")]
+[node name="Creature" parent="Area1" unique_id=1847624246 instance=ExtResource("4_actor")]
 position = Vector2(144, 144)
 script = ExtResource("10_wild_creature")
-dialogue_line = "A wild Loambuck bristles and paws the ground. It will fight if you press E."
 species = ExtResource("8_loambuck")
 level = 3
 ability_index = 1
+dialogue_line = "A wild Loambuck bristles and paws the ground. It will fight if you press E."
 
 [node name="Body" parent="Area1/Creature" index="0"]
 visible = false
@@ -124,13 +123,13 @@ color = Color(0.584314, 0.317647, 0.803922, 1)
 [node name="Label" parent="Area1/Creature" index="1"]
 text = "LOAMBUCK"
 
-[node name="CreatureVisual" type="Node2D" parent="Area1/Creature"]
+[node name="CreatureVisual" type="Node2D" parent="Area1/Creature" unique_id=482788615]
 scale = Vector2(1.6, 1.6)
 script = ExtResource("7_creature_visual")
 species = ExtResource("8_loambuck")
 
-[node name="DialoguePanel" parent="." instance=ExtResource("5_dialogue")]
+[node name="DialoguePanel" parent="." unique_id=2003034949 instance=ExtResource("5_dialogue")]
 
-[node name="SettingsMenu" parent="." instance=ExtResource("6_settings")]
+[node name="SettingsMenu" parent="." unique_id=794024538 instance=ExtResource("6_settings")]
 
-[node name="BattleScene" parent="." instance=ExtResource("11_battle_scene")]
+[node name="BattleScene" parent="." unique_id=1665401472 instance=ExtResource("11_battle_scene")]

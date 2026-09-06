@@ -26,7 +26,7 @@ The following rules apply when reading or implementing this specification:
 
 ## 2. High-Level Game Summary
 
-**Oathbound** is a top-down, grid-based 2D RPG about exploring a fantasy region, forming magical oaths with creatures, building a party of up to three Oathbound, completing quests, and defeating hostile Oathkeepers who have destabilized remote communities.
+**Oathbound** is a top-down 2D RPG about exploring a fantasy region, forming magical oaths with creatures, building a party of up to three Oathbound, completing quests, and defeating hostile Oathkeepers who have destabilized remote communities.
 
 The game is inspired by the pacing and structure of early creature-collecting RPGs, but it is intentionally smaller and faster. The core release is designed as a polished short experience rather than a long content-heavy RPG.
 
@@ -209,8 +209,10 @@ Species may overlap between areas. Later areas should generally contain higher-l
 
 ### 6.1 Player Movement
 
-- Movement is grid-based.
-- Movement uses eight directions: up, down, left, right, and the four diagonals.
+- Movement is analog: the player moves continuously at a fixed speed in the direction of the input rather than stepping between cells.
+- Movement input is eight-directional (up, down, left, right, and the four diagonals); diagonal movement is normalized so it is no faster than orthogonal movement.
+- The player slides along walls and other obstacles instead of stopping dead.
+- The world is still laid out on a 48-pixel grid; NPCs and objects are placed on cell centers.
 - The player can interact with NPCs and world objects from adjacent tiles.
 - The player does not personally fight in combat.
 - The player has a fixed visual identity but chooses their name.

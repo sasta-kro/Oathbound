@@ -1,18 +1,53 @@
 class_name StatusIds
 extends RefCounted
-## Stable identifiers for the MVP status conditions (Specification 12).
+## The MVP status conditions (Specification 12).
 ##
-## Statuses are referenced by id rather than by enum so the status set can be
-## extended or replaced without redefining move content or the battle loop.
-## Status behaviour itself is owned by the battle system, not by this module.
+## Content selects a status from the [enum Status] dropdown; saved resources
+## store the integer value, so existing entries must never be reordered or
+## removed. [constant IDS] gives each status a stable string id for save data
+## and logs. Status behaviour itself is owned by the battle system.
 
-const POISON := &"status_poison"
-const BURN := &"status_burn"
-const STUN := &"status_stun"
-const NONE := &""
+## Append-only. [constant NONE] marks "no status" on moves.
+enum Status { NONE, POISON, BURN, STUN }
 
-const ALL := [POISON, BURN, STUN]
+const NONE := Status.NONE
+const POISON := Status.POISON
+const BURN := Status.BURN
+const STUN := Status.STUN
+
+## Every real status, in a stable order for presentation.
+const ALL := [Status.POISON, Status.BURN, Status.STUN]
+
+const IDS: Dictionary = {
+	Status.POISON: &"status_poison",
+	Status.BURN: &"status_burn",
+	Status.STUN: &"status_stun",
+}
+
+const DISPLAY_NAMES: Dictionary = {
+	Status.POISON: "poison",
+	Status.BURN: "burn",
+	Status.STUN: "stun",
+}
+
+const APPLIED_VERBS: Dictionary = {
+	Status.POISON: "poisoned",
+	Status.BURN: "burned",
+	Status.STUN: "stunned",
+}
 
 
-static func is_known(id: StringName) -> bool:
-	return ALL.has(id)
+static func is_known(status: int) -> bool:
+	return IDS.has(status)
+
+
+static func id(status: Status) -> StringName:
+	return StringName(IDS.get(status, &""))
+
+
+static func display_name(status: Status) -> String:
+	return String(DISPLAY_NAMES.get(status, "unknown"))
+
+
+static func applied_verb(status: Status) -> String:
+	return String(APPLIED_VERBS.get(status, "afflicted"))

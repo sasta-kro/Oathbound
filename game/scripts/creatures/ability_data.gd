@@ -38,8 +38,8 @@ extends Resource
 @export var taken_type_filter: Elements.Type = Elements.Type.FIRE
 
 @export_group("Status")
-## Statuses this creature cannot be given. See [StatusIds].
-@export var immune_status_ids: Array[StringName] = []
+## Statuses this creature cannot be given.
+@export var immune_statuses: Array[StatusIds.Status] = []
 ## Percentage points added to the chance of statuses this creature inflicts.
 @export_range(-100, 100) var inflicted_status_chance_bonus: int = 0
 
@@ -58,8 +58,8 @@ func incoming_damage_multiplier(move_type: Elements.Type) -> float:
 	return damage_taken_multiplier
 
 
-func blocks_status(status_id: StringName) -> bool:
-	return immune_status_ids.has(status_id)
+func blocks_status(status: StatusIds.Status) -> bool:
+	return immune_statuses.has(status)
 
 
 func has_any_effect() -> bool:
@@ -67,7 +67,7 @@ func has_any_effect() -> bool:
 		not passive_stat_modifiers.is_empty()
 		or not is_equal_approx(damage_dealt_multiplier, 1.0)
 		or not is_equal_approx(damage_taken_multiplier, 1.0)
-		or not immune_status_ids.is_empty()
+		or not immune_statuses.is_empty()
 		or inflicted_status_chance_bonus != 0
 	)
 
@@ -81,11 +81,8 @@ func validate() -> Array[String]:
 		problems.append("Ability '%s' has no display name." % id)
 	if not has_any_effect():
 		problems.append("Ability '%s' has no effect." % id)
-	for status_id: StringName in immune_status_ids:
-		if not StatusIds.is_known(status_id):
-			problems.append(
-				"Ability '%s' grants immunity to unknown status '%s'." % [id, status_id]
-			)
+	if immune_statuses.has(StatusIds.NONE):
+		problems.append("Ability '%s' lists NONE as an immunity." % id)
 	for modifier: StatModifier in passive_stat_modifiers:
 		if modifier == null:
 			problems.append("Ability '%s' has an empty stat modifier row." % id)

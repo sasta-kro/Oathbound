@@ -7,9 +7,9 @@
 [ext_resource type="Resource" path="res://content/moves/move_ember_01.tres" id="4_ember"]
 [ext_resource type="Resource" uid="uid://yy88er3s78cw" path="res://content/moves/move_guard_stance_01.tres" id="5_guard_stance"]
 [ext_resource type="Resource" path="res://content/moves/move_flame_burst_01.tres" id="6_flame_burst"]
-[ext_resource type="Resource" path="res://content/moves/move_quake_step_01.tres" id="7_quake_step"]
+[ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_quake_step_01.tres" id="7_quake_step"]
 [ext_resource type="Resource" path="res://content/abilities/ability_ember_body.tres" id="8_ember_body"]
-[ext_resource type="Resource" path="res://content/abilities/ability_searing_touch.tres" id="9_searing_touch"]
+[ext_resource type="Resource" uid="uid://c7scajbgbopvj" path="res://content/abilities/ability_searing_touch.tres" id="9_searing_touch"]
 
 [sub_resource type="Resource" id="Learn_ember_1"]
 script = ExtResource("2_entry")

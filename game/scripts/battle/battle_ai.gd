@@ -42,10 +42,10 @@ func _score(move: MoveData, user: Battler, target: Battler, engine: BattleEngine
 		var expected: float = float(BattleRules.damage(move, user, target, engine.config.type_chart))
 		return expected * float(BattleRules.hit_chance(move, user)) / 100.0
 	var score: float = USELESS_SCORE
-	if move.applies_status() and not target.has_status(move.status_id):
+	if move.applies_status() and not target.has_status(move.status):
 		var blocked: bool = (
 			target.creature.ability != null
-			and target.creature.ability.blocks_status(move.status_id)
+			and target.creature.ability.blocks_status(move.status)
 		)
 		if not blocked:
 			score = maxf(score, USEFUL_STATUS_SCORE)

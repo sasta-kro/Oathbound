@@ -1,9 +1,9 @@
-[gd_resource type="TileSet" format=3]
+[gd_resource type="TileSet" format=3 uid="uid://mwnosjig5qbr"]
 
-[ext_resource type="Texture2D" path="res://assets/tilesets/grass.png" id="1_lwdea"]
-[ext_resource type="Texture2D" path="res://assets/tilesets/wall.png" id="2_tkwqx"]
-[ext_resource type="Texture2D" path="res://assets/tilesets/plant.png" id="3_td7rg"]
-[ext_resource type="Texture2D" path="res://assets/tilesets/props.png" id="4_2gi2t"]
+[ext_resource type="Texture2D" uid="uid://bjpo4ofemd6nq" path="res://assets/tilesets/grass.png" id="1_lwdea"]
+[ext_resource type="Texture2D" uid="uid://4o4khkedrpx0" path="res://assets/tilesets/wall.png" id="2_tkwqx"]
+[ext_resource type="Texture2D" uid="uid://brajgfrup1qe0" path="res://assets/tilesets/plant.png" id="3_td7rg"]
+[ext_resource type="Texture2D" uid="uid://8qbx6dmhwj4u" path="res://assets/tilesets/props.png" id="4_2gi2t"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_nciip"]
 resource_name = "grass"
