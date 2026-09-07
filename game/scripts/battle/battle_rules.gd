@@ -31,6 +31,16 @@ const CURRENCY_PER_LEVEL := 5
 const SUPER_EFFECTIVE_TEXT := "It's super effective!"
 const NOT_VERY_EFFECTIVE_TEXT := "It's not very effective..."
 
+## Reward wording, shared by the two places a creature can be defeated: the
+## [BattleEngine], which reports one event per beat so the battle screen can
+## pace them, and an overworld rout, which has no battle screen and prints a
+## single line. Keeping the strings here stops the two from drifting apart.
+const XP_GAINED_TEXT := "%s gained %d XP."
+const LEVEL_UP_TEXT := "%s grew to level %d!"
+const MOVE_LEARNED_TEXT := "%s learned %s!"
+const MOVE_LEARN_SKIPPED_TEXT := "%s wants to learn %s, but already knows four moves."
+const EVOLUTION_READY_TEXT := "%s is ready to evolve!"
+
 
 static func type_multiplier(
 	move_type: Elements.Type, defender: CreatureInstance, chart: TypeChart

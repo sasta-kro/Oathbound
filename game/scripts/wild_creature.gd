@@ -4,21 +4,26 @@ extends WorldActor
 ## A visible wild creature in the overworld (Specification 7).
 ##
 ## Neutral creatures roam inside a leash around their home; hostile ones also
-## chase the player once it comes within detection range and report through
-## [signal reached_player] when they get adjacent. Interacting with either
-## starts a wild battle. Once defeated or bound the creature reports
-## [signal defeated]; the [SpawnZone] that made it handles respawning.
+## chase the player once it comes within detection range. A hostile creature
+## that catches up winds up visibly and then strikes, reporting through
+## [signal reached_player] only once the blow actually lands, so the player
+## always has a moment to swing first or back out of range.
+##
+## The creature carries one [CreatureInstance] for as long as it lives, so a
+## hit taken in the overworld is still there when the battle screen opens and
+## survives the player running away. Once defeated or bound the creature
+## reports [signal defeated]; the [SpawnZone] that made it handles respawning.
 ##
 ## Tool script only so the Inspector can list the species' abilities by name;
 ## nothing moves in the editor.
 
 ## Emitted once when the creature leaves the map after a battle.
 signal defeated(creature: WildCreature)
-## Emitted by hostile creatures each time they close to interaction range.
+## Emitted by hostile creatures each time an overworld strike of theirs lands.
 signal reached_player(creature: WildCreature)
 
 enum Disposition { NEUTRAL, HOSTILE }
-enum State { IDLE, WANDER, CHASE }
+enum State { IDLE, WANDER, CHASE, WINDUP, RECOVER }
 
 ## Inspector value of [member ability_index] meaning "roll one per encounter".
 const RANDOM_ABILITY := -1
@@ -30,6 +35,37 @@ const REACH_IN_CELLS: float = 1.5
 ## Hostile creatures give up a chase this far beyond their leash, in cells,
 ## so they cannot be kited across the whole map.
 const CHASE_LEASH_SLACK_IN_CELLS: float = 2.0
+## The telegraph before a hostile creature's strike lands. This is the window
+## the player has to swing first or step out of reach, so it is the single
+## most important number in the overworld fight.
+const STRIKE_WINDUP_SECONDS: float = 0.45
+## How long a creature is left open after striking.
+const STRIKE_RECOVER_SECONDS: float = 0.8
+## How long a creature reels after being hit, during which it cannot strike.
+const FLINCH_SECONDS: float = 0.4
+## Grace given to a creature the player has just finished a battle with, so
+## walking out of a battle does not walk straight into the next one.
+const POST_BATTLE_GRACE_SECONDS: float = 1.5
+## How far a hit knocks a creature back.
+const KNOCKBACK_SPEED: float = 220.0
+## Pixels per second the knockback bleeds off.
+const KNOCKBACK_DECAY: float = 900.0
+## Seconds a routed creature spends dying before it leaves the map.
+const ROUT_SECONDS: float = 0.45
+const ROUT_FADE_SECONDS: float = 0.25
+
+## Overworld health bar, shown only once a creature has actually been hurt.
+const HEALTH_BAR_SIZE := Vector2(44.0, 5.0)
+const HEALTH_BAR_OFFSET_Y: float = -20.0
+const HEALTH_BAR_BORDER_COLOR := Color(0.05, 0.06, 0.08, 0.9)
+const HEALTH_BAR_BACK_COLOR := Color(0.16, 0.17, 0.2, 0.9)
+## Read at a glance from across the map, so the thresholds are the same ones
+## the battle screen uses on its own bars.
+const HEALTH_HEALTHY_COLOR := Color("4cc260")
+const HEALTH_WARY_COLOR := Color("e0b23a")
+const HEALTH_CRITICAL_COLOR := Color("d1453b")
+const HEALTH_WARY_FRACTION: float = 0.5
+const HEALTH_CRITICAL_FRACTION: float = 0.2
 
 @export var species: CreatureSpecies:
 	set(value):
@@ -66,6 +102,13 @@ var state: State = State.IDLE
 var _rng := RandomNumberGenerator.new()
 var _state_time_left: float = 0.0
 var _wander_target: Vector2
+var _knockback: Vector2 = Vector2.ZERO
+## Built on first use and kept for the creature's whole life, so overworld
+## damage persists. See [method encounter_instance].
+var _encounter: CreatureInstance
+## Set while the creature is playing its death beat, during which it is no
+## longer a valid encounter but has not left the map yet.
+var _routed: bool = false
 
 @onready var visual: CreatureVisual = get_node_or_null(^"CreatureVisual")
 @onready var label: Label = get_node_or_null(^"Label")
@@ -103,13 +146,15 @@ func configure(
 func _physics_process(delta: float) -> void:
 	if Engine.is_editor_hint():
 		return
-	if was_defeated or not roaming_enabled:
+	if was_defeated or _routed or not roaming_enabled:
 		velocity = Vector2.ZERO
 		_animate()
 		return
 
 	var player: Node2D = _player()
-	if disposition == Disposition.HOSTILE and player != null:
+	# A creature that is winding up, striking or reeling has committed to that
+	# beat, so nothing re-targets it until the beat is over.
+	if disposition == Disposition.HOSTILE and player != null and _is_free_to_act():
 		_update_hostility(player)
 
 	match state:
@@ -130,6 +175,17 @@ func _physics_process(delta: float) -> void:
 				_enter_idle()
 			else:
 				velocity = (player.global_position - global_position).normalized() * chase_speed
+		State.WINDUP:
+			velocity = Vector2.ZERO
+			_state_time_left -= delta
+			if _state_time_left <= 0.0:
+				_land_strike(player)
+		State.RECOVER:
+			velocity = _knockback
+			_knockback = _knockback.move_toward(Vector2.ZERO, KNOCKBACK_DECAY * delta)
+			_state_time_left -= delta
+			if _state_time_left <= 0.0:
+				_enter_idle()
 
 	move_and_slide()
 	_animate()
@@ -150,7 +206,7 @@ func _validate_property(property: Dictionary) -> void:
 	property.hint_string = ",".join(options)
 
 
-## A fresh combat instance for this encounter. Wild creatures roll their
+## A fresh combat instance for this creature. Wild creatures roll their
 ## ability unless the map pins one, so the same species does not always fight
 ## the same way.
 func spawn_instance(rng: RandomNumberGenerator = null) -> CreatureInstance:
@@ -160,14 +216,84 @@ func spawn_instance(rng: RandomNumberGenerator = null) -> CreatureInstance:
 	return instance
 
 
+## The instance this creature fights with, built once and then kept. Damage
+## landed on it in the overworld is the same damage the battle screen opens
+## with, and it is still there if the player runs away and comes back.
+func encounter_instance() -> CreatureInstance:
+	if _encounter == null:
+		_encounter = spawn_instance(_rng)
+	return _encounter
+
+
+## Applies a blow landed in the overworld and leaves the creature reeling.
+## Returns true when the hit put it down, in which case no battle happens and
+## the caller pays out the rewards itself.
+func take_overworld_hit(amount: int, from_position: Vector2) -> bool:
+	var instance: CreatureInstance = encounter_instance()
+	instance.set_hp(instance.current_hp - amount)
+	var away: Vector2 = global_position - from_position
+	_knockback = (
+		away.normalized() * KNOCKBACK_SPEED if not away.is_zero_approx() else Vector2.ZERO
+	)
+	_enter_recover(FLINCH_SECONDS)
+	if visual != null:
+		visual.play(CreatureVisual.STATE_HURT)
+	queue_redraw()
+	return instance.is_fainted()
+
+
+## Plays the death beat of a creature routed in the overworld, then takes it
+## off the map. Awaited by the caller so the reward line does not land on top
+## of a creature that is still standing.
+func play_rout() -> void:
+	if was_defeated or _routed:
+		return
+	_routed = true
+	velocity = Vector2.ZERO
+	if visual != null:
+		visual.play(CreatureVisual.STATE_DEATH)
+	if is_inside_tree():
+		var tween := create_tween()
+		tween.tween_interval(ROUT_SECONDS)
+		tween.tween_property(self, "modulate:a", 0.0, ROUT_FADE_SECONDS)
+		await tween.finished
+	mark_defeated()
+
+
+## Backs a creature off for a moment, so leaving a battle does not immediately
+## walk into the next one (Specification 7.4).
+func back_off(seconds: float = POST_BATTLE_GRACE_SECONDS) -> void:
+	if was_defeated or _routed:
+		return
+	_knockback = Vector2.ZERO
+	_enter_recover(seconds)
+
+
+## Whether the creature can be talked to or swung at right now.
 func is_interactable() -> bool:
-	return not was_defeated
+	return not was_defeated and not _routed
+
+
+## True while the creature is about to strike, which is the window the player
+## can react in.
+func is_winding_up() -> bool:
+	return state == State.WINDUP
+
+
+## Redraws the health bar after something other than an overworld hit changed
+## the creature's HP, which in practice means a battle the player ran from.
+func refresh_health() -> void:
+	queue_redraw()
 
 
 func set_roaming(enabled: bool) -> void:
 	roaming_enabled = enabled
 	if not enabled:
 		velocity = Vector2.ZERO
+		# A half-finished windup must not resume and land after the screen the
+		# player was looking at has closed.
+		if state == State.WINDUP:
+			_enter_idle()
 
 
 func mark_defeated() -> void:
@@ -189,14 +315,50 @@ func _update_hostility(player: Node2D) -> void:
 	if state == State.CHASE:
 		if to_player > detection_radius * 1.5 or from_home > chase_limit:
 			_enter_idle()
-		elif to_player <= REACH_IN_CELLS * WorldArea.GRID_SIZE:
-			reached_player.emit(self)
+		elif to_player <= strike_reach():
+			_enter_windup()
 	elif to_player <= detection_radius and from_home <= chase_limit:
 		state = State.CHASE
 
 
+func strike_reach() -> float:
+	return REACH_IN_CELLS * WorldArea.GRID_SIZE
+
+
+## Whether the creature is in a state that can be interrupted or re-targeted.
+func _is_free_to_act() -> bool:
+	return state == State.IDLE or state == State.WANDER or state == State.CHASE
+
+
+## The telegraph: the creature stops, rears up and commits. It is only after
+## [constant STRIKE_WINDUP_SECONDS] that the blow actually lands, so a player
+## who reacts can swing first or simply walk out of reach.
+func _enter_windup() -> void:
+	state = State.WINDUP
+	_state_time_left = STRIKE_WINDUP_SECONDS
+	velocity = Vector2.ZERO
+	if visual != null:
+		visual.play(CreatureVisual.STATE_ATTACK)
+
+
+## Resolves a windup. The blow only counts if the player is still in reach,
+## which is what makes stepping back a real answer to the telegraph.
+func _land_strike(player: Node2D) -> void:
+	_enter_recover(STRIKE_RECOVER_SECONDS)
+	if player == null:
+		return
+	if global_position.distance_to(player.global_position) <= strike_reach():
+		reached_player.emit(self)
+
+
+func _enter_recover(seconds: float) -> void:
+	state = State.RECOVER
+	_state_time_left = seconds
+
+
 func _enter_idle() -> void:
 	state = State.IDLE
+	_knockback = Vector2.ZERO
 	_state_time_left = _rng.randf_range(idle_time_range.x, idle_time_range.y)
 
 
@@ -209,8 +371,40 @@ func _enter_wander() -> void:
 	_wander_target = home_position + Vector2.RIGHT.rotated(_rng.randf() * TAU) * distance
 
 
+## A thin bar over a creature that has been hurt, so the overworld shows the
+## damage a swing did without opening a battle screen. A creature at full
+## health draws nothing, which keeps an untouched map clean.
+func _draw() -> void:
+	if Engine.is_editor_hint() or _encounter == null or was_defeated:
+		return
+	var fraction: float = clampf(_encounter.hp_fraction(), 0.0, 1.0)
+	if fraction >= 1.0:
+		return
+	var origin := Vector2(-HEALTH_BAR_SIZE.x * 0.5, HEALTH_BAR_OFFSET_Y)
+	draw_rect(Rect2(origin - Vector2.ONE, HEALTH_BAR_SIZE + Vector2(2.0, 2.0)), HEALTH_BAR_BORDER_COLOR)
+	draw_rect(Rect2(origin, HEALTH_BAR_SIZE), HEALTH_BAR_BACK_COLOR)
+	if fraction <= 0.0:
+		return
+	draw_rect(
+		Rect2(origin, Vector2(HEALTH_BAR_SIZE.x * fraction, HEALTH_BAR_SIZE.y)),
+		_health_color(fraction),
+	)
+
+
+func _health_color(fraction: float) -> Color:
+	if fraction <= HEALTH_CRITICAL_FRACTION:
+		return HEALTH_CRITICAL_COLOR
+	if fraction <= HEALTH_WARY_FRACTION:
+		return HEALTH_WARY_COLOR
+	return HEALTH_HEALTHY_COLOR
+
+
 func _animate() -> void:
 	if visual == null:
+		return
+	# A windup or a flinch owns the sprite until it finishes; overwriting it
+	# with a walk cycle would erase the telegraph the player reacts to.
+	if state == State.WINDUP or state == State.RECOVER:
 		return
 	var moving: bool = velocity.length_squared() > 1.0
 	var wanted: StringName = CreatureVisual.STATE_WALK if moving else CreatureVisual.STATE_IDLE

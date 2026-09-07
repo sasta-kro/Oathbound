@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="CreatureSpecies" format=3]
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://uaj22yo1wc33"]
 
 [ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_ability"]
 [ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="1_species"]
@@ -10,7 +10,7 @@
 [ext_resource type="Resource" path="res://content/moves/move_tide_crash_01.tres" id="7_tide_crash"]
 [ext_resource type="Resource" uid="uid://hy2bjnv2kuj3" path="res://content/abilities/ability_stonewall.tres" id="8_stonewall"]
 [ext_resource type="Resource" path="res://content/abilities/ability_thick_hide.tres" id="9_thick_hide"]
-[ext_resource type="SpriteFrames" path="res://content/sprites/creature_earth_02_battle.tres" id="10_battle_sprite"]
+[ext_resource type="SpriteFrames" uid="uid://cpn60ryo07wje" path="res://content/sprites/creature_earth_02_battle.tres" id="10_battle_sprite"]
 
 [sub_resource type="Resource" id="Learn_stone_toss_1"]
 script = ExtResource("2_entry")

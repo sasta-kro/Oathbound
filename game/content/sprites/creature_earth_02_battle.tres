@@ -1,10 +1,10 @@
-[gd_resource type="SpriteFrames" format=3]
+[gd_resource type="SpriteFrames" format=3 uid="uid://cpn60ryo07wje"]
 
-[ext_resource type="Texture2D" path="res://assets/creatures/golem_blue/attack_01.png" id="1_attack_01"]
-[ext_resource type="Texture2D" path="res://assets/creatures/golem_blue/death.png" id="2_death"]
-[ext_resource type="Texture2D" path="res://assets/creatures/golem_blue/hurt.png" id="3_hurt"]
-[ext_resource type="Texture2D" path="res://assets/creatures/golem_blue/idle.png" id="4_idle"]
-[ext_resource type="Texture2D" path="res://assets/creatures/golem_blue/walk.png" id="5_walk"]
+[ext_resource type="Texture2D" uid="uid://c2x7vfor8c2va" path="res://assets/creatures/golem_blue/attack_01.png" id="1_attack_01"]
+[ext_resource type="Texture2D" uid="uid://cqrjkri23moh8" path="res://assets/creatures/golem_blue/death.png" id="2_death"]
+[ext_resource type="Texture2D" uid="uid://bx5jjcbjlxtsg" path="res://assets/creatures/golem_blue/hurt.png" id="3_hurt"]
+[ext_resource type="Texture2D" uid="uid://u3cpwmmomfxi" path="res://assets/creatures/golem_blue/idle.png" id="4_idle"]
+[ext_resource type="Texture2D" uid="uid://bng7r6t2wnlei" path="res://assets/creatures/golem_blue/walk.png" id="5_walk"]
 
 [sub_resource type="AtlasTexture" id="attack_0"]
 atlas = ExtResource("1_attack_01")
@@ -226,7 +226,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("attack_10")
 }],
-"loop": false,
+"loop": 0,
 "name": &"attack",
 "speed": 24.0
 }, {
@@ -270,7 +270,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("death_12")
 }],
-"loop": false,
+"loop": 0,
 "name": &"death",
 "speed": 12.0
 }, {
@@ -287,7 +287,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("hurt_3")
 }],
-"loop": false,
+"loop": 0,
 "name": &"hurt",
 "speed": 12.0
 }, {
@@ -316,7 +316,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("idle_7")
 }],
-"loop": true,
+"loop": 1,
 "name": &"idle",
 "speed": 8.0
 }, {
@@ -351,7 +351,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("walk_9")
 }],
-"loop": true,
+"loop": 1,
 "name": &"walk",
 "speed": 10.0
 }]

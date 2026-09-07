@@ -58,14 +58,58 @@ const HP_CRITICAL_FRACTION := 0.2
 const HIT_FLASH_COLOR := Color(1.0, 0.45, 0.45)
 const BIND_FLASH_COLOR := Color(1.0, 0.85, 0.35)
 const DISABLED_TEXT_COLOR := Color(0.55, 0.55, 0.55)
+const MENU_TEXT_COLOR := Color(0.87, 0.87, 0.83)
+const MENU_SELECTED_TEXT_COLOR := Color(1.0, 0.97, 0.85)
+const MENU_HIGHLIGHT_COLOR := Color(0.72549, 0.682353, 0.321569, 0.22)
+const MENU_HIGHLIGHT_BORDER_COLOR := Color(0.72549, 0.682353, 0.321569, 0.9)
 const CURSOR_PREFIX := "▶ "
 const IDLE_PREFIX := "  "
 const DISMISS_HINT := "  ▼"
 const MENU_FONT_SIZE := 17
 const MENU_ROW_PADDING := 2
+const MENU_ROW_MARGIN := 6
+## Every button state a row restyles, so hover and focus cannot fight the
+## cursor for which row looks selected.
+const ROW_STYLE_STATES: Array[String] = ["normal", "hover", "pressed", "focus", "disabled"]
+
+## Three-letter badges shown in the status panels (Specification 12).
+const STATUS_BADGE_TEXT: Dictionary = {
+	StatusIds.POISON: "PSN",
+	StatusIds.BURN: "BRN",
+	StatusIds.STUN: "STN",
+}
+const STATUS_BADGE_COLORS: Dictionary = {
+	StatusIds.POISON: Color("8e5bc0"),
+	StatusIds.BURN: Color("d4703a"),
+	StatusIds.STUN: Color("d8c23c"),
+}
+const STATUS_BADGE_FONT_SIZE := 11
+const STATUS_BADGE_TEXT_COLOR := Color(0.07, 0.07, 0.09)
+
+const DAMAGE_NUMBER_FONT_SIZE := 30
+const DAMAGE_NUMBER_WIDTH := 120.0
+const DAMAGE_NUMBER_RISE := 34.0
+const DAMAGE_NUMBER_SECONDS := 0.7
+## Just above the sprite's head. Any higher and the number rises into the
+## status windows, which sit in front of the stage.
+const DAMAGE_NUMBER_OFFSET := Vector2(0.0, -78.0)
+const DAMAGE_NEUTRAL_COLOR := Color(1.0, 0.95, 0.9)
+const DAMAGE_STRONG_COLOR := Color(1.0, 0.65, 0.3)
+const DAMAGE_WEAK_COLOR := Color(0.7, 0.75, 0.8)
+
+const SHAKE_SECONDS := 0.24
+const SHAKE_STEPS := 4
+const SHAKE_STRENGTH := 7.0
+## Super-effective hits knock the stage this much harder.
+const SHAKE_STRONG_SCALE := 1.5
 
 ## Skips every wait and tween so a test can drive a battle synchronously.
 var skip_presentation: bool = false
+
+## Optional [ScreenTransition]. When one is set the battle covers the screen
+## with it before closing, so whatever replaces the battle is never seen
+## appearing. Left null the screen simply hides, which is what tests want.
+var transition: ScreenTransition
 
 var engine: BattleEngine
 
@@ -86,9 +130,14 @@ var _hp_labels: Dictionary = {}
 var _name_labels: Dictionary = {}
 var _level_labels: Dictionary = {}
 var _type_labels: Dictionary = {}
+var _status_rows: Dictionary = {}
 var _hp_tweens: Dictionary = {}
+var _shake_tween: Tween
+var _idle_row_style: StyleBoxEmpty
+var _selected_row_style: StyleBoxFlat
 
 @onready var root: Control = $Root
+@onready var stage: Node2D = $Root/Stage
 @onready var player_visual: CreatureVisual = %PlayerVisual
 @onready var enemy_visual: CreatureVisual = %EnemyVisual
 @onready var player_shadow: Node2D = $Root/Stage/PlayerShadow
@@ -96,12 +145,14 @@ var _hp_tweens: Dictionary = {}
 @onready var player_name: Label = %PlayerName
 @onready var player_level: Label = %PlayerLevel
 @onready var player_types: Label = %PlayerTypes
+@onready var player_statuses: HBoxContainer = %PlayerStatuses
 @onready var player_hp_bar: ProgressBar = %PlayerHpBar
 @onready var player_hp: Label = %PlayerHp
 @onready var player_xp_bar: ProgressBar = %PlayerXpBar
 @onready var enemy_name: Label = %EnemyName
 @onready var enemy_level: Label = %EnemyLevel
 @onready var enemy_types: Label = %EnemyTypes
+@onready var enemy_statuses: HBoxContainer = %EnemyStatuses
 @onready var enemy_hp_bar: ProgressBar = %EnemyHpBar
 @onready var enemy_hp: Label = %EnemyHp
 @onready var command_list: VBoxContainer = %CommandList
@@ -120,6 +171,8 @@ func _ready() -> void:
 	_name_labels = {player_side: player_name, enemy_side: enemy_name}
 	_level_labels = {player_side: player_level, enemy_side: enemy_level}
 	_type_labels = {player_side: player_types, enemy_side: enemy_types}
+	_status_rows = {player_side: player_statuses, enemy_side: enemy_statuses}
+	_build_row_styles()
 	for side: int in _shadows:
 		(_shadows[side] as Node2D).add_child(StageShadow.new())
 		# Each bar gets its own fill so the two HP colours can differ.
@@ -332,19 +385,12 @@ func _add_entry(
 	entry.disabled_reason = disabled_reason
 
 	var button := Button.new()
-	button.flat = true
+	# Not `flat`: flat buttons skip their stylebox entirely, and the cursor row
+	# is drawn as one.
 	button.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	button.focus_mode = Control.FOCUS_NONE
 	button.add_theme_font_size_override("font_size", MENU_FONT_SIZE)
-	# Default buttons are tall enough to push the window over the stage, so
-	# rows use a bare style with tight padding instead.
-	var row_style := StyleBoxEmpty.new()
-	row_style.content_margin_left = 4
-	row_style.content_margin_right = 4
-	row_style.content_margin_top = MENU_ROW_PADDING
-	row_style.content_margin_bottom = MENU_ROW_PADDING
-	for state: String in ["normal", "hover", "pressed", "focus", "disabled"]:
-		button.add_theme_stylebox_override(state, row_style)
+	_style_row(button, false)
 	if not entry.enabled:
 		button.add_theme_color_override("font_color", DISABLED_TEXT_COLOR)
 		button.add_theme_color_override("font_hover_color", DISABLED_TEXT_COLOR)
@@ -360,14 +406,46 @@ func _end_menu() -> void:
 	_set_cursor(0)
 
 
+## Default buttons are tall enough to push the window over the stage, so rows
+## use a bare style with tight padding. The selected row swaps in a filled
+## style with the same margins, so nothing shifts as the cursor moves.
+func _build_row_styles() -> void:
+	_idle_row_style = StyleBoxEmpty.new()
+	_apply_row_margins(_idle_row_style)
+	_selected_row_style = StyleBoxFlat.new()
+	_selected_row_style.bg_color = MENU_HIGHLIGHT_COLOR
+	_selected_row_style.border_width_left = 3
+	_selected_row_style.border_color = MENU_HIGHLIGHT_BORDER_COLOR
+	_selected_row_style.set_corner_radius_all(4)
+	_apply_row_margins(_selected_row_style)
+
+
+func _apply_row_margins(style: StyleBox) -> void:
+	style.content_margin_left = MENU_ROW_MARGIN
+	style.content_margin_right = MENU_ROW_MARGIN
+	style.content_margin_top = MENU_ROW_PADDING
+	style.content_margin_bottom = MENU_ROW_PADDING
+
+
+func _style_row(button: Button, selected: bool) -> void:
+	var style: StyleBox = _selected_row_style if selected else _idle_row_style
+	for state: String in ROW_STYLE_STATES:
+		button.add_theme_stylebox_override(state, style)
+
+
 func _set_cursor(index: int) -> void:
 	if _entries.is_empty():
 		return
 	_cursor = posmod(index, _entries.size())
 	for position: int in _entries.size():
 		var entry: MenuEntry = _entries[position]
-		var prefix: String = CURSOR_PREFIX if position == _cursor else IDLE_PREFIX
-		entry.button.text = prefix + entry.label
+		var selected: bool = position == _cursor
+		entry.button.text = (CURSOR_PREFIX if selected else IDLE_PREFIX) + entry.label
+		_style_row(entry.button, selected)
+		if entry.enabled:
+			var text_color: Color = MENU_SELECTED_TEXT_COLOR if selected else MENU_TEXT_COLOR
+			entry.button.add_theme_color_override("font_color", text_color)
+			entry.button.add_theme_color_override("font_hover_color", text_color)
 	_say(_entries[_cursor].hint)
 
 
@@ -443,9 +521,13 @@ func _run_turn(action: BattleAction) -> void:
 	_continue()
 
 
+## Closes the screen. When a [member transition] is set the screen is covered
+## first, so the caller only has to uncover whatever it put underneath.
 func _finish() -> void:
 	_awaiting_dismiss = false
 	_close_menu()
+	if transition != null:
+		await transition.cover(ScreenTransition.Style.WORLD)
 	root.hide()
 	battle_finished.emit(engine)
 
@@ -473,8 +555,12 @@ func _present(event: BattleEvent) -> void:
 			await _wait(ATTACK_SECONDS)
 		BattleEvent.Kind.HIT, BattleEvent.Kind.STATUS_DAMAGE:
 			var target: CreatureVisual = _visual_for(event.side)
+			var multiplier: float = float(event.data.get("multiplier", 1.0))
 			target.play(CreatureVisual.STATE_HURT)
 			_flash(target, HIT_FLASH_COLOR)
+			_show_damage(event.side, int(event.data.get("damage", 0)), multiplier)
+			if event.kind == BattleEvent.Kind.HIT:
+				_shake_stage(multiplier)
 			_tween_hp(event.side)
 			await _wait(HP_TWEEN_SECONDS)
 		BattleEvent.Kind.MISSED:
@@ -535,6 +621,66 @@ func _dodge(side: int) -> void:
 	var tween := create_tween()
 	tween.tween_property(visual, "position", home + Vector2(0, -14), 0.08)
 	tween.tween_property(visual, "position", home, 0.12)
+
+
+## A rising "-12" over the creature that was hit, coloured by how well the move
+## landed. Presentation only: the exact numbers live in the status panels.
+func _show_damage(side: int, amount: int, multiplier: float) -> void:
+	if skip_presentation or amount <= 0:
+		return
+	var label := Label.new()
+	label.text = "-%d" % amount
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", DAMAGE_NUMBER_FONT_SIZE)
+	label.add_theme_color_override("font_color", _damage_color(multiplier))
+	label.add_theme_color_override("font_outline_color", Color(0.0, 0.0, 0.0, 0.75))
+	label.add_theme_constant_override("outline_size", 5)
+	stage.add_child(label)
+	label.size = Vector2(DAMAGE_NUMBER_WIDTH, float(DAMAGE_NUMBER_FONT_SIZE))
+	var home: Vector2 = _homes[side]
+	var start: Vector2 = home + DAMAGE_NUMBER_OFFSET - Vector2(DAMAGE_NUMBER_WIDTH * 0.5, 0.0)
+	label.position = start
+
+	var tween := create_tween()
+	tween.set_parallel(true)
+	(
+		tween
+		. tween_property(
+			label, "position", start + Vector2(0.0, -DAMAGE_NUMBER_RISE), DAMAGE_NUMBER_SECONDS
+		)
+		. set_trans(Tween.TRANS_QUINT)
+		. set_ease(Tween.EASE_OUT)
+	)
+	tween.tween_property(label, "modulate:a", 0.0, DAMAGE_NUMBER_SECONDS * 0.45).set_delay(
+		DAMAGE_NUMBER_SECONDS * 0.55
+	)
+	tween.chain().tween_callback(label.queue_free)
+
+
+func _damage_color(multiplier: float) -> Color:
+	if multiplier > 1.0:
+		return DAMAGE_STRONG_COLOR
+	if multiplier > 0.0 and multiplier < 1.0:
+		return DAMAGE_WEAK_COLOR
+	return DAMAGE_NEUTRAL_COLOR
+
+
+## A short knock on the whole stage, so a landed hit carries some weight. Only
+## the stage moves; the status windows and the message log stay put.
+func _shake_stage(multiplier: float) -> void:
+	if skip_presentation:
+		return
+	if _shake_tween != null and _shake_tween.is_valid():
+		_shake_tween.kill()
+	var strength: float = SHAKE_STRENGTH * (SHAKE_STRONG_SCALE if multiplier > 1.0 else 1.0)
+	var step: float = SHAKE_SECONDS / float(SHAKE_STEPS + 1)
+	_shake_tween = create_tween()
+	for index: int in SHAKE_STEPS:
+		var falloff: float = 1.0 - float(index) / float(SHAKE_STEPS)
+		var direction: float = 1.0 if index % 2 == 0 else -1.0
+		var offset := Vector2(strength * falloff * direction, strength * falloff * 0.4)
+		_shake_tween.tween_property(stage, "position", offset, step)
+	_shake_tween.tween_property(stage, "position", Vector2.ZERO, step)
 
 
 func _flash(visual: CreatureVisual, color: Color) -> void:
@@ -602,6 +748,7 @@ func _refresh_panel(side: int) -> void:
 	(_name_labels[side] as Label).text = creature.display_name().to_upper()
 	(_level_labels[side] as Label).text = "Lv %d" % creature.level
 	(_type_labels[side] as Label).text = creature.species.type_display_name().to_upper()
+	_refresh_status_badges(side, battler)
 	if not (_hp_tweens.has(side) and (_hp_tweens[side] as Tween).is_running()):
 		_set_hp_display(float(creature.current_hp), side)
 	if side == BattleTeam.Side.PLAYER:
@@ -609,6 +756,36 @@ func _refresh_panel(side: int) -> void:
 		var span: int = into_level + creature.xp_to_next_level()
 		player_xp_bar.max_value = maxi(1, span)
 		player_xp_bar.value = into_level if span > 0 else 1
+
+
+## Status conditions are core to how a battle is going, so each active one
+## shows as a coloured badge next to the creature's types (Specification 12).
+func _refresh_status_badges(side: int, battler: Battler) -> void:
+	var row: HBoxContainer = _status_rows[side]
+	for badge: Node in row.get_children():
+		row.remove_child(badge)
+		badge.queue_free()
+	for status: StatusIds.Status in StatusIds.ALL:
+		if battler.has_status(status):
+			row.add_child(_status_badge(status))
+
+
+func _status_badge(status: StatusIds.Status) -> Label:
+	var badge := Label.new()
+	badge.text = String(STATUS_BADGE_TEXT.get(status, "???"))
+	badge.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	badge.add_theme_font_size_override("font_size", STATUS_BADGE_FONT_SIZE)
+	badge.add_theme_color_override("font_color", STATUS_BADGE_TEXT_COLOR)
+	var style := StyleBoxFlat.new()
+	var color: Color = STATUS_BADGE_COLORS.get(status, Color.GRAY)
+	style.bg_color = color
+	style.set_corner_radius_all(3)
+	style.content_margin_left = 5
+	style.content_margin_right = 5
+	style.content_margin_top = 1
+	style.content_margin_bottom = 1
+	badge.add_theme_stylebox_override("normal", style)
+	return badge
 
 
 func _say(text: String) -> void:

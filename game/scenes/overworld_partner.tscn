@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/overworld_partner.gd" id="1_partner"]
+[ext_resource type="Script" path="res://scripts/visual/creature_visual.gd" id="2_creature_visual"]
+
+[node name="OverworldPartner" type="Node2D"]
+z_index = 1
+script = ExtResource("1_partner")
+
+[node name="CreatureVisual" type="Node2D" parent="."]
+scale = Vector2(1.4, 1.4)
+script = ExtResource("2_creature_visual")
+context = 1
+placeholder_size = Vector2(36, 36)

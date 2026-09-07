@@ -55,6 +55,15 @@ func add_to_party(creature: CreatureInstance) -> bool:
 	return true
 
 
+## The party member that fights first, and the one that lands and takes blows
+## in the overworld. Null when nothing in the party can fight.
+func lead_creature() -> CreatureInstance:
+	for creature: CreatureInstance in party:
+		if not creature.is_fainted():
+			return creature
+	return null
+
+
 func has_usable_party_member() -> bool:
 	for creature: CreatureInstance in party:
 		if not creature.is_fainted():
@@ -67,6 +76,49 @@ func heal_party() -> void:
 	for creature: CreatureInstance in party:
 		creature.heal_full()
 	party_changed.emit()
+
+
+## Pays out a creature defeated outside a battle, such as one routed by an
+## overworld strike, and returns the player-facing lines describing it.
+##
+## Battles award XP through [BattleEngine] instead, because the battle screen
+## needs one event per beat to pace them. Both paths share the wording in
+## [BattleRules], so the two accounts of the same reward stay identical.
+func award_defeat_rewards(defeated: CreatureInstance) -> PackedStringArray:
+	var lines: PackedStringArray = []
+	if defeated == null:
+		return lines
+	currency += BattleRules.currency_for_defeating(defeated)
+	var xp: int = BattleRules.xp_for_defeating(defeated)
+	for creature: CreatureInstance in party:
+		if creature.is_fainted():
+			continue
+		lines.append_array(_award_xp(creature, xp))
+	party_changed.emit()
+	return lines
+
+
+func _award_xp(creature: CreatureInstance, xp: int) -> PackedStringArray:
+	var lines: PackedStringArray = []
+	var result: XpResult = creature.gain_xp(xp, level_cap)
+	lines.append(BattleRules.XP_GAINED_TEXT % [creature.display_name(), result.applied])
+	if not result.leveled_up():
+		return lines
+	lines.append(BattleRules.LEVEL_UP_TEXT % [creature.display_name(), result.new_level])
+	var known_before: Array[MoveData] = creature.moves.duplicate()
+	var needs_choice: Array[MoveData] = creature.resolve_new_moves(result)
+	for move: MoveData in creature.moves:
+		if not known_before.has(move):
+			lines.append(BattleRules.MOVE_LEARNED_TEXT % [creature.display_name(), move.display_name])
+	# The replace-or-refuse menu does not exist yet (Specification 9.8), so an
+	# overspilling move is reported and can be relearned in Hub 1.
+	for move: MoveData in needs_choice:
+		lines.append(
+			BattleRules.MOVE_LEARN_SKIPPED_TEXT % [creature.display_name(), move.display_name]
+		)
+	if result.evolution_ready:
+		lines.append(BattleRules.EVOLUTION_READY_TEXT % creature.display_name())
+	return lines
 
 
 func apply_defeat_penalty() -> void:

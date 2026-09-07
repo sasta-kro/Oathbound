@@ -1,0 +1,44 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/screen_transition.gd" id="1_screen_transition"]
+[ext_resource type="Shader" path="res://shaders/tile_wipe.gdshader" id="2_tile_wipe"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wipe"]
+shader = ExtResource("2_tile_wipe")
+shader_parameter/progress = 0.0
+shader_parameter/cells = Vector2(24, 14)
+shader_parameter/fill_color = Color(0.0588235, 0.0745098, 0.101961, 1)
+shader_parameter/cell_span = 0.45
+shader_parameter/jitter = 0.14
+
+[node name="ScreenTransition" type="CanvasLayer"]
+layer = 30
+script = ExtResource("1_screen_transition")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Wipe" type="ColorRect" parent="Root"]
+material = SubResource("ShaderMaterial_wipe")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 1, 1, 1)
+
+[node name="Flash" type="ColorRect" parent="Root"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.968627, 0.901961, 0.9)

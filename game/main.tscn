@@ -1,11 +1,13 @@
 [gd_scene format=3 uid="uid://cfnw2slgjv2iw"]
 
 [ext_resource type="Script" uid="uid://cylbrubh17ryi" path="res://scripts/main.gd" id="1_main"]
-[ext_resource type="PackedScene" path="res://areas/area_one.tscn" id="2_area_one"]
+[ext_resource type="PackedScene" uid="uid://cg1nnqja3n7l" path="res://areas/area_one.tscn" id="2_area_one"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
 [ext_resource type="PackedScene" path="res://scenes/dialogue_panel.tscn" id="5_dialogue"]
 [ext_resource type="PackedScene" path="res://scenes/settings_menu.tscn" id="6_settings"]
 [ext_resource type="PackedScene" path="res://scenes/battle_scene.tscn" id="11_battle_scene"]
+[ext_resource type="PackedScene" path="res://scenes/screen_transition.tscn" id="12_screen_transition"]
+[ext_resource type="PackedScene" path="res://scenes/overworld_partner.tscn" id="13_partner"]
 
 [node name="Main" type="Node2D" unique_id=19684313]
 script = ExtResource("1_main")
@@ -28,10 +30,14 @@ theme_override_colors/font_color = Color(0.956863, 0.945098, 0.862745, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 0.45)
 theme_override_constants/outline_size = 3
 theme_override_font_sizes/font_size = 14
-text = "WASD: MOVE    E: INTERACT"
+text = "WASD: MOVE    E: INTERACT    F: ATTACK"
+
+[node name="OverworldPartner" parent="." unique_id=345820674 instance=ExtResource("13_partner")]
 
 [node name="DialoguePanel" parent="." unique_id=1840755847 instance=ExtResource("5_dialogue")]
 
 [node name="SettingsMenu" parent="." unique_id=275442455 instance=ExtResource("6_settings")]
 
 [node name="BattleScene" parent="." unique_id=333658902 instance=ExtResource("11_battle_scene")]
+
+[node name="ScreenTransition" parent="." unique_id=553702632 instance=ExtResource("12_screen_transition")]

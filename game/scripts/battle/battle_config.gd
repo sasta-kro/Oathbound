@@ -5,6 +5,11 @@ extends RefCounted
 ## Built by whoever starts the encounter (the overworld, a trainer script, a
 ## test) so the engine itself never reaches into global state.
 
+## How the encounter started (Specification 7.3, extended). The overworld sets
+## it from who landed the first blow outside the battle. The damage that blow
+## did is already on the creatures; this only records who acts on turn one.
+enum Opening { NEUTRAL, ADVANTAGE, DISADVANTAGE }
+
 var player_party: Array[CreatureInstance] = []
 var enemy_party: Array[CreatureInstance] = []
 ## Wild battles allow binding and running (Specification 11.2, 15.1).
@@ -20,13 +25,17 @@ var scroll_multiplier: float = BattleRules.BASIC_SCROLL_MULTIPLIER
 var has_bind_destination: bool = true
 ## Story-based level cap for player creatures (Specification 9.4).
 var level_cap: int = CreatureRules.GLOBAL_MAX_LEVEL
+var opening: Opening = Opening.NEUTRAL
 var type_chart: TypeChart
 ## Seed for the battle's random rolls. Negative picks a random seed.
 var rng_seed: int = -1
 
 
 static func wild(
-	party: Array[CreatureInstance], wild_creature: CreatureInstance, chart: TypeChart
+	party: Array[CreatureInstance],
+	wild_creature: CreatureInstance,
+	chart: TypeChart,
+	how_it_started: Opening = Opening.NEUTRAL,
 ) -> BattleConfig:
 	var config := BattleConfig.new()
 	config.player_party = party
@@ -34,6 +43,7 @@ static func wild(
 	config.is_wild = true
 	config.can_run = true
 	config.type_chart = chart
+	config.opening = how_it_started
 	return config
 
 

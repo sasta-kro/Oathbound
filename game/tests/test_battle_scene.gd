@@ -2,6 +2,7 @@ extends GutTest
 ## The battle screen wiring: side-view stage, status windows and menus.
 
 const SCENE: PackedScene = preload("res://scenes/battle_scene.tscn")
+const TRANSITION_SCENE: PackedScene = preload("res://scenes/screen_transition.tscn")
 
 var _scene: BattleScene
 
@@ -109,5 +110,71 @@ func test_finishing_the_battle_closes_the_screen_and_reports_the_engine() -> voi
 	press.action = &"interact"
 	press.pressed = true
 	_scene._unhandled_input(press)
+	assert_false(_scene.is_active())
+	assert_signal_emitted(_scene, "battle_finished")
+
+
+func test_the_cursor_row_is_the_only_highlighted_one() -> void:
+	_scene.start_battle(_config())
+	await wait_frames(2)
+
+	var fight: Button = _scene._entries[0].button
+	var switch: Button = _scene._entries[1].button
+	assert_eq(fight.get_theme_stylebox("normal"), _scene._selected_row_style)
+	assert_eq(switch.get_theme_stylebox("normal"), _scene._idle_row_style)
+
+	_scene._set_cursor(1)
+	assert_eq(fight.get_theme_stylebox("normal"), _scene._idle_row_style)
+	assert_eq(switch.get_theme_stylebox("normal"), _scene._selected_row_style)
+
+
+func test_status_conditions_show_as_badges_beside_the_types() -> void:
+	_scene.start_battle(_config())
+	await wait_frames(2)
+	assert_eq(_scene.enemy_statuses.get_child_count(), 0, "A healthy creature shows no badges.")
+
+	_scene.engine.enemy.active().apply_status(StatusIds.POISON, 3)
+	_scene.engine.enemy.active().apply_status(StatusIds.STUN, 1)
+	_scene._refresh_panels()
+
+	assert_eq(_scene.enemy_statuses.get_child_count(), 2)
+	assert_eq((_scene.enemy_statuses.get_child(0) as Label).text, "PSN")
+	assert_eq(
+		(_scene.enemy_statuses.get_child(1) as Label).text, "STN", "Badges keep a stable order."
+	)
+
+	_scene.engine.enemy.active().clear_status(StatusIds.POISON)
+	_scene._refresh_panels()
+	assert_eq(_scene.enemy_statuses.get_child_count(), 1)
+	assert_eq((_scene.enemy_statuses.get_child(0) as Label).text, "STN")
+	# Replaced badges are freed on the next frame; wait so they are not counted
+	# as orphans by the runner.
+	await wait_frames(1)
+
+
+func test_a_battle_with_a_transition_covers_the_screen_before_it_closes() -> void:
+	var transition: ScreenTransition = TRANSITION_SCENE.instantiate()
+	transition.instant = true
+	add_child_autofree(transition)
+	_scene.transition = transition
+
+	var config := _config()
+	config.player_party = [Content.spawn_creature(&"creature_fire_01", 20)]
+	_scene.start_battle(config)
+	await wait_frames(2)
+	watch_signals(_scene)
+
+	_scene.engine.forced_roll = 0.0
+	_scene.press_entry(0)
+	_scene.press_entry(0)
+	await wait_frames(2)
+
+	var press := InputEventAction.new()
+	press.action = &"interact"
+	press.pressed = true
+	_scene._unhandled_input(press)
+	await wait_frames(2)
+
+	assert_true(transition.root.visible, "The world is uncovered by whoever opened the battle.")
 	assert_false(_scene.is_active())
 	assert_signal_emitted(_scene, "battle_finished")

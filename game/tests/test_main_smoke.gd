@@ -35,6 +35,7 @@ func test_required_input_actions_exist() -> void:
 		"move_left",
 		"move_right",
 		"interact",
+		"attack",
 		"toggle_fullscreen",
 	]
 

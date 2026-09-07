@@ -76,7 +76,31 @@ func start() -> Array[BattleEvent]:
 			BattleEvent.Kind.SEND_OUT, BattleTeam.Side.PLAYER, "Go, %s!" % own.display_name()
 		)
 	)
+	_announce_opening(foe, events)
 	return events
+
+
+## Says why a side is already hurt when the battle opens (Specification 7.3,
+## extended). The blow itself landed in the overworld, so there is nothing to
+## resolve here: only the reason the HP bars start where they do.
+func _announce_opening(foe: Battler, events: Array[BattleEvent]) -> void:
+	match config.opening:
+		BattleConfig.Opening.ADVANTAGE:
+			events.append(
+				BattleEvent.create(
+					BattleEvent.Kind.MESSAGE,
+					BattleTeam.Side.ENEMY,
+					"You struck first! %s is still reeling." % _label(foe),
+				)
+			)
+		BattleConfig.Opening.DISADVANTAGE:
+			events.append(
+				BattleEvent.create(
+					BattleEvent.Kind.MESSAGE,
+					BattleTeam.Side.PLAYER,
+					"%s ambushed you! You were caught off guard." % _label(foe),
+				)
+			)
 
 
 ## What the player may currently do, with a player-facing reason for anything
@@ -203,7 +227,15 @@ func _validate_player_action(action: BattleAction) -> String:
 	return ""
 
 
+## Turn order (Specification 11.3, 11.4), with one exception: whoever landed
+## the blow in the overworld also acts first on turn one, no matter how slow
+## they are or what the other side chose. Priorities take over from turn two.
 func _turn_order(player_action: BattleAction, enemy_action: BattleAction) -> Array[int]:
+	if turn_number == 1:
+		if config.opening == BattleConfig.Opening.ADVANTAGE:
+			return [BattleTeam.Side.PLAYER, BattleTeam.Side.ENEMY]
+		if config.opening == BattleConfig.Opening.DISADVANTAGE:
+			return [BattleTeam.Side.ENEMY, BattleTeam.Side.PLAYER]
 	var comparison: int = BattleRules.compare_order(
 		player_action.priority(),
 		player.active().effective_speed(),
@@ -405,7 +437,7 @@ func _award_xp(recipient: Battler, xp: int, events: Array[BattleEvent]) -> void:
 		BattleEvent.create(
 			BattleEvent.Kind.XP_GAINED,
 			recipient.side,
-			"%s gained %d XP." % [creature.display_name(), result.applied],
+			BattleRules.XP_GAINED_TEXT % [creature.display_name(), result.applied],
 			{"xp": result.applied, "excess": result.excess},
 		)
 	)
@@ -415,7 +447,7 @@ func _award_xp(recipient: Battler, xp: int, events: Array[BattleEvent]) -> void:
 		BattleEvent.create(
 			BattleEvent.Kind.LEVEL_UP,
 			recipient.side,
-			"%s grew to level %d!" % [creature.display_name(), result.new_level],
+			BattleRules.LEVEL_UP_TEXT % [creature.display_name(), result.new_level],
 			{"level": result.new_level},
 		)
 	)
@@ -427,7 +459,7 @@ func _award_xp(recipient: Battler, xp: int, events: Array[BattleEvent]) -> void:
 				BattleEvent.create(
 					BattleEvent.Kind.MOVE_LEARNED,
 					recipient.side,
-					"%s learned %s!" % [creature.display_name(), move.display_name],
+					BattleRules.MOVE_LEARNED_TEXT % [creature.display_name(), move.display_name],
 					{"move": move},
 				)
 			)
@@ -439,7 +471,7 @@ func _award_xp(recipient: Battler, xp: int, events: Array[BattleEvent]) -> void:
 				BattleEvent.Kind.MOVE_LEARN_SKIPPED,
 				recipient.side,
 				(
-					"%s wants to learn %s, but already knows four moves."
+					BattleRules.MOVE_LEARN_SKIPPED_TEXT
 					% [creature.display_name(), move.display_name]
 				),
 				{"move": move},
@@ -450,7 +482,7 @@ func _award_xp(recipient: Battler, xp: int, events: Array[BattleEvent]) -> void:
 			BattleEvent.create(
 				BattleEvent.Kind.MESSAGE,
 				recipient.side,
-				"%s is ready to evolve!" % creature.display_name(),
+				BattleRules.EVOLUTION_READY_TEXT % creature.display_name(),
 			)
 		)
 
