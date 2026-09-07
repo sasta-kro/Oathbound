@@ -8,6 +8,16 @@ const GROUP := &"player"
 const ANIMATION_IDLE := &"idle"
 const ANIMATION_WALK := &"walk"
 
+## The hero sheet has one row per compass direction, so every animation is
+## named `<idle|walk>_<facing>`. Diagonals borrow the row of their dominant
+## axis, which keeps eight-way movement on four rows of art.
+const FACING_SUFFIXES := {
+	Vector2i.DOWN: &"down",
+	Vector2i.UP: &"up",
+	Vector2i.LEFT: &"left",
+	Vector2i.RIGHT: &"right",
+}
+
 ## Pixels per second at full stick deflection.
 @export var move_speed: float = 240.0
 ## Grid cell size, kept for callers that reason about tiles.
@@ -63,15 +73,29 @@ func _facing_from(direction: Vector2) -> Vector2i:
 	return Vector2i(x, y)
 
 
-## The hero sheet is side-view art, so it only mirrors on horizontal input and
-## keeps its last facing while walking straight up or down.
+## Plays the walk or idle row that matches the way the player is facing.
 func _animate(direction: Vector2) -> void:
 	if sprite == null or sprite.sprite_frames == null:
 		return
-	var wanted: StringName = ANIMATION_WALK if direction != Vector2.ZERO else ANIMATION_IDLE
-	if sprite.sprite_frames.has_animation(wanted) and sprite.animation != wanted:
+	var prefix: StringName = ANIMATION_WALK if direction != Vector2.ZERO else ANIMATION_IDLE
+	var wanted: StringName = StringName("%s_%s" % [prefix, _facing_suffix()])
+	if not sprite.sprite_frames.has_animation(wanted):
+		return
+	if sprite.animation != wanted:
 		sprite.play(wanted)
 	elif not sprite.is_playing():
 		sprite.play()
-	if absf(direction.x) > 0.01:
-		sprite.flip_h = direction.x < 0.0
+
+
+## The animation row for the current facing. Diagonals resolve to their
+## horizontal row, because the side views read more clearly than the front and
+## back ones.
+func _facing_suffix() -> StringName:
+	var row: Vector2i = facing_direction
+	if row.x != 0:
+		row = Vector2i(row.x, 0)
+	elif row.y == 0:
+		row = Vector2i.DOWN
+	else:
+		row = Vector2i(0, row.y)
+	return FACING_SUFFIXES[row]

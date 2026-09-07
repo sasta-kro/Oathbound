@@ -13,4 +13,5 @@ Sheets are horizontal strips of 128x128 frames; the figure occupies roughly
 | `idle.png` | 10 |
 | `walk.png` | 10 |
 
-Used by `res://content/sprites/player_hero.tres` and `res://scenes/player.tscn`.
+Currently unused: the player switched to the four-direction sheet in
+`res://assets/characters/character_13.png`, which supports eight-way movement.

@@ -58,7 +58,7 @@ const PLACEHOLDER_FPS: Dictionary[StringName, float] = {
 	set(value):
 		art_scale = value
 		if _visual is AnimatedSprite2D:
-			(_visual as AnimatedSprite2D).scale = Vector2.ONE * value
+			(_visual as AnimatedSprite2D).scale = Vector2.ONE * _sprite_scale()
 
 ## Species shown. Assignable from a scene so a room can place a creature
 ## without code; runtime callers use [method set_species] or
@@ -142,7 +142,7 @@ func _rebuild() -> void:
 		var sprite := AnimatedSprite2D.new()
 		sprite.sprite_frames = frames
 		sprite.flip_h = flip_h
-		sprite.scale = Vector2.ONE * art_scale
+		sprite.scale = Vector2.ONE * _sprite_scale()
 		sprite.animation_finished.connect(_on_animation_finished)
 		_visual = sprite
 	else:
@@ -197,6 +197,12 @@ func _on_animation_finished() -> void:
 	if is_looping_state(finished_state) or TERMINAL_STATES.has(finished_state):
 		return
 	play(STATE_IDLE)
+
+
+## The scale the art is actually drawn at: what the scene asked for, corrected
+## by the species' own [member CreatureSpecies.sprite_scale].
+func _sprite_scale() -> float:
+	return art_scale * (species.sprite_scale if species != null else 1.0)
 
 
 ## Overworld art is optional: a species with only battle frames shows those

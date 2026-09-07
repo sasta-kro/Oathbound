@@ -57,6 +57,10 @@ extends Resource
 ## (Specification 23).
 @export var battle_sprite: SpriteFrames
 @export var overworld_sprite: SpriteFrames
+## Corrects art drawn at a different size to the rest of the roster, so one
+## oversized sheet does not force every scene to special-case it. Multiplies
+## whatever scale the scene already asked for.
+@export_range(0.1, 4.0, 0.05) var sprite_scale: float = 1.0
 @export var cry: AudioStream
 
 

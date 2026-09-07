@@ -1,6 +1,7 @@
 extends GutTest
 
 const EMBERLING_PATH := "res://content/creatures/creature_fire_01.tres"
+const RIMESHARD_PATH := "res://content/creatures/creature_earth_02.tres"
 
 var _visual: CreatureVisual
 
@@ -13,6 +14,49 @@ func before_each() -> void:
 
 func _emberling() -> CreatureSpecies:
 	return load(EMBERLING_PATH) as CreatureSpecies
+
+
+func _rimeshard() -> CreatureSpecies:
+	return load(RIMESHARD_PATH) as CreatureSpecies
+
+
+func _sprite() -> AnimatedSprite2D:
+	return _visual.get_child(0) as AnimatedSprite2D
+
+
+func test_rimeshard_ships_with_a_battle_sprite() -> void:
+	var species: CreatureSpecies = _rimeshard()
+	assert_not_null(species.battle_sprite, "Rimeshard must have battle sprite frames.")
+
+	var frames: SpriteFrames = species.battle_sprite
+	for state: StringName in [
+		CreatureVisual.STATE_IDLE,
+		CreatureVisual.STATE_WALK,
+		CreatureVisual.STATE_ATTACK,
+		CreatureVisual.STATE_HURT,
+		CreatureVisual.STATE_DEATH,
+	]:
+		assert_true(frames.has_animation(state), "Battle sprite must define '%s'." % state)
+		assert_gt(frames.get_frame_count(state), 1, "'%s' must be animated." % state)
+
+
+func test_oversized_art_is_corrected_by_the_species_scale() -> void:
+	var species: CreatureSpecies = _rimeshard()
+	assert_lt(species.sprite_scale, 1.0, "The golem sheet is drawn larger than the roster.")
+
+	_visual.art_scale = 2.0
+	_visual.set_species(species)
+	assert_almost_eq(
+		_sprite().scale.x,
+		2.0 * species.sprite_scale,
+		0.001,
+		"The species scale must multiply the scale the scene asked for.",
+	)
+
+	_visual.set_species(_emberling())
+	assert_almost_eq(
+		_sprite().scale.x, 2.0, 0.001, "A species with no correction keeps the scene's scale."
+	)
 
 
 func test_emberling_ships_with_a_battle_sprite() -> void:

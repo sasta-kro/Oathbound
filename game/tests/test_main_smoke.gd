@@ -191,16 +191,40 @@ func test_hero_sprite_walks_and_faces_the_way_it_moves() -> void:
 	var player: Player = main_scene.get_node("Player")
 	var sprite: AnimatedSprite2D = player.get_node("Sprite")
 	assert_not_null(sprite.sprite_frames, "The player must carry the hero sprite frames.")
-	assert_true(sprite.sprite_frames.has_animation(&"walk"))
-	assert_true(sprite.sprite_frames.has_animation(&"idle"))
+	for facing: String in ["down", "up", "left", "right"]:
+		assert_true(
+			sprite.sprite_frames.has_animation(StringName("walk_%s" % facing)),
+			"The hero sheet must define walk_%s." % facing,
+		)
+		assert_true(
+			sprite.sprite_frames.has_animation(StringName("idle_%s" % facing)),
+			"The hero sheet must define idle_%s." % facing,
+		)
 
 	player.global_position = Vector2(-336, 0)
 	player.move_with(Vector2.LEFT)
-	assert_eq(sprite.animation, &"walk", "Moving plays the walk cycle.")
-	assert_true(sprite.flip_h, "Moving left mirrors the side-view hero.")
+	assert_eq(sprite.animation, &"walk_left", "Moving left plays the left walk cycle.")
 	player.move_with(Vector2.ZERO)
-	assert_eq(sprite.animation, &"idle", "Standing still returns to idle.")
-	assert_true(sprite.flip_h, "Standing still keeps the last facing.")
+	assert_eq(sprite.animation, &"idle_left", "Standing still returns to idle.")
+
+	player.move_with(Vector2.DOWN)
+	assert_eq(sprite.animation, &"walk_down", "Moving down plays the front walk cycle.")
+	player.move_with(Vector2.UP)
+	assert_eq(sprite.animation, &"walk_up", "Moving up plays the back walk cycle.")
+
+
+func test_diagonal_movement_uses_the_side_view_rows() -> void:
+	var main_scene: Node2D = _load_main()
+	await get_tree().physics_frame
+
+	var player: Player = main_scene.get_node("Player")
+	var sprite: AnimatedSprite2D = player.get_node("Sprite")
+
+	player.global_position = Vector2(-336, 0)
+	player.move_with(Vector2(1, -1))
+	assert_eq(sprite.animation, &"walk_right", "Up-right walks in the right-facing row.")
+	player.move_with(Vector2(-1, 1))
+	assert_eq(sprite.animation, &"walk_left", "Down-left walks in the left-facing row.")
 
 
 func test_moved_signal_only_fires_when_the_player_actually_moves() -> void:

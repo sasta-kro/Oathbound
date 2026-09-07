@@ -11,11 +11,11 @@ script = ExtResource("1_player")
 
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
 texture_filter = 1
-scale = Vector2(1.5, 1.5)
+scale = Vector2(2, 2)
 sprite_frames = ExtResource("2_hero_frames")
-animation = &"idle"
-autoplay = "idle"
-offset = Vector2(7.5, 3)
+animation = &"idle_down"
+autoplay = "idle_down"
+offset = Vector2(0, 4.5)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_player")

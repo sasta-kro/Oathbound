@@ -15,6 +15,7 @@ const TILESET_PATH: String = "res://assets/tilesets/area_one.tres"
 const WORLD_AREA_SCRIPT: String = "res://scripts/world/world_area.gd"
 const ACTOR_SCENE: String = "res://scenes/world_actor.tscn"
 const SPAWN_ZONE_SCENE: String = "res://scenes/spawn_zone.tscn"
+const KNIGHT_SPRITE_FRAMES: String = "res://content/sprites/npc_knight.tres"
 
 ## The 32 px sheets are drawn at 1.5x so one cell is 48 px.
 const LAYER_SCALE := Vector2(1.5, 1.5)
@@ -44,8 +45,8 @@ const SPAWN_ZONES: Array[Dictionary] = [
 		"hostile": true,
 	},
 	{
-		"name": "PuddlePool",
-		"species": "res://content/creatures/creature_water_01.tres",
+		"name": "ShardHollow",
+		"species": "res://content/creatures/creature_earth_02.tres",
 		"cell": Vector2i(11, 11),
 		"radius": 2.0,
 		"max_alive": 2,
@@ -109,6 +110,7 @@ func _bake() -> void:
 	knight.position = AreaOneGenerator.cell_to_world(KNIGHT_CELL)
 	knight.set("display_name", "KNIGHT")
 	knight.set("body_color", Color(0.247059, 0.72549, 0.34902, 1))
+	knight.set("sprite_frames", load(KNIGHT_SPRITE_FRAMES))
 	knight.set("dialogue_line", "Knight: The northern ruins remain sealed. Keep to the marked path.")
 	knight.set("heals_party", true)
 	area.add_child(knight)
