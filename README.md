@@ -1,6 +1,6 @@
 # Oathbound
 
-Oathbound is a small 2D creature-collecting RPG built with Godot 4.7.2.
+Oathbound is a small top-down 2D creature-collecting RPG built with Godot 4.7.2. Wild creatures roam the overworld in plain sight instead of hiding in random encounters, the first blow struck on the field decides how each battle opens, and new companions are bound to the party with oath scrolls. A complete story run takes roughly 40 to 60 minutes.
 
 ## Repository structure
 
