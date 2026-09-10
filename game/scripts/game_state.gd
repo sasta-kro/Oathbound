@@ -5,6 +5,7 @@ extends Node
 ## Autoloaded as [code]GameState[/code]. Saving and loading (Specification 21)
 ## will serialise this node; until then it lives for one session.
 
+signal experience_awarded(creature: CreatureInstance, before_xp: int, before_level: int, applied: int)
 signal party_changed
 
 const STARTER_SPECIES_ID := &"creature_fire_01"
@@ -20,6 +21,7 @@ const INITIAL_LEVEL_CAP := 20
 ## Provisional defeat penalty (Specification 20.1).
 const DEFEAT_CURRENCY_PENALTY := 50
 
+var seen_species: Dictionary = {}
 var party: Array[CreatureInstance] = []
 var binding_scrolls: int = STARTING_BINDING_SCROLLS
 var currency: int = 0
@@ -37,6 +39,7 @@ func ensure_starter() -> void:
 		return
 	var starter: CreatureInstance = Content.spawn_creature(STARTER_SPECIES_ID, STARTER_LEVEL)
 	if starter != null:
+		seen_species[starter.species_id()] = true
 		party.append(starter)
 		party_changed.emit()
 
@@ -50,6 +53,7 @@ func party_is_full() -> bool:
 func add_to_party(creature: CreatureInstance) -> bool:
 	if creature == null or party_is_full():
 		return false
+	seen_species[creature.species_id()] = true
 	party.append(creature)
 	party_changed.emit()
 	return true
@@ -100,7 +104,10 @@ func award_defeat_rewards(defeated: CreatureInstance) -> PackedStringArray:
 
 func _award_xp(creature: CreatureInstance, xp: int) -> PackedStringArray:
 	var lines: PackedStringArray = []
+	var before_xp := creature.total_xp
+	var before_level := creature.level
 	var result: XpResult = creature.gain_xp(xp, level_cap)
+	experience_awarded.emit(creature, before_xp, before_level, result.applied)
 	lines.append(BattleRules.XP_GAINED_TEXT % [creature.display_name(), result.applied])
 	if not result.leveled_up():
 		return lines

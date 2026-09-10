@@ -431,6 +431,8 @@ func _xp_recipients() -> Array[Battler]:
 
 func _award_xp(recipient: Battler, xp: int, events: Array[BattleEvent]) -> void:
 	var creature: CreatureInstance = recipient.creature
+	var before_xp := creature.total_xp
+	var before_level := creature.level
 	var result: XpResult = creature.gain_xp(xp, config.level_cap)
 	xp_over_cap += result.excess
 	events.append(
@@ -438,7 +440,7 @@ func _award_xp(recipient: Battler, xp: int, events: Array[BattleEvent]) -> void:
 			BattleEvent.Kind.XP_GAINED,
 			recipient.side,
 			BattleRules.XP_GAINED_TEXT % [creature.display_name(), result.applied],
-			{"xp": result.applied, "excess": result.excess},
+			{"xp": result.applied, "excess": result.excess, "creature": creature, "before_xp": before_xp, "before_level": before_level},
 		)
 	)
 	if not result.leveled_up():

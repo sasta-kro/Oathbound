@@ -104,13 +104,7 @@ func test_finishing_the_battle_closes_the_screen_and_reports_the_engine() -> voi
 	_scene.press_entry(0)
 	await wait_frames(2)
 	assert_eq(_scene.engine.outcome, BattleEngine.Outcome.VICTORY)
-	assert_true(_scene.is_active(), "The final message waits for the player.")
-
-	var press := InputEventAction.new()
-	press.action = &"interact"
-	press.pressed = true
-	_scene._unhandled_input(press)
-	assert_false(_scene.is_active())
+	assert_false(_scene.is_active(), "Completed battles return automatically without an extra input.")
 	assert_signal_emitted(_scene, "battle_finished")
 
 

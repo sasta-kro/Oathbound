@@ -65,3 +65,18 @@ gdlint scripts tests
 ```
 
 New gameplay should remain playable with labeled placeholder visuals when final assets are unavailable.
+
+### Interface and navigation
+
+The game launches into a title screen. In the field, use **Tab / P** for the
+party, **J** for the creature journal, and **Esc** for the main menu. Menus
+support mouse input and standard keyboard focus navigation. The party screen
+opens creature details, lets a healthy companion become the lead, and offers
+evolution when eligible. The journal searches names and elements and records
+seen/bound species during the session.
+
+EXP appears in non-blocking side cards with creature portraits, animated level
+progress and level-up feedback. Victories return to exploration automatically;
+overworld defeats also pay rewards without a dialogue prompt. Progress remains
+session-only; returning to the title preserves party state but reloads the map
+when entering the field again.

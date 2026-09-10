@@ -28,10 +28,16 @@ const ROUT_TEXT := "You cut down the wild %s before it could fight back."
 @onready var transition: ScreenTransition = $ScreenTransition
 @onready var partner: OverworldPartner = $OverworldPartner
 
+var field_ui: FieldUI
+
 var _battling_creature: WildCreature
 
 
 func _ready() -> void:
+	$HUD/Hint.hide()
+	field_ui = FieldUI.new()
+	add_child(field_ui)
+	field_ui.changed.connect(_refresh_world_activity)
 	player.global_position = area.player_start_position()
 	partner.snap_to_player()
 	_fit_camera_to_area()
@@ -59,7 +65,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_toggle_settings()
 		return
 
-	if settings_menu.is_open() or battle_scene.is_active():
+	if settings_menu.is_open() or battle_scene.is_active() or field_ui.is_open():
 		return
 
 	if event.is_action_pressed(&"attack"):
@@ -175,15 +181,15 @@ func _creature_in_reach_of_strike() -> WildCreature:
 ## battle would have paid, so skipping the battle costs the player nothing but
 ## the chance to bind it.
 func _rout(creature: WildCreature, defeated: CreatureInstance) -> void:
-	var name_before_defeat: String = defeated.display_name()
 	_set_world_active(false)
 	await creature.play_rout()
-	var lines: PackedStringArray = [ROUT_TEXT % name_before_defeat]
-	lines.append(
-		"You earned %d coins." % BattleRules.currency_for_defeating(defeated)
-	)
-	lines.append_array(GameState.award_defeat_rewards(defeated))
-	_open_dialogue(" ".join(lines))
+	GameState.seen_species[defeated.species_id()] = true
+	var reward_lines := GameState.award_defeat_rewards(defeated)
+	field_ui.show_notice("+%d coins" % BattleRules.currency_for_defeating(defeated))
+	for line in reward_lines:
+		if not "XP" in line and not "level" in line:
+			field_ui.show_notice(line)
+	_refresh_world_activity()
 
 
 ## The closest interactable actor the player can touch, or null.
@@ -247,6 +253,7 @@ func _start_wild_battle(
 		GameState.heal_party()
 
 	var enemy: CreatureInstance = creature.encounter_instance()
+	GameState.seen_species[enemy.species_id()] = true
 	if opening == BattleConfig.Opening.DISADVANTAGE:
 		_apply_ambush(enemy)
 
@@ -281,6 +288,8 @@ func _apply_ambush(attacker: CreatureInstance) -> void:
 func _on_battle_finished(engine: BattleEngine) -> void:
 	GameState.binding_scrolls = engine.binding_scrolls
 	GameState.currency += engine.currency_earned
+	if engine.currency_earned > 0:
+		field_ui.show_notice("+%d coins" % engine.currency_earned)
 	var creature: WildCreature = _battling_creature
 	_battling_creature = null
 	# A creature the battle took leaves the map as light rather than simply
@@ -337,6 +346,7 @@ func _close_dialogue() -> void:
 func _world_is_paused() -> bool:
 	return (
 		settings_menu.is_open()
+		or (field_ui != null and field_ui.is_open())
 		or battle_scene.is_active()
 		or dialogue_panel.is_open()
 		or transition.is_busy()

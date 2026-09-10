@@ -4,15 +4,15 @@
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_settings_background"]
 bg_color = Color(0.0588235, 0.0862745, 0.109804, 0.98)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.72549, 0.682353, 0.321569, 1)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.25, 0.39, 0.40, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
 
 [node name="SettingsMenu" type="CanvasLayer"]
 layer = 10
@@ -37,7 +37,7 @@ color = Color(0, 0, 0, 0.6)
 
 [node name="Panel" type="PanelContainer" parent="Root"]
 layout_mode = 1
-anchors_preset = 8
+anchors_preset = 12
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5

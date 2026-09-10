@@ -49,7 +49,7 @@ const DODGE_SECONDS := 0.2
 const FAINT_SECONDS := 0.7
 const BIND_SECONDS := 0.5
 
-const HP_HEALTHY_COLOR := Color("4cc260")
+const HP_HEALTHY_COLOR := Color("a1cdb5")
 const HP_WARY_COLOR := Color("e0b23a")
 const HP_CRITICAL_COLOR := Color("d1453b")
 const HP_WARY_FRACTION := 0.5
@@ -66,12 +66,12 @@ const BIND_FLASH_COLOR := Color(1.0, 0.85, 0.35)
 const DISABLED_TEXT_COLOR := Color(0.55, 0.55, 0.55)
 const MENU_TEXT_COLOR := Color(0.87, 0.87, 0.83)
 const MENU_SELECTED_TEXT_COLOR := Color(1.0, 0.97, 0.85)
-const MENU_HIGHLIGHT_COLOR := Color(0.72549, 0.682353, 0.321569, 0.22)
-const MENU_HIGHLIGHT_BORDER_COLOR := Color(0.72549, 0.682353, 0.321569, 0.9)
+const MENU_HIGHLIGHT_COLOR := Color("2b4037")
+const MENU_HIGHLIGHT_BORDER_COLOR := Color("d9bb80")
 const CURSOR_PREFIX := "▶ "
 const IDLE_PREFIX := "  "
 const DISMISS_HINT := "  ▼"
-const MENU_FONT_SIZE := 17
+const MENU_FONT_SIZE := 14
 const MENU_ROW_PADDING := 2
 const MENU_ROW_MARGIN := 6
 ## Every button state a row restyles, so hover and focus cannot fight the
@@ -166,6 +166,8 @@ var _selected_row_style: StyleBoxFlat
 
 
 func _ready() -> void:
+	root.theme = OathTheme.make()
+	_polish_chrome()
 	root.hide()
 	var player_side: int = BattleTeam.Side.PLAYER
 	var enemy_side: int = BattleTeam.Side.ENEMY
@@ -274,8 +276,7 @@ func _continue() -> void:
 		BattleEngine.Phase.REPLACING:
 			_open_party_menu(true)
 		BattleEngine.Phase.ENDED:
-			_awaiting_dismiss = true
-			message_label.text += DISMISS_HINT
+			_finish()
 		_:
 			_open_command_menu()
 
@@ -544,6 +545,11 @@ func _finish() -> void:
 func _play_events(events: Array[BattleEvent]) -> void:
 	_playing = true
 	for event: BattleEvent in events:
+		if event.kind == BattleEvent.Kind.XP_GAINED:
+			GameState.experience_awarded.emit(event.data["creature"], event.data["before_xp"], event.data["before_level"], event.data["xp"])
+			continue
+		if event.kind == BattleEvent.Kind.LEVEL_UP:
+			continue
 		_say(event.text)
 		await _present(event)
 		await _hold(MESSAGE_HOLD_SECONDS)
@@ -855,3 +861,33 @@ func _visual_for(side: int) -> CreatureVisual:
 
 func _team(side: int) -> BattleTeam:
 	return engine.player if side == BattleTeam.Side.PLAYER else engine.enemy
+
+
+func _polish_chrome() -> void:
+	var backdrop := TextureRect.new()
+	backdrop.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	backdrop.texture = preload("res://assets/ui/verdant_sanctum.svg")
+	backdrop.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	backdrop.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	backdrop.modulate = Color(0.65, 0.72, 0.69)
+	root.add_child(backdrop)
+	root.move_child(backdrop, 1)
+	$Root/Ground.hide()
+	$Root/Horizon.hide()
+	for path in ["PlayerPanel", "EnemyPanel", "BottomBar/CommandPanel", "BottomBar/MessagePanel"]:
+		var panel: PanelContainer = root.get_node(path)
+		panel.add_theme_stylebox_override("panel", OathTheme.box(Color(OathTheme.INK, 0.96), OathTheme.LINE, 8, 0))
+	for title in [player_name, enemy_name]:
+		title.add_theme_font_override("font", OathTheme.SERIF)
+		title.add_theme_font_size_override("font_size", 27)
+	for label in [player_level, enemy_level]:
+		label.add_theme_color_override("font_color", OathTheme.GOLD)
+		label.add_theme_font_size_override("font_size", 13)
+	message_label.add_theme_font_size_override("font_size", 16)
+	var caption := OathTheme.label("W I L D   E N C O U N T E R", 9, OathTheme.GOLD)
+	caption.position = Vector2(362, 36)
+	caption.size.x = 236
+	caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	root.add_child(caption)

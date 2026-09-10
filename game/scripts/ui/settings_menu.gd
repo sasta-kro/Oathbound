@@ -19,6 +19,16 @@ const CUSTOM_SIZE_ITEM_ID: int = -1
 
 
 func _ready() -> void:
+	root.theme = OathTheme.make()
+	$Root/Panel.add_theme_stylebox_override("panel", OathTheme.box(OathTheme.INK, OathTheme.GOLD.darkened(0.55), 10, 0))
+	var title: Label = $Root/Panel/Margin/Rows/Title
+	title.text = "Make yourself at home."
+	title.add_theme_font_override("font", OathTheme.SERIF)
+	title.add_theme_font_size_override("font_size", 34)
+	title.add_theme_color_override("font_color", OathTheme.PAPER)
+	$Root/Panel/Margin/Rows/DisplaySection.text = "DISPLAY PREFERENCES"
+	$Root/Panel/Margin/Rows/DisplaySection.add_theme_font_size_override("font_size", 10)
+	close_button.text = "Done  →"
 	root.hide()
 	window_size_options.item_selected.connect(_on_window_size_selected)
 	fullscreen_toggle.toggled.connect(_on_fullscreen_toggled)
@@ -31,6 +41,8 @@ func open() -> void:
 		return
 	_refresh_display_controls()
 	root.show()
+	root.modulate.a = 0
+	create_tween().tween_property(root, "modulate:a", 1.0, 0.16)
 	window_size_options.grab_focus()
 	opened.emit()
 
