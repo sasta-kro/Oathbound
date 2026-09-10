@@ -35,6 +35,11 @@ extends Resource
 ## breaking the move (Specification 23).
 @export var animation_id: StringName = &""
 @export var sfx_id: StringName = &""
+## Spell effect played when the move is used. Presets are shared: several
+## moves point at the same one, and a move that wants its own look duplicates
+## it and changes a colour. Left empty, the move falls back to the stock
+## effect for its element, so no move is ever silent on screen.
+@export var vfx: VfxPreset
 
 
 func is_damaging() -> bool:

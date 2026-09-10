@@ -42,7 +42,18 @@ const PLACEHOLDER_FPS: Dictionary[StringName, float] = {
 	STATE_DEATH: 6.0,
 }
 
+## Break-up effect used when a creature is defeated. Only real art can
+## dissolve: a placeholder draws with child nodes rather than its own canvas
+## item, so callers fall back to a plain fade for one.
+const DISSOLVE_SHADER: Shader = preload("res://shaders/dissolve.gdshader")
+
 @export var context: Context = Context.BATTLE
+## How far a dissolving creature drifts upwards, in screen pixels.
+@export_range(0.0, 64.0) var dissolve_lift_pixels: float = 18.0
+## Size of the flecks a dissolving creature breaks into, in the sprite's own
+## pixels. Art drawn small on screen needs smaller flecks, or the same handful
+## of pieces reads as a few blocks rather than as scattering light.
+@export_range(0.5, 32.0) var dissolve_fleck_pixels: float = 5.0
 ## Placeholder box size used when the species has no sprite.
 @export var placeholder_size: Vector2 = Vector2(64, 64)
 ## Mirrors the sprite so a side-view creature faces left. Placeholders are
@@ -72,6 +83,7 @@ const PLACEHOLDER_FPS: Dictionary[StringName, float] = {
 var state: StringName = STATE_IDLE
 
 var _visual: Node2D
+var _dissolve_material: ShaderMaterial
 
 
 ## Shows a live creature.
@@ -95,6 +107,63 @@ func play(new_state: StringName) -> void:
 ## Convenience for the common battle beat: attack once, then idle again.
 func play_attack() -> void:
 	play(STATE_ATTACK)
+
+
+## How far this creature has broken apart: 0 intact, 1 gone. Tween it to play
+## a defeat. Does nothing on a placeholder, so check [method can_dissolve]
+## first if the caller needs a fallback.
+var dissolve: float = 0.0:
+	set(value):
+		dissolve = value
+		if _dissolve_material != null:
+			_dissolve_material.set_shader_parameter("progress", value)
+
+
+## Whether this creature can play the break-up effect at all.
+func can_dissolve() -> bool:
+	return _visual is AnimatedSprite2D
+
+
+## Puts the creature back together and takes the effect off, for one returning
+## to play.
+func clear_dissolve() -> void:
+	dissolve = 0.0
+	if _visual != null:
+		_visual.material = null
+	_dissolve_material = null
+
+
+## Arms the break-up effect. Returns false when this creature has no art to
+## break up, which is the caller's cue to fade it out instead.
+func prepare_dissolve() -> bool:
+	if not can_dissolve():
+		return false
+	var sprite: AnimatedSprite2D = _visual
+	_dissolve_material = ShaderMaterial.new()
+	_dissolve_material.shader = DISSOLVE_SHADER
+	_dissolve_material.set_shader_parameter("progress", 0.0)
+	_dissolve_material.set_shader_parameter("variant", randf())
+	_dissolve_material.set_shader_parameter("sprite_height", _frame_height(sprite))
+	_dissolve_material.set_shader_parameter("fleck_size", dissolve_fleck_pixels)
+	# The shader works in the sprite's own pixels, which the node then scales.
+	# Dividing here keeps the drift the same distance on screen whether the art
+	# is drawn at battle size or overworld size.
+	_dissolve_material.set_shader_parameter(
+		"lift", dissolve_lift_pixels / maxf(_sprite_scale(), 0.01)
+	)
+	sprite.material = _dissolve_material
+	dissolve = 0.0
+	return true
+
+
+## Height of the frame on screen, in the sprite's own pixels, so the dissolve
+## sweeps from the creature's feet rather than from an arbitrary line.
+func _frame_height(sprite: AnimatedSprite2D) -> float:
+	var frames := sprite.sprite_frames
+	if frames == null or not frames.has_animation(sprite.animation):
+		return 100.0
+	var texture := frames.get_frame_texture(sprite.animation, sprite.frame)
+	return texture.get_height() if texture != null else 100.0
 
 
 func is_using_placeholder() -> bool:
@@ -154,6 +223,8 @@ func _rebuild() -> void:
 		placeholder.finished.connect(_on_animation_finished)
 		_visual = placeholder
 	add_child(_visual)
+	_dissolve_material = null
+	dissolve = 0.0
 	_apply_state()
 
 

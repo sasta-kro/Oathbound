@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="VfxPreset" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/visual/vfx_preset.gd" id="1_vfx"]
+
+[resource]
+script = ExtResource("1_vfx")
+id = &"vfx_toss_stone"
+pattern = 0
+delivery = 2
+core_color = Color(0.941176, 0.85098, 0.658824, 1)
+edge_color = Color(0.478431, 0.290196, 0.141176, 1)
+opacity = 1.0
+size = Vector2(90, 90)
+offset = Vector2(0, -18)
+thickness = 0.5
+softness = 0.08
+ragged = 0.7
+duration = 0.4
+speed = 1.2
+smooth = true

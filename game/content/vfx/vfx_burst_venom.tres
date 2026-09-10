@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="VfxPreset" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/visual/vfx_preset.gd" id="1_vfx"]
+
+[resource]
+script = ExtResource("1_vfx")
+id = &"vfx_burst_venom"
+pattern = 0
+delivery = 0
+core_color = Color(0.901961, 1, 0.690196, 1)
+edge_color = Color(0.419608, 0.184314, 0.627451, 1)
+opacity = 1.0
+size = Vector2(200, 200)
+offset = Vector2(0, -12)
+thickness = 0.26
+softness = 0.14
+ragged = 0.55
+duration = 0.5
+speed = 0.85
+smooth = true

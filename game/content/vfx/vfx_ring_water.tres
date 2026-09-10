@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="VfxPreset" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/visual/vfx_preset.gd" id="1_vfx"]
+
+[resource]
+script = ExtResource("1_vfx")
+id = &"vfx_ring_water"
+pattern = 1
+delivery = 0
+core_color = Color(0.839216, 0.956863, 1, 1)
+edge_color = Color(0.168627, 0.498039, 0.831373, 1)
+opacity = 1.0
+size = Vector2(300, 170)
+offset = Vector2(0, 44)
+thickness = 0.3
+softness = 0.08
+ragged = 0.4
+duration = 0.55
+speed = 1.0
+smooth = true

@@ -13,6 +13,8 @@ script = ExtResource("1_wild_creature")
 scale = Vector2(1.6, 1.6)
 script = ExtResource("2_creature_visual")
 context = 1
+dissolve_lift_pixels = 10.0
+dissolve_fleck_pixels = 2.0
 placeholder_size = Vector2(40, 40)
 
 [node name="Label" type="Label" parent="."]

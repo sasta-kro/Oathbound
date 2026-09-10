@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="VfxPreset" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/visual/vfx_preset.gd" id="1_vfx"]
+
+[resource]
+script = ExtResource("1_vfx")
+id = &"vfx_hit_impact"
+pattern = 0
+delivery = 0
+core_color = Color(1, 0.952941, 0.815686, 1)
+edge_color = Color(1, 0.478431, 0.180392, 1)
+opacity = 1.0
+size = Vector2(110, 110)
+offset = Vector2(0, -8)
+thickness = 0.55
+softness = 0.1
+ragged = 0.7
+duration = 0.26
+speed = 1.0
+smooth = true

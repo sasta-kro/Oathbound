@@ -53,6 +53,16 @@ const KNOCKBACK_DECAY: float = 900.0
 ## Seconds a routed creature spends dying before it leaves the map.
 const ROUT_SECONDS: float = 0.45
 const ROUT_FADE_SECONDS: float = 0.25
+## How long a defeated creature takes to break apart into light.
+const ROUT_DISSOLVE_SECONDS: float = 0.8
+
+## Effects played in the world. Both are shared presets: see [VfxPreset].
+const HIT_VFX: VfxPreset = preload("res://content/vfx/vfx_hit_impact.tres")
+const DEFEAT_VFX: VfxPreset = preload("res://content/vfx/vfx_defeat_sparks.tres")
+## The presets are authored for the battle stage, where a creature is drawn
+## several times larger than it is on the map. Played at full size out here
+## they swallow the creature they are meant to be happening to.
+const WORLD_VFX_SCALE: float = 0.42
 
 ## Overworld health bar, shown only once a creature has actually been hurt.
 const HEALTH_BAR_SIZE := Vector2(44.0, 5.0)
@@ -106,6 +116,9 @@ var _knockback: Vector2 = Vector2.ZERO
 ## Built on first use and kept for the creature's whole life, so overworld
 ## damage persists. See [method encounter_instance].
 var _encounter: CreatureInstance
+## World-sized copies of the shared presets, made once rather than per hit.
+@onready var _world_hit_vfx: VfxPreset = HIT_VFX.scaled(WORLD_VFX_SCALE)
+@onready var _world_defeat_vfx: VfxPreset = DEFEAT_VFX.scaled(WORLD_VFX_SCALE)
 ## Set while the creature is playing its death beat, during which it is no
 ## longer a valid encounter but has not left the map yet.
 var _routed: bool = false
@@ -238,26 +251,51 @@ func take_overworld_hit(amount: int, from_position: Vector2) -> bool:
 	_enter_recover(FLINCH_SECONDS)
 	if visual != null:
 		visual.play(CreatureVisual.STATE_HURT)
+	_play_world_vfx(_world_hit_vfx, global_position)
 	queue_redraw()
 	return instance.is_fainted()
 
 
-## Plays the death beat of a creature routed in the overworld, then takes it
-## off the map. Awaited by the caller so the reward line does not land on top
-## of a creature that is still standing.
-func play_rout() -> void:
+## Plays the beat where a creature leaves the map: it comes apart into flecks
+## of light and is then taken off. Awaited by the caller when a reward line
+## follows, so the text does not land on top of a creature still standing.
+##
+## [param as_defeat] plays the death animation on the way out. A creature that
+## was bound rather than beaten is released the same way but should not be
+## shown dying, so binding passes false.
+func play_rout(as_defeat: bool = true) -> void:
 	if was_defeated or _routed:
 		return
 	_routed = true
 	velocity = Vector2.ZERO
-	if visual != null:
+	if visual != null and as_defeat:
 		visual.play(CreatureVisual.STATE_DEATH)
 	if is_inside_tree():
 		var tween := create_tween()
 		tween.tween_interval(ROUT_SECONDS)
-		tween.tween_property(self, "modulate:a", 0.0, ROUT_FADE_SECONDS)
+		tween.tween_callback(_release_into_light)
+		# A creature with real art comes apart into flecks; a placeholder has
+		# no canvas item of its own to dissolve, so it fades instead.
+		if visual != null and visual.prepare_dissolve():
+			tween.tween_property(visual, "dissolve", 1.0, ROUT_DISSOLVE_SECONDS)
+		else:
+			tween.tween_property(self, "modulate:a", 0.0, ROUT_FADE_SECONDS)
 		await tween.finished
 	mark_defeated()
+
+
+## The motes a defeated creature leaves behind. They are parented to the world
+## rather than to the body, because the body is hidden the moment it is marked
+## defeated and would take them with it.
+func _release_into_light() -> void:
+	_play_world_vfx(_world_defeat_vfx, global_position)
+
+
+func _play_world_vfx(preset: VfxPreset, at: Vector2) -> void:
+	var host := get_parent() as Node2D
+	if host == null or not is_inside_tree():
+		return
+	VfxPlayer.play_global(host, preset, at)
 
 
 ## Backs a creature off for a moment, so leaving a battle does not immediately
@@ -348,6 +386,7 @@ func _land_strike(player: Node2D) -> void:
 	if player == null:
 		return
 	if global_position.distance_to(player.global_position) <= strike_reach():
+		_play_world_vfx(_world_hit_vfx, player.global_position)
 		reached_player.emit(self)
 
 

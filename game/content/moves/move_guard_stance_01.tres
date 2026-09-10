@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bq5p2dxnovb0r" path="res://scripts/creatures/move_data.gd" id="1_move"]
 [ext_resource type="Script" uid="uid://c8yppijv6s6vv" path="res://scripts/creatures/stat_modifier.gd" id="2_modifier"]
+[ext_resource type="Resource" path="res://content/vfx/vfx_motes_guard.tres" id="2_vfx"]
 
 [sub_resource type="Resource" id="Modifier_guard"]
 script = ExtResource("2_modifier")
@@ -17,3 +18,4 @@ description = "The user braces, sharply raising its Defense for a few turns."
 type = 1
 cooldown_turns = 3
 stat_modifiers = Array[ExtResource("2_modifier")]([SubResource("Modifier_guard")])
+vfx = ExtResource("2_vfx")

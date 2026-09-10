@@ -283,10 +283,14 @@ func _on_battle_finished(engine: BattleEngine) -> void:
 	GameState.currency += engine.currency_earned
 	var creature: WildCreature = _battling_creature
 	_battling_creature = null
+	# A creature the battle took leaves the map as light rather than simply
+	# blinking out, but not yet: the wipe is still over the screen, and an
+	# effect played under it would come and go unseen.
+	var taken: WildCreature = null
+	var was_bound: bool = false
 	match engine.outcome:
 		BattleEngine.Outcome.VICTORY:
-			if creature != null:
-				creature.mark_defeated()
+			taken = creature
 		BattleEngine.Outcome.ESCAPED:
 			# The creature keeps whatever damage the battle did to it, and is
 			# held off for a moment so fleeing is not instantly undone
@@ -296,8 +300,8 @@ func _on_battle_finished(engine: BattleEngine) -> void:
 				creature.refresh_health()
 		BattleEngine.Outcome.BOUND:
 			GameState.add_to_party(engine.bound_creature)
-			if creature != null:
-				creature.mark_defeated()
+			taken = creature
+			was_bound = true
 		BattleEngine.Outcome.DEFEAT:
 			# No revival location exists yet, so recovery happens in place
 			# (Specification 20.1 steps 2, 4 and 5).
@@ -314,6 +318,9 @@ func _on_battle_finished(engine: BattleEngine) -> void:
 	# The battle screen covered the screen before it closed, so the world is
 	# already swapped in underneath and only needs uncovering.
 	await transition.reveal(ScreenTransition.Style.WORLD)
+	# Not awaited: the world is the player's again while the light fades.
+	if taken != null:
+		taken.play_rout(not was_bound)
 	_refresh_world_activity()
 
 

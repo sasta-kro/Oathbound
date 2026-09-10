@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="VfxPreset" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/visual/vfx_preset.gd" id="1_vfx"]
+
+[resource]
+script = ExtResource("1_vfx")
+id = &"vfx_motes_wind"
+pattern = 4
+delivery = 0
+core_color = Color(1, 1, 1, 1)
+edge_color = Color(0.498039, 0.847059, 0.658824, 1)
+opacity = 1.0
+size = Vector2(220, 240)
+offset = Vector2(0, -20)
+thickness = 0.26
+softness = 0.1
+ragged = 0.5
+duration = 0.6
+speed = 1.0
+smooth = true

@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cylbrubh17ryi" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="PackedScene" uid="uid://cg1nnqja3n7l" path="res://areas/area_one.tscn" id="2_area_one"]
+[ext_resource type="PackedScene" path="res://scenes/world_atmosphere.tscn" id="14_atmosphere"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
 [ext_resource type="PackedScene" path="res://scenes/dialogue_panel.tscn" id="5_dialogue"]
 [ext_resource type="PackedScene" path="res://scenes/settings_menu.tscn" id="6_settings"]
@@ -19,7 +20,10 @@ position = Vector2(-288, 144)
 
 [node name="Camera2D" type="Camera2D" parent="Player" unique_id=225932662]
 
+[node name="WorldAtmosphere" parent="." instance=ExtResource("14_atmosphere")]
+
 [node name="HUD" type="CanvasLayer" parent="." unique_id=262844847]
+layer = 2
 
 [node name="Hint" type="Label" parent="HUD" unique_id=1968370792]
 offset_left = 16.0
@@ -35,6 +39,7 @@ text = "WASD: MOVE    E: INTERACT    F: ATTACK"
 [node name="OverworldPartner" parent="." unique_id=345820674 instance=ExtResource("13_partner")]
 
 [node name="DialoguePanel" parent="." unique_id=1840755847 instance=ExtResource("5_dialogue")]
+layer = 2
 
 [node name="SettingsMenu" parent="." unique_id=275442455 instance=ExtResource("6_settings")]
 

@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bq5p2dxnovb0r" path="res://scripts/creatures/move_data.gd" id="1_move"]
 [ext_resource type="Script" uid="uid://c8yppijv6s6vv" path="res://scripts/creatures/stat_modifier.gd" id="2_cm0pd"]
+[ext_resource type="Resource" path="res://content/vfx/vfx_ring_earth.tres" id="2_vfx"]
 
 [resource]
 script = ExtResource("1_move")
@@ -15,3 +16,4 @@ cooldown_turns = 2
 status = 3
 status_chance = 20
 status_duration_turns = 1
+vfx = ExtResource("2_vfx")

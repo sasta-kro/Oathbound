@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="VfxPreset" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/visual/vfx_preset.gd" id="1_vfx"]
+
+[resource]
+script = ExtResource("1_vfx")
+id = &"vfx_ring_earth"
+pattern = 1
+delivery = 0
+core_color = Color(0.941176, 0.85098, 0.658824, 1)
+edge_color = Color(0.541176, 0.352941, 0.168627, 1)
+opacity = 1.0
+size = Vector2(280, 160)
+offset = Vector2(0, 44)
+thickness = 0.3
+softness = 0.08
+ragged = 0.6
+duration = 0.5
+speed = 1.0
+smooth = true

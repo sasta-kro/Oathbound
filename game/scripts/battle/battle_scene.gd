@@ -55,6 +55,12 @@ const HP_CRITICAL_COLOR := Color("d1453b")
 const HP_WARY_FRACTION := 0.5
 const HP_CRITICAL_FRACTION := 0.2
 
+## Effects shared with the rest of the game: see [VfxPreset].
+const HIT_VFX: VfxPreset = preload("res://content/vfx/vfx_hit_impact.tres")
+const DEFEAT_VFX: VfxPreset = preload("res://content/vfx/vfx_defeat_sparks.tres")
+const BIND_VFX: VfxPreset = preload("res://content/vfx/vfx_bind_seal.tres")
+const DISSOLVE_SECONDS := 0.8
+
 const HIT_FLASH_COLOR := Color(1.0, 0.45, 0.45)
 const BIND_FLASH_COLOR := Color(1.0, 0.85, 0.35)
 const DISABLED_TEXT_COLOR := Color(0.55, 0.55, 0.55)
@@ -552,12 +558,14 @@ func _present(event: BattleEvent) -> void:
 		BattleEvent.Kind.MOVE_USED:
 			_visual_for(event.side).play_attack()
 			_lunge(event.side)
+			_play_move_vfx(event.side, event.data.get("move") as MoveData)
 			await _wait(ATTACK_SECONDS)
 		BattleEvent.Kind.HIT, BattleEvent.Kind.STATUS_DAMAGE:
 			var target: CreatureVisual = _visual_for(event.side)
 			var multiplier: float = float(event.data.get("multiplier", 1.0))
 			target.play(CreatureVisual.STATE_HURT)
 			_flash(target, HIT_FLASH_COLOR)
+			_play_vfx(HIT_VFX, target)
 			_show_damage(event.side, int(event.data.get("damage", 0)), multiplier)
 			if event.kind == BattleEvent.Kind.HIT:
 				_shake_stage(multiplier)
@@ -570,13 +578,14 @@ func _present(event: BattleEvent) -> void:
 			var fainted: CreatureVisual = _visual_for(event.side)
 			fainted.play(CreatureVisual.STATE_DEATH)
 			await _wait(FAINT_SECONDS)
-			_fade_out(event.side)
+			_take_off_stage(event.side)
 			_refresh_panels()
 		BattleEvent.Kind.BIND_ATTEMPT:
 			_flash(enemy_visual, BIND_FLASH_COLOR)
+			_play_vfx(BIND_VFX, enemy_visual)
 			await _wait(BIND_SECONDS)
 		BattleEvent.Kind.BIND_SUCCESS:
-			_fade_out(BattleTeam.Side.ENEMY)
+			_take_off_stage(BattleTeam.Side.ENEMY)
 		_:
 			_refresh_panels()
 
@@ -587,6 +596,7 @@ func _show_creature(side: int) -> void:
 	visual.set_creature(battler.creature)
 	visual.position = _homes[side]
 	visual.modulate = Color.WHITE
+	visual.clear_dissolve()
 	visual.show()
 	(_shadows[side] as Node2D).show()
 	visual.play(CreatureVisual.STATE_IDLE)
@@ -691,13 +701,42 @@ func _flash(visual: CreatureVisual, color: Color) -> void:
 	tween.tween_property(visual, "modulate", Color.WHITE, 0.2)
 
 
-func _fade_out(side: int) -> void:
+## Plays a move's spell effect between the two creatures. The effect itself is
+## content: see [VfxPreset]. A move with no preset still shows its element's
+## stock effect, so this never has to check for one.
+func _play_move_vfx(side: int, move: MoveData) -> void:
+	if skip_presentation:
+		return
+	var target_side: int = _opposing(side)
+	VfxPlayer.play_move(
+		stage, move, _homes[side], _homes[target_side], side == BattleTeam.Side.ENEMY
+	)
+
+
+func _opposing(side: int) -> int:
+	return BattleTeam.Side.ENEMY if side == BattleTeam.Side.PLAYER else BattleTeam.Side.PLAYER
+
+
+## Takes a creature off the stage. Real art breaks apart into flecks of light;
+## a placeholder has no canvas item of its own to dissolve, so it fades.
+func _take_off_stage(side: int) -> void:
 	var visual: CreatureVisual = _visual_for(side)
 	(_shadows[side] as Node2D).hide()
 	if skip_presentation:
 		visual.hide()
 		return
-	create_tween().tween_property(visual, "modulate:a", 0.0, 0.3)
+	_play_vfx(DEFEAT_VFX, visual)
+	if visual.prepare_dissolve():
+		create_tween().tween_property(visual, "dissolve", 1.0, DISSOLVE_SECONDS)
+	else:
+		create_tween().tween_property(visual, "modulate:a", 0.0, 0.3)
+
+
+## Plays a one-off effect on top of a creature.
+func _play_vfx(preset: VfxPreset, on: CreatureVisual) -> void:
+	if skip_presentation:
+		return
+	VfxPlayer.play_global(stage, preset, on.global_position)
 
 
 func _tween_hp(side: int) -> void:
