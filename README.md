@@ -68,9 +68,16 @@ New gameplay should remain playable with labeled placeholder visuals when final 
 
 ### Interface and navigation
 
+The field HUD uses compact glass icons in the top-right corner. Hover an icon
+for its name and shortcut. The area title fades after arrival, and the slim
+companion health card opens its details when clicked.
+
 The game launches into a title screen. In the field, use **Tab / P** for the
 party, **J** for the creature journal, and **Esc** for the main menu. Menus
-support mouse input and standard keyboard focus navigation. The party screen
+support mouse input and standard keyboard focus navigation: Tab opens the party
+from the field, then cycles focus inside menus. Esc returns from a creature record
+to its parent screen; P closes the party. Journal search and element filters are
+retained when returning from a record. The party screen
 opens creature details, lets a healthy companion become the lead, and offers
 evolution when eligible. The journal searches names and elements and records
 seen/bound species during the session.

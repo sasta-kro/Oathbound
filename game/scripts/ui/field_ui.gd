@@ -25,6 +25,8 @@ var _active_rewards := 0
 var _lead: CreatureInstance
 var _last_hp := -1
 var _health_tween: Tween
+var _location_shown := false
+var _location_tween: Tween
 
 func _ready() -> void:
 	layer = 6
@@ -74,58 +76,76 @@ func _ready() -> void:
 func _build_hud() -> void:
 	hud = HBoxContainer.new()
 	hud.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	hud.offset_left = 20
-	hud.offset_right = -20
-	hud.offset_top = 18
+	hud.offset_left = 14
+	hud.offset_right = -14
+	hud.offset_top = 14
 	root.add_child(hud)
 	status_panel = PanelContainer.new()
 	status_panel.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
-	status_panel.offset_left = 20
-	status_panel.offset_top = -94
-	status_panel.offset_right = 298
-	status_panel.offset_bottom = -18
+	status_panel.offset_left = 14
+	status_panel.offset_top = -66
+	status_panel.offset_right = 222
+	status_panel.offset_bottom = -14
+	status_panel.add_theme_stylebox_override("panel", _glass_frame(7))
 	status_panel.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	status_panel.tooltip_text = "Inspect your lead companion"
+	status_panel.tooltip_text = "Inspect your lead companion · Party: Tab / P"
 	status_panel.gui_input.connect(func(event: InputEvent):
 		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT and _lead != null:
 			_details(_lead))
 	root.add_child(status_panel)
 
 func refresh_hud() -> void:
+	if _location_tween != null: _location_tween.kill()
 	_clear(hud)
-	var location := PanelContainer.new()
-	var compact := OathTheme.box(Color(OathTheme.INK, 0.94), OathTheme.LINE, 6, 10)
-	location.add_theme_stylebox_override("panel", compact)
-	hud.add_child(location)
-	var info := VBoxContainer.new()
-	info.add_theme_constant_override("separation", 2)
-	location.add_child(info)
-	info.add_child(OathTheme.label("◇  THE VERDANT REACH", 11, OathTheme.PAPER))
-	info.add_child(OathTheme.label("WASD  Move   ·   E  Interact   ·   F  Strike", 9, OathTheme.MUTED))
+	hud.add_theme_constant_override("separation", 6)
+	# The area title is an arrival cue, not a permanent opaque HUD block.
+	if not _location_shown:
+		_location_shown = true
+		var location := OathTheme.label("THE VERDANT REACH", 10, OathTheme.PAPER)
+		location.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.9))
+		location.add_theme_constant_override("shadow_offset_y", 1)
+		hud.add_child(location)
+		_location_tween = create_tween()
+		_location_tween.tween_interval(5.0)
+		_location_tween.tween_property(location, "modulate:a", 0.0, 0.8)
+		_location_tween.tween_callback(location.queue_free)
 	hud.add_child(OathTheme.spacer(false))
-	for item in [["party", "Party   ⇥"], ["journal", "Journal   J"], ["menu", "Menu   Esc"]]:
-		var b := OathTheme.button(item[1], open_page.bind(item[0]))
+	for item in [["party", "Party · Tab / P", "party"], ["journal", "Journal · J", "journal"], ["menu", "Menu · Esc", "menu"]]:
+		var b := Button.new()
+		b.name = String(item[0]).capitalize() + "Button"
+		b.icon = load("res://assets/ui/icons/%s.svg" % item[2])
+		b.tooltip_text = item[1]
+		b.custom_minimum_size = Vector2(32, 32)
+		b.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		b.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+		b.add_theme_stylebox_override("normal", _glass_frame(5))
+		b.add_theme_stylebox_override("hover", _glass_frame(5, true))
+		b.add_theme_stylebox_override("pressed", _glass_frame(5, true))
+		b.add_theme_stylebox_override("focus", OathTheme.box(Color.TRANSPARENT, OathTheme.GOLD, 8, 5))
+		b.pressed.connect(open_page.bind(item[0]))
 		hud.add_child(b)
+		b.add_child(preload("res://scripts/ui/hud_glass.gd").new())
 	_rebuild_status(GameState.lead_creature())
 
 func _rebuild_status(creature: CreatureInstance) -> void:
+	if _health_tween != null: _health_tween.kill()
 	_clear(status_panel)
+	status_panel.add_child(preload("res://scripts/ui/hud_glass.gd").new())
 	_lead = creature
 	_last_hp = -1
 	var row := HBoxContainer.new()
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	status_panel.add_child(row)
 	if creature != null:
-		status_portrait = OathTheme.portrait(creature.species, 40)
+		status_portrait = OathTheme.portrait(creature.species, 26)
 		row.add_child(status_portrait)
 	var info := VBoxContainer.new()
 	info.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	info.add_theme_constant_override("separation", 4)
+	info.add_theme_constant_override("separation", 3)
 	row.add_child(info)
-	status_text = OathTheme.label("", 12)
-	status_hp = OathTheme.label("", 10, OathTheme.MUTED)
+	status_text = OathTheme.label("", 11)
+	status_hp = OathTheme.label("", 9, OathTheme.PAPER)
 	health_bar = OathTheme.bar(1)
 	info.add_child(status_text)
 	info.add_child(health_bar)
@@ -142,7 +162,7 @@ func _process(_delta: float) -> void:
 		health_bar.value = 0
 		return
 	status_text.text = "%s  ·  Lv. %d" % [lead.display_name(), lead.level]
-	status_hp.text = "%d / %d HP   ·   LEAD COMPANION" % [lead.current_hp, lead.max_hp()]
+	status_hp.text = "%d / %d HP" % [lead.current_hp, lead.max_hp()]
 	if _last_hp != lead.current_hp:
 		if _health_tween != null: _health_tween.kill()
 		if _last_hp < 0: health_bar.value = lead.hp_fraction() * 100
@@ -192,7 +212,8 @@ func _build_sidebar(layout: HBoxContainer) -> void:
 	sidebar.add_child(OathTheme.button("Return to field   Esc", close))
 
 func _restore_menu_focus() -> void:
-	if is_open(): nav_buttons.get(page, nav_buttons["party"]).grab_focus()
+	if is_open():
+		nav_buttons.get(_return_page if page == "details" else page, nav_buttons["party"]).grab_focus()
 
 func is_open() -> bool:
 	return overlay.visible
@@ -355,7 +376,9 @@ func _details(creature: CreatureInstance, specimen: bool = false) -> void:
 	open_page("details")
 	var top := HBoxContainer.new()
 	body.add_child(top)
-	top.add_child(OathTheme.button("←  " + ("Field journal" if specimen else "Companions"), _go_back))
+	var return_button := OathTheme.button("←  " + ("Field journal" if specimen else "Companions"), _go_back)
+	top.add_child(return_button)
+	return_button.grab_focus()
 	top.add_child(OathTheme.spacer(false))
 	top.add_child(OathTheme.label("SPECIES RECORD" if specimen else "COMPANION RECORD", 9, OathTheme.GOLD))
 	var columns := HBoxContainer.new()
@@ -501,7 +524,7 @@ func _journal() -> void:
 		var count := 0
 		for entry in entries:
 			var species: CreatureSpecies = entry.species
-			var matches_text := journal_filter.to_lower() in (species.display_name + " " + species.type_display_name()).to_lower()
+			var matches_text := journal_filter.is_empty() or journal_filter.to_lower() in (species.display_name + " " + species.type_display_name()).to_lower()
 			entry.card.visible = matches_text and (journal_element == -1 or species.types().has(journal_element))
 			if entry.card.visible: count += 1
 		empty.visible = count == 0
@@ -571,3 +594,10 @@ func _present_reward(data: Dictionary) -> void:
 		panel.queue_free()
 		_active_rewards -= 1
 		_drain_rewards())
+
+
+func _glass_frame(padding: int, highlighted: bool = false) -> StyleBoxFlat:
+	var frame := OathTheme.box(Color(1, 1, 1, 0.1 if highlighted else 0.015), Color(0.9, 1, 0.96, 0.44 if highlighted else 0.2), 8, padding)
+	frame.shadow_color = Color(0, 0, 0, 0.12)
+	frame.shadow_size = 3
+	return frame
