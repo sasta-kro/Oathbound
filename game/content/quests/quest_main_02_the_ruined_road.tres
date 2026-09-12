@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_clear_emberlings"]
+script = ExtResource("2_objective")
+kind = 0
+target = &"creature_fire_01"
+count = 3
+description = "Drive three Emberlings off the ruined road"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_main_02_the_ruined_road"
+title = "The Ruined Road"
+kind = 0
+summary = "Emberlings have taken to the road by the ruins and burn anything that walks it. The Scout cannot reach the altar until they are driven off."
+giver = &"scout"
+requires = &"quest_main_01_beyond_the_walls"
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_clear_emberlings")])
+reward_currency = 60
+reward_binding_scrolls = 2
+reward_xp = 30
+offer_line = "Scout: Emberlings have taken to the road by the ruins, and they burn anything that walks it. I cannot get past them alone. Drive three of them off and I can reach the altar."
+accept_option = "Consider it done."
+refuse_option = "Not right now."
+accepted_line = "Scout: They gather up the road toward the ruins. Strike first if you can; they do not wait for you to be ready."
+refused_line = "Scout: Then I will sit by my fire a little longer."
+reoffer_line = "Scout: The Emberlings are still on the road. Ready to try?"
+progress_line = "Scout: How goes the road?"
+continue_option = "Still at it."
+abandon_option = "I can't manage it."
+abandoned_line = "Scout: No shame in it. They are fierce little things."
+complete_line = "Scout: The road is quiet. I owe you more than these, but take them. Whatever waits at the altar, we face it next."
+done_line = "Scout: The altar is at the end of the road. I will go up when you do."

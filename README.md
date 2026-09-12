@@ -14,9 +14,15 @@ tools/     External development tools, including the Godot MCP server.
 
 `docs/` is the source of truth for gameplay behavior, scope, deferred features, placeholder policy, and design constraints.
 
-`AGENTS.md` defines repository workflow and codebase conventions for human and agent contributors.
-
-`docs/map_authoring.md` explains how to paint areas and place creature spawn zones in the Godot editor.
+| Document | Read it for |
+|---|---|
+| `docs/handoff.md` | Current state, what was built last and how, known gaps, roadmap. Start here. |
+| `docs/Oathbound_Specification_v0.5.md` | The gameplay rules, with an implementation status tag per section. |
+| `docs/architecture.md` | How the Godot project is organised: autoloads, layers, content, saving, tests, conventions for contributors and agents. |
+| `docs/map_authoring.md` | Painting areas, spawn zones, exits, NPCs and quests in the editor. |
+| `docs/Oathbound Dev Env Setup (Required).md` | Engine version, terminal `godot`, MCP server, formatters. |
+| `docs/spec_audit_2026-09-12.md` | The v0.4-to-v0.5 audit: every divergence between spec and code. |
+| `docs/archive/` | Superseded specification versions. |
 
 Implementation files must not silently change the specification. Conflicts, missing decisions, and non-trivial assumptions should be reported for review.
 
@@ -27,13 +33,15 @@ The project root is `game/`.
 Important locations:
 
 ```text
-game/main.tscn          Launch scene.
-game/areas/             Hand-painted overworld areas (one scene per area).
-game/scenes/            Reusable Godot scenes.
-game/scripts/            Typed GDScript gameplay code.
-game/tests/              GUT tests.
-game/addons/gut/         Pinned GUT installation.
-game/addons/godot_mcp/   Godot-side MCP integration.
+game/scenes/title_screen.tscn   Main scene (project setting). Leads into main.tscn.
+game/main.tscn                  The field: area, player, partner, HUD, battle, transition.
+game/areas/                     Hand-painted overworld areas (one scene per area).
+game/scenes/                    Reusable Godot scenes.
+game/scripts/                   Typed GDScript gameplay code.
+game/content/                   Game data as .tres resources (creatures, moves, abilities, quests, VFX).
+game/tests/                     GUT tests.
+game/addons/gut/                Pinned GUT installation.
+game/addons/godot_mcp/          Godot-side MCP integration.
 ```
 
 The project targets Godot 4.7.2 Stable with the Compatibility renderer. The project-specific MCP addon is development tooling only and is not a runtime dependency.
@@ -72,8 +80,10 @@ The field HUD uses compact glass icons in the top-right corner. Hover an icon
 for its name and shortcut. The area title fades after arrival, and the slim
 companion health card opens its details when clicked.
 
-The game launches into a title screen. In the field, use **Tab / P** for the
-party, **J** for the creature journal, and **Esc** for the main menu. Menus
+The game launches into a title screen. In the field, use **F** to strike a
+creature with your lead companion, **E** to talk, **Tab / P** for the
+party, **J** for the creature journal, **L** for the quest log, and **Esc**
+for the main menu. Menus
 support mouse input and standard keyboard focus navigation: Tab opens the party
 from the field, then cycles focus inside menus. Esc returns from a creature record
 to its parent screen; P closes the party. Journal search and element filters are
@@ -103,6 +113,6 @@ party, coins, scrolls, the journal, play time, and the player's position and
 facing in the area it was saved in. Roaming creatures are respawned by the
 area on load.
 
-This goes past Specification 21.1, which asks for a single autosave slot and
-no manual save command; manual slots were added on request.
+Specification v0.5 section 21.1 describes this model; v0.4 asked for a single
+autosave slot, and manual slots were added on request.
 

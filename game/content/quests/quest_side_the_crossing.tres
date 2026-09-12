@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_chase_rillfins"]
+script = ExtResource("2_objective")
+kind = 0
+target = &"creature_water_01"
+count = 2
+description = "Chase two Rillfins away from the pond crossing"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_side_the_crossing"
+title = "The Crossing"
+kind = 1
+summary = "Rillfins at the pond crossing have soaked the Merchant's last two deliveries. He wants the crossing quiet before the next caravan."
+giver = &"merchant"
+requires = &""
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_chase_rillfins")])
+reward_currency = 35
+reward_binding_scrolls = 1
+reward_xp = 0
+offer_line = "Merchant: Two deliveries soaked through, and both times it was Rillfins at the pond crossing. Chase a couple off before the next caravan and there is coin in it for you."
+accept_option = "I'll clear the crossing."
+refuse_option = "Not right now."
+accepted_line = "Merchant: The pond is east of the road, past the gate. Mind your footing; the shore is slick."
+refused_line = "Merchant: Suit yourself. The bread will be damp again, then."
+reoffer_line = "Merchant: Still Rillfins at the crossing. Reconsidered?"
+progress_line = "Merchant: Any luck at the crossing?"
+continue_option = "Working on it."
+abandon_option = "I'll leave the crossing be."
+abandoned_line = "Merchant: Hm. Well, damp bread is still bread."
+complete_line = "Merchant: Dry as a bone, the last crate. You have earned this, and a scroll from the one I never opened."
+done_line = "Merchant: The caravan came through dry. First time in a season."

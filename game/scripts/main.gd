@@ -35,6 +35,8 @@ const SAVED_TEXT := "Saved to %s"
 var field_ui: FieldUI
 
 var _battling_creature: WildCreature
+## Species of the creature the open battle is against, for the quest log.
+var _battling_species: StringName = &""
 ## Set while one area is being swapped for another, so a second exit trigger
 ## during the wipe cannot start a second swap.
 var _travelling: bool = false
@@ -60,6 +62,7 @@ func _ready() -> void:
 	# of the transition itself and hides underneath it.
 	battle_scene.transition = transition
 	_wire_area()
+	_report_area_reached()
 	# Entering the field is entering an area (Specification 21.2), so a fresh
 	# journey can be continued from the title screen straight away.
 	_autosave(false)
@@ -179,6 +182,7 @@ func travel_to(area_path: String, entrance: StringName) -> void:
 	_fit_camera_to_area()
 	camera.reset_smoothing()
 	_wire_area()
+	_report_area_reached()
 	# Entering an area is a save boundary (Specification 21.2), and the
 	# entrance marker is a safe spot to come back to.
 	_autosave()
@@ -234,8 +238,11 @@ func _toggle_settings() -> void:
 
 
 ## The interact key in the overworld: it closes an open line of dialogue, or
-## else acts on the nearest actor within reach.
+## else acts on the nearest actor within reach. A line waiting on a reply
+## takes the key itself, so it never arrives here.
 func _interact() -> void:
+	if dialogue_panel.is_asking():
+		return
 	if dialogue_panel.is_open():
 		_close_dialogue()
 		return
@@ -246,10 +253,68 @@ func _interact() -> void:
 	if actor is WildCreature:
 		_start_wild_battle(actor as WildCreature)
 		return
+	_talk_to(actor)
+
+
+## Talking to an NPC: healing and small talk, or quest business when the
+## actor has any (Specification 17, 18.4). Talking is itself something a
+## quest can ask for, so it is reported before the actor's own quests are
+## looked at and a "find the scout" errand completes on arrival.
+func _talk_to(actor: WorldActor) -> void:
 	if actor.heals_party:
 		GameState.heal_party()
 		_autosave()
-	_open_dialogue(actor.dialogue_line)
+	GameState.report_quest_event(QuestObjective.Kind.TALK, actor.actor_id())
+	var quest: QuestData = actor.current_quest(GameState.quests, Content)
+	if quest == null:
+		_open_dialogue(actor.dialogue_line)
+		return
+	if GameState.quests.is_ready(quest):
+		_open_dialogue(quest.complete_text())
+		_show_reward_lines(GameState.complete_quest(quest))
+		_autosave()
+		return
+	if GameState.quests.is_active(quest.id):
+		var reply: int = await _ask(quest.progress_text(), [quest.continue_option, quest.abandon_option])
+		if reply == 1:
+			GameState.abandon_quest(quest)
+			_open_dialogue(quest.abandoned_text())
+			_autosave()
+		elif reply == 0:
+			_close_dialogue()
+		return
+	var line: String = quest.reoffer_text() if GameState.quests.was_declined(quest.id) else quest.offer_line
+	var choice: int = await _ask(line, [quest.accept_option, quest.refuse_option])
+	if choice == 0:
+		GameState.accept_quest(quest)
+		_open_dialogue(quest.accepted_text())
+		_autosave()
+	elif choice == 1:
+		GameState.refuse_quest(quest)
+		_open_dialogue(quest.refused_text())
+		_autosave()
+
+
+## Puts a line with replies to the player and waits for the answer. The
+## world pauses with the dialogue open, as it does for any line.
+func _ask(line: String, options: PackedStringArray) -> int:
+	_set_world_active(false)
+	var reply: int = await dialogue_panel.ask(line, options)
+	_refresh_world_activity()
+	return reply
+
+
+## Reward lines the field shows as notices. XP is left out because the
+## experience panel already animates it from [signal GameState.experience_awarded].
+func _show_reward_lines(lines: PackedStringArray) -> void:
+	for line: String in lines:
+		if not "XP" in line and not "level" in line:
+			field_ui.show_notice(line)
+
+
+## Tells the quest log the player has arrived in the current area.
+func _report_area_reached() -> void:
+	GameState.report_quest_event(QuestObjective.Kind.REACH, StringName(area.scene_file_path))
 
 
 ## The overworld strike (Specification 7.3, extended).
@@ -261,6 +326,8 @@ func _interact() -> void:
 ## creature that survives becomes a battle the player opens ahead on, and one
 ## that does not never sees a battle screen.
 func _strike() -> void:
+	if dialogue_panel.is_asking():
+		return
 	if dialogue_panel.is_open():
 		_close_dialogue()
 	if not player.strike():
@@ -333,9 +400,8 @@ func _rout(creature: WildCreature, defeated: CreatureInstance) -> void:
 	GameState.seen_species[defeated.species_id()] = true
 	var reward_lines := GameState.award_defeat_rewards(defeated)
 	field_ui.show_notice("+%d coins" % BattleRules.currency_for_defeating(defeated))
-	for line in reward_lines:
-		if not "XP" in line and not "level" in line:
-			field_ui.show_notice(line)
+	_show_reward_lines(reward_lines)
+	GameState.report_quest_event(QuestObjective.Kind.DEFEAT, defeated.species_id())
 	_autosave()
 	_refresh_world_activity()
 
@@ -402,6 +468,7 @@ func _start_wild_battle(
 
 	var enemy: CreatureInstance = creature.encounter_instance()
 	GameState.seen_species[enemy.species_id()] = true
+	_battling_species = enemy.species_id()
 	if opening == BattleConfig.Opening.DISADVANTAGE:
 		_apply_ambush(enemy)
 
@@ -440,6 +507,8 @@ func _on_battle_finished(engine: BattleEngine) -> void:
 		field_ui.show_notice("+%d coins" % engine.currency_earned)
 	var creature: WildCreature = _battling_creature
 	_battling_creature = null
+	var species: StringName = _battling_species
+	_battling_species = &""
 	# A creature the battle took leaves the map as light rather than simply
 	# blinking out, but not yet: the wipe is still over the screen, and an
 	# effect played under it would come and go unseen.
@@ -448,6 +517,7 @@ func _on_battle_finished(engine: BattleEngine) -> void:
 	match engine.outcome:
 		BattleEngine.Outcome.VICTORY:
 			taken = creature
+			GameState.report_quest_event(QuestObjective.Kind.DEFEAT, species)
 		BattleEngine.Outcome.ESCAPED:
 			# The creature keeps whatever damage the battle did to it, and is
 			# held off for a moment so fleeing is not instantly undone
@@ -459,6 +529,7 @@ func _on_battle_finished(engine: BattleEngine) -> void:
 			GameState.add_to_party(engine.bound_creature)
 			taken = creature
 			was_bound = true
+			GameState.report_quest_event(QuestObjective.Kind.BIND, species)
 		BattleEngine.Outcome.DEFEAT:
 			# No revival location exists yet, so recovery happens in place
 			# (Specification 20.1 steps 2, 4 and 5).

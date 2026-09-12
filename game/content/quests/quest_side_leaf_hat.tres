@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_bind_loambuck"]
+script = ExtResource("2_objective")
+kind = 1
+target = &"creature_earth_01"
+count = 1
+description = "Bind a Loambuck and bring it home"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_side_leaf_hat"
+title = "The Leaf Hat"
+kind = 1
+summary = "The child on the wall saw a Loambuck with leaves on its back and wants to see one up close."
+giver = &"child"
+requires = &""
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_bind_loambuck")])
+reward_currency = 25
+reward_binding_scrolls = 0
+reward_xp = 15
+offer_line = "Child: The Loambuck I saw had leaves on its back like a little hat. If you bound one, I could see it up close! Please?"
+accept_option = "I'll bring one home."
+refuse_option = "Maybe another day."
+accepted_line = "Child: Really? They live in the meadow past the gate. Weaken it first, my mother says, and then the scroll."
+refused_line = "Child: Fine. I'll just watch from the wall then."
+reoffer_line = "Child: Did you change your mind about the Loambuck?"
+progress_line = "Child: Did you find one? With the leaves?"
+continue_option = "Still looking."
+abandon_option = "I can't catch one."
+abandoned_line = "Child: Oh. Okay. Maybe I'll see one from the wall again."
+complete_line = "Child: It has the hat! It has the leaf hat! Here, I saved these coins for bread, but this is better."
+done_line = "Child: Tell the Loambuck I said hello."

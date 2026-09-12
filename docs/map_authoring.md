@@ -33,7 +33,7 @@ Town (WorldArea)           The root. Ground + PlayerStart are wired in the Inspe
 ├── Exits
 │   └── ToAreaOne (AreaExit)    Walking in here loads Area One.
 ├── Actors
-│   └── Knight   (WorldActor)   An NPC with a dialogue line.
+│   └── Knight   (WorldActor)   An NPC with a dialogue line, and quests if it gives any.
 ├── SpawnZones
 │   └── ...      (SpawnZone)
 └── Bounds   (StaticBody2D)   Invisible wall around the painted ground.
@@ -189,3 +189,21 @@ godot --headless --path game --script res://scripts/dev/bake_area.gd -- town are
 Running a bake again overwrites hand edits, so treat the layouts as a
 record of how the first version was built (and a quick way to start a new
 map), not a build step.
+
+## Quests
+
+Quests are content, not map work: one `.tres` per quest under
+`content/quests/`, with a `QuestData` script (`scripts/quests/quest_data.gd`).
+Each has a stable `id` (`quest_main_01_...`, `quest_side_...`), a `kind`
+(main or side), the `giver` actor id, an optional `requires` quest that must
+be finished first, a list of `QuestObjective`s and the giver's lines for
+every step (offer, accepted, refused, asked again, in progress, abandoned,
+complete, done). Objectives are defeat/bind a species, talk to an actor, or
+reach an area; `target` is the species id, the actor id, or the area's scene
+path. `count` is how many times.
+
+To hand a quest to an NPC, add its id to the actor's `quest_ids` in the
+Inspector (and in the layout script if the area is still baked from one).
+Actor ids are the node name in lower case, so `Actors/Scout` is `scout`.
+The main scene reports defeats, bindings, talks and arrivals to
+`GameState.quests`; nothing in the area needs wiring.

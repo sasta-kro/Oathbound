@@ -174,6 +174,7 @@ func _people(p: AreaPainter) -> void:
 			"body_color": Color(0.75, 0.62, 0.86, 1),
 			"facing": &"left",
 			"dialogue_line": "Elder: The board has work for anyone willing to leave the walls. Wild Oathbound roam the meadow, and worse things by the ruins.",
+			"quest_ids": Array[StringName]([&"quest_main_01_beyond_the_walls"]),
 		}
 	)
 	p.add_actor(
@@ -183,6 +184,7 @@ func _people(p: AreaPainter) -> void:
 			"display_name": "MERCHANT",
 			"body_color": Color(0.9, 0.6, 0.3, 1),
 			"dialogue_line": "Merchant: Fresh bread, dried fish, and a crate I have not opened since the caravan came. Take a look.",
+			"quest_ids": Array[StringName]([&"quest_side_the_crossing"]),
 		}
 	)
 	p.add_actor(
@@ -193,6 +195,7 @@ func _people(p: AreaPainter) -> void:
 			"body_color": Color(0.95, 0.85, 0.4, 1),
 			"facing": &"up",
 			"dialogue_line": "Child: I saw a Loambuck from the wall! It had leaves on its back. Can I come with you? No? Fine.",
+			"quest_ids": Array[StringName]([&"quest_side_leaf_hat"]),
 		}
 	)
 

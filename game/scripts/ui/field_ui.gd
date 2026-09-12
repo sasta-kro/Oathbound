@@ -70,6 +70,8 @@ func _ready() -> void:
 	overlay.hide()
 	GameState.party_changed.connect(refresh_hud)
 	GameState.experience_awarded.connect(show_xp)
+	GameState.quest_changed.connect(_on_quest_changed)
+	GameState.quest_objective_advanced.connect(_on_quest_objective_advanced)
 	world.settings_menu.closed.connect(_restore_menu_focus)
 	refresh_hud()
 
@@ -110,7 +112,7 @@ func refresh_hud() -> void:
 		_location_tween.tween_property(location, "modulate:a", 0.0, 0.8)
 		_location_tween.tween_callback(location.queue_free)
 	hud.add_child(OathTheme.spacer(false))
-	for item in [["party", "Party · Tab / P", "party"], ["journal", "Journal · J", "journal"], ["menu", "Menu · Esc", "menu"]]:
+	for item in [["party", "Party · Tab / P", "party"], ["journal", "Journal · J", "journal"], ["quests", "Quest log · L", "quests"], ["menu", "Menu · Esc", "menu"]]:
 		var b := Button.new()
 		b.name = String(item[0]).capitalize() + "Button"
 		b.icon = load("res://assets/ui/icons/%s.svg" % item[2])
@@ -190,6 +192,10 @@ func _input(event: InputEvent) -> void:
 			if is_open() and page == "journal": close()
 			else: open_page("journal")
 			get_viewport().set_input_as_handled()
+		elif event.keycode == KEY_L:
+			if is_open() and page == "quests": close()
+			else: open_page("quests")
+			get_viewport().set_input_as_handled()
 
 func _build_sidebar(layout: HBoxContainer) -> void:
 	var sidebar := VBoxContainer.new()
@@ -199,7 +205,7 @@ func _build_sidebar(layout: HBoxContainer) -> void:
 	sidebar.add_child(OathTheme.label("◇   O A T H B O U N D", 10, OathTheme.GOLD))
 	sidebar.add_child(OathTheme.heading("Field companion", 22))
 	sidebar.add_child(OathTheme.rule())
-	for item in [["menu", "01    Journey"], ["party", "02    Companions"], ["journal", "03    Field journal"], ["saves", "04    Save journey"]]:
+	for item in [["menu", "01    Journey"], ["party", "02    Companions"], ["journal", "03    Field journal"], ["quests", "04    Quest log"], ["saves", "05    Save journey"]]:
 		var b := OathTheme.button(item[1], open_page.bind(item[0]))
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.custom_minimum_size.y = 43
@@ -248,6 +254,7 @@ func open_page(next: String) -> void:
 	match page:
 		"party": _party()
 		"journal": _journal()
+		"quests": _quests()
 		"saves": _saves()
 		"details": pass
 		_: _menu()
@@ -307,7 +314,7 @@ func _menu() -> void:
 	body.add_child(OathTheme.label("LAST SAVED %s  ·  Played %s  ·  The field autosaves as you travel" % [saved.to_upper(), SaveService.describe_duration(int(GameState.play_seconds))], 9, OathTheme.MUTED))
 
 func _saves() -> void:
-	_header("04  /  SAVE JOURNEY", "Keep this moment.", "Save to a slot, return to an earlier one, or clear one out. Loading leaves anything unsaved behind.")
+	_header("05  /  SAVE JOURNEY", "Keep this moment.", "Save to a slot, return to an earlier one, or clear one out. Loading leaves anything unsaved behind.")
 	var list := SaveSlotList.new()
 	list.can_save = true
 	list.can_load = true
@@ -557,6 +564,96 @@ func _journal() -> void:
 	for i in filter_buttons.size():
 		filter_buttons[i].pressed.connect(func(): journal_element = i - 1; apply_filter.call())
 	apply_filter.call()
+
+## The quest log (Specification 17.6): what is in progress, how far along
+## each ask is, and what has been fulfilled. Objectives read as the quest
+## words them, with a tally only where more than one is asked for.
+func _quests() -> void:
+	var active := GameState.quests.active_quests()
+	var done := GameState.quests.completed_quests()
+	_header("04  /  QUEST LOG", "Oaths to the living.", "%02d in progress  /  %02d fulfilled" % [active.size(), done.size()])
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	body.add_child(scroll)
+	var stack := VBoxContainer.new()
+	stack.name = "QuestStack"
+	stack.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	stack.add_theme_constant_override("separation", 10)
+	scroll.add_child(stack)
+	if active.is_empty() and done.is_empty():
+		var empty := OathTheme.paragraph("No one has asked anything of you yet. The folk of the town have work for anyone willing to leave the walls.", 13)
+		empty.custom_minimum_size.y = 80
+		stack.add_child(empty)
+		return
+	if active.is_empty():
+		stack.add_child(OathTheme.paragraph("Nothing in progress. Ask around; someone always needs a hand.", 12))
+	for quest: QuestData in active:
+		_quest_card(stack, quest, false)
+	if not done.is_empty():
+		stack.add_child(OathTheme.rule())
+		stack.add_child(OathTheme.label("FULFILLED", 9, OathTheme.MUTED))
+		for quest: QuestData in done:
+			_quest_card(stack, quest, true)
+
+func _quest_card(stack: VBoxContainer, quest: QuestData, fulfilled: bool) -> void:
+	var tint := OathTheme.GOLD if quest.is_main() else OathTheme.JADE
+	var ready := GameState.quests.is_ready(quest)
+	var panel := PanelContainer.new()
+	panel.name = String(quest.id)
+	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	panel.add_theme_stylebox_override("panel", OathTheme.box(Color("122124") if fulfilled else OathTheme.SURFACE, OathTheme.LINE if fulfilled else tint.darkened(0.55), 6, 12))
+	panel.modulate.a = 0.6 if fulfilled else 1.0
+	stack.add_child(panel)
+	var card := VBoxContainer.new()
+	card.add_theme_constant_override("separation", 5)
+	panel.add_child(card)
+	var top := HBoxContainer.new()
+	top.add_theme_constant_override("separation", 8)
+	card.add_child(top)
+	top.add_child(OathTheme.chip(quest.kind_display_name().to_upper(), tint))
+	top.add_child(OathTheme.heading(quest.title, 22))
+	top.add_child(OathTheme.spacer(false))
+	if fulfilled: top.add_child(OathTheme.label("FULFILLED", 9, OathTheme.MUTED))
+	elif ready: top.add_child(OathTheme.label("RETURN TO %s" % String(quest.giver).to_upper(), 9, tint))
+	if not quest.summary.is_empty(): card.add_child(OathTheme.paragraph(quest.summary, 11))
+	for index: int in quest.objectives.size():
+		var objective: QuestObjective = quest.objectives[index]
+		if objective == null: continue
+		var met := fulfilled or GameState.quests.is_objective_done(quest, index)
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 8)
+		card.add_child(row)
+		row.add_child(OathTheme.label("◆" if met else "◇", 11, tint if met else OathTheme.MUTED))
+		var text := OathTheme.label(objective.description, 11, OathTheme.MUTED if met else OathTheme.PAPER)
+		text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_child(text)
+		if objective.required() > 1:
+			var tally := objective.required() if fulfilled else mini(GameState.quests.progress(quest, index), objective.required())
+			row.add_child(OathTheme.label("%d / %d" % [tally, objective.required()], 10, tint if met else OathTheme.MUTED))
+	if quest.has_reward() and not fulfilled:
+		var parts: PackedStringArray = []
+		if quest.reward_currency > 0: parts.append("%d coins" % quest.reward_currency)
+		if quest.reward_binding_scrolls > 0: parts.append("%d Binding Scroll%s" % [quest.reward_binding_scrolls, "" if quest.reward_binding_scrolls == 1 else "s"])
+		if quest.reward_xp > 0: parts.append("%d EXP each" % quest.reward_xp)
+		card.add_child(OathTheme.label("REWARD  ·  " + "  ·  ".join(parts), 9, OathTheme.MUTED))
+
+func _on_quest_changed(quest: QuestData, status: QuestLog.Status) -> void:
+	match status:
+		QuestLog.Status.ACTIVE: show_notice("Quest accepted  ·  %s" % quest.title)
+		QuestLog.Status.COMPLETED: show_notice("Quest complete  ·  %s" % quest.title)
+		QuestLog.Status.ABANDONED: show_notice("Quest set aside  ·  %s" % quest.title)
+	if is_open() and page == "quests": open_page("quests")
+
+func _on_quest_objective_advanced(quest: QuestData, index: int, done: bool) -> void:
+	var objective: QuestObjective = quest.objectives[index]
+	if done:
+		show_notice("◆  %s" % objective.description)
+		if GameState.quests.is_ready(quest):
+			show_notice("Return to the %s  ·  %s" % [String(quest.giver), quest.title])
+	else:
+		show_notice("◇  %s  ·  %d / %d" % [objective.description, GameState.quests.progress(quest, index), objective.required()])
+	if is_open() and page == "quests": open_page("quests")
 
 func _species_details(species: CreatureSpecies) -> void:
 	_details(CreatureInstance.create(species, 1), true)

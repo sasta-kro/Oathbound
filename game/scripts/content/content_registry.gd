@@ -9,6 +9,7 @@ extends Node
 const SPECIES_DIR := "res://content/creatures"
 const MOVES_DIR := "res://content/moves"
 const ABILITIES_DIR := "res://content/abilities"
+const QUESTS_DIR := "res://content/quests"
 const TYPE_CHART_PATH := "res://content/types/type_chart_mvp.tres"
 
 var type_chart: TypeChart
@@ -16,6 +17,7 @@ var type_chart: TypeChart
 var _species: Dictionary = {}
 var _moves: Dictionary = {}
 var _abilities: Dictionary = {}
+var _quests: Dictionary = {}
 
 
 func _ready() -> void:
@@ -27,14 +29,19 @@ func reload() -> void:
 	_species.clear()
 	_moves.clear()
 	_abilities.clear()
+	_quests.clear()
 	_load_directory(SPECIES_DIR, _species, "species")
 	_load_directory(MOVES_DIR, _moves, "move")
 	_load_directory(ABILITIES_DIR, _abilities, "ability")
+	# Quests are optional content (Specification 25.3): an empty or missing
+	# directory only means nobody in the world has work to offer.
+	if DirAccess.dir_exists_absolute(QUESTS_DIR):
+		_load_directory(QUESTS_DIR, _quests, "quest")
 	_load_type_chart()
 	DevLog.info(
 		(
-			"ContentRegistry loaded %d species, %d moves and %d abilities."
-			% [_species.size(), _moves.size(), _abilities.size()]
+			"ContentRegistry loaded %d species, %d moves, %d abilities and %d quests."
+			% [_species.size(), _moves.size(), _abilities.size(), _quests.size()]
 		)
 	)
 
@@ -51,8 +58,16 @@ func get_ability(id: StringName) -> AbilityData:
 	return _abilities.get(id) as AbilityData
 
 
+func get_quest(id: StringName) -> QuestData:
+	return _quests.get(id) as QuestData
+
+
 func has_species(id: StringName) -> bool:
 	return _species.has(id)
+
+
+func has_quest(id: StringName) -> bool:
+	return _quests.has(id)
 
 
 func has_move(id: StringName) -> bool:
@@ -85,6 +100,15 @@ func all_abilities() -> Array[AbilityData]:
 	ids.sort()
 	for id: StringName in ids:
 		out.append(_abilities[id])
+	return out
+
+
+func all_quests() -> Array[QuestData]:
+	var out: Array[QuestData] = []
+	var ids := _quests.keys()
+	ids.sort()
+	for id: StringName in ids:
+		out.append(_quests[id])
 	return out
 
 
@@ -132,6 +156,8 @@ func validate() -> Array[String]:
 		problems.append_array(move.validate())
 	for ability: AbilityData in all_abilities():
 		problems.append_array(ability.validate())
+	for quest: QuestData in all_quests():
+		problems.append_array(quest.validate(self))
 	if type_chart == null:
 		problems.append("No type chart loaded from '%s'." % TYPE_CHART_PATH)
 	return problems

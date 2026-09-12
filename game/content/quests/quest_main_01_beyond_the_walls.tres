@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_reach_meadow"]
+script = ExtResource("2_objective")
+kind = 3
+target = &"res://areas/area_one.tscn"
+count = 1
+description = "Pass through the north gate into the meadow"
+
+[sub_resource type="Resource" id="Objective_find_scout"]
+script = ExtResource("2_objective")
+kind = 2
+target = &"scout"
+count = 1
+description = "Find the Scout at the camp by the road"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_main_01_beyond_the_walls"
+title = "Beyond the Walls"
+kind = 0
+summary = "A scout of the town is camped past the north gate and has sent no word in days. The Elder wants to know what he has seen."
+giver = &"elder"
+requires = &""
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_reach_meadow"), SubResource("Objective_find_scout")])
+reward_currency = 40
+reward_binding_scrolls = 1
+reward_xp = 0
+offer_line = "Elder: You have the look of someone who means to leave the walls. Good. A scout of ours is camped past the north gate and has sent no word in days. Find him and hear what he has seen. Will you?"
+accept_option = "I'll find him."
+refuse_option = "Not today."
+accepted_line = "Elder: Follow the road north and keep to it. Come back and tell me what he says."
+refused_line = "Elder: Then rest. The road will still be there tomorrow, and so will I."
+reoffer_line = "Elder: The scout is still out there past the gate. Have you changed your mind?"
+progress_line = "Elder: Have you found the scout yet?"
+continue_option = "Still looking."
+abandon_option = "I can't go out there."
+abandoned_line = "Elder: I understand. It is no small thing to ask. Come back if your heart changes."
+complete_line = "Elder: The altar, he says? Then the old stories were not only stories. Take this for the road, and keep your Oathbound close."
+done_line = "Elder: Whatever stirs by the ruins will not wait long. Ready yourself."

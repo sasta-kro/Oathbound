@@ -15,6 +15,10 @@ signal experience_awarded(creature: CreatureInstance, before_xp: int, before_lev
 signal party_changed
 ## Emitted after a save reached disk, manual or automatic.
 signal game_saved(slot: int)
+## A quest was accepted, refused, abandoned or completed.
+signal quest_changed(quest: QuestData, status: QuestLog.Status)
+## An objective of an active quest moved; [param done] once it is met.
+signal quest_objective_advanced(quest: QuestData, index: int, done: bool)
 
 const STARTER_SPECIES_ID := &"creature_fire_01"
 ## Provisional starter level: with the additive damage formula a level-7
@@ -34,6 +38,9 @@ var party: Array[CreatureInstance] = []
 var binding_scrolls: int = STARTING_BINDING_SCROLLS
 var currency: int = 0
 var level_cap: int = INITIAL_LEVEL_CAP
+## Standing with every quest (Specification 17). Built in [method _ready]
+## because it reads content from the registry.
+var quests: QuestLog
 
 ## Scene path of the area the player was last recorded in, or empty when the
 ## journey has not left the shipped starting area yet.
@@ -58,6 +65,7 @@ var _resume_pending: bool = false
 
 
 func _ready() -> void:
+	quests = QuestLog.new(Content)
 	ensure_starter()
 
 
@@ -74,6 +82,7 @@ func new_game() -> void:
 	binding_scrolls = STARTING_BINDING_SCROLLS
 	currency = 0
 	level_cap = INITIAL_LEVEL_CAP
+	quests.clear()
 	clear_location()
 	_resume_pending = false
 	play_seconds = 0.0
@@ -158,6 +167,7 @@ func to_dict() -> Dictionary:
 		"binding_scrolls": binding_scrolls,
 		"currency": currency,
 		"level_cap": level_cap,
+		"quests": quests.to_dict(),
 		"location":
 		{
 			"area": area_path,
@@ -188,6 +198,7 @@ func from_dict(data: Dictionary) -> void:
 	binding_scrolls = maxi(0, int(data.get("binding_scrolls", STARTING_BINDING_SCROLLS)))
 	currency = maxi(0, int(data.get("currency", 0)))
 	level_cap = clampi(int(data.get("level_cap", INITIAL_LEVEL_CAP)), 1, CreatureRules.GLOBAL_MAX_LEVEL)
+	quests.from_dict(data.get("quests", {}) if data.get("quests") is Dictionary else {})
 	play_seconds = float(data.get("play_seconds", 0))
 	last_saved_at = int(data.get("saved_at", 0))
 	var location: Dictionary = data.get("location", {}) if data.get("location") is Dictionary else {}
@@ -302,3 +313,59 @@ func _award_xp(creature: CreatureInstance, xp: int) -> PackedStringArray:
 
 func apply_defeat_penalty() -> void:
 	currency = maxi(0, currency - DEFEAT_CURRENCY_PENALTY)
+
+
+# --- Quests ------------------------------------------------------------------
+
+
+func accept_quest(quest: QuestData) -> bool:
+	if not quests.accept(quest):
+		return false
+	quest_changed.emit(quest, QuestLog.Status.ACTIVE)
+	return true
+
+
+func refuse_quest(quest: QuestData) -> bool:
+	if not quests.refuse(quest):
+		return false
+	quest_changed.emit(quest, QuestLog.Status.REFUSED)
+	return true
+
+
+func abandon_quest(quest: QuestData) -> bool:
+	if not quests.abandon(quest):
+		return false
+	quest_changed.emit(quest, QuestLog.Status.ABANDONED)
+	return true
+
+
+## Turns in a quest whose objectives are all met and pays its rewards
+## (Specification 17.3). Returns the player-facing reward lines, empty when
+## the quest was not ready.
+func complete_quest(quest: QuestData) -> PackedStringArray:
+	var lines: PackedStringArray = []
+	if not quests.complete(quest):
+		return lines
+	if quest.reward_currency > 0:
+		currency += quest.reward_currency
+		lines.append("+%d coins" % quest.reward_currency)
+	if quest.reward_binding_scrolls > 0:
+		binding_scrolls += quest.reward_binding_scrolls
+		lines.append(
+			"+%d Binding Scroll%s" % [quest.reward_binding_scrolls, "" if quest.reward_binding_scrolls == 1 else "s"]
+		)
+	if quest.reward_xp > 0:
+		for creature: CreatureInstance in party:
+			if not creature.is_fainted():
+				lines.append_array(_award_xp(creature, quest.reward_xp))
+		party_changed.emit()
+	quest_changed.emit(quest, QuestLog.Status.COMPLETED)
+	return lines
+
+
+## The overworld telling the log that [param kind] happened to
+## [param target]: a species defeated or bound, an actor spoken to, an area
+## entered. Every active quest that cares moves along.
+func report_quest_event(kind: QuestObjective.Kind, target: StringName) -> void:
+	for step: Dictionary in quests.report(kind, target):
+		quest_objective_advanced.emit(step.quest, step.index, step.done)

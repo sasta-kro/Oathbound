@@ -148,6 +148,7 @@ func _camp(p: AreaPainter) -> void:
 			"body_color": Color(0.35, 0.6, 0.85, 1),
 			"facing": &"left",
 			"dialogue_line": "Scout: Follow the road and you will not get lost. It bends past the pond and climbs to the ruins. The altar is at the very end. Nobody goes further.",
+			"quest_ids": Array[StringName]([&"quest_main_02_the_ruined_road"]),
 		}
 	)
 

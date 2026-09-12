@@ -19,6 +19,9 @@ const GROUP := &"world_actors"
 ## Talking to this actor restores the party, standing in for the Hub healing
 ## service until one exists.
 @export var heals_party: bool = false
+## Quests this actor gives and takes back in, by id, in the order they are
+## offered. Talk-to objectives name actors by [method actor_id].
+@export var quest_ids: Array[StringName] = []
 
 
 func _ready() -> void:
@@ -43,3 +46,28 @@ func _ready() -> void:
 ## Whether the player can still interact with this actor.
 func is_interactable() -> bool:
 	return true
+
+
+## Stable id quests refer to this actor by: the node name, lower-cased, so
+## the "Elder" in the town is [code]&"elder"[/code].
+func actor_id() -> StringName:
+	return StringName(name.to_lower())
+
+
+## The quest this actor wants to talk about right now: one that is ready to
+## turn in first, then one in progress, then the first that can be offered.
+## Null when there is nothing but small talk.
+func current_quest(log: QuestLog, registry: Node) -> QuestData:
+	var offerable: QuestData = null
+	var in_progress: QuestData = null
+	for id: StringName in quest_ids:
+		var quest: QuestData = registry.get_quest(id)
+		if quest == null:
+			continue
+		if log.is_ready(quest):
+			return quest
+		if in_progress == null and log.is_active(quest.id):
+			in_progress = quest
+		elif offerable == null and log.can_offer(quest):
+			offerable = quest
+	return in_progress if in_progress != null else offerable
