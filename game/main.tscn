@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cfnw2slgjv2iw"]
 
 [ext_resource type="Script" uid="uid://cylbrubh17ryi" path="res://scripts/main.gd" id="1_main"]
-[ext_resource type="PackedScene" uid="uid://cg1nnqja3n7l" path="res://areas/area_one.tscn" id="2_area_one"]
+[ext_resource type="PackedScene" path="res://areas/town.tscn" id="2_town"]
 [ext_resource type="PackedScene" path="res://scenes/world_atmosphere.tscn" id="14_atmosphere"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
 [ext_resource type="PackedScene" path="res://scenes/dialogue_panel.tscn" id="5_dialogue"]
@@ -13,7 +13,7 @@
 [node name="Main" type="Node2D" unique_id=19684313]
 script = ExtResource("1_main")
 
-[node name="Area" parent="." unique_id=1551001340 instance=ExtResource("2_area_one")]
+[node name="Area" parent="." unique_id=1551001340 instance=ExtResource("2_town")]
 
 [node name="Player" parent="." unique_id=637359007 instance=ExtResource("3_player")]
 position = Vector2(-288, 144)

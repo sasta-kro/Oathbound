@@ -12,8 +12,9 @@ extends Node2D
 ## own blow first turns the same rules around on the player.
 ##
 ## The scene knows nothing about a specific map. Areas are `WorldArea` scenes
-## under `res://areas/`; actors and spawn zones announce themselves through
-## groups and signals.
+## under `res://areas/`; actors, spawn zones and exits announce themselves
+## through groups and signals. Walking into an [AreaExit] swaps the area for
+## the one it names and puts the player on the matching entrance marker.
 
 const INTERACTION_REACH_IN_CELLS: float = 1.5
 ## Shown after an overworld rout, ahead of the reward lines.
@@ -31,6 +32,9 @@ const ROUT_TEXT := "You cut down the wild %s before it could fight back."
 var field_ui: FieldUI
 
 var _battling_creature: WildCreature
+## Set while one area is being swapped for another, so a second exit trigger
+## during the wipe cannot start a second swap.
+var _travelling: bool = false
 
 
 func _ready() -> void:
@@ -47,12 +51,62 @@ func _ready() -> void:
 	# The battle screen owns the moment it closes, so it plays the cover half
 	# of the transition itself and hides underneath it.
 	battle_scene.transition = transition
+	_wire_area()
+
+
+## Listens to whatever the current area contains. Spawn zones relay their
+## creatures, hand-placed creatures speak for themselves, and exits ask for
+## the next area.
+func _wire_area() -> void:
 	for zone: SpawnZone in get_tree().get_nodes_in_group(SpawnZone.GROUP):
-		zone.creature_reached_player.connect(_on_creature_reached_player)
+		if not zone.creature_reached_player.is_connected(_on_creature_reached_player):
+			zone.creature_reached_player.connect(_on_creature_reached_player)
 	# Creatures placed by hand in the area rather than by a zone.
 	for creature: WildCreature in get_tree().get_nodes_in_group(WildCreature.CREATURE_GROUP):
 		if not creature.reached_player.is_connected(_on_creature_reached_player):
 			creature.reached_player.connect(_on_creature_reached_player)
+	for exit: AreaExit in get_tree().get_nodes_in_group(AreaExit.GROUP):
+		if not exit.player_entered.is_connected(_on_area_exit_entered):
+			exit.player_entered.connect(_on_area_exit_entered)
+
+
+func _on_area_exit_entered(exit: AreaExit) -> void:
+	if _world_is_paused() or _travelling:
+		return
+	travel_to(exit.target_area_path, exit.target_entrance)
+
+
+## Swaps the current area for the scene at [param area_path] and puts the
+## player on its [param entrance] marker, behind a screen wipe so the old map
+## is never seen being torn down.
+func travel_to(area_path: String, entrance: StringName) -> void:
+	var packed: PackedScene = load(area_path) as PackedScene
+	if packed == null:
+		push_warning("Area exit points at %s, which is not a scene." % area_path)
+		return
+	_travelling = true
+	_set_world_active(false)
+	await transition.cover(ScreenTransition.Style.WORLD)
+
+	var previous: WorldArea = area
+	var index: int = previous.get_index()
+	remove_child(previous)
+	previous.queue_free()
+	var next: WorldArea = packed.instantiate() as WorldArea
+	next.name = "Area"
+	add_child(next)
+	move_child(next, index)
+	area = next
+
+	player.global_position = area.entrance_position(entrance)
+	player.velocity = Vector2.ZERO
+	partner.snap_to_player()
+	_fit_camera_to_area()
+	camera.reset_smoothing()
+	_wire_area()
+	await transition.reveal(ScreenTransition.Style.WORLD)
+	_travelling = false
+	_refresh_world_activity()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -345,7 +399,8 @@ func _close_dialogue() -> void:
 
 func _world_is_paused() -> bool:
 	return (
-		settings_menu.is_open()
+		_travelling
+		or settings_menu.is_open()
 		or (field_ui != null and field_ui.is_open())
 		or battle_scene.is_active()
 		or dialogue_panel.is_open()

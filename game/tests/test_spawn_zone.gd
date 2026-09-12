@@ -2,6 +2,9 @@ extends GutTest
 ## Spawn zones and wild creature behaviour (Specification 7.2 and 7.3).
 
 const MAIN_SCENE: PackedScene = preload("res://main.tscn")
+## The small test room these checks are measured against; the game itself
+## opens in the town, which has no spawn zones.
+const TEST_AREA: PackedScene = preload("res://areas/test_01.tscn")
 const CREATURE_SCENE: PackedScene = preload("res://scenes/wild_creature.tscn")
 const SPAWN_ZONE_SCENE: PackedScene = preload("res://scenes/spawn_zone.tscn")
 const SPECIES: CreatureSpecies = preload("res://content/creatures/creature_fire_01.tres")
@@ -16,6 +19,15 @@ func after_each() -> void:
 
 func _load_main() -> Node2D:
 	var main_scene: Node2D = autofree(MAIN_SCENE.instantiate())
+	# Swap the town for the test room before the main scene wires itself up.
+	var shipped_area: Node = main_scene.get_node("Area")
+	var index: int = shipped_area.get_index()
+	main_scene.remove_child(shipped_area)
+	shipped_area.free()
+	var test_area: Node = TEST_AREA.instantiate()
+	test_area.name = "Area"
+	main_scene.add_child(test_area)
+	main_scene.move_child(test_area, index)
 	add_child(main_scene)
 	return main_scene
 

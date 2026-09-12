@@ -11,6 +11,9 @@ extends Node2D
 
 ## World-space size of one map cell. The 32 px sheets are drawn at 1.5x.
 const GRID_SIZE: int = 48
+## Node holding one Marker2D per way into the area, named by the exits that
+## lead here.
+const ENTRANCES_PATH := ^"Entrances"
 
 ## Layer whose painted cells define where the area exists. Spawns are only
 ## valid on painted ground.
@@ -28,13 +31,23 @@ func _ready() -> void:
 		push_warning("%s has no Ground TileMapLayer; spawns and camera limits are off." % name)
 
 
-## World-space rectangle covering every painted ground cell.
+## World-space rectangle covering every painted ground cell. The ground
+## layer's own cell size is used, since a meadow ground is painted on
+## half-size cells.
 func bounds() -> Rect2:
 	if ground == null:
 		return Rect2()
 	var used: Rect2i = ground.get_used_rect()
-	var top_left: Vector2 = ground.to_global(ground.map_to_local(used.position)) - Vector2.ONE * GRID_SIZE / 2.0
-	return Rect2(top_left, Vector2(used.size) * GRID_SIZE)
+	var cell: Vector2 = ground_cell_size()
+	var top_left: Vector2 = ground.to_global(ground.map_to_local(used.position)) - cell / 2.0
+	return Rect2(top_left, Vector2(used.size) * cell)
+
+
+## World-space size of one cell of the ground layer.
+func ground_cell_size() -> Vector2:
+	if ground == null or ground.tile_set == null:
+		return Vector2.ONE * GRID_SIZE
+	return Vector2(ground.tile_set.tile_size) * ground.global_scale
 
 
 func is_on_ground(world_position: Vector2) -> bool:
@@ -60,3 +73,21 @@ func player_start_position() -> Vector2:
 	if player_start == null:
 		return global_position
 	return player_start.global_position
+
+
+## Where the player appears when arriving through an [AreaExit] that names
+## [param entrance]: a Marker2D of that name under `Entrances`. An unknown
+## name falls back to the player start, so a mistyped exit still lands
+## somewhere sensible.
+func entrance_position(entrance: StringName) -> Vector2:
+	var entrances: Node = get_node_or_null(ENTRANCES_PATH)
+	if entrances != null and entrance != &"":
+		var marker: Node2D = entrances.get_node_or_null(NodePath(entrance)) as Node2D
+		if marker != null:
+			return marker.global_position
+	return player_start_position()
+
+
+func has_entrance(entrance: StringName) -> bool:
+	var entrances: Node = get_node_or_null(ENTRANCES_PATH)
+	return entrances != null and entrances.get_node_or_null(NodePath(entrance)) is Node2D

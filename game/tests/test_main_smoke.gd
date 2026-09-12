@@ -1,6 +1,9 @@
 extends GutTest
 
 const MAIN_SCENE: PackedScene = preload("res://main.tscn")
+## The small test room the movement and layout checks below are measured
+## against. The game itself opens in the town.
+const TEST_AREA: PackedScene = preload("res://areas/test_01.tscn")
 
 const PLAYER_START_CELL := Vector2i(5, 9)
 const KNIGHT_CELL := Vector2i(5, 5)
@@ -15,6 +18,15 @@ func after_each() -> void:
 
 func _load_main() -> Node2D:
 	var main_scene: Node2D = autofree(MAIN_SCENE.instantiate())
+	# Swap the town for the test room before the main scene wires itself up.
+	var shipped_area: Node = main_scene.get_node("Area")
+	var index: int = shipped_area.get_index()
+	main_scene.remove_child(shipped_area)
+	shipped_area.free()
+	var test_area: Node = TEST_AREA.instantiate()
+	test_area.name = "Area"
+	main_scene.add_child(test_area)
+	main_scene.move_child(test_area, index)
 	add_child(main_scene)
 	return main_scene
 
@@ -112,7 +124,7 @@ func test_camera_limits_follow_the_painted_ground() -> void:
 	var camera: Camera2D = main_scene.get_node("Player/Camera2D")
 
 	var limits: Rect2 = area.bounds()
-	assert_eq(limits, Rect2(-552, -312, 1056, 624), "Area 1 is a 22x13 room of 48 px cells.")
+	assert_eq(limits, Rect2(-552, -312, 1056, 624), "The test room is 22x13 cells of 48 px.")
 	assert_eq(camera.limit_left, -552)
 	assert_eq(camera.limit_top, -312)
 	assert_eq(camera.limit_right, 504)

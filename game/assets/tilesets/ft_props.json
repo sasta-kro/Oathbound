@@ -1,0 +1,314 @@
+[
+ {
+  "name": "banner",
+  "cell": [
+   6,
+   0
+  ],
+  "size": [
+   1,
+   2
+  ],
+  "pixels": [
+   24,
+   59
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "barrel",
+  "cell": [
+   15,
+   0
+  ],
+  "size": [
+   1,
+   1
+  ],
+  "pixels": [
+   16,
+   20
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "basket",
+  "cell": [
+   0,
+   2
+  ],
+  "size": [
+   1,
+   1
+  ],
+  "pixels": [
+   22,
+   17
+  ],
+  "kind": "walkable"
+ },
+ {
+  "name": "bench_long",
+  "cell": [
+   1,
+   2
+  ],
+  "size": [
+   1,
+   1
+  ],
+  "pixels": [
+   14,
+   30
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "bench_short",
+  "cell": [
+   2,
+   2
+  ],
+  "size": [
+   1,
+   1
+  ],
+  "pixels": [
+   14,
+   14
+  ],
+  "kind": "walkable"
+ },
+ {
+  "name": "bulletin_board",
+  "cell": [
+   0,
+   0
+  ],
+  "size": [
+   2,
+   2
+  ],
+  "pixels": [
+   44,
+   42
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "campfire",
+  "cell": [
+   7,
+   0
+  ],
+  "size": [
+   1,
+   1
+  ],
+  "pixels": [
+   32,
+   32
+  ],
+  "kind": "prop",
+  "animation": {
+   "frames": 8,
+   "seconds": 0.12,
+   "frame_pixels": [
+    32,
+    32
+   ]
+  }
+ },
+ {
+  "name": "crate_large",
+  "cell": [
+   4,
+   2
+  ],
+  "size": [
+   1,
+   1
+  ],
+  "pixels": [
+   24,
+   29
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "crate_medium",
+  "cell": [
+   5,
+   2
+  ],
+  "size": [
+   1,
+   1
+  ],
+  "pixels": [
+   16,
+   21
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "fireplace",
+  "cell": [
+   7,
+   2
+  ],
+  "size": [
+   1,
+   1
+  ],
+  "pixels": [
+   30,
+   26
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "haystack",
+  "cell": [
+   8,
+   2
+  ],
+  "size": [
+   1,
+   1
+  ],
+  "pixels": [
+   29,
+   32
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "lamp_post",
+  "cell": [
+   2,
+   0
+  ],
+  "size": [
+   2,
+   2
+  ],
+  "pixels": [
+   46,
+   62
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "potted_plant",
+  "cell": [
+   9,
+   2
+  ],
+  "size": [
+   1,
+   1
+  ],
+  "pixels": [
+   15,
+   11
+  ],
+  "kind": "walkable"
+ },
+ {
+  "name": "sack",
+  "cell": [
+   10,
+   2
+  ],
+  "size": [
+   1,
+   1
+  ],
+  "pixels": [
+   16,
+   14
+  ],
+  "kind": "walkable"
+ },
+ {
+  "name": "sign_1",
+  "cell": [
+   11,
+   2
+  ],
+  "size": [
+   1,
+   1
+  ],
+  "pixels": [
+   24,
+   22
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "sign_2",
+  "cell": [
+   12,
+   2
+  ],
+  "size": [
+   1,
+   1
+  ],
+  "pixels": [
+   24,
+   22
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "stump",
+  "cell": [
+   3,
+   2
+  ],
+  "size": [
+   1,
+   1
+  ],
+  "pixels": [
+   32,
+   31
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "table",
+  "cell": [
+   4,
+   0
+  ],
+  "size": [
+   2,
+   2
+  ],
+  "pixels": [
+   42,
+   39
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "water_trough",
+  "cell": [
+   6,
+   2
+  ],
+  "size": [
+   1,
+   1
+  ],
+  "pixels": [
+   30,
+   22
+  ],
+  "kind": "prop"
+ }
+]

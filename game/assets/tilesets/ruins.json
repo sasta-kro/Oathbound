@@ -1,0 +1,402 @@
+[
+ {
+  "name": "bone_long",
+  "cell": [
+   3,
+   5
+  ],
+  "size": [
+   1,
+   2
+  ],
+  "pixels": [
+   32,
+   34
+  ],
+  "kind": "walkable"
+ },
+ {
+  "name": "boulder_pale",
+  "cell": [
+   4,
+   3
+  ],
+  "size": [
+   2,
+   2
+  ],
+  "pixels": [
+   57,
+   56
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "crystal_shard",
+  "cell": [
+   0,
+   5
+  ],
+  "size": [
+   2,
+   2
+  ],
+  "pixels": [
+   39,
+   36
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "dark_rubble",
+  "cell": [
+   14,
+   3
+  ],
+  "size": [
+   2,
+   2
+  ],
+  "pixels": [
+   47,
+   46
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "dead_shrub",
+  "cell": [
+   7,
+   0
+  ],
+  "size": [
+   2,
+   3
+  ],
+  "pixels": [
+   59,
+   69
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "dead_stump",
+  "cell": [
+   7,
+   5
+  ],
+  "size": [
+   2,
+   1
+  ],
+  "pixels": [
+   41,
+   31
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "dead_tree",
+  "cell": [
+   3,
+   0
+  ],
+  "size": [
+   2,
+   3
+  ],
+  "pixels": [
+   63,
+   89
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "dead_tree_thin",
+  "cell": [
+   2,
+   3
+  ],
+  "size": [
+   2,
+   2
+  ],
+  "pixels": [
+   49,
+   63
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "dry_bramble",
+  "cell": [
+   6,
+   3
+  ],
+  "size": [
+   2,
+   2
+  ],
+  "pixels": [
+   64,
+   58
+  ],
+  "kind": "walkable"
+ },
+ {
+  "name": "ghost_grass",
+  "cell": [
+   8,
+   3
+  ],
+  "size": [
+   2,
+   2
+  ],
+  "pixels": [
+   46,
+   50
+  ],
+  "kind": "walkable"
+ },
+ {
+  "name": "gnarled_tree",
+  "cell": [
+   5,
+   0
+  ],
+  "size": [
+   2,
+   3
+  ],
+  "pixels": [
+   59,
+   74
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "grave_pair",
+  "cell": [
+   9,
+   5
+  ],
+  "size": [
+   2,
+   1
+  ],
+  "pixels": [
+   45,
+   19
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "graves_cluster",
+  "cell": [
+   11,
+   5
+  ],
+  "size": [
+   2,
+   1
+  ],
+  "pixels": [
+   48,
+   21
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "graves_row",
+  "cell": [
+   4,
+   5
+  ],
+  "size": [
+   3,
+   1
+  ],
+  "pixels": [
+   96,
+   19
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "rock_pale",
+  "cell": [
+   12,
+   3
+  ],
+  "size": [
+   2,
+   2
+  ],
+  "pixels": [
+   34,
+   33
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "rocks_pale",
+  "cell": [
+   10,
+   3
+  ],
+  "size": [
+   2,
+   2
+  ],
+  "pixels": [
+   45,
+   44
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "ruin_arch",
+  "cell": [
+   9,
+   0
+  ],
+  "size": [
+   3,
+   2
+  ],
+  "pixels": [
+   80,
+   62
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "ruin_pillars",
+  "cell": [
+   0,
+   0
+  ],
+  "size": [
+   3,
+   3
+  ],
+  "pixels": [
+   80,
+   95
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "ruin_rubble",
+  "cell": [
+   0,
+   3
+  ],
+  "size": [
+   2,
+   2
+  ],
+  "pixels": [
+   55,
+   54
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "skull_maw",
+  "cell": [
+   2,
+   5
+  ],
+  "size": [
+   1,
+   2
+  ],
+  "pixels": [
+   31,
+   47
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "skull_pile",
+  "cell": [
+   12,
+   0
+  ],
+  "size": [
+   3,
+   2
+  ],
+  "pixels": [
+   71,
+   51
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "skull_small",
+  "cell": [
+   13,
+   5
+  ],
+  "size": [
+   1,
+   1
+  ],
+  "pixels": [
+   26,
+   22
+  ],
+  "kind": "walkable"
+ },
+ {
+  "name": "tombstone_1",
+  "cell": [
+   14,
+   5
+  ],
+  "size": [
+   1,
+   1
+  ],
+  "pixels": [
+   21,
+   23
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "tombstone_2",
+  "cell": [
+   15,
+   5
+  ],
+  "size": [
+   1,
+   1
+  ],
+  "pixels": [
+   24,
+   23
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "tombstone_3",
+  "cell": [
+   0,
+   7
+  ],
+  "size": [
+   1,
+   1
+  ],
+  "pixels": [
+   17,
+   24
+  ],
+  "kind": "prop"
+ }
+]

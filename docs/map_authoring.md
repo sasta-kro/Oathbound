@@ -7,7 +7,9 @@ Godot editor; there is no external map tool and nothing to import.
 
 1. Install Godot 4.7.2 (the exact version, see `Oathbound Dev Env Setup`).
 2. Clone the repository and open the `game/` folder as the project.
-3. Open `areas/area_one.tscn` from the FileSystem dock. That is the sample map.
+3. Open `areas/town.tscn` from the FileSystem dock. That is where the game
+   starts; `areas/area_one.tscn` is the meadow beyond the gate and
+   `areas/test_01.tscn` the small original test room.
 
 Work in a git branch and commit the `areas/*.tscn` file you changed. Areas are
 separate scenes precisely so map edits do not collide with code changes in
@@ -16,16 +18,25 @@ separate scenes precisely so map edits do not collide with code changes in
 ## Anatomy of an area
 
 ```text
-AreaOne (WorldArea)        The root. Ground + PlayerStart are wired in the Inspector.
+Town (WorldArea)           The root. Ground + PlayerStart are wired in the Inspector.
 ├── Ground   (TileMapLayer)  Grass. Every walkable cell must be painted here.
-├── Path     (TileMapLayer)  Stone paths, painted with the terrain brush.
+├── Water    (TileMapLayer)  Ponds. Blocks movement.
+├── Road     (TileMapLayer)  Fan-tasy dirt roads.
+├── Path     (TileMapLayer)  Cainos stone paving.
 ├── Walls    (TileMapLayer)  Brick walls. Tiles here block movement.
-├── Decor    (TileMapLayer)  Bushes, crates, rocks, flowers. Big props block.
-├── PlayerStart (Marker2D)   Where the player appears.
-├── Knight   (WorldActor)    An NPC with a dialogue line.
-└── SpawnZones
-    ├── LoambuckMeadow (SpawnZone)
-    └── ...
+├── Decor    (TileMapLayer)  Houses, trees, crates, rocks. Most of it blocks.
+├── Foliage  (TileMapLayer)  Bushes, flowers, tufts; sways in the wind shader.
+├── Overhead (TileMapLayer)  Roofs and canopies, drawn over the player.
+├── PlayerStart (Marker2D)   Where the player appears when the game starts here.
+├── Entrances
+│   └── FromAreaOne (Marker2D)  Where the player appears coming from Area One.
+├── Exits
+│   └── ToAreaOne (AreaExit)    Walking in here loads Area One.
+├── Actors
+│   └── Knight   (WorldActor)   An NPC with a dialogue line.
+├── SpawnZones
+│   └── ...      (SpawnZone)
+└── Bounds   (StaticBody2D)   Invisible wall around the painted ground.
 ```
 
 The camera limits and the valid spawn area come from whatever is painted on
@@ -34,30 +45,74 @@ The camera limits and the valid spawn area come from whatever is painted on
 One cell is 48 px in the world (the 32 px art is drawn at 1.5x). Snap
 settings: `Editor > Snap` with a 48 px grid keeps markers and zones on cells.
 
+### Two tilesets
+
+`assets/tilesets/overworld.tres` holds everything drawn on the 48 px cell:
+the Cainos grass, stone and walls, and the Fan-tasy houses, trees and props
+(each sprite is one tile). `assets/tilesets/meadow.tres` holds the Fan-tasy
+16 px terrain: meadow grass with dirt, dirt roads and water. Its layers use
+the same 1.5x scale, so one map cell is a 2x2 block of its tiles and roads
+and shores get finer edges. `Water` and `Road` always use `meadow.tres`;
+`Ground` uses it in the town (meadow grass) and `overworld.tres` in Area One
+(Cainos grass).
+
 ## Painting tiles
 
 Select a layer, open the **TileMap** panel at the bottom, then:
 
-- **Grass**: `Ground` layer, **Terrains** tab, terrain set *Ground*, pick
-  *Grass*, paint or rectangle-fill. The brush chooses random variants and
-  sprinkles flowers on its own.
-- **Stone paths**: `Path` layer, Terrains tab, *Stone Path*. Paint at least
+- **Cainos grass**: `Ground` layer, **Terrains** tab, terrain set *Ground*,
+  pick *Grass*, paint or rectangle-fill. The brush chooses random variants
+  and sprinkles flowers on its own.
+- **Meadow grass and dirt**: `Ground` layer with `meadow.tres`, Terrains
+  tab, terrain set *Meadow*. Paint *Meadow Grass* everywhere first, then
+  *Meadow Dirt* where the ground is trodden.
+- **Stone paving**: `Path` layer, Terrains tab, *Stone Path*. Paint at least
   two cells wide: the edge tiles sit inside the painted cells, so a one-cell
-  stroke has no room for edges.
+  stroke has no room for edges. The edge tiles carry Cainos grass, so on a
+  meadow paint the plain paving tiles from the **Tiles** tab instead.
+- **Roads**: `Road` layer, Terrains tab, *Dirt Road*. Draws over any grass.
+- **Water**: `Water` layer, Terrains tab, *Water*. The shore appears by
+  itself and the water animates. Water blocks movement.
 - **Walls**: `Walls` layer, Terrains tab, terrain set *Walls*, *Brick Wall*.
   The lit capstone row appears on top of every run by itself. Walls block
   movement without any extra collision nodes.
-- **Decor**: `Decor` layer, **Tiles** tab, pick a sprite from the `plant` or
-  `props` atlas and click. Sprites two cells or bigger block movement; tufts,
-  pebbles and small pots are walked over.
+- **Houses, trees, props**: `Decor` layer, **Tiles** tab, pick a sprite from
+  the `ft_buildings`, `ft_nature`, `ft_props`, `ruins`, `plant` or `props`
+  atlas and click. A house or tree comes as two sprites: paint the `_top`
+  half on `Overhead` (it draws over the player) directly above the `_base`
+  half on `Decor` (it blocks). Sprites two cells or bigger block movement
+  over most of their footprint; tufts, pebbles and small pots are walked
+  over.
+- **Bushes and flowers**: `Foliage` layer, so the wind shader moves them.
 
-The tileset is generated by `scripts/dev/build_area_tileset.gd`. To add a
-tile with collision or terrain bits, edit that script and re-run it rather
-than editing `area_one.tres` in the tileset editor:
+The tilesets are generated by `scripts/dev/build_overworld_tileset.gd` from
+the sheets and manifests in `assets/tilesets/`. To add a tile with collision
+or terrain bits, edit that script (or the manifest) and re-run it rather
+than editing the `.tres` in the tileset editor:
 
 ```bash
-godot --headless --path game --script res://scripts/dev/build_area_tileset.gd
+godot --headless --path game --script res://scripts/dev/build_overworld_tileset.gd
 ```
+
+`assets/tilesets/SOURCE.md` says where each sheet comes from and how the
+Fan-tasy and Undead art is packed.
+
+## Exits and entrances
+
+An exit is where the player leaves for another area:
+
+1. Drag `scenes/area_exit.tscn` under `Exits` and place it where the player
+   walks off the map. The yellow rectangle is drawn in the editor.
+2. In the Inspector set `Target Area Path` to the next area's scene and
+   `Target Entrance` to the name of a marker in that area's `Entrances`
+   node. `Size In Cells` is the trigger's size.
+3. In the target area, add a `Marker2D` under `Entrances` with that name,
+   a couple of cells inside from its own exit back, so arriving does not
+   bounce the player straight back.
+
+The main scene swaps areas behind a screen wipe and puts the player on the
+marker. Areas point at each other by path, so two areas can lead into each
+other.
 
 ## Spawn zones
 
@@ -104,8 +159,14 @@ the party.
 ## Testing
 
 Press F5 (or the play button) to run the game from `main.tscn`, which loads
-`areas/area_one.tscn`. To switch the game to a different area, change the
-`Area` node in `main.tscn` to instance your scene.
+`areas/town.tscn`. To start the game in a different area, change the `Area`
+node in `main.tscn` to instance your scene.
+
+To see a whole map at once, add a `Node` with `scripts/dev/snapshot_area.gd`
+to any open scene and call
+`snapshot("res://areas/town.tscn", "/tmp/town.png", 0.5)` on it (from the
+MCP bridge or the script editor); it renders the scene, spawn circles and
+exit rectangles included, to a PNG. Remove the node afterwards.
 
 Automated checks from `game/`:
 
@@ -114,8 +175,17 @@ godot --headless --path . --import
 godot --headless -d --path . -s addons/gut/gut_cmdln.gd
 ```
 
-## Regenerating the sample map
+## Regenerating a map
 
-`scripts/dev/bake_area_one.gd` produced the first version of
-`areas/area_one.tscn`. Running it again overwrites hand edits, so treat it as
-a reference for how the layout was built, not a build step.
+The town and Area One were first written by `scripts/dev/bake_area.gd` from
+the layouts in `scripts/dev/layouts/`, which describe each map in cells:
+terrain regions, named sprites, dressing to scatter, and the actors, zones
+and exits. `scripts/dev/bake_test_01.gd` did the same for the test room.
+
+```bash
+godot --headless --path game --script res://scripts/dev/bake_area.gd -- town area_one
+```
+
+Running a bake again overwrites hand edits, so treat the layouts as a
+record of how the first version was built (and a quick way to start a new
+map), not a build step.

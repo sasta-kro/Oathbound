@@ -23,10 +23,38 @@ python3 tools/pack_sprite_sheet.py prop "assets/tilesets/Extra/TX Props with Sha
 python3 tools/pack_sprite_sheet.py plant "assets/tilesets/Extra/TX Plant with Shadow.png" game/assets/tilesets/plant.png
 ```
 
-`area_one.tres` declares the atlas sources over these sheets. Regenerate it with:
+## Fan-tasy and Undead sheets
+
+Source: `assets/tilesets/The Fan-tasy Tileset (Free)/` and
+`assets/tilesets/Free-Undead-Tileset-Top-Down-Pixel-Art/`, both 16 px art.
+`tools/build_overworld_sheets.py` writes these, keeping the pixels as they are:
+
+| File | Contents |
+|---|---|
+| `ft_ground.png` / `.json` | Meadow grass and dirt terrain; the JSON carries the Tiled wang bits per tile. |
+| `ft_road.png` / `.json` | Dirt road terrain. |
+| `ft_water.png` / `.json` | Water with a sand shore, four animation frames six columns apart. |
+| `ft_buildings.png` / `.json` | Houses, well and gate, packed on the 32 px grid. Each is split into a `_top` (drawn over the player) and a `_base` (blocks). |
+| `ft_nature.png` / `.json` | Trees (split the same way), bushes, rocks, flower patches. |
+| `ft_props.png` / `.json` | Market and street props; the campfire's eight frames side by side. |
+| `ruins.png` / `.json` | Pieces cut from the Undead `Objects.png`: pillars, arch, graves, dead trees, bones. |
+
+The object manifests list `name`, atlas `cell`, `size` in cells and a `kind`
+(`solid`, `prop`, `walkable`, `overhead`) that the tileset builder turns into
+collision. Regenerate from the repository root:
 
 ```
-godot --headless --path game --script res://scripts/dev/build_area_tileset.gd
+python3 tools/build_overworld_sheets.py
 ```
 
-`res://scripts/area_one_room.gd` paints the tiles.
+## Tilesets
+
+`overworld.tres` (32 px tiles) declares the Cainos sources and the packed
+object sheets; `meadow.tres` (16 px tiles) declares the three terrain sheets.
+Regenerate both with:
+
+```
+godot --headless --path game --script res://scripts/dev/build_overworld_tileset.gd
+```
+
+`scripts/dev/overworld_tiles.gd` lists the source and terrain ids.

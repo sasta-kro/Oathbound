@@ -1,0 +1,208 @@
+[
+ {
+  "name": "gate_base",
+  "cell": [
+   11,
+   3
+  ],
+  "size": [
+   3,
+   2
+  ],
+  "pixels": [
+   80,
+   64
+  ],
+  "kind": "solid",
+  "collision": [
+   [
+    0.25,
+    0,
+    0.5,
+    2
+   ],
+   [
+    2.25,
+    0,
+    0.5,
+    2
+   ]
+  ]
+ },
+ {
+  "name": "gate_top",
+  "cell": [
+   10,
+   5
+  ],
+  "size": [
+   3,
+   1
+  ],
+  "pixels": [
+   80,
+   32
+  ],
+  "kind": "overhead"
+ },
+ {
+  "name": "house_hay_1_base",
+  "cell": [
+   8,
+   3
+  ],
+  "size": [
+   3,
+   2
+  ],
+  "pixels": [
+   88,
+   64
+  ],
+  "kind": "solid"
+ },
+ {
+  "name": "house_hay_1_top",
+  "cell": [
+   5,
+   3
+  ],
+  "size": [
+   3,
+   2
+  ],
+  "pixels": [
+   88,
+   39
+  ],
+  "kind": "overhead"
+ },
+ {
+  "name": "house_hay_2_base",
+  "cell": [
+   0,
+   3
+  ],
+  "size": [
+   5,
+   2
+  ],
+  "pixels": [
+   157,
+   64
+  ],
+  "kind": "solid"
+ },
+ {
+  "name": "house_hay_2_top",
+  "cell": [
+   10,
+   0
+  ],
+  "size": [
+   5,
+   2
+  ],
+  "pixels": [
+   157,
+   48
+  ],
+  "kind": "overhead"
+ },
+ {
+  "name": "house_hay_3_base",
+  "cell": [
+   0,
+   0
+  ],
+  "size": [
+   6,
+   3
+  ],
+  "pixels": [
+   180,
+   96
+  ],
+  "kind": "solid"
+ },
+ {
+  "name": "house_hay_3_top",
+  "cell": [
+   0,
+   5
+  ],
+  "size": [
+   6,
+   1
+  ],
+  "pixels": [
+   180,
+   32
+  ],
+  "kind": "overhead"
+ },
+ {
+  "name": "house_hay_4_base",
+  "cell": [
+   6,
+   0
+  ],
+  "size": [
+   4,
+   3
+  ],
+  "pixels": [
+   128,
+   96
+  ],
+  "kind": "solid"
+ },
+ {
+  "name": "house_hay_4_top",
+  "cell": [
+   6,
+   5
+  ],
+  "size": [
+   4,
+   1
+  ],
+  "pixels": [
+   128,
+   32
+  ],
+  "kind": "overhead"
+ },
+ {
+  "name": "well_base",
+  "cell": [
+   14,
+   3
+  ],
+  "size": [
+   2,
+   2
+  ],
+  "pixels": [
+   56,
+   64
+  ],
+  "kind": "solid"
+ },
+ {
+  "name": "well_top",
+  "cell": [
+   13,
+   5
+  ],
+  "size": [
+   2,
+   1
+  ],
+  "pixels": [
+   56,
+   11
+  ],
+  "kind": "overhead"
+ }
+]
