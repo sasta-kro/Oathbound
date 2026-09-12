@@ -199,7 +199,7 @@ func _build_sidebar(layout: HBoxContainer) -> void:
 	sidebar.add_child(OathTheme.label("◇   O A T H B O U N D", 10, OathTheme.GOLD))
 	sidebar.add_child(OathTheme.heading("Field companion", 22))
 	sidebar.add_child(OathTheme.rule())
-	for item in [["menu", "01    Journey"], ["party", "02    Companions"], ["journal", "03    Field journal"]]:
+	for item in [["menu", "01    Journey"], ["party", "02    Companions"], ["journal", "03    Field journal"], ["saves", "04    Save journey"]]:
 		var b := OathTheme.button(item[1], open_page.bind(item[0]))
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.custom_minimum_size.y = 43
@@ -248,6 +248,7 @@ func open_page(next: String) -> void:
 	match page:
 		"party": _party()
 		"journal": _journal()
+		"saves": _saves()
 		"details": pass
 		_: _menu()
 	_restore_menu_focus()
@@ -299,9 +300,31 @@ func _menu() -> void:
 	var resume := OathTheme.button("Resume exploration   →", close, true)
 	resume.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	actions.add_child(resume)
+	actions.add_child(OathTheme.button("Save journey", open_page.bind("saves")))
 	actions.add_child(OathTheme.button("Settings", func(): world.settings_menu.open()))
-	actions.add_child(OathTheme.button("Title screen", func(): get_tree().change_scene_to_file("res://scenes/title_screen.tscn")))
-	body.add_child(OathTheme.label("SESSION PLAY  ·  Closing the game resets this journey.", 9, OathTheme.MUTED))
+	actions.add_child(OathTheme.button("Title screen", world.return_to_title))
+	var saved := "not yet" if GameState.last_saved_at == 0 else SaveService.describe_time(GameState.last_saved_at)
+	body.add_child(OathTheme.label("LAST SAVED %s  ·  Played %s  ·  The field autosaves as you travel" % [saved.to_upper(), SaveService.describe_duration(int(GameState.play_seconds))], 9, OathTheme.MUTED))
+
+func _saves() -> void:
+	_header("04  /  SAVE JOURNEY", "Keep this moment.", "Save to a slot, return to an earlier one, or clear one out. Loading leaves anything unsaved behind.")
+	var list := SaveSlotList.new()
+	list.can_save = true
+	list.can_load = true
+	list.can_erase = true
+	list.confirm_load = true
+	list.highlighted_slot = GameState.active_slot
+	list.save_requested.connect(func(slot: int):
+		if world.save_to_slot(slot):
+			list.highlighted_slot = slot
+		list.refresh()
+		list.focus_first())
+	list.load_requested.connect(func(slot: int): world.load_from_slot(slot))
+	list.erase_requested.connect(func(slot: int):
+		SaveService.erase(slot)
+		list.refresh()
+		list.focus_first())
+	body.add_child(list)
 
 func _party() -> void:
 	_header("02  /  YOUR COMPANIONS", "Bound together.", "A shared path. A stronger bond. Choose a companion to see their story.")

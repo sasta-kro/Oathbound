@@ -19,6 +19,9 @@ extends Node2D
 const INTERACTION_REACH_IN_CELLS: float = 1.5
 ## Shown after an overworld rout, ahead of the reward lines.
 const ROUT_TEXT := "You cut down the wild %s before it could fight back."
+const TITLE_SCENE_PATH := "res://scenes/title_screen.tscn"
+const AUTOSAVED_TEXT := "Autosaved"
+const SAVED_TEXT := "Saved to %s"
 
 @onready var area: WorldArea = $Area
 @onready var player: Player = $Player
@@ -42,8 +45,13 @@ func _ready() -> void:
 	field_ui = FieldUI.new()
 	add_child(field_ui)
 	field_ui.changed.connect(_refresh_world_activity)
-	player.global_position = area.player_start_position()
+	if GameState.take_resume_request() and _restore_saved_area():
+		player.global_position = GameState.player_position
+		player.face(GameState.player_facing)
+	else:
+		player.global_position = area.player_start_position()
 	partner.snap_to_player()
+	GameState.play_time_running = true
 	_fit_camera_to_area()
 	settings_menu.opened.connect(_on_settings_opened)
 	settings_menu.closed.connect(_on_settings_closed)
@@ -52,6 +60,82 @@ func _ready() -> void:
 	# of the transition itself and hides underneath it.
 	battle_scene.transition = transition
 	_wire_area()
+	# Entering the field is entering an area (Specification 21.2), so a fresh
+	# journey can be continued from the title screen straight away.
+	_autosave(false)
+
+
+func _exit_tree() -> void:
+	GameState.play_time_running = false
+
+
+## The window close button. The journey is saved on a normal quit
+## (Specification 21.2) unless a battle or area swap is mid-flight, when the
+## last boundary save is the coherent one to keep.
+func _notification(what: int) -> void:
+	if what != NOTIFICATION_WM_CLOSE_REQUEST:
+		return
+	if battle_scene.is_active() or _travelling:
+		return
+	_record_location()
+	GameState.autosave()
+
+
+## A continued journey opens in the area it was saved in rather than the one
+## the scene ships with. Runs before the area is wired, so nothing has to be
+## unhooked. Returns false when the saved area cannot be loaded, in which
+## case the shipped area and its start marker are used.
+func _restore_saved_area() -> bool:
+	if not GameState.has_location():
+		return false
+	if GameState.area_path == area.scene_file_path:
+		return true
+	var packed: PackedScene = load(GameState.area_path) as PackedScene
+	if packed == null:
+		push_warning("The saved area %s is not a scene; starting in the default one." % GameState.area_path)
+		GameState.clear_location()
+		return false
+	_swap_area(packed)
+	return true
+
+
+## Autosave (Specification 21.2). Called at state boundaries: arriving in an
+## area, after a battle or rout, after a healing service, and on the way out
+## to the title screen. Writes only the autosave slot, never one the player
+## saved by hand. Silent when the disk refuses, since the warning is already
+## logged and the player can do nothing about it mid-game.
+func _autosave(announce: bool = true) -> void:
+	_record_location()
+	if GameState.autosave() and announce:
+		field_ui.show_notice(AUTOSAVED_TEXT)
+
+
+## A save the player asked for from the menu. Returns whether it reached disk.
+func save_to_slot(slot: int) -> bool:
+	_record_location()
+	var ok: bool = GameState.save_game(slot)
+	if ok:
+		field_ui.show_notice(SAVED_TEXT % SaveService.slot_title(slot).capitalize())
+	return ok
+
+
+## Abandons the current session for the journey in [param slot]. The field is
+## rebuilt from scratch, so nothing from the old one can leak into the new.
+func load_from_slot(slot: int) -> bool:
+	if not GameState.load_game(slot):
+		return false
+	get_tree().change_scene_to_file(scene_file_path)
+	return true
+
+
+func _record_location() -> void:
+	GameState.record_location(area.scene_file_path, player.global_position, player.facing_direction)
+
+
+## Leaves for the title screen, saving first so "Continue" picks up here.
+func return_to_title() -> void:
+	_autosave(false)
+	get_tree().change_scene_to_file(TITLE_SCENE_PATH)
 
 
 ## Listens to whatever the current area contains. Spawn zones relay their
@@ -88,6 +172,24 @@ func travel_to(area_path: String, entrance: StringName) -> void:
 	_set_world_active(false)
 	await transition.cover(ScreenTransition.Style.WORLD)
 
+	_swap_area(packed)
+	player.global_position = area.entrance_position(entrance)
+	player.velocity = Vector2.ZERO
+	partner.snap_to_player()
+	_fit_camera_to_area()
+	camera.reset_smoothing()
+	_wire_area()
+	# Entering an area is a save boundary (Specification 21.2), and the
+	# entrance marker is a safe spot to come back to.
+	_autosave()
+	await transition.reveal(ScreenTransition.Style.WORLD)
+	_travelling = false
+	_refresh_world_activity()
+
+
+## Replaces the current area node with a fresh instance of [param packed],
+## keeping it at the same place in the tree so draw order is unchanged.
+func _swap_area(packed: PackedScene) -> void:
 	var previous: WorldArea = area
 	var index: int = previous.get_index()
 	remove_child(previous)
@@ -97,16 +199,6 @@ func travel_to(area_path: String, entrance: StringName) -> void:
 	add_child(next)
 	move_child(next, index)
 	area = next
-
-	player.global_position = area.entrance_position(entrance)
-	player.velocity = Vector2.ZERO
-	partner.snap_to_player()
-	_fit_camera_to_area()
-	camera.reset_smoothing()
-	_wire_area()
-	await transition.reveal(ScreenTransition.Style.WORLD)
-	_travelling = false
-	_refresh_world_activity()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -156,6 +248,7 @@ func _interact() -> void:
 		return
 	if actor.heals_party:
 		GameState.heal_party()
+		_autosave()
 	_open_dialogue(actor.dialogue_line)
 
 
@@ -243,6 +336,7 @@ func _rout(creature: WildCreature, defeated: CreatureInstance) -> void:
 	for line in reward_lines:
 		if not "XP" in line and not "level" in line:
 			field_ui.show_notice(line)
+	_autosave()
 	_refresh_world_activity()
 
 
@@ -378,6 +472,9 @@ func _on_battle_finished(engine: BattleEngine) -> void:
 	# leaves the partner wherever it stood when the screen closed.
 	partner.refresh_lead()
 	partner.snap_to_player()
+	# Every outcome above is a save boundary (Specification 21.2): the party,
+	# scrolls and coins are settled, and a bound creature is already home.
+	_autosave()
 	# The battle screen covered the screen before it closed, so the world is
 	# already swapped in underneath and only needs uncovering.
 	await transition.reveal(ScreenTransition.Style.WORLD)

@@ -22,6 +22,7 @@ MCPInputBridge="*res://addons/godot_mcp/services/mcp_input_bridge.gd"
 MCPScreenshotBridge="*res://addons/godot_mcp/services/mcp_screenshot_bridge.gd"
 DisplayService="*res://scripts/display/display_service.gd"
 Content="*res://scripts/content/content_registry.gd"
+SaveService="*res://scripts/save/save_service.gd"
 GameState="*res://scripts/game_state.gd"
 
 [display]

@@ -2,11 +2,19 @@ extends Node
 ## Player-owned progression shared by the overworld and battles: the active
 ## party, Binding Scrolls, currency and the story level cap.
 ##
-## Autoloaded as [code]GameState[/code]. Saving and loading (Specification 21)
-## will serialise this node; until then it lives for one session.
+## Autoloaded as [code]GameState[/code]. [method to_dict] and [method from_dict]
+## are the whole save format; [SaveService] moves the result to and from disk.
+## The overworld records where the player stands here before every save, so a
+## loaded journey resumes on the same spot.
+##
+## Saving departs from Specification 21.1 on purpose: besides the autosave
+## slot the field writes at state boundaries, the player has manual slots
+## they save to and load from themselves.
 
 signal experience_awarded(creature: CreatureInstance, before_xp: int, before_level: int, applied: int)
 signal party_changed
+## Emitted after a save reached disk, manual or automatic.
+signal game_saved(slot: int)
 
 const STARTER_SPECIES_ID := &"creature_fire_01"
 ## Provisional starter level: with the additive damage formula a level-7
@@ -27,9 +35,173 @@ var binding_scrolls: int = STARTING_BINDING_SCROLLS
 var currency: int = 0
 var level_cap: int = INITIAL_LEVEL_CAP
 
+## Scene path of the area the player was last recorded in, or empty when the
+## journey has not left the shipped starting area yet.
+var area_path: String = ""
+var player_position: Vector2 = Vector2.ZERO
+var player_facing: Vector2i = Vector2i.DOWN
+## Seconds spent in the field, across sessions. Only counts while
+## [member play_time_running] is set by the overworld.
+var play_seconds: float = 0.0
+var play_time_running: bool = false
+## Unix time of the last successful save this session or the loaded one, 0
+## when the journey has never been saved.
+var last_saved_at: int = 0
+## The manual slot this journey was last loaded from or saved to, so the save
+## screen can offer it first. [constant SaveService.NO_SLOT] until the player
+## picks one.
+var active_slot: int = SaveService.NO_SLOT
+## Set by [method load_game] and consumed by the overworld once, so a
+## continued journey opens where it was saved while a recorded location never
+## moves the player on its own.
+var _resume_pending: bool = false
+
 
 func _ready() -> void:
 	ensure_starter()
+
+
+func _process(delta: float) -> void:
+	if play_time_running:
+		play_seconds += delta
+
+
+## Throws away the current journey and starts over with the starter. Does not
+## touch the save on disk; the title screen erases that deliberately.
+func new_game() -> void:
+	seen_species.clear()
+	party.clear()
+	binding_scrolls = STARTING_BINDING_SCROLLS
+	currency = 0
+	level_cap = INITIAL_LEVEL_CAP
+	clear_location()
+	_resume_pending = false
+	play_seconds = 0.0
+	last_saved_at = 0
+	active_slot = SaveService.NO_SLOT
+	ensure_starter()
+
+
+func has_location() -> bool:
+	return area_path != ""
+
+
+func record_location(at_area_path: String, at_position: Vector2, facing: Vector2i) -> void:
+	area_path = at_area_path
+	player_position = at_position
+	player_facing = facing
+
+
+func clear_location() -> void:
+	area_path = ""
+	player_position = Vector2.ZERO
+	player_facing = Vector2i.DOWN
+
+
+# --- Persistence -------------------------------------------------------------
+
+
+## Writes the journey to [param slot]. Returns whether it reached disk. A
+## manual slot becomes the active one; the autosave slot never does.
+func save_game(slot: int) -> bool:
+	var stamp: int = int(Time.get_unix_time_from_system())
+	var previous_stamp: int = last_saved_at
+	last_saved_at = stamp
+	if not SaveService.write(slot, to_dict()):
+		last_saved_at = previous_stamp
+		return false
+	if SaveService.is_manual_slot(slot):
+		active_slot = slot
+	game_saved.emit(slot)
+	return true
+
+
+## The field's boundary save.
+func autosave() -> bool:
+	return save_game(SaveService.AUTOSAVE_SLOT)
+
+
+## Restores the journey from [param slot]. Returns false, leaving the current
+## state alone, when the slot is empty.
+func load_game(slot: int) -> bool:
+	var data: Dictionary = SaveService.read(slot)
+	if data.is_empty():
+		return false
+	from_dict(data)
+	active_slot = slot if SaveService.is_manual_slot(slot) else SaveService.NO_SLOT
+	_resume_pending = has_location()
+	return true
+
+
+## Whether the overworld should open at the saved location. True once per
+## [method load_game]; the field consumes it when it places the player.
+func take_resume_request() -> bool:
+	var pending: bool = _resume_pending
+	_resume_pending = false
+	return pending
+
+
+## The whole save. Content is referenced by id, JSON-friendly throughout.
+func to_dict() -> Dictionary:
+	var party_data: Array = []
+	for creature: CreatureInstance in party:
+		party_data.append(creature.to_dict())
+	var seen: Array = []
+	for id: StringName in seen_species:
+		seen.append(String(id))
+	seen.sort()
+	return {
+		"saved_at": last_saved_at,
+		"play_seconds": int(play_seconds),
+		"party": party_data,
+		"seen_species": seen,
+		"binding_scrolls": binding_scrolls,
+		"currency": currency,
+		"level_cap": level_cap,
+		"location":
+		{
+			"area": area_path,
+			"x": player_position.x,
+			"y": player_position.y,
+			"facing_x": player_facing.x,
+			"facing_y": player_facing.y,
+		},
+	}
+
+
+## Replaces the journey with [param data] from [method to_dict]. Creatures
+## whose species no longer exists are dropped; a party left empty by that
+## gets the starter back, so a save can never be unplayable.
+func from_dict(data: Dictionary) -> void:
+	party.clear()
+	for entry: Variant in data.get("party", []):
+		if not entry is Dictionary:
+			continue
+		var creature: CreatureInstance = CreatureInstance.from_dict(entry, Content)
+		if creature != null and not party_is_full():
+			party.append(creature)
+	seen_species.clear()
+	for id: Variant in data.get("seen_species", []):
+		seen_species[StringName(String(id))] = true
+	for creature: CreatureInstance in party:
+		seen_species[creature.species_id()] = true
+	binding_scrolls = maxi(0, int(data.get("binding_scrolls", STARTING_BINDING_SCROLLS)))
+	currency = maxi(0, int(data.get("currency", 0)))
+	level_cap = clampi(int(data.get("level_cap", INITIAL_LEVEL_CAP)), 1, CreatureRules.GLOBAL_MAX_LEVEL)
+	play_seconds = float(data.get("play_seconds", 0))
+	last_saved_at = int(data.get("saved_at", 0))
+	var location: Dictionary = data.get("location", {}) if data.get("location") is Dictionary else {}
+	var saved_area: String = String(location.get("area", ""))
+	if saved_area != "" and ResourceLoader.exists(saved_area):
+		record_location(
+			saved_area,
+			Vector2(float(location.get("x", 0.0)), float(location.get("y", 0.0))),
+			Vector2i(int(location.get("facing_x", 0)), int(location.get("facing_y", 1))),
+		)
+	else:
+		clear_location()
+	ensure_starter()
+	party_changed.emit()
 
 
 ## Gives the player their starter when the party is empty, so the game is

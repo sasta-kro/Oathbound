@@ -65,6 +65,14 @@ func _physics_process(delta: float) -> void:
 	move_with(input_direction)
 
 
+## Turns the player without moving it, as when a saved journey resumes.
+func face(direction: Vector2i) -> void:
+	if direction == Vector2i.ZERO:
+		return
+	facing_direction = direction
+	_animate(Vector2.ZERO)
+
+
 ## Moves the player for one physics step in `direction` (any length up to 1)
 ## and returns whether it actually changed position.
 func move_with(direction: Vector2) -> bool:

@@ -84,6 +84,25 @@ seen/bound species during the session.
 
 EXP appears in non-blocking side cards with creature portraits, animated level
 progress and level-up feedback. Victories return to exploration automatically;
-overworld defeats also pay rewards without a dialogue prompt. Progress remains
-session-only; returning to the title preserves party state but reloads the map
-when entering the field again.
+overworld defeats also pay rewards without a dialogue prompt.
+
+### Saving
+
+Saves live in `user://saves/`: three manual slots (`slot_1.json` to
+`slot_3.json`) and one autosave (`autosave.json`). Each file keeps its
+previous contents beside it as `.backup`, which is read when the file itself
+is damaged. **Save journey** in the field menu (Esc, entry 04) writes any slot;
+overwriting, loading mid-journey and erasing all ask twice. The field also
+autosaves into its own slot on entering the field or an area, after every
+battle, rout and healing service, on the way back to the title screen, and
+when the window is closed outside a battle. The autosave never touches a
+manual slot. The title screen offers **Continue** for the most recent slot of
+either kind, **Load a journey** to pick or erase one, and **Begin anew**,
+which starts fresh without erasing anything. A loaded journey restores the
+party, coins, scrolls, the journal, play time, and the player's position and
+facing in the area it was saved in. Roaming creatures are respawned by the
+area on load.
+
+This goes past Specification 21.1, which asks for a single autosave slot and
+no manual save command; manual slots were added on request.
+
