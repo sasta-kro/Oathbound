@@ -28,6 +28,8 @@ Autoloads (`project.godot` order matters; later ones may read earlier ones in `_
 |---|---|---|
 | `MCPRuntimeBridge`, `MCPInputBridge`, `MCPScreenshotBridge` | `addons/godot_mcp/services/` | Dev tooling only. Must never be referenced by game code. |
 | `DisplayService` | `scripts/display/display_service.gd` | Window scale, fullscreen, `user://settings.cfg`. |
+| `MusicService` | `scripts/audio/music_service.gd` | Background music: id → file table, crossfade, music volume in `user://settings.cfg`. Missing track = silence + `DevLog.missing_asset("music", id)`. Areas name their track in `WorldArea.music_id`. Credits in `assets/music/SOURCE.md`. |
+| `SfxService` | `scripts/audio/sfx_service.gd` | One-shot sound effects: id → files table (random variant), 8 voices, effects volume in `user://settings.cfg`. Missing id/file = silence + `DevLog.missing_asset("sfx", id)`. Credits in `assets/sfx/SOURCE.md`. |
 | `Content` | `scripts/content/content_registry.gd` | Loads every `.tres` under `content/` and indexes it by `id`. `validate()` reports broken references. |
 | `SaveService` | `scripts/save/save_service.gd` | Slot files on disk. Knows nothing about what a save contains. |
 | `GameState` | `scripts/game_state.gd` | The player's journey: party, scrolls, coins, level cap, quest log, seen species, location, play time. `to_dict()`/`from_dict()` **are** the save format. |

@@ -103,6 +103,48 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="AudioSection" type="Label" parent="Root/Panel/Margin/Rows"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94902, 0.94902, 0.901961, 1)
+theme_override_font_sizes/font_size = 16
+text = "Audio"
+
+[node name="AudioRows" type="GridContainer" parent="Root/Panel/Margin/Rows"]
+layout_mode = 2
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 12
+columns = 2
+
+[node name="MusicVolumeLabel" type="Label" parent="Root/Panel/Margin/Rows/AudioRows"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.94902, 0.94902, 0.901961, 1)
+text = "Music volume"
+
+[node name="MusicVolumeSlider" type="HSlider" parent="Root/Panel/Margin/Rows/AudioRows"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 100.0
+step = 5.0
+value = 70.0
+
+[node name="SfxVolumeLabel" type="Label" parent="Root/Panel/Margin/Rows/AudioRows"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.94902, 0.94902, 0.901961, 1)
+text = "Sound effects volume"
+
+[node name="SfxVolumeSlider" type="HSlider" parent="Root/Panel/Margin/Rows/AudioRows"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 100.0
+step = 5.0
+value = 80.0
+
 [node name="Hint" type="Label" parent="Root/Panel/Margin/Rows"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.658824, 0.658824, 0.639216, 1)

@@ -1325,7 +1325,7 @@ The MVP includes:
 - Shop/service interfaces.
 - Battle interface.
 
-**[Partial]** Exist: title screen with Continue/Load/Begin anew, field menu (serves as pause menu), party screen, Oathbound details (companion and species records), field journal (bestiary), quest log, settings (display only), save/load slots, battle screen. Missing: inventory and shop screens, audio and control sections of settings.
+**[Partial]** Exist: title screen with Continue/Load/Begin anew, field menu (serves as pause menu), party screen, Oathbound details (companion and species records), field journal (bestiary), quest log, settings (display and audio), save/load slots, battle screen. Missing: inventory and shop screens, control section of settings.
 
 ### 22.5 Battle Information
 
@@ -1385,7 +1385,7 @@ The settings screen includes volume controls. At minimum, music and sound effect
 
 Accessibility-specific settings and mobile touch-screen UI are not required in the MVP.
 
-**[Not started]** There is no audio in the game at all.
+**[Implemented]** Music and sound effects sliders in settings (`MusicService`, `SfxService`), persisted in `user://settings.cfg`.
 
 ## 23. Placeholder and Missing-Asset Requirements
 
@@ -1441,11 +1441,11 @@ Missing UI art uses functional temporary controls and labels. Missing decorative
 - Missing music: remain silent and emit development-visible music start/stop diagnostics using the intended music ID.
 - Diagnostics should be centrally suppressible/configurable so development messages are not inseparable from final game presentation.
 
-**[Implemented]** for sprites (`CreatureVisual` falls back to `PlaceholderVisual`; `DevLog.missing_asset` reports once per id; the `oathbound/dev/verbose_diagnostics` project setting suppresses it). Audio has no system yet.
+**[Implemented]** for sprites (`CreatureVisual` falls back to `PlaceholderVisual`; `DevLog.missing_asset` reports once per id; the `oathbound/dev/verbose_diagnostics` project setting suppresses it) and for music (`MusicService` stays silent on an unknown or missing id, reports it once via `DevLog.missing_asset("music", id)`, and logs start/stop with the id through `DevLog.info`) and for sound effects (`SfxService` stays silent on an unknown or missing id and reports it once via `DevLog.missing_asset("sfx", id)`).
 
 ### 23.6 Effects as Content
 
-Battle and overworld effects are not hand-drawn assets. One procedural shader draws every effect; a `VfxPreset` resource chooses the shape (burst, ring, slash, beam, motes, sparks), two colours, size, timing and where it plays (on target, on user, travelling). A move names a preset or falls back to a stock preset for its element, so no move is ever silent on screen. This keeps Section 23.1 true for effects without any art. **[Implemented]** `content/vfx/`, `scenes/vfx_preview.tscn` as a workbench.
+Battle and overworld effects are not hand-drawn assets. One procedural shader draws every effect; a `VfxPreset` resource chooses the shape (burst, ring, slash, beam, motes, sparks), two colours, size, timing and where it plays (on target, on user, travelling). A move names a preset or falls back to a stock preset for its element, so no move is ever silent on screen. This keeps Section 23.1 true for effects without any art. **[Implemented]** `content/vfx/`, `scenes/vfx_preview.tscn` as a workbench. Hits layer an impact burst and sparks sized by effectiveness (overworld strikes reuse them at world scale); a bind attempt plays gathering motes and a seal that closes in twice, with distinct success (gold sparks, the creature leaves as seal light) and failure (crumbling scroll) effects. A preset can play in `reverse`.
 
 ## 24. Content Targets
 

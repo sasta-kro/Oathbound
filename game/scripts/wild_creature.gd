@@ -56,8 +56,9 @@ const ROUT_FADE_SECONDS: float = 0.25
 ## How long a defeated creature takes to break apart into light.
 const ROUT_DISSOLVE_SECONDS: float = 0.8
 
-## Effects played in the world. Both are shared presets: see [VfxPreset].
+## Effects played in the world. All are shared presets: see [VfxPreset].
 const HIT_VFX: VfxPreset = preload("res://content/vfx/vfx_hit_impact.tres")
+const HIT_SPARKS_VFX: VfxPreset = preload("res://content/vfx/vfx_hit_sparks.tres")
 const DEFEAT_VFX: VfxPreset = preload("res://content/vfx/vfx_defeat_sparks.tres")
 ## The presets are authored for the battle stage, where a creature is drawn
 ## several times larger than it is on the map. Played at full size out here
@@ -118,6 +119,7 @@ var _knockback: Vector2 = Vector2.ZERO
 var _encounter: CreatureInstance
 ## World-sized copies of the shared presets, made once rather than per hit.
 @onready var _world_hit_vfx: VfxPreset = HIT_VFX.scaled(WORLD_VFX_SCALE)
+@onready var _world_hit_sparks_vfx: VfxPreset = HIT_SPARKS_VFX.scaled(WORLD_VFX_SCALE)
 @onready var _world_defeat_vfx: VfxPreset = DEFEAT_VFX.scaled(WORLD_VFX_SCALE)
 ## Set while the creature is playing its death beat, during which it is no
 ## longer a valid encounter but has not left the map yet.
@@ -251,7 +253,7 @@ func take_overworld_hit(amount: int, from_position: Vector2) -> bool:
 	_enter_recover(FLINCH_SECONDS)
 	if visual != null:
 		visual.play(CreatureVisual.STATE_HURT)
-	_play_world_vfx(_world_hit_vfx, global_position)
+	_play_world_hit(global_position)
 	queue_redraw()
 	return instance.is_fainted()
 
@@ -270,6 +272,8 @@ func play_rout(as_defeat: bool = true) -> void:
 	velocity = Vector2.ZERO
 	if visual != null and as_defeat:
 		visual.play(CreatureVisual.STATE_DEATH)
+	if as_defeat:
+		SfxService.play(&"faint")
 	if is_inside_tree():
 		var tween := create_tween()
 		tween.tween_interval(ROUT_SECONDS)
@@ -289,6 +293,14 @@ func play_rout(as_defeat: bool = true) -> void:
 ## defeated and would take them with it.
 func _release_into_light() -> void:
 	_play_world_vfx(_world_defeat_vfx, global_position)
+
+
+## A blow landing in the world: the same burst and sparks a battle hit shows,
+## at world scale.
+func _play_world_hit(at: Vector2) -> void:
+	_play_world_vfx(_world_hit_vfx, at)
+	_play_world_vfx(_world_hit_sparks_vfx, at)
+	SfxService.play(&"hit")
 
 
 func _play_world_vfx(preset: VfxPreset, at: Vector2) -> void:
@@ -386,7 +398,7 @@ func _land_strike(player: Node2D) -> void:
 	if player == null:
 		return
 	if global_position.distance_to(player.global_position) <= strike_reach():
-		_play_world_vfx(_world_hit_vfx, player.global_position)
+		_play_world_hit(player.global_position)
 		reached_player.emit(self)
 
 

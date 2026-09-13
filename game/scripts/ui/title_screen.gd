@@ -1,4 +1,5 @@
 extends Control
+const TITLE_MUSIC_ID: StringName = &"title"
 var entrance: Tween
 var content: VBoxContainer
 var loader: VBoxContainer
@@ -6,6 +7,7 @@ var slot_list: SaveSlotList
 var start: Button
 
 func _ready() -> void:
+	MusicService.play(TITLE_MUSIC_ID)
 	theme = OathTheme.make()
 	texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	var backdrop := TextureRect.new()

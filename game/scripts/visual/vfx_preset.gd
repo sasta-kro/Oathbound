@@ -64,6 +64,9 @@ enum Delivery {
 @export_range(0.1, 4.0) var speed: float = 1.0
 ## Eases the effect in and out instead of running at a constant rate.
 @export var smooth: bool = true
+## Plays the shape backwards, so a ring closes in instead of spreading out and
+## sparks fly inwards. A seal that binds reads as closing, not bursting.
+@export var reverse: bool = false
 
 ## Default colours per element, used when a move names no preset.
 const ELEMENT_PALETTES: Dictionary = {

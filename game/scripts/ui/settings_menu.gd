@@ -2,9 +2,9 @@ class_name SettingsMenu
 extends CanvasLayer
 ## Settings screen for display options (Specification 22.4).
 ##
-## Only the display section exists so far: window size and fullscreen. Audio
-## volume (22.8) and control rebinding (22.2) are separate sections that plug
-## into the same rows container when they are implemented.
+## Display: window size and fullscreen. Audio: music and effects volume (22.8). Control
+## rebinding (22.2) is a separate section that plugs into the same rows
+## container when it is implemented.
 
 signal opened
 signal closed
@@ -15,6 +15,8 @@ const CUSTOM_SIZE_ITEM_ID: int = -1
 @onready var root: Control = $Root
 @onready var window_size_options: OptionButton = %WindowSizeOptions
 @onready var fullscreen_toggle: CheckButton = %FullscreenToggle
+@onready var music_volume_slider: HSlider = %MusicVolumeSlider
+@onready var sfx_volume_slider: HSlider = %SfxVolumeSlider
 @onready var close_button: Button = %CloseButton
 
 
@@ -28,10 +30,18 @@ func _ready() -> void:
 	title.add_theme_color_override("font_color", OathTheme.PAPER)
 	$Root/Panel/Margin/Rows/DisplaySection.text = "DISPLAY PREFERENCES"
 	$Root/Panel/Margin/Rows/DisplaySection.add_theme_font_size_override("font_size", 10)
+	$Root/Panel/Margin/Rows/AudioSection.text = "AUDIO"
+	$Root/Panel/Margin/Rows/AudioSection.add_theme_font_size_override("font_size", 10)
 	close_button.text = "Done  →"
 	root.hide()
 	window_size_options.item_selected.connect(_on_window_size_selected)
 	fullscreen_toggle.toggled.connect(_on_fullscreen_toggled)
+	music_volume_slider.value_changed.connect(_on_music_volume_changed)
+	MusicService.music_volume_changed.connect(_on_service_music_volume_changed)
+	sfx_volume_slider.value_changed.connect(_on_sfx_volume_changed)
+	# Released rather than dragged, so the sample plays once per adjustment.
+	sfx_volume_slider.drag_ended.connect(_on_sfx_slider_released)
+	SfxService.sfx_volume_changed.connect(_on_service_sfx_volume_changed)
 	close_button.pressed.connect(close)
 	DisplayService.display_changed.connect(_on_display_changed)
 
@@ -40,6 +50,7 @@ func open() -> void:
 	if is_open():
 		return
 	_refresh_display_controls()
+	_refresh_audio_controls()
 	root.show()
 	root.modulate.a = 0
 	create_tween().tween_property(root, "modulate:a", 1.0, 0.16)
@@ -93,3 +104,31 @@ func _on_fullscreen_toggled(enabled: bool) -> void:
 func _on_display_changed() -> void:
 	if is_open():
 		_refresh_display_controls()
+
+
+func _refresh_audio_controls() -> void:
+	music_volume_slider.set_value_no_signal(MusicService.music_volume() * 100.0)
+	sfx_volume_slider.set_value_no_signal(SfxService.sfx_volume() * 100.0)
+
+
+func _on_music_volume_changed(value: float) -> void:
+	MusicService.set_music_volume(value / 100.0)
+
+
+func _on_service_music_volume_changed(_volume: float) -> void:
+	if is_open():
+		_refresh_audio_controls()
+
+
+func _on_sfx_volume_changed(value: float) -> void:
+	SfxService.set_sfx_volume(value / 100.0)
+
+
+## A sample at the new level, so the slider can be set by ear.
+func _on_sfx_slider_released(_changed: bool) -> void:
+	SfxService.play(&"hit")
+
+
+func _on_service_sfx_volume_changed(_volume: float) -> void:
+	if is_open():
+		_refresh_audio_controls()

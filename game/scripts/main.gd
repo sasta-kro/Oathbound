@@ -22,6 +22,7 @@ const ROUT_TEXT := "You cut down the wild %s before it could fight back."
 const TITLE_SCENE_PATH := "res://scenes/title_screen.tscn"
 const AUTOSAVED_TEXT := "Autosaved"
 const SAVED_TEXT := "Saved to %s"
+const BATTLE_MUSIC_ID: StringName = &"battle"
 
 @onready var area: WorldArea = $Area
 @onready var player: Player = $Player
@@ -62,6 +63,7 @@ func _ready() -> void:
 	# of the transition itself and hides underneath it.
 	battle_scene.transition = transition
 	_wire_area()
+	_play_area_music()
 	_report_area_reached()
 	# Entering the field is entering an area (Specification 21.2), so a fresh
 	# journey can be continued from the title screen straight away.
@@ -157,6 +159,12 @@ func _wire_area() -> void:
 			exit.player_entered.connect(_on_area_exit_entered)
 
 
+## The current area's theme. Safe to call on every arrival and after every
+## battle, since the service ignores a track that is already playing.
+func _play_area_music() -> void:
+	MusicService.play(area.music_id)
+
+
 func _on_area_exit_entered(exit: AreaExit) -> void:
 	if _world_is_paused() or _travelling:
 		return
@@ -182,6 +190,7 @@ func travel_to(area_path: String, entrance: StringName) -> void:
 	_fit_camera_to_area()
 	camera.reset_smoothing()
 	_wire_area()
+	_play_area_music()
 	_report_area_reached()
 	# Entering an area is a save boundary (Specification 21.2), and the
 	# entrance marker is a safe spot to come back to.
@@ -480,6 +489,7 @@ func _start_wild_battle(
 	# The world stops the moment the encounter is decided, so the player is not
 	# still walking behind the wipe.
 	_set_world_active(false)
+	MusicService.play(BATTLE_MUSIC_ID)
 	await transition.cover(ScreenTransition.Style.BATTLE)
 	# `start_battle` shows the screen before it awaits its opening messages, so
 	# the reveal uncovers a battle that is already on screen.
@@ -548,6 +558,7 @@ func _on_battle_finished(engine: BattleEngine) -> void:
 	_autosave()
 	# The battle screen covered the screen before it closed, so the world is
 	# already swapped in underneath and only needs uncovering.
+	_play_area_music()
 	await transition.reveal(ScreenTransition.Style.WORLD)
 	# Not awaited: the world is the player's again while the light fades.
 	if taken != null:

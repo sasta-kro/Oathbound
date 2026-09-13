@@ -86,7 +86,7 @@ func _begin(from: Vector2, to: Vector2, flip: bool) -> void:
 	_material.set_shader_parameter("ragged", _preset.ragged)
 	_material.set_shader_parameter("aspect", size.x / maxf(size.y, 0.001))
 	_material.set_shader_parameter("variant", randf())
-	_material.set_shader_parameter("progress", 0.0)
+	_material.set_shader_parameter("progress", 1.0 if _preset.reverse else 0.0)
 
 	_quad = ColorRect.new()
 	_quad.color = Color.WHITE
@@ -110,7 +110,8 @@ func _begin(from: Vector2, to: Vector2, flip: bool) -> void:
 	_tween = create_tween()
 	if _preset.smooth:
 		_tween.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	_tween.tween_property(_material, "shader_parameter/progress", 1.0, seconds).from(0.0)
+	var start: float = 1.0 if _preset.reverse else 0.0
+	_tween.tween_property(_material, "shader_parameter/progress", 1.0 - start, seconds).from(start)
 	if _preset.delivery == VfxPreset.Delivery.TRAVEL and not beam:
 		_tween.parallel().tween_property(self, "position", to + _preset.offset, seconds).from(
 			from + _preset.offset

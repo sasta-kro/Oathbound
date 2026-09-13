@@ -47,7 +47,13 @@ const HP_TWEEN_SECONDS := 0.35
 const SEND_OUT_SECONDS := 0.25
 const DODGE_SECONDS := 0.2
 const FAINT_SECONDS := 0.7
-const BIND_SECONDS := 0.5
+## The scroll is offered, the seal closes twice, then the roll lands.
+const BIND_SECONDS := 1.2
+## Beat between the seal's closing and the bound creature leaving.
+const BIND_SUCCESS_SECONDS := 0.35
+const BIND_FAIL_SECONDS := 0.3
+## When each extra seal closes during a bind attempt, in seconds.
+const BIND_CLOSE_DELAYS: Array[float] = [0.3, 0.7]
 
 const HP_HEALTHY_COLOR := Color("a1cdb5")
 const HP_WARY_COLOR := Color("e0b23a")
@@ -57,12 +63,26 @@ const HP_CRITICAL_FRACTION := 0.2
 
 ## Effects shared with the rest of the game: see [VfxPreset].
 const HIT_VFX: VfxPreset = preload("res://content/vfx/vfx_hit_impact.tres")
+const HIT_SPARKS_VFX: VfxPreset = preload("res://content/vfx/vfx_hit_sparks.tres")
 const DEFEAT_VFX: VfxPreset = preload("res://content/vfx/vfx_defeat_sparks.tres")
 const BIND_VFX: VfxPreset = preload("res://content/vfx/vfx_bind_seal.tres")
+const BIND_MOTES_VFX: VfxPreset = preload("res://content/vfx/vfx_bind_motes.tres")
+const BIND_CLOSE_VFX: VfxPreset = preload("res://content/vfx/vfx_bind_seal_close.tres")
+const BIND_SUCCESS_VFX: VfxPreset = preload("res://content/vfx/vfx_bind_sparks.tres")
+const BIND_BREAK_VFX: VfxPreset = preload("res://content/vfx/vfx_bind_break.tres")
+## A hit that lands well is drawn bigger; one that barely lands, smaller.
+const HIT_STRONG_SCALE := 1.4
+const HIT_WEAK_SCALE := 0.75
+## Poison and burn ticks are quieter than a landed blow.
+const STATUS_DAMAGE_SCALE := 0.7
 const DISSOLVE_SECONDS := 0.8
 
 const HIT_FLASH_COLOR := Color(1.0, 0.45, 0.45)
 const BIND_FLASH_COLOR := Color(1.0, 0.85, 0.35)
+const BIND_SEALED_FLASH_COLOR := Color(1.0, 0.98, 0.9)
+## Ash of a crumbled scroll.
+const BIND_BREAK_SPARK_CORE := Color(0.85, 0.82, 0.78)
+const BIND_BREAK_SPARK_EDGE := Color(0.4, 0.33, 0.3)
 const DISABLED_TEXT_COLOR := Color(0.55, 0.55, 0.55)
 const MENU_TEXT_COLOR := Color(0.87, 0.87, 0.83)
 const MENU_SELECTED_TEXT_COLOR := Color(1.0, 0.97, 0.85)
@@ -571,7 +591,8 @@ func _present(event: BattleEvent) -> void:
 			var multiplier: float = float(event.data.get("multiplier", 1.0))
 			target.play(CreatureVisual.STATE_HURT)
 			_flash(target, HIT_FLASH_COLOR)
-			_play_vfx(HIT_VFX, target)
+			_play_hit_vfx(target, multiplier, event.kind == BattleEvent.Kind.HIT)
+			_play_sfx(_hit_sound(multiplier, event.kind == BattleEvent.Kind.HIT))
 			_show_damage(event.side, int(event.data.get("damage", 0)), multiplier)
 			if event.kind == BattleEvent.Kind.HIT:
 				_shake_stage(multiplier)
@@ -583,15 +604,28 @@ func _present(event: BattleEvent) -> void:
 		BattleEvent.Kind.FAINTED:
 			var fainted: CreatureVisual = _visual_for(event.side)
 			fainted.play(CreatureVisual.STATE_DEATH)
+			_play_sfx(&"faint")
 			await _wait(FAINT_SECONDS)
 			_take_off_stage(event.side)
 			_refresh_panels()
 		BattleEvent.Kind.BIND_ATTEMPT:
-			_flash(enemy_visual, BIND_FLASH_COLOR)
-			_play_vfx(BIND_VFX, enemy_visual)
+			_play_bind_attempt_vfx()
+			_play_sfx(&"bind_attempt")
 			await _wait(BIND_SECONDS)
 		BattleEvent.Kind.BIND_SUCCESS:
-			_take_off_stage(BattleTeam.Side.ENEMY)
+			_flash(enemy_visual, BIND_SEALED_FLASH_COLOR)
+			_play_vfx(BIND_SUCCESS_VFX, enemy_visual)
+			_play_sfx(&"bind_success")
+			await _wait(BIND_SUCCESS_SECONDS)
+			_take_off_stage(BattleTeam.Side.ENEMY, BIND_SUCCESS_VFX.at_speed(1.3))
+		BattleEvent.Kind.BIND_FAILED:
+			_play_sfx(&"bind_fail")
+			_play_vfx(BIND_BREAK_VFX, enemy_visual)
+			_play_vfx(
+				HIT_SPARKS_VFX.recoloured(BIND_BREAK_SPARK_CORE, BIND_BREAK_SPARK_EDGE), enemy_visual
+			)
+			_dodge(BattleTeam.Side.ENEMY)
+			await _wait(BIND_FAIL_SECONDS)
 		_:
 			_refresh_panels()
 
@@ -723,19 +757,81 @@ func _opposing(side: int) -> int:
 	return BattleTeam.Side.ENEMY if side == BattleTeam.Side.PLAYER else BattleTeam.Side.PLAYER
 
 
+## A landed blow: an impact burst with sparks flying off it, sized by how well
+## the move landed. A status tick is the burst alone, smaller, since nothing
+## struck the creature.
+func _play_hit_vfx(target: CreatureVisual, multiplier: float, struck: bool) -> void:
+	if skip_presentation:
+		return
+	if not struck:
+		_play_vfx(HIT_VFX.scaled(STATUS_DAMAGE_SCALE), target)
+		return
+	var factor: float = 1.0
+	if multiplier > 1.0:
+		factor = HIT_STRONG_SCALE
+	elif multiplier > 0.0 and multiplier < 1.0:
+		factor = HIT_WEAK_SCALE
+	_play_vfx(HIT_VFX.scaled(factor), target)
+	_play_vfx(HIT_SPARKS_VFX.scaled(factor), target)
+
+
+## The scroll is offered: light gathers over the creature while the seal
+## spreads under it, then closes in twice. The roll's result follows as its
+## own event.
+func _play_bind_attempt_vfx() -> void:
+	if skip_presentation:
+		return
+	_flash(enemy_visual, BIND_FLASH_COLOR)
+	_play_vfx(BIND_MOTES_VFX, enemy_visual)
+	_play_vfx(BIND_VFX, enemy_visual)
+	for index: int in BIND_CLOSE_DELAYS.size():
+		# Each closing is tighter and quicker than the one before it.
+		var preset: VfxPreset = BIND_CLOSE_VFX.scaled(1.0 - 0.2 * index).at_speed(1.0 + 0.4 * index)
+		_play_vfx_after(BIND_CLOSE_DELAYS[index], preset, enemy_visual)
+
+
+## Plays [param preset] on [param on] after [param seconds], unless the battle
+## has closed in the meantime.
+func _play_vfx_after(seconds: float, preset: VfxPreset, on: CreatureVisual) -> void:
+	if skip_presentation or not is_inside_tree():
+		return
+	await get_tree().create_timer(seconds).timeout
+	if not is_active() or not on.visible:
+		return
+	_play_vfx(preset, on)
+
+
 ## Takes a creature off the stage. Real art breaks apart into flecks of light;
 ## a placeholder has no canvas item of its own to dissolve, so it fades.
-func _take_off_stage(side: int) -> void:
+## [param vfx] is what the creature leaves behind: a beaten creature's sparks
+## by default, a bound one's seal light when the oath took.
+func _take_off_stage(side: int, vfx: VfxPreset = DEFEAT_VFX) -> void:
 	var visual: CreatureVisual = _visual_for(side)
 	(_shadows[side] as Node2D).hide()
 	if skip_presentation:
 		visual.hide()
 		return
-	_play_vfx(DEFEAT_VFX, visual)
+	_play_vfx(vfx, visual)
 	if visual.prepare_dissolve():
 		create_tween().tween_property(visual, "dissolve", 1.0, DISSOLVE_SECONDS)
 	else:
 		create_tween().tween_property(visual, "modulate:a", 0.0, 0.3)
+
+
+## The sound of a blow, matched to how well it landed. A status tick is the
+## soft one, since nothing struck.
+func _hit_sound(multiplier: float, struck: bool) -> StringName:
+	if not struck or (multiplier > 0.0 and multiplier < 1.0):
+		return &"hit_weak"
+	if multiplier > 1.0:
+		return &"hit_strong"
+	return &"hit"
+
+
+func _play_sfx(id: StringName) -> void:
+	if skip_presentation:
+		return
+	SfxService.play(id)
 
 
 ## Plays a one-off effect on top of a creature.

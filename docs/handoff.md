@@ -96,7 +96,7 @@ Ordered so each step unlocks the next and keeps the game playable at every commi
 
 12. **Opening sequence and player name.** Short scripted dialogue at the start; name entry; store `player_name`. Medium.
 13. **Areas 2 and 3, bosses 2 and 3, ending and credits.** Content-heavy; the map pipeline is ready. Species count needs to grow from 6 toward 15+, moves from 10 toward 25+.
-14. **Audio.** Music and SFX players, `DevLog.missing_asset("sfx"/"music", id)` for missing files, volume settings section. Medium.
+14. **Audio.** Done for the current content: `MusicService` (four CC0 tracks, see `assets/music/SOURCE.md`) and `SfxService` (CC0 hit, bind and faint sounds, see `assets/sfx/SOURCE.md`), music and effects sliders in settings. Remaining: UI sounds (menu move/confirm), move-specific sounds per element, footsteps. Small each.
 15. **Control rebinding** in settings. Medium.
 16. **Interactables:** chests (once-per-game, saved), signs, doors, switches. Medium.
 17. **Remaining quest objective kinds:** retrieve item, deliver creature, escort. After 7 and 9.

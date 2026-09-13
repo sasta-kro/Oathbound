@@ -32,6 +32,7 @@ size = Vector2(48, 1296)
 
 [node name="Town" type="Node2D" unique_id=999703501 node_paths=PackedStringArray("ground", "player_start")]
 script = ExtResource("1_8mgha")
+music_id = &"town"
 ground = NodePath("Ground")
 player_start = NodePath("PlayerStart")
 

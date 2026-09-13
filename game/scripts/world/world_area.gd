@@ -20,6 +20,9 @@ const ENTRANCES_PATH := ^"Entrances"
 @export var ground: TileMapLayer
 ## Where the player appears when the area loads.
 @export var player_start: Marker2D
+## Track [MusicService] plays while the player is here. Must be a key of
+## [constant MusicService.TRACKS].
+@export var music_id: StringName = &"field"
 
 
 func _ready() -> void:
