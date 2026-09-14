@@ -157,6 +157,16 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 4
 
+[node name="PlayerInitiativeSpacer" type="Control" parent="Root/PlayerPanel/Margin/Rows/TypeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PlayerInitiativeBadge" type="Label" parent="Root/PlayerPanel/Margin/Rows/TypeRow"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+vertical_alignment = 1
+
 [node name="PlayerHpBar" type="ProgressBar" parent="Root/PlayerPanel/Margin/Rows"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 14)
@@ -239,6 +249,16 @@ text = "EARTH"
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 4
+
+[node name="EnemyInitiativeSpacer" type="Control" parent="Root/EnemyPanel/Margin/Rows/TypeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EnemyInitiativeBadge" type="Label" parent="Root/EnemyPanel/Margin/Rows/TypeRow"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+vertical_alignment = 1
 
 [node name="EnemyHpBar" type="ProgressBar" parent="Root/EnemyPanel/Margin/Rows"]
 unique_name_in_owner = true

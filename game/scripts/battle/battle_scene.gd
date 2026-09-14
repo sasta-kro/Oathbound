@@ -116,6 +116,18 @@ const STATUS_BADGE_COLORS: Dictionary = {
 const STATUS_BADGE_FONT_SIZE := 11
 const STATUS_BADGE_TEXT_COLOR := Color(0.07, 0.07, 0.09)
 
+## Turn-order indicator copy (Increment 10). Exactly one indicator is visible
+## while a command is chosen: the forced overworld opening owns battle turn
+## one, and every later turn defaults to the faster active creature at equal
+## action priority.
+const FIRST_STRIKE_TEXT := "FIRST STRIKE"
+const AMBUSH_TEXT := "AMBUSHES FIRST"
+const GOES_FIRST_TEXT := "GOES FIRST"
+const SPEED_TIE_TEXT := "SPEED TIE"
+const INITIATIVE_FONT_SIZE := 10
+const INITIATIVE_SURFACE_COLOR := Color(OathTheme.INK, 0.85)
+const INITIATIVE_BORDER_COLOR := Color(OathTheme.GOLD, 0.55)
+
 const DAMAGE_NUMBER_FONT_SIZE := 30
 const DAMAGE_NUMBER_WIDTH := 120.0
 const DAMAGE_NUMBER_RISE := 34.0
@@ -142,6 +154,10 @@ var skip_presentation: bool = false
 var transition: ScreenTransition
 
 var engine: BattleEngine
+## SPEED TIE belongs to the matchup rather than one side, so it lives under the
+## encounter caption instead of in a status panel. Kept as a field so tests and
+## refresh logic can reach it.
+var speed_tie_label: Label
 
 var _menu: Menu = Menu.NONE
 var _entries: Array[MenuEntry] = []
@@ -187,6 +203,8 @@ var _selected_row_style: StyleBoxFlat
 @onready var enemy_statuses: HBoxContainer = %EnemyStatuses
 @onready var enemy_hp_bar: ProgressBar = %EnemyHpBar
 @onready var enemy_hp: Label = %EnemyHp
+@onready var player_initiative_badge: Label = %PlayerInitiativeBadge
+@onready var enemy_initiative_badge: Label = %EnemyInitiativeBadge
 @onready var command_list: VBoxContainer = %CommandList
 @onready var message_label: Label = %MessageLabel
 
@@ -207,6 +225,8 @@ func _ready() -> void:
 	_type_labels = {player_side: player_types, enemy_side: enemy_types}
 	_status_rows = {player_side: player_statuses, enemy_side: enemy_statuses}
 	_build_row_styles()
+	_style_initiative_badge(player_initiative_badge)
+	_style_initiative_badge(enemy_initiative_badge)
 	for side: int in _shadows:
 		(_shadows[side] as Node2D).add_child(StageShadow.new())
 		# Each bar gets its own fill so the two HP colours can differ.
@@ -228,6 +248,7 @@ func start_battle(config: BattleConfig) -> void:
 	_awaiting_dismiss = false
 	_caption.text = caption_for(config)
 	_close_menu()
+	_hide_initiative_indicators()
 	for side: int in _visuals:
 		(_visuals[side] as CreatureVisual).hide()
 		(_shadows[side] as Node2D).hide()
@@ -316,6 +337,7 @@ func _continue() -> void:
 
 
 func _open_command_menu() -> void:
+	_refresh_initiative_indicators()
 	var options: Dictionary = engine.options()
 	var active: Battler = engine.player.active()
 	_begin_menu(Menu.COMMAND)
@@ -393,6 +415,7 @@ func _open_party_menu(forced: bool) -> void:
 		_add_entry(label, callback, "Send out %s." % creature.display_name(), bench.has(index), reason)
 	_end_menu()
 	if forced:
+		_hide_initiative_indicators()
 		_say("Choose your next Oathbound.")
 
 
@@ -509,6 +532,10 @@ func _move_hint(move: MoveData) -> String:
 	parts.append("Accuracy %d%%" % move.accuracy)
 	if move.cooldown_turns > 0:
 		parts.append("Cooldown %d" % move.cooldown_turns)
+	if move.priority > 0:
+		parts.append("Priority +%d: resolves before lower-priority actions." % move.priority)
+	elif move.priority < 0:
+		parts.append("Priority %d: resolves after higher-priority actions." % move.priority)
 	var hint: String = " · ".join(parts)
 	if move.is_damaging():
 		var effectiveness: String = BattleRules.effectiveness_text(
@@ -567,6 +594,7 @@ func _run_turn(action: BattleAction) -> void:
 func _finish() -> void:
 	_awaiting_dismiss = false
 	_close_menu()
+	_hide_initiative_indicators()
 	if transition != null:
 		await transition.cover(ScreenTransition.Style.WORLD)
 	root.hide()
@@ -943,6 +971,67 @@ func _status_badge(status: StatusIds.Status) -> Label:
 	return badge
 
 
+# --- Turn-order indicators (Increment 10) -------------------------------------
+
+
+## Decides which initiative indicator the upcoming turn carries. The forced
+## overworld opening owns battle turn one; after that the faster active
+## creature is the default actor at equal action priority. Called only when
+## the command menu opens, so an indicator never changes while the previous
+## turn's events are still playing.
+func _refresh_initiative_indicators() -> void:
+	var player_text := ""
+	var enemy_text := ""
+	var tie_visible := false
+	if engine != null and engine.phase == BattleEngine.Phase.CHOOSING:
+		var opening_turn: bool = engine.turn_number == 0
+		if opening_turn and engine.config.opening == BattleConfig.Opening.ADVANTAGE:
+			player_text = FIRST_STRIKE_TEXT
+		elif opening_turn and engine.config.opening == BattleConfig.Opening.DISADVANTAGE:
+			enemy_text = AMBUSH_TEXT
+		else:
+			var leader: int = engine.speed_leader()
+			if leader == BattleTeam.Side.PLAYER:
+				player_text = GOES_FIRST_TEXT
+			elif leader == BattleTeam.Side.ENEMY:
+				enemy_text = GOES_FIRST_TEXT
+			else:
+				tie_visible = true
+	_show_initiative(player_text, enemy_text, tie_visible)
+
+
+func _hide_initiative_indicators() -> void:
+	_show_initiative("", "", false)
+
+
+func _show_initiative(player_text: String, enemy_text: String, tie_visible: bool) -> void:
+	_set_initiative_badge(player_initiative_badge, player_text)
+	_set_initiative_badge(enemy_initiative_badge, enemy_text)
+	speed_tie_label.visible = tie_visible
+
+
+func _set_initiative_badge(badge: Label, text: String) -> void:
+	badge.text = text
+	badge.visible = not text.is_empty()
+
+
+## The compact gold-on-dark chip both side badges share, styled in code like
+## the status badges so no art asset is involved.
+func _style_initiative_badge(badge: Label) -> void:
+	badge.add_theme_font_size_override("font_size", INITIATIVE_FONT_SIZE)
+	badge.add_theme_color_override("font_color", OathTheme.GOLD)
+	var style := StyleBoxFlat.new()
+	style.bg_color = INITIATIVE_SURFACE_COLOR
+	style.border_color = INITIATIVE_BORDER_COLOR
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(3)
+	style.content_margin_left = 6
+	style.content_margin_right = 6
+	style.content_margin_top = 1
+	style.content_margin_bottom = 1
+	badge.add_theme_stylebox_override("normal", style)
+
+
 func _say(text: String) -> void:
 	message_label.text = text
 
@@ -1001,3 +1090,9 @@ func _polish_chrome() -> void:
 	_caption.size.x = 236
 	_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	root.add_child(_caption)
+	speed_tie_label = OathTheme.label(SPEED_TIE_TEXT, INITIATIVE_FONT_SIZE, OathTheme.GOLD)
+	speed_tie_label.position = Vector2(362, 50)
+	speed_tie_label.size.x = 236
+	speed_tie_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	speed_tie_label.hide()
+	root.add_child(speed_tie_label)

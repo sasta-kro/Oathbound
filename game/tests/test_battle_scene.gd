@@ -24,6 +24,32 @@ func _config() -> BattleConfig:
 	return config
 
 
+## A fresh battle config with chosen parties, for the indicator tests.
+func _versus(party_entries: Array, enemy_entry: Array) -> BattleConfig:
+	var party: Array[CreatureInstance] = []
+	for entry: Array in party_entries:
+		party.append(Content.spawn_creature(entry[0], entry[1]))
+	var config := BattleConfig.wild(
+		party, Content.spawn_creature(enemy_entry[0], enemy_entry[1]), Content.type_chart
+	)
+	config.binding_scrolls = 5
+	config.rng_seed = 3
+	return config
+
+
+## A minimal move with only the fields the hint reads, so priority wording can
+## be isolated from the shipped content.
+func _move_with_priority(priority: int) -> MoveData:
+	var move := MoveData.new()
+	move.id = &"move_test_priority_%d" % priority
+	move.display_name = "Test Move"
+	move.type = Elements.Type.FIRE
+	move.power = 5
+	move.accuracy = 100
+	move.priority = priority
+	return move
+
+
 func test_starts_hidden() -> void:
 	assert_false(_scene.is_active())
 
@@ -172,3 +198,152 @@ func test_a_battle_with_a_transition_covers_the_screen_before_it_closes() -> voi
 	assert_true(transition.root.visible, "The world is uncovered by whoever opened the battle.")
 	assert_false(_scene.is_active())
 	assert_signal_emitted(_scene, "battle_finished")
+
+
+# --- Turn-order indicators (Increment 10) -------------------------------------
+
+
+func test_a_neutral_battle_shows_goes_first_on_the_faster_creature_only() -> void:
+	_scene.start_battle(_config())
+	await wait_frames(2)
+	assert_gt(
+		_scene.engine.player.active().effective_speed(),
+		_scene.engine.enemy.active().effective_speed(),
+		"Precondition: the player's Emberling is faster.",
+	)
+
+	assert_true(_scene.player_initiative_badge.visible)
+	assert_eq(_scene.player_initiative_badge.text, "GOES FIRST")
+	assert_false(_scene.enemy_initiative_badge.visible)
+	assert_false(_scene.speed_tie_label.visible)
+
+
+func test_equal_speed_shows_the_tie_label_and_no_side_badge() -> void:
+	_scene.start_battle(_versus([[&"creature_wind_01", 5]], [&"creature_wind_01", 5]))
+	await wait_frames(2)
+	assert_eq(
+		_scene.engine.player.active().effective_speed(),
+		_scene.engine.enemy.active().effective_speed(),
+		"Precondition: identical creatures are equally fast.",
+	)
+
+	assert_false(_scene.player_initiative_badge.visible)
+	assert_false(_scene.enemy_initiative_badge.visible)
+	assert_true(_scene.speed_tie_label.visible)
+	assert_eq(_scene.speed_tie_label.text, "SPEED TIE")
+
+
+func test_a_first_strike_opening_beats_the_speed_comparison() -> void:
+	var config := _versus([[&"creature_earth_01", 5]], [&"creature_wind_01", 5])
+	config.opening = BattleConfig.Opening.ADVANTAGE
+	_scene.start_battle(config)
+	await wait_frames(2)
+	assert_lt(
+		_scene.engine.player.active().effective_speed(),
+		_scene.engine.enemy.active().effective_speed(),
+		"Precondition: the opening must contradict the Speed order.",
+	)
+
+	assert_true(_scene.player_initiative_badge.visible)
+	assert_eq(_scene.player_initiative_badge.text, "FIRST STRIKE")
+	assert_false(_scene.enemy_initiative_badge.visible)
+	assert_false(_scene.speed_tie_label.visible)
+
+
+func test_an_ambush_opening_beats_the_speed_comparison() -> void:
+	var config := _versus([[&"creature_wind_01", 5]], [&"creature_earth_01", 5])
+	config.opening = BattleConfig.Opening.DISADVANTAGE
+	_scene.start_battle(config)
+	await wait_frames(2)
+	assert_lt(
+		_scene.engine.enemy.active().effective_speed(),
+		_scene.engine.player.active().effective_speed(),
+		"Precondition: the opening must contradict the Speed order.",
+	)
+
+	assert_true(_scene.enemy_initiative_badge.visible)
+	assert_eq(_scene.enemy_initiative_badge.text, "AMBUSHES FIRST")
+	assert_false(_scene.player_initiative_badge.visible)
+	assert_false(_scene.speed_tie_label.visible)
+
+
+func test_after_the_forced_opening_the_indicator_falls_back_to_speed() -> void:
+	var config := _versus([[&"creature_earth_01", 5]], [&"creature_wind_01", 5])
+	config.opening = BattleConfig.Opening.ADVANTAGE
+	_scene.start_battle(config)
+	await wait_frames(2)
+	assert_eq(_scene.player_initiative_badge.text, "FIRST STRIKE")
+
+	_scene.engine.forced_roll = 0.0
+	_scene.press_entry(0)
+	_scene.press_entry(0)
+	await wait_frames(2)
+
+	assert_eq(_scene.current_menu(), BattleScene.Menu.COMMAND)
+	assert_eq(_scene.engine.turn_number, 1)
+	assert_true(_scene.enemy_initiative_badge.visible)
+	assert_eq(_scene.enemy_initiative_badge.text, "GOES FIRST")
+	assert_false(_scene.player_initiative_badge.visible)
+	assert_false(_scene.speed_tie_label.visible)
+
+
+func test_switching_refreshes_the_indicator_for_the_new_active_creature() -> void:
+	var config := _versus(
+		[[&"creature_wind_01", 5], [&"creature_earth_01", 5]], [&"creature_wind_01", 5]
+	)
+	_scene.start_battle(config)
+	await wait_frames(2)
+	assert_true(_scene.speed_tie_label.visible, "Precondition: identical leads start tied.")
+
+	_scene.engine.forced_roll = 0.0
+	_scene.press_entry(1)
+	assert_eq(_scene.current_menu(), BattleScene.Menu.PARTY)
+	_scene.press_entry(1)
+	await wait_frames(2)
+
+	assert_eq(_scene.engine.player.active().creature.species_id(), &"creature_earth_01")
+	assert_true(_scene.enemy_initiative_badge.visible)
+	assert_eq(_scene.enemy_initiative_badge.text, "GOES FIRST")
+	assert_false(_scene.speed_tie_label.visible)
+
+
+func test_move_hints_explain_nonzero_priority_with_its_limitation() -> void:
+	_scene.start_battle(_config())
+	await wait_frames(2)
+
+	var quick := _move_with_priority(2)
+	assert_string_contains(
+		_scene._move_hint(quick), "Priority +2: resolves before lower-priority actions."
+	)
+
+	var slow := _move_with_priority(-1)
+	assert_string_contains(
+		_scene._move_hint(slow), "Priority -1: resolves after higher-priority actions."
+	)
+
+
+func test_priority_zero_move_hints_make_no_priority_claim() -> void:
+	_scene.start_battle(_config())
+	await wait_frames(2)
+
+	var hint: String = _scene._move_hint(_move_with_priority(0))
+	assert_string_contains(hint, "Power 5")
+	assert_false(hint.contains("Priority"), "Zero priority needs no explanation.")
+
+
+func test_closing_the_battle_hides_every_initiative_indicator() -> void:
+	var config := _config()
+	config.player_party = [Content.spawn_creature(&"creature_fire_01", 20)]
+	_scene.start_battle(config)
+	await wait_frames(2)
+	assert_true(_scene.player_initiative_badge.visible, "Precondition: an indicator is on screen.")
+
+	_scene.engine.forced_roll = 0.0
+	_scene.press_entry(0)
+	_scene.press_entry(0)
+	await wait_frames(2)
+
+	assert_false(_scene.is_active())
+	assert_false(_scene.player_initiative_badge.visible)
+	assert_false(_scene.enemy_initiative_badge.visible)
+	assert_false(_scene.speed_tie_label.visible)

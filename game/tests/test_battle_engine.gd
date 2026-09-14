@@ -127,6 +127,57 @@ func test_priority_beats_speed() -> void:
 	)
 
 
+# --- Speed leader query (Increment 10) ---------------------------------------
+
+
+func test_speed_leader_reports_the_faster_active_side() -> void:
+	var player_leads := _start(_wild([[GUSTPIP, 5]], LOAMBUCK, 5), NEVER)
+	assert_true(
+		(
+			player_leads.player.active().effective_speed()
+			> player_leads.enemy.active().effective_speed()
+		)
+	)
+	assert_eq(player_leads.speed_leader(), BattleTeam.Side.PLAYER)
+
+	var enemy_leads := _start(_wild([[LOAMBUCK, 5]], GUSTPIP, 5), NEVER)
+	assert_true(
+		enemy_leads.enemy.active().effective_speed() > enemy_leads.player.active().effective_speed()
+	)
+	assert_eq(enemy_leads.speed_leader(), BattleTeam.Side.ENEMY)
+
+
+func test_speed_leader_returns_no_side_for_equal_effective_speed() -> void:
+	var engine := _start(_wild([[GUSTPIP, 5]], GUSTPIP, 5), NEVER)
+	assert_eq(engine.player.active().effective_speed(), engine.enemy.active().effective_speed())
+	assert_eq(engine.speed_leader(), BattleEvent.NO_SIDE)
+
+
+func test_speed_leader_uses_effective_speed_including_modifiers() -> void:
+	var engine := _start(_wild([[LOAMBUCK, 5]], LOAMBUCK, 5), NEVER)
+	assert_eq(engine.speed_leader(), BattleEvent.NO_SIDE, "Same species and level start tied.")
+	var swift := StatModifier.new()
+	swift.stat = Stats.Stat.SPEED
+	swift.target = StatModifier.Target.SELF
+	swift.percent = 50
+	engine.player.active().add_modifier(swift)
+	assert_gt(engine.player.active().effective_speed(), engine.enemy.active().effective_speed())
+	assert_eq(engine.speed_leader(), BattleTeam.Side.PLAYER, "A Speed modifier moves the leader.")
+
+
+func test_speed_leader_rolls_nothing_and_changes_no_state() -> void:
+	var queried := _start(_wild([[GUSTPIP, 5]], LOAMBUCK, 5), NEVER)
+	var untouched := _start(_wild([[GUSTPIP, 5]], LOAMBUCK, 5), NEVER)
+	var turn_before: int = queried.turn_number
+	var phase_before: int = queried.phase
+
+	queried.speed_leader()
+
+	assert_eq(queried.turn_number, turn_before)
+	assert_eq(queried.phase, phase_before)
+	assert_eq(queried.rng.randf(), untouched.rng.randf(), "The query consumed no random roll.")
+
+
 # --- Damage and accuracy ------------------------------------------------------
 
 

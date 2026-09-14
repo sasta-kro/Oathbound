@@ -136,6 +136,27 @@ func effectiveness_against_enemy(move: MoveData) -> float:
 	return BattleRules.type_multiplier(move.type, enemy.active().creature, config.type_chart)
 
 
+## Which side's active creature is faster by effective Speed, for the battle
+## screen's initiative indicator. A read-only comparison: it never rolls,
+## chooses an action, changes the phase, or advances the turn. Returns
+## [constant BattleEvent.NO_SIDE] when the speeds tie or no valid comparison
+## exists yet.
+func speed_leader() -> int:
+	if player == null or enemy == null:
+		return BattleEvent.NO_SIDE
+	var own: Battler = player.active()
+	var foe: Battler = enemy.active()
+	if own == null or foe == null or own.is_fainted() or foe.is_fainted():
+		return BattleEvent.NO_SIDE
+	var own_speed: int = own.effective_speed()
+	var foe_speed: int = foe.effective_speed()
+	if own_speed > foe_speed:
+		return BattleTeam.Side.PLAYER
+	if foe_speed > own_speed:
+		return BattleTeam.Side.ENEMY
+	return BattleEvent.NO_SIDE
+
+
 ## Random number in [0, 1). See [member forced_roll].
 func roll() -> float:
 	if forced_roll >= 0.0:
