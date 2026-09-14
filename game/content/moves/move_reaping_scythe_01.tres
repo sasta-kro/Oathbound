@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="MoveData" format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/move_data.gd" id="1_move"]
+[ext_resource type="Resource" path="res://content/vfx/vfx_slash_wind.tres" id="2_vfx"]
+
+[resource]
+script = ExtResource("1_move")
+id = &"move_reaping_scythe_01"
+display_name = "Reaping Scythe"
+description = "A wide, sweeping cut of a spectral scythe."
+type = 3
+power = 40
+accuracy = 90
+cooldown_turns = 2
+priority = 0
+vfx = ExtResource("2_vfx")

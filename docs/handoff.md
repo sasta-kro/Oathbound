@@ -19,6 +19,18 @@ Roughly 10 to 15 minutes of content against a 40 to 60 minute target.
 
 These are the most recent implementations. The next developer will most likely touch them first.
 
+### 2.0 Monster roster and the Area 1 boss (14 September 2026)
+
+**Files:** `tools/import_monster_sprites.py` (copies `assets/sprites/monster/*` into `game/assets/creatures/<name>/` and writes `content/sprites/<species>_battle.tres`); 17 new species (`creature_earth_03..06`, `fire_03..07`, `water_02..04`, `wind_02..06`), 10 new moves, 3 new abilities (`hellborn`, `bloodthirst`, `broken_oath`), `vfx_beam_fire`; Cinderclaw now uses the Demon_E art; `quest_main_03_the_black_knight`; `scripts/wild_creature.gd` (boss exports), `battle_config.gd` (`boss()`), `battle_engine.gd` (boss intro, bind reason, labels), `battle_scene.gd` (caption follows battle kind), `game_state.gd` (`defeated_bosses`, `record_boss_defeat`), `main.gd` (`_challenge_boss`, boss outcomes); `areas/area_one.tscn` and its layout (BlackKnight at the altar, Guardian moved down to the road's end, four new zones: SlagPit, LeechShallows, BatWood, SquireGraves); `tests/test_boss_battle.gd`.
+
+**How:** the Oathbreaker (Black Knight_C art, level 14, Earth/Fire) stands in front of the altar. It only accepts a challenge while the Scout's third main quest is active; E or F asks "Fight / Not yet". Losing restores it; winning raises the cap to 30 and it never returns. Boss stats were tuned with a headless simulation: a level 12-13 Emberling-led party of three wins roughly a quarter to half the time, a level-15 lead wins almost always.
+
+**Deliberate departure:** Spec 19 describes bosses as Oathkeepers with up to three creatures. The Area 1 boss is a single creature by request; the spec section is tagged accordingly. Swapping it for an Oathkeeper later only touches `main.gd` and the scene.
+
+**Element recolours:** the importer can rotate a red pack's colours to a Water (blue), Wind (green) or Earth (brown) palette; folders get a `_water`/`_wind`/`_earth` suffix. Rillfin (blue Lava Slime) and Gustpip (green Hellbat) lost their placeholders; Leechling, Mirelash, Dreadmere (blue) and Hexcaller (green) were recoloured to match their type; three new Water species use recolours: Brinehound (Hellhound), Mistwisp (Ghostfire, Water/Wind) and Deepcrag (Flame Golem, Water/Earth), plus the move Brine Fang. To add one, append a row to `MONSTERS` and rerun the script.
+
+**Not placed yet:** Brinehound, Mistwisp, Deepcrag, Bulwark, Ironhorn, Cinderhulk, Ashhound, Wispflame, Hammerhorn, Mirelash, Dreadmere, Quillimp, Pyrewing, Gloomgaze and Hexcaller exist as content but spawn nowhere. They are meant for Areas 2 and 3 (or evolve from placed species).
+
 ### 2.1 Quest system (uncommitted at handoff)
 
 **Files:** `scripts/quests/quest_data.gd`, `quest_objective.gd`, `quest_log.gd`; `content/quests/*.tres` (4 quests); `scripts/content/content_registry.gd` (quest index + validation); `scripts/world_actor.gd` (`quest_ids`, `actor_id()`, `current_quest()`); `scripts/game_state.gd` (quest wrappers, rewards, save keys); `scripts/main.gd::_talk_to` (dialogue branches); `scripts/dialogue_panel.gd::ask()` (choice list); `scripts/ui/field_ui.gd::_quests` (log page, L key, notices); `assets/ui/icons/quests.svg`; `tests/test_quest_system.gd` (22 tests); `docs/map_authoring.md` (Quests section); the two area scenes and their layouts (giver `quest_ids`).
@@ -54,7 +66,7 @@ Earlier milestones, oldest first: creature system with abilities and growth (`df
 - **CI:** none.
 - **`AGENTS.md`:** listed in `.gitignore` and absent. The README used to reference it. Agent conventions now live in `architecture.md` section 12. If a tracked agent file is wanted, un-ignore and add it.
 - **`areas/test_01.tscn`:** legacy test room, not reachable in the game. Safe to delete along with `scripts/dev/test_01_generator.gd` and `bake_test_01.gd`, or keep as a scratch area.
-- **Placeholders in play:** Cinderclaw, Rillfin and Gustpip have no art. NPCs other than the Knight are coloured boxes with labels. That is by design (Spec 23) and tests cover both paths.
+- **Placeholders in play:** every species has art now. NPCs other than the Knight are coloured boxes with labels. That is by design (Spec 23) and tests cover both paths.
 - **Assets and licences:** `assets/creatures/*/SOURCE.md` and `assets/player/male_hero/SOURCE.md` record sources. The golem, demon and blood-monster packs have no licence recorded ("fill in before release"). The male hero pack is unused and non-commercial. The hero uses `assets/characters/character_13.png` (superretroworld). Fonts are OFL.
 
 ## 4. Known gaps and small bugs
@@ -64,9 +76,9 @@ Ordered by how likely they are to bite.
 1. **A fifth move would be lost.** No replace-or-refuse choice and no relearn NPC exist; the engine skips the move with a message. Every shipped species has exactly four learnset moves, so this cannot trigger with current content, but the first species with five moves will hit it. `CreatureInstance.replace_move`, `forget_move`, `relearnable_moves` already exist.
 2. **Journal BOUND is not persisted.** It reflects the current party only. Add `bound_species` to `GameState` next to `seen_species`, set it on bind and starter, save it.
 3. **XP policy differs by path.** Battle: participants. Rout and quest rewards: whole party. Pick one for routs (lead only recommended) and change `GameState.award_defeat_rewards`.
-4. **Level cap never rises.** Anything past level 20 needs a boss victory to write `GameState.level_cap`.
+4. **Level cap stops at 30.** The Area 1 boss raises it; 40 waits for an Area 2 boss (add its id to `GameState.BOSS_LEVEL_CAPS`).
 5. **Stun survives a switch-out** and fires on the creature's next action. Clear it in `BattleEngine._switch` if unwanted.
-6. **Battle caption is hard-coded "WILD ENCOUNTER"** (`battle_scene.gd::_polish_chrome`). Make it follow `config.is_wild` when trainers arrive.
+6. **Hand-placed Guardian respawns** each time Area One is re-entered; only bosses are persisted.
 7. **Field HUD location label is hard-coded "THE VERDANT REACH"**; should come from the area.
 8. **Party defeat heals in place** with no revival location or world reset.
 9. **Deprecated GUT calls:** the run summary reports 14 deprecation warnings. Harmless; look at them when upgrading GUT.

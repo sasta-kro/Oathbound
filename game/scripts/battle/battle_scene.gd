@@ -55,6 +55,10 @@ const BIND_FAIL_SECONDS := 0.3
 ## When each extra seal closes during a bind attempt, in seconds.
 const BIND_CLOSE_DELAYS: Array[float] = [0.3, 0.7]
 
+const WILD_CAPTION := "W I L D   E N C O U N T E R"
+const TRAINER_CAPTION := "O A T H K E E P E R   B A T T L E"
+const BOSS_CAPTION := "B O S S   B A T T L E"
+
 const HP_HEALTHY_COLOR := Color("a1cdb5")
 const HP_WARY_COLOR := Color("e0b23a")
 const HP_CRITICAL_COLOR := Color("d1453b")
@@ -160,6 +164,8 @@ var _status_rows: Dictionary = {}
 var _hp_tweens: Dictionary = {}
 var _shake_tween: Tween
 var _idle_row_style: StyleBoxEmpty
+## The spaced-out heading above the stage; follows the kind of battle.
+var _caption: Label
 var _selected_row_style: StyleBoxFlat
 
 @onready var root: Control = $Root
@@ -220,6 +226,7 @@ func is_active() -> bool:
 func start_battle(config: BattleConfig) -> void:
 	engine = BattleEngine.new(config)
 	_awaiting_dismiss = false
+	_caption.text = caption_for(config)
 	_close_menu()
 	for side: int in _visuals:
 		(_visuals[side] as CreatureVisual).hide()
@@ -232,6 +239,13 @@ func start_battle(config: BattleConfig) -> void:
 		return
 	await _play_events(events)
 	_continue()
+
+
+## The heading shown above the stage for [param config].
+static func caption_for(config: BattleConfig) -> String:
+	if config.is_boss:
+		return BOSS_CAPTION
+	return WILD_CAPTION if config.is_wild else TRAINER_CAPTION
 
 
 func current_menu() -> Menu:
@@ -982,8 +996,8 @@ func _polish_chrome() -> void:
 		label.add_theme_color_override("font_color", OathTheme.GOLD)
 		label.add_theme_font_size_override("font_size", 13)
 	message_label.add_theme_font_size_override("font_size", 16)
-	var caption := OathTheme.label("W I L D   E N C O U N T E R", 9, OathTheme.GOLD)
-	caption.position = Vector2(362, 36)
-	caption.size.x = 236
-	caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	root.add_child(caption)
+	_caption = OathTheme.label(WILD_CAPTION, 9, OathTheme.GOLD)
+	_caption.position = Vector2(362, 36)
+	_caption.size.x = 236
+	_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	root.add_child(_caption)

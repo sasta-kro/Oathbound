@@ -6,6 +6,7 @@
 [ext_resource type="Shader" path="res://shaders/foliage_sway.gdshader" id="4_4p6n8"]
 [ext_resource type="PackedScene" path="res://scenes/world_actor.tscn" id="5_10dds"]
 [ext_resource type="Script" path="res://scripts/world_actor.gd" id="6_th2jq"]
+[ext_resource type="SpriteFrames" path="res://content/sprites/npc_scout.tres" id="npc_scout_frames"]
 [ext_resource type="PackedScene" path="res://scenes/wild_creature.tscn" id="7_b42mx"]
 [ext_resource type="Script" path="res://scripts/wild_creature.gd" id="8_o8h4y"]
 [ext_resource type="Resource" path="res://content/creatures/creature_fire_02.tres" id="9_fq0iv"]
@@ -18,6 +19,11 @@
 [ext_resource type="Resource" path="res://content/creatures/creature_wind_01.tres" id="16_dupcp"]
 [ext_resource type="PackedScene" path="res://scenes/area_exit.tscn" id="17_mvasf"]
 [ext_resource type="Script" path="res://scripts/world/area_exit.gd" id="18_7gq5w"]
+[ext_resource type="Resource" path="res://content/creatures/creature_earth_05.tres" id="19_boss"]
+[ext_resource type="Resource" path="res://content/creatures/creature_fire_03.tres" id="20_slagling"]
+[ext_resource type="Resource" path="res://content/creatures/creature_water_02.tres" id="21_leechling"]
+[ext_resource type="Resource" path="res://content/creatures/creature_wind_02.tres" id="22_scorchbat"]
+[ext_resource type="Resource" path="res://content/creatures/creature_earth_03.tres" id="23_squire"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_vwtsa"]
 shader = ExtResource("4_4p6n8")
@@ -113,17 +119,31 @@ position = Vector2(120, 648)
 script = ExtResource("6_th2jq")
 display_name = "SCOUT"
 body_color = Color(0.35, 0.6, 0.85, 1)
+sprite_frames = ExtResource("npc_scout_frames")
 facing = &"left"
 dialogue_line = "Scout: Follow the road and you will not get lost. It bends past the pond and climbs to the ruins. The altar is at the very end. Nobody goes further."
-quest_ids = Array[StringName]([&"quest_main_02_the_ruined_road"])
+quest_ids = Array[StringName]([&"quest_main_02_the_ruined_road", &"quest_main_03_the_black_knight"])
 
 [node name="Guardian" type="CharacterBody2D" parent="Actors" unique_id=1692816607 groups=["world_actors"] instance=ExtResource("7_b42mx")]
-position = Vector2(840, -360)
+position = Vector2(504, -312)
 script = ExtResource("8_o8h4y")
 species = ExtResource("9_fq0iv")
 level = 8
 disposition = 1
 leash_radius = 96.0
+
+[node name="BlackKnight" type="CharacterBody2D" parent="Actors" groups=["world_actors"] instance=ExtResource("7_b42mx")]
+position = Vector2(840, -408)
+script = ExtResource("8_o8h4y")
+species = ExtResource("19_boss")
+level = 14
+ability_index = 0
+boss_id = &"boss_area_01"
+required_quest = &"quest_main_03_the_black_knight"
+challenge_line = "The Black Knight: So. Another who would pass the altar. I swore an oath to guard this place, and I broke it, and still I stand. Come, then. Break yourself against me."
+sealed_line = "A knight in black armour stands before the altar, still as stone. Its helm turns to follow you, but it does not move. Perhaps the Scout knows something about it."
+victory_line = "The Black Knight: The oath... is finally... ended. The black armour cracks apart and scatters into light. The way past the altar is open."
+leash_radius = 0.0
 
 [node name="SpawnZones" type="Node2D" parent="." unique_id=759478234]
 
@@ -177,6 +197,44 @@ radius_in_cells = 2.0
 max_alive = 1
 level_min = 6
 level_max = 7
+disposition = 1
+
+[node name="SlagPit" type="Node2D" parent="SpawnZones" instance=ExtResource("10_uyjoe")]
+position = Vector2(840, 72)
+script = ExtResource("11_uibdh")
+species = ExtResource("20_slagling")
+radius_in_cells = 3.0
+max_alive = 2
+level_min = 4
+level_max = 6
+
+[node name="LeechShallows" type="Node2D" parent="SpawnZones" instance=ExtResource("10_uyjoe")]
+position = Vector2(936, 408)
+script = ExtResource("11_uibdh")
+species = ExtResource("21_leechling")
+radius_in_cells = 2.5
+max_alive = 2
+level_min = 4
+level_max = 6
+
+[node name="BatWood" type="Node2D" parent="SpawnZones" instance=ExtResource("10_uyjoe")]
+position = Vector2(-744, -24)
+script = ExtResource("11_uibdh")
+species = ExtResource("22_scorchbat")
+radius_in_cells = 3.0
+max_alive = 2
+level_min = 3
+level_max = 5
+disposition = 1
+
+[node name="SquireGraves" type="Node2D" parent="SpawnZones" instance=ExtResource("10_uyjoe")]
+position = Vector2(312, -552)
+script = ExtResource("11_uibdh")
+species = ExtResource("23_squire")
+radius_in_cells = 2.0
+max_alive = 2
+level_min = 7
+level_max = 9
 disposition = 1
 
 [node name="Exits" type="Node2D" parent="." unique_id=1722430673]

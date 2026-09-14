@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="MoveData" format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/move_data.gd" id="1_move"]
+[ext_resource type="Resource" path="res://content/vfx/vfx_beam_fire.tres" id="2_vfx"]
+
+[resource]
+script = ExtResource("1_move")
+id = &"move_hellfire_beam_01"
+display_name = "Hellfire Beam"
+description = "A searing beam of hellfire that can set the target burning."
+type = 0
+power = 45
+accuracy = 85
+cooldown_turns = 3
+priority = 0
+status = 2
+status_chance = 20
+status_duration_turns = 3
+vfx = ExtResource("2_vfx")

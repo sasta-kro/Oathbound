@@ -1,0 +1,48 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/creature_species.gd" id="1_species"]
+[ext_resource type="Script" path="res://scripts/creatures/learnset_entry.gd" id="2_entry"]
+[ext_resource type="Script" path="res://scripts/creatures/ability_data.gd" id="3_ability"]
+[ext_resource type="Resource" path="res://content/growth/growth_bulky.tres" id="4_growth"]
+[ext_resource type="SpriteFrames" path="res://content/sprites/creature_earth_05_battle.tres" id="5_sprite"]
+[ext_resource type="Resource" path="res://content/abilities/ability_broken_oath.tres" id="ability_0"]
+[ext_resource type="Resource" path="res://content/moves/move_shield_bash_01.tres" id="move_shield_bash"]
+[ext_resource type="Resource" path="res://content/moves/move_hellfire_beam_01.tres" id="move_hellfire_beam"]
+[ext_resource type="Resource" path="res://content/moves/move_war_cry_01.tres" id="move_war_cry"]
+[ext_resource type="Resource" path="res://content/moves/move_oath_sunder_01.tres" id="move_oath_sunder"]
+
+[sub_resource type="Resource" id="Learn_shield_bash_1"]
+script = ExtResource("2_entry")
+move = ExtResource("move_shield_bash")
+
+[sub_resource type="Resource" id="Learn_hellfire_beam_8"]
+script = ExtResource("2_entry")
+level = 8
+move = ExtResource("move_hellfire_beam")
+
+[sub_resource type="Resource" id="Learn_war_cry_10"]
+script = ExtResource("2_entry")
+level = 10
+move = ExtResource("move_war_cry")
+
+[sub_resource type="Resource" id="Learn_oath_sunder_12"]
+script = ExtResource("2_entry")
+level = 12
+move = ExtResource("move_oath_sunder")
+
+[resource]
+script = ExtResource("1_species")
+id = &"creature_earth_05"
+display_name = "Oathbreaker"
+primary_type = 1
+has_secondary_type = true
+secondary_type = 0
+base_hp = 80
+base_attack = 46
+base_defense = 44
+base_speed = 40
+growth = ExtResource("4_growth")
+learnset = Array[ExtResource("2_entry")]([SubResource("Learn_shield_bash_1"), SubResource("Learn_hellfire_beam_8"), SubResource("Learn_war_cry_10"), SubResource("Learn_oath_sunder_12")])
+ability_pool = Array[ExtResource("3_ability")]([ExtResource("ability_0")])
+base_bind_chance = 0.05
+battle_sprite = ExtResource("5_sprite")

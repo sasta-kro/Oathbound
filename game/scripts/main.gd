@@ -23,6 +23,7 @@ const TITLE_SCENE_PATH := "res://scenes/title_screen.tscn"
 const AUTOSAVED_TEXT := "Autosaved"
 const SAVED_TEXT := "Saved to %s"
 const BATTLE_MUSIC_ID: StringName = &"battle"
+const BOSS_FIGHT_OPTIONS: PackedStringArray = ["Fight", "Not yet"]
 
 @onready var area: WorldArea = $Area
 @onready var player: Player = $Player
@@ -152,6 +153,10 @@ func _wire_area() -> void:
 			zone.creature_reached_player.connect(_on_creature_reached_player)
 	# Creatures placed by hand in the area rather than by a zone.
 	for creature: WildCreature in get_tree().get_nodes_in_group(WildCreature.CREATURE_GROUP):
+		# A beaten boss never comes back (Specification 19).
+		if creature.is_boss() and GameState.has_defeated_boss(creature.boss_id):
+			creature.mark_defeated()
+			continue
 		if not creature.reached_player.is_connected(_on_creature_reached_player):
 			creature.reached_player.connect(_on_creature_reached_player)
 	for exit: AreaExit in get_tree().get_nodes_in_group(AreaExit.GROUP):
@@ -260,7 +265,11 @@ func _interact() -> void:
 	if actor == null:
 		return
 	if actor is WildCreature:
-		_start_wild_battle(actor as WildCreature)
+		var creature := actor as WildCreature
+		if creature.is_boss():
+			_challenge_boss(creature)
+		else:
+			_start_wild_battle(creature)
 		return
 	_talk_to(actor)
 
@@ -361,6 +370,13 @@ func _strike() -> void:
 		_start_wild_battle(target)
 		return
 
+	if target.is_boss():
+		# A boss is not cut down in the field; swinging at it is a challenge.
+		await partner.strike_toward(struck_point)
+		if _strike_can_still_land(target):
+			_challenge_boss(target)
+		return
+
 	var defender: CreatureInstance = target.encounter_instance()
 	var amount: int = OverworldStrike.player_strike_damage(lead, defender, Content.type_chart)
 	# The dash is awaited so the blow visibly lands before the world changes
@@ -413,6 +429,23 @@ func _rout(creature: WildCreature, defeated: CreatureInstance) -> void:
 	GameState.report_quest_event(QuestObjective.Kind.DEFEAT, defeated.species_id())
 	_autosave()
 	_refresh_world_activity()
+
+
+## Stepping up to a boss. It names the fight and lets the player walk away,
+## and refuses outright until its required quest is under way
+## (Specification 5.3).
+func _challenge_boss(creature: WildCreature) -> void:
+	var can_fight: bool = (
+		creature.required_quest == &"" or GameState.quests.is_active(creature.required_quest)
+	)
+	if not can_fight:
+		_open_dialogue(creature.challenge_text(false))
+		return
+	var reply: int = await _ask(creature.challenge_text(true), BOSS_FIGHT_OPTIONS)
+	if reply == 0 and creature.is_interactable() and not battle_scene.is_active():
+		_start_wild_battle(creature)
+	elif reply == 1:
+		_close_dialogue()
 
 
 ## The closest interactable actor the player can touch, or null.
@@ -481,7 +514,11 @@ func _start_wild_battle(
 	if opening == BattleConfig.Opening.DISADVANTAGE:
 		_apply_ambush(enemy)
 
-	var config := BattleConfig.wild(GameState.party, enemy, Content.type_chart, opening)
+	var config := (
+		BattleConfig.boss(GameState.party, enemy, Content.type_chart, opening)
+		if creature.is_boss()
+		else BattleConfig.wild(GameState.party, enemy, Content.type_chart, opening)
+	)
 	config.binding_scrolls = GameState.binding_scrolls
 	config.has_bind_destination = not GameState.party_is_full()
 	config.level_cap = GameState.level_cap
@@ -524,9 +561,12 @@ func _on_battle_finished(engine: BattleEngine) -> void:
 	# effect played under it would come and go unseen.
 	var taken: WildCreature = null
 	var was_bound: bool = false
+	var boss_lines: PackedStringArray = []
 	match engine.outcome:
 		BattleEngine.Outcome.VICTORY:
 			taken = creature
+			if creature != null and creature.is_boss():
+				boss_lines = GameState.record_boss_defeat(creature.boss_id)
 			GameState.report_quest_event(QuestObjective.Kind.DEFEAT, species)
 		BattleEngine.Outcome.ESCAPED:
 			# The creature keeps whatever damage the battle did to it, and is
@@ -545,6 +585,9 @@ func _on_battle_finished(engine: BattleEngine) -> void:
 			# (Specification 20.1 steps 2, 4 and 5).
 			GameState.apply_defeat_penalty()
 			GameState.heal_party()
+			# A boss recovers too, so the next attempt is a fair fight.
+			if creature != null and creature.is_boss():
+				creature.restore_encounter()
 			_open_dialogue(
 				"You wake by the road. Your Oathbound have been revived, but %d coins are gone."
 				% GameState.DEFEAT_CURRENCY_PENALTY
@@ -563,6 +606,12 @@ func _on_battle_finished(engine: BattleEngine) -> void:
 	# Not awaited: the world is the player's again while the light fades.
 	if taken != null:
 		taken.play_rout(not was_bound)
+		if taken.is_boss():
+			if not taken.victory_line.is_empty():
+				_open_dialogue(taken.victory_line)
+			# Shown directly: the reward filter would drop a line about levels.
+			for line: String in boss_lines:
+				field_ui.show_notice(line)
 	_refresh_world_activity()
 
 

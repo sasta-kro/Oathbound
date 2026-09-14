@@ -20,3 +20,8 @@ pose is column 1.
   `res://content/sprites/player_hero.tres`.
 - `character_14.png` - the Knight NPC, used by
   `res://content/sprites/npc_knight.tres`.
+- `character_4.png` - the Elder, used by `res://content/sprites/npc_elder.tres`.
+- `character_7.png` - the Merchant, used by
+  `res://content/sprites/npc_merchant.tres`.
+- `character_29.png` - the Child, used by `res://content/sprites/npc_child.tres`.
+- `character_27.png` - the Scout, used by `res://content/sprites/npc_scout.tres`.

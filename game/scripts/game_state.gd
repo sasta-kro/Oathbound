@@ -13,6 +13,8 @@ extends Node
 
 signal experience_awarded(creature: CreatureInstance, before_xp: int, before_level: int, applied: int)
 signal party_changed
+## A boss fell for the first time (Specification 19).
+signal boss_defeated(boss_id: StringName)
 ## Emitted after a save reached disk, manual or automatic.
 signal game_saved(slot: int)
 ## A quest was accepted, refused, abandoned or completed.
@@ -30,6 +32,12 @@ const STARTING_BINDING_SCROLLS := 5
 const PARTY_CAPACITY := 3
 ## Level cap before the Area 1 boss falls (Specification 9.4).
 const INITIAL_LEVEL_CAP := 20
+## The level cap each boss victory raises the party to (Specification 5.2,
+## 9.4). Boss ids come from [member WildCreature.boss_id].
+const BOSS_LEVEL_CAPS: Dictionary = {
+	&"boss_area_01": 30,
+}
+const LEVEL_CAP_RAISED_TEXT := "Your Oathbound can now grow to level %d."
 ## Provisional defeat penalty (Specification 20.1).
 const DEFEAT_CURRENCY_PENALTY := 50
 
@@ -38,6 +46,9 @@ var party: Array[CreatureInstance] = []
 var binding_scrolls: int = STARTING_BINDING_SCROLLS
 var currency: int = 0
 var level_cap: int = INITIAL_LEVEL_CAP
+## Ids of every boss beaten, as a set. Beaten bosses never return
+## (Specification 19).
+var defeated_bosses: Dictionary = {}
 ## Standing with every quest (Specification 17). Built in [method _ready]
 ## because it reads content from the registry.
 var quests: QuestLog
@@ -82,6 +93,7 @@ func new_game() -> void:
 	binding_scrolls = STARTING_BINDING_SCROLLS
 	currency = 0
 	level_cap = INITIAL_LEVEL_CAP
+	defeated_bosses.clear()
 	quests.clear()
 	clear_location()
 	_resume_pending = false
@@ -159,6 +171,10 @@ func to_dict() -> Dictionary:
 	for id: StringName in seen_species:
 		seen.append(String(id))
 	seen.sort()
+	var bosses: Array = []
+	for id: StringName in defeated_bosses:
+		bosses.append(String(id))
+	bosses.sort()
 	return {
 		"saved_at": last_saved_at,
 		"play_seconds": int(play_seconds),
@@ -167,6 +183,7 @@ func to_dict() -> Dictionary:
 		"binding_scrolls": binding_scrolls,
 		"currency": currency,
 		"level_cap": level_cap,
+		"defeated_bosses": bosses,
 		"quests": quests.to_dict(),
 		"location":
 		{
@@ -198,6 +215,9 @@ func from_dict(data: Dictionary) -> void:
 	binding_scrolls = maxi(0, int(data.get("binding_scrolls", STARTING_BINDING_SCROLLS)))
 	currency = maxi(0, int(data.get("currency", 0)))
 	level_cap = clampi(int(data.get("level_cap", INITIAL_LEVEL_CAP)), 1, CreatureRules.GLOBAL_MAX_LEVEL)
+	defeated_bosses.clear()
+	for id: Variant in data.get("defeated_bosses", []):
+		defeated_bosses[StringName(String(id))] = true
 	quests.from_dict(data.get("quests", {}) if data.get("quests") is Dictionary else {})
 	play_seconds = float(data.get("play_seconds", 0))
 	last_saved_at = int(data.get("saved_at", 0))
@@ -308,6 +328,26 @@ func _award_xp(creature: CreatureInstance, xp: int) -> PackedStringArray:
 		)
 	if result.evolution_ready:
 		lines.append(BattleRules.EVOLUTION_READY_TEXT % creature.display_name())
+	return lines
+
+
+func has_defeated_boss(boss_id: StringName) -> bool:
+	return defeated_bosses.has(boss_id)
+
+
+## Records a boss victory and raises the level cap it unlocks. Returns the
+## player-facing lines describing what changed, empty when the boss had
+## already been beaten.
+func record_boss_defeat(boss_id: StringName) -> PackedStringArray:
+	var lines: PackedStringArray = []
+	if boss_id == &"" or has_defeated_boss(boss_id):
+		return lines
+	defeated_bosses[boss_id] = true
+	var new_cap: int = int(BOSS_LEVEL_CAPS.get(boss_id, 0))
+	if new_cap > level_cap:
+		level_cap = mini(new_cap, CreatureRules.GLOBAL_MAX_LEVEL)
+		lines.append(LEVEL_CAP_RAISED_TEXT % level_cap)
+	boss_defeated.emit(boss_id)
 	return lines
 
 

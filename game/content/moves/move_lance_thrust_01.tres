@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="MoveData" format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/move_data.gd" id="1_move"]
+[ext_resource type="Resource" path="res://content/vfx/vfx_toss_stone.tres" id="2_vfx"]
+
+[resource]
+script = ExtResource("1_move")
+id = &"move_lance_thrust_01"
+display_name = "Lance Thrust"
+description = "A quick thrust that strikes before the target can move."
+type = 1
+power = 20
+accuracy = 100
+cooldown_turns = 1
+priority = 1
+vfx = ExtResource("2_vfx")

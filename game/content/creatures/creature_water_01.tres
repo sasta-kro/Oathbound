@@ -11,6 +11,7 @@
 [ext_resource type="Resource" path="res://content/abilities/ability_toxic_ward.tres" id="8_toxic_ward"]
 [ext_resource type="Resource" uid="uid://clfgmuu7pwbi6" path="res://content/abilities/ability_swiftfoot.tres" id="9_swiftfoot"]
 
+[ext_resource type="SpriteFrames" path="res://content/sprites/creature_water_01_battle.tres" id="10_battle_sprite"]
 [sub_resource type="Resource" id="Learn_water_jet_1"]
 script = ExtResource("2_entry")
 move = ExtResource("4_water_jet")
@@ -43,3 +44,4 @@ growth = ExtResource("3_growth")
 learnset = Array[ExtResource("2_entry")]([SubResource("Learn_water_jet_1"), SubResource("Learn_venom_spit_8"), SubResource("Learn_tide_crash_14"), SubResource("Learn_guard_stance_20")])
 ability_pool = Array[ExtResource("1_m8uec")]([ExtResource("8_toxic_ward"), ExtResource("9_swiftfoot")])
 base_bind_chance = 0.45
+battle_sprite = ExtResource("10_battle_sprite")

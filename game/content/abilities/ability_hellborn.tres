@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="AbilityData" format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/ability_data.gd" id="1_ability"]
+
+[resource]
+script = ExtResource("1_ability")
+id = &"ability_hellborn"
+display_name = "Hellborn"
+description = "Born in fire, the creature cannot be burned and shrugs off part of every Fire move."
+damage_taken_multiplier = 0.8
+has_taken_type_filter = true
+taken_type_filter = 0
+immune_statuses = Array[int]([2])

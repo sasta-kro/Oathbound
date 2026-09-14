@@ -11,6 +11,7 @@
 [ext_resource type="Resource" uid="uid://clfgmuu7pwbi6" path="res://content/abilities/ability_swiftfoot.tres" id="8_swiftfoot"]
 [ext_resource type="Resource" path="res://content/abilities/ability_windrider.tres" id="9_windrider"]
 
+[ext_resource type="SpriteFrames" path="res://content/sprites/creature_wind_01_battle.tres" id="10_battle_sprite"]
 [sub_resource type="Resource" id="Learn_gust_1"]
 script = ExtResource("2_entry")
 move = ExtResource("4_gust")
@@ -43,3 +44,4 @@ growth = ExtResource("3_growth")
 learnset = Array[ExtResource("2_entry")]([SubResource("Learn_gust_1"), SubResource("Learn_stone_toss_7"), SubResource("Learn_gale_slash_13"), SubResource("Learn_quake_step_19")])
 ability_pool = Array[ExtResource("1_3vj6k")]([ExtResource("8_swiftfoot"), ExtResource("9_windrider")])
 base_bind_chance = 0.5
+battle_sprite = ExtResource("10_battle_sprite")

@@ -10,6 +10,7 @@
 [ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_quake_step_01.tres" id="7_quake_step"]
 [ext_resource type="Resource" path="res://content/abilities/ability_ember_body.tres" id="8_ember_body"]
 [ext_resource type="Resource" uid="uid://c7scajbgbopvj" path="res://content/abilities/ability_searing_touch.tres" id="9_searing_touch"]
+[ext_resource type="SpriteFrames" path="res://content/sprites/creature_fire_02_battle.tres" id="10_battle_sprite"]
 
 [sub_resource type="Resource" id="Learn_ember_1"]
 script = ExtResource("2_entry")
@@ -42,3 +43,4 @@ growth = ExtResource("3_growth")
 learnset = Array[ExtResource("2_entry")]([SubResource("Learn_ember_1"), SubResource("Learn_guard_stance_6"), SubResource("Learn_flame_burst_12"), SubResource("Learn_quake_step_20")])
 ability_pool = Array[ExtResource("1_5dyf1")]([ExtResource("8_ember_body"), ExtResource("9_searing_touch")])
 base_bind_chance = 0.22
+battle_sprite = ExtResource("10_battle_sprite")

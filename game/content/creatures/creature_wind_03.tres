@@ -1,0 +1,50 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/creature_species.gd" id="1_species"]
+[ext_resource type="Script" path="res://scripts/creatures/learnset_entry.gd" id="2_entry"]
+[ext_resource type="Script" path="res://scripts/creatures/ability_data.gd" id="3_ability"]
+[ext_resource type="Resource" path="res://content/growth/growth_standard.tres" id="4_growth"]
+[ext_resource type="SpriteFrames" path="res://content/sprites/creature_wind_03_battle.tres" id="5_sprite"]
+[ext_resource type="Resource" path="res://content/abilities/ability_windrider.tres" id="ability_0"]
+[ext_resource type="Resource" path="res://content/abilities/ability_swiftfoot.tres" id="ability_1"]
+[ext_resource type="Resource" path="res://content/moves/move_gust_01.tres" id="move_gust"]
+[ext_resource type="Resource" path="res://content/moves/move_ember_01.tres" id="move_ember"]
+[ext_resource type="Resource" path="res://content/moves/move_hex_bolt_01.tres" id="move_hex_bolt"]
+[ext_resource type="Resource" path="res://content/moves/move_gale_slash_01.tres" id="move_gale_slash"]
+[ext_resource type="Resource" path="res://content/creatures/creature_wind_04.tres" id="6_evo"]
+
+[sub_resource type="Resource" id="Learn_gust_1"]
+script = ExtResource("2_entry")
+move = ExtResource("move_gust")
+
+[sub_resource type="Resource" id="Learn_ember_5"]
+script = ExtResource("2_entry")
+level = 5
+move = ExtResource("move_ember")
+
+[sub_resource type="Resource" id="Learn_hex_bolt_10"]
+script = ExtResource("2_entry")
+level = 10
+move = ExtResource("move_hex_bolt")
+
+[sub_resource type="Resource" id="Learn_gale_slash_15"]
+script = ExtResource("2_entry")
+level = 15
+move = ExtResource("move_gale_slash")
+
+[resource]
+script = ExtResource("1_species")
+id = &"creature_wind_03"
+display_name = "Quillimp"
+primary_type = 3
+base_hp = 40
+base_attack = 48
+base_defense = 36
+base_speed = 52
+growth = ExtResource("4_growth")
+learnset = Array[ExtResource("2_entry")]([SubResource("Learn_gust_1"), SubResource("Learn_ember_5"), SubResource("Learn_hex_bolt_10"), SubResource("Learn_gale_slash_15")])
+evolves_into = ExtResource("6_evo")
+evolution_level = 18
+ability_pool = Array[ExtResource("3_ability")]([ExtResource("ability_0"), ExtResource("ability_1")])
+base_bind_chance = 0.45
+battle_sprite = ExtResource("5_sprite")

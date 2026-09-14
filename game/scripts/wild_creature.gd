@@ -65,6 +65,11 @@ const DEFEAT_VFX: VfxPreset = preload("res://content/vfx/vfx_defeat_sparks.tres"
 ## they swallow the creature they are meant to be happening to.
 const WORLD_VFX_SCALE: float = 0.42
 
+## A boss is drawn this much larger than an ordinary creature of its size.
+const BOSS_ART_SCALE: float = 1.35
+const DEFAULT_CHALLENGE_LINE := "%s stands in your way. Fight?"
+const DEFAULT_SEALED_LINE := "%s does not stir."
+
 ## Overworld health bar, shown only once a creature has actually been hurt.
 const HEALTH_BAR_SIZE := Vector2(44.0, 5.0)
 const HEALTH_BAR_OFFSET_Y: float = -20.0
@@ -87,6 +92,21 @@ const HEALTH_CRITICAL_FRACTION: float = 0.2
 ## Slot in the species ability pool, or [constant RANDOM_ABILITY] to roll one
 ## per encounter. Shown as a dropdown of the species' ability names.
 @export var ability_index: int = RANDOM_ABILITY
+
+@export_group("Boss")
+## Stable id of the boss this creature is (Specification 19), or empty for an
+## ordinary creature. A boss waits to be challenged, cannot be routed by an
+## overworld strike, fled from or bound, and stays beaten across saves.
+@export var boss_id: StringName = &""
+## Quest that must be in progress before the boss accepts a challenge
+## (Specification 5.3). Empty means it can be fought at any time.
+@export var required_quest: StringName = &""
+## Put to the player before the fight, with the choice to walk away.
+@export_multiline var challenge_line: String = ""
+## Shown instead of the challenge while [member required_quest] is not active.
+@export_multiline var sealed_line: String = ""
+## Shown once the boss has fallen.
+@export_multiline var victory_line: String = ""
 
 @export_group("Behaviour")
 @export var disposition: Disposition = Disposition.NEUTRAL
@@ -135,6 +155,8 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
 	add_to_group(CREATURE_GROUP)
+	if is_boss() and visual != null:
+		visual.scale *= BOSS_ART_SCALE
 	_rng.randomize()
 	if home_position == Vector2.ZERO:
 		home_position = global_position
@@ -238,6 +260,26 @@ func encounter_instance() -> CreatureInstance:
 	if _encounter == null:
 		_encounter = spawn_instance(_rng)
 	return _encounter
+
+
+func is_boss() -> bool:
+	return boss_id != &""
+
+
+## What the boss says when the player steps up: the challenge, or the sealed
+## line when [param can_fight] is false.
+func challenge_text(can_fight: bool) -> String:
+	var creature_name: String = species.display_name if species != null else "The creature"
+	if can_fight:
+		return challenge_line if not challenge_line.is_empty() else DEFAULT_CHALLENGE_LINE % creature_name
+	return sealed_line if not sealed_line.is_empty() else DEFAULT_SEALED_LINE % creature_name
+
+
+## Throws away the damage this creature has taken, so a boss the party lost to
+## is whole again for the next attempt.
+func restore_encounter() -> void:
+	_encounter = null
+	queue_redraw()
 
 
 ## Applies a blow landed in the overworld and leaves the creature reeling.

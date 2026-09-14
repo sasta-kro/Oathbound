@@ -11,6 +11,8 @@ extends RefCounted
 enum Phase { NOT_STARTED, CHOOSING, REPLACING, ENDED }
 enum Outcome { NONE, VICTORY, DEFEAT, ESCAPED, BOUND }
 
+const BOSS_INTRO_TEXT := "%s bars your way!"
+
 var config: BattleConfig
 var player: BattleTeam
 var enemy: BattleTeam
@@ -62,11 +64,11 @@ func start() -> Array[BattleEvent]:
 	phase = Phase.CHOOSING
 	var foe: Battler = enemy.active()
 	foe.participated = true
-	var intro: String = (
-		"A wild %s appeared!" % foe.display_name()
-		if config.is_wild
-		else "%s sent out %s!" % [config.enemy_name, foe.display_name()]
-	)
+	var intro: String = "A wild %s appeared!" % foe.display_name()
+	if config.is_boss:
+		intro = BOSS_INTRO_TEXT % foe.display_name()
+	elif not config.is_wild:
+		intro = "%s sent out %s!" % [config.enemy_name, foe.display_name()]
 	events.append(BattleEvent.create(BattleEvent.Kind.SEND_OUT, BattleTeam.Side.ENEMY, intro))
 
 	var own: Battler = player.active()
@@ -107,7 +109,9 @@ func _announce_opening(foe: Battler, events: Array[BattleEvent]) -> void:
 ## that is unavailable (Specification 11.2, 15.4).
 func options() -> Dictionary:
 	var bind_reason := ""
-	if not config.is_wild:
+	if config.is_boss:
+		bind_reason = "%s will never swear an oath to you." % enemy.active().display_name()
+	elif not config.is_wild:
 		bind_reason = "You can't bind another Oathkeeper's creature."
 	elif binding_scrolls <= 0:
 		bind_reason = "You have no Binding Scrolls left."
@@ -648,8 +652,8 @@ func _end(final_outcome: Outcome, events: Array[BattleEvent]) -> void:
 		Outcome.VICTORY:
 			text = (
 				"You defeated the wild %s!" % enemy.active().display_name()
-				if config.is_wild
-				else "You defeated %s!" % config.enemy_name
+				if config.is_wild and not config.is_boss
+				else "You defeated %s!" % _enemy_title()
 			)
 			if currency_earned > 0:
 				text += " You earned %d coins." % currency_earned
@@ -689,6 +693,13 @@ func _percent_roll_passes(chance_percent: int) -> bool:
 func _label(battler: Battler) -> String:
 	if battler.side == BattleTeam.Side.PLAYER:
 		return battler.display_name()
+	if config.is_boss:
+		return battler.display_name()
 	if config.is_wild:
 		return "Wild %s" % battler.display_name()
 	return "Foe %s" % battler.display_name()
+
+
+## Who the player beat: the Oathkeeper, or the boss creature itself.
+func _enemy_title() -> String:
+	return enemy.active().display_name() if config.is_boss else config.enemy_name

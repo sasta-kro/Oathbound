@@ -171,7 +171,7 @@ Main progression is structurally linear even if the internal layouts are explora
 
 Physical gates, NPC blockades, locked passages, or similar in-world blockers should represent locked progression. Players cannot enter a later main area before its preceding boss has been defeated.
 
-**[Not started]** No bosses, no gates. The level cap is 20 (`GameState.level_cap`) and nothing raises it yet. The cap is saved, so raising it is a matter of a boss victory writing the new value.
+**[Partial]** The Area 1 boss exists (see 19). Beating it records `boss_area_01` in `GameState.defeated_bosses` and raises the level cap to 30 (`GameState.BOSS_LEVEL_CAPS`). Area 2 does not exist, so no physical gate is unlocked yet.
 
 ### 5.3 Provisional Required Pre-Boss Objectives
 
@@ -378,7 +378,7 @@ Each creature species defines its baseline identity, including:
 - Ability pool (Section 9.9).
 - Visual/audio references when assets exist.
 
-**[Implemented]** as `CreatureSpecies` resources under `content/creatures/`. Six species exist: Emberling (Fire, evolves into Cinderclaw at 16), Cinderclaw (Fire), Loambuck (Earth), Rimeshard (Earth), Rillfin (Water), Gustpip (Wind/Earth). Three have battle art; the rest use placeholders.
+**[Implemented]** as `CreatureSpecies` resources under `content/creatures/`. 26 species exist, with three evolution lines besides Emberling to Cinderclaw (Slagling to Cinderhulk, Quillimp to Pyrewing, Mirelash to Dreadmere). Every species has battle art. Sprites for the monster packs are imported by `tools/import_monster_sprites.py`, which also recolours a pack into a Water, Wind or Earth palette so one sheet can serve several elements.
 
 Individual creatures of the same species do **not** have Pokemon-style IVs, natures, or hidden randomized stat variation in the MVP. Same-species individuals follow the same underlying species progression unless modified by level, moves, statuses, or temporary effects.
 
@@ -436,7 +436,7 @@ Current player level caps:
 
 The cap is tied to story progression, not the physical area the player currently occupies.
 
-**[Partial]** Cap 20 is enforced and saved; nothing raises it (no bosses).
+**[Partial]** Cap 20 is enforced and saved; the Area 1 boss raises it to 30. Nothing raises it to 40 yet (no Area 2 boss).
 
 ### 9.5 XP Distribution
 
@@ -1167,7 +1167,7 @@ Bosses do not require unique boss-only creatures in the MVP.
 
 Defeated bosses do not respawn or become repeatable fights.
 
-**[Not started]**
+**[Partial]** The Area 1 boss is the Oathbreaker (Black Knight), a level-14 Earth/Fire creature at the Area One altar, placed as a `WildCreature` with `boss_id`. **Departure from this section and 4.6:** it is a boss creature, not an Oathkeeper with a roster, by request. It uses `BattleConfig.boss()` (no running, no binding, "BOSS BATTLE" caption), accepts a challenge only while `quest_main_03_the_black_knight` is active (the pre-boss objective of 5.3), is fully restored after the party loses, and stays beaten across saves. No boss AI profile, items or switching yet.
 
 ## 20. Defeat, Recovery, and Soft-Lock Prevention
 
@@ -1235,7 +1235,7 @@ Autosave occurs at meaningful state boundaries, including:
 
 When an event is dangerous, save before entering the event so a crash does not destroy prior progression.
 
-**[Implemented]** for: entering the field, entering an area, after every battle and rout, after a healing service, after every quest state change, on returning to the title screen, and on window close outside a battle. Buying, selling and boss victories do not exist yet.
+**[Implemented]** for: entering the field, entering an area, after every battle and rout, after a healing service, after every quest state change, on returning to the title screen, and on window close outside a battle. Boss victories autosave through the after-battle boundary. Buying and selling do not exist yet.
 
 ### 21.3 Persisted State
 
@@ -1262,7 +1262,7 @@ The save must preserve at least:
 
 The game remains playable after the ending and the completed state is saved.
 
-**[Partial]** Saved today: play time, timestamp, party (species, level, XP, HP, moves, ability), seen species, scrolls, currency, level cap, quest states and progress, area and player position and facing. Display settings persist separately in `user://settings.cfg`. Everything else in the list has no state yet. Roaming creatures are not saved; the area respawns them on load.
+**[Partial]** Saved today: play time, timestamp, party (species, level, XP, HP, moves, ability), seen species, scrolls, currency, level cap, defeated bosses, quest states and progress, area and player position and facing. Display settings persist separately in `user://settings.cfg`. Everything else in the list has no state yet. Roaming creatures are not saved; the area respawns them on load.
 
 ## 22. User Interface and Controls
 
@@ -1455,19 +1455,19 @@ These targets guide content production but must not be hard-coded into core game
 |---|---:|---:|
 | Main explorable areas | 3 | 1 (Area One) |
 | Central hub | 1 | 1 (the town, also the starter settlement) |
-| Bosses | 3 | 0 |
+| Bosses | 3 | 1 (Area 1, a creature) |
 | Ordinary hostile Oathkeepers | 4-5 per area | 0 |
 | Friendly NPC baseline | 1-3 per area | Town 4, Area One 1 |
 | Side quests | 2-5 per area | 2 (both given in town) |
-| Main quests | one line | 2 |
-| Creature species | Approx. 15-25 | 6 |
-| Moves | Approx. 25-40 | 10 |
-| Abilities | (new) | 7 |
+| Main quests | one line | 3 |
+| Creature species | Approx. 15-25 | 26 |
+| Moves | Approx. 25-40 | 21 |
+| Abilities | (new) | 10 |
 | Active party size | 3 | 3 |
 | Oathbound move slots | 4 | 4 |
 | Elemental types | 4 | 4 |
 | MVP status conditions | 3 | 3 |
-| Player level cap | 40, progression-gated | 20, never raised |
+| Player level cap | 40, progression-gated | 20, raised to 30 by the Area 1 boss |
 | Creature Hotel capacity | Provisional 30 stored Oathbound | none |
 
 ## 25. Changeability and Modularity Requirements

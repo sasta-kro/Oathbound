@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="MoveData" format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/move_data.gd" id="1_move"]
+[ext_resource type="Resource" path="res://content/vfx/vfx_burst_fire.tres" id="2_vfx"]
+
+[resource]
+script = ExtResource("1_move")
+id = &"move_ash_fang_01"
+display_name = "Ash Fang"
+description = "Fangs wreathed in cinders. A reliable bite that sometimes leaves a burn."
+type = 0
+power = 25
+accuracy = 95
+cooldown_turns = 0
+priority = 0
+status = 2
+status_chance = 15
+status_duration_turns = 3
+vfx = ExtResource("2_vfx")

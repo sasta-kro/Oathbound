@@ -289,7 +289,10 @@ func test_the_town_npcs_carry_their_quests() -> void:
 	assert_eq((town.get_node("Actors/Child") as WorldActor).quest_ids, [CHILD_QUEST_ID] as Array[StringName])
 	assert_eq((town.get_node("Actors/Merchant") as WorldActor).quest_ids, [MERCHANT_QUEST_ID] as Array[StringName])
 	var meadow: Node = autofree((load(AREA_ONE) as PackedScene).instantiate())
-	assert_eq((meadow.get_node("Actors/Scout") as WorldActor).quest_ids, [SECOND_MAIN_QUEST_ID] as Array[StringName])
+	assert_eq(
+		(meadow.get_node("Actors/Scout") as WorldActor).quest_ids,
+		[SECOND_MAIN_QUEST_ID, &"quest_main_03_the_black_knight"] as Array[StringName]
+	)
 
 
 func _load_main() -> Node2D:

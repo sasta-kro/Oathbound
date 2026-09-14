@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="MoveData" format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/move_data.gd" id="1_move"]
+[ext_resource type="Resource" path="res://content/vfx/vfx_motes_guard.tres" id="2_vfx"]
+[ext_resource type="Script" path="res://scripts/creatures/stat_modifier.gd" id="3_modifier"]
+
+[sub_resource type="Resource" id="Modifier_0"]
+script = ExtResource("3_modifier")
+stat = 1
+target = 0
+percent = 35
+duration_turns = 3
+
+[resource]
+script = ExtResource("1_move")
+id = &"move_war_cry_01"
+display_name = "War Cry"
+description = "A roar that stokes the user's fury, sharply raising its Attack."
+type = 1
+power = 0
+accuracy = 100
+cooldown_turns = 4
+priority = 0
+stat_modifiers = Array[ExtResource("3_modifier")]([SubResource("Modifier_0")])
+vfx = ExtResource("2_vfx")

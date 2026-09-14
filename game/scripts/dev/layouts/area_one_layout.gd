@@ -18,6 +18,7 @@ const SIZE := Vector2i(50, 36)
 const SEED: int = 0xA1EA
 
 const TOWN_SCENE := "res://areas/town.tscn"
+const SCOUT_SPRITE_FRAMES := "res://content/sprites/npc_scout.tres"
 const ROAD_WIDTH: int = 3
 const ROAD: Array = [
 	Vector2i(25, 35),
@@ -41,6 +42,11 @@ const SPECIES := {
 	"cinderclaw": "res://content/creatures/creature_fire_02.tres",
 	"rillfin": "res://content/creatures/creature_water_01.tres",
 	"gustpip": "res://content/creatures/creature_wind_01.tres",
+	"slagling": "res://content/creatures/creature_fire_03.tres",
+	"leechling": "res://content/creatures/creature_water_02.tres",
+	"scorchbat": "res://content/creatures/creature_wind_02.tres",
+	"hollow_squire": "res://content/creatures/creature_earth_03.tres",
+	"oathbreaker": "res://content/creatures/creature_earth_05.tres",
 }
 const NEUTRAL: int = 0
 const HOSTILE: int = 1
@@ -146,9 +152,10 @@ func _camp(p: AreaPainter) -> void:
 		{
 			"display_name": "SCOUT",
 			"body_color": Color(0.35, 0.6, 0.85, 1),
+			"sprite_frames": load(SCOUT_SPRITE_FRAMES),
 			"facing": &"left",
 			"dialogue_line": "Scout: Follow the road and you will not get lost. It bends past the pond and climbs to the ruins. The altar is at the very end. Nobody goes further.",
-			"quest_ids": Array[StringName]([&"quest_main_02_the_ruined_road"]),
+			"quest_ids": Array[StringName]([&"quest_main_02_the_ruined_road", &"quest_main_03_the_black_knight"]),
 		}
 	)
 
@@ -199,10 +206,31 @@ func _creatures(p: AreaPainter) -> void:
 	p.add_spawn_zone("TidePool", Vector2i(30, 26), _zone("rillfin", 3.0, 2, 4, 6, NEUTRAL))
 	p.add_spawn_zone("GaleRise", Vector2i(21, 9), _zone("gustpip", 3.0, 2, 4, 6, HOSTILE))
 	p.add_spawn_zone("CinderRuins", Vector2i(33, 15), _zone("cinderclaw", 2.0, 1, 6, 7, HOSTILE))
+	p.add_spawn_zone("SlagPit", Vector2i(42, 19), _zone("slagling", 3.0, 2, 4, 6, NEUTRAL))
+	p.add_spawn_zone("LeechShallows", Vector2i(44, 26), _zone("leechling", 2.5, 2, 4, 6, NEUTRAL))
+	p.add_spawn_zone("BatWood", Vector2i(9, 17), _zone("scorchbat", 3.0, 2, 3, 5, HOSTILE))
+	p.add_spawn_zone("SquireGraves", Vector2i(31, 6), _zone("hollow_squire", 2.0, 2, 7, 9, HOSTILE))
+	# The Area 1 boss in front of the altar. It only accepts a challenge while
+	# the Scout's last quest is under way, and stays beaten once it falls.
+	p.add_creature(
+		"BlackKnight",
+		Vector2i(42, 9),
+		{
+			"species": load(SPECIES["oathbreaker"]),
+			"level": 14,
+			"ability_index": 0,
+			"boss_id": &"boss_area_01",
+			"required_quest": &"quest_main_03_the_black_knight",
+			"challenge_line": "The Black Knight: So. Another who would pass the altar. I swore an oath to guard this place, and I broke it, and still I stand. Come, then. Break yourself against me.",
+			"sealed_line": "A knight in black armour stands before the altar, still as stone. Its helm turns to follow you, but it does not move. Perhaps the Scout knows something about it.",
+			"victory_line": "The Black Knight: The oath... is finally... ended. The black armour cracks apart and scatters into light. The way past the altar is open.",
+			"leash_radius": 0.0,
+		}
+	)
 	# The altar's guardian: placed by hand, so it never respawns once beaten.
 	p.add_creature(
 		"Guardian",
-		Vector2i(42, 10),
+		Vector2i(35, 11),
 		{
 			"species": load(SPECIES["cinderclaw"]),
 			"level": 8,

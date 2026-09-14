@@ -16,6 +16,9 @@ var enemy_party: Array[CreatureInstance] = []
 var is_wild: bool = true
 ## False for mandatory Oathkeeper battles (Specification 11.2).
 var can_run: bool = true
+## A boss encounter (Specification 19): no running, no binding, and the battle
+## text names the boss instead of calling it wild.
+var is_boss: bool = false
 ## Shown for trainer battles. Empty for wild encounters.
 var enemy_name: String = ""
 var binding_scrolls: int = 0
@@ -44,6 +47,21 @@ static func wild(
 	config.can_run = true
 	config.type_chart = chart
 	config.opening = how_it_started
+	return config
+
+
+## A boss creature met in the field rather than sent out by an Oathkeeper.
+## It keeps the wild battle's rewards and single foe, but it cannot be fled
+## from or bound, so the only way past it is to win.
+static func boss(
+	party: Array[CreatureInstance],
+	boss_creature: CreatureInstance,
+	chart: TypeChart,
+	how_it_started: Opening = Opening.NEUTRAL,
+) -> BattleConfig:
+	var config := wild(party, boss_creature, chart, how_it_started)
+	config.is_boss = true
+	config.can_run = false
 	return config
 
 
