@@ -1,6 +1,6 @@
 # Architecture
 
-How the Godot project under `game/` is put together. This is the implementation companion to the gameplay specification; where they disagree, the spec is the rule and this file describes what the code does today.
+How the Godot project under `game/` is put together. This is the implementation companion to the gameplay specification; where they disagree, the spec is the rule and this file describes system structure. See `docs/implementation_status.md` for the current feature and content status.
 
 Engine: Godot 4.7.2, Compatibility renderer, typed GDScript, GUT 9.7.1. Open `game/` as the project.
 
@@ -91,6 +91,8 @@ Level cap is passed in by whoever awards XP (`GameState.level_cap`), so the crea
 
 Every random roll goes through `engine.roll()`; tests set `forced_roll` or a seed. All numbers (damage, hit chance, bind chance, run chance, XP, coins, turn order) are static functions in `BattleRules`, so balance edits touch one file.
 
+Binding remains available in ordinary wild battles while a Binding Scroll and party destination exist. Boss battles and trainer battles disable binding. Boss battles also disable running.
+
 `BattleScene` is presentation only: it renders the engine's `BattleEvent` list one beat at a time (`_present`), builds the command/moves/party menus from `engine.options()`, and emits `battle_finished(engine)` after covering the screen with the transition. `skip_presentation = true` makes it synchronous for tests.
 
 `main.gd::_on_battle_finished` applies the outcome to `GameState` (scrolls, coins, bound creature, defeat penalty), reports quest events, autosaves, and plays the creature's rout or back-off.
@@ -108,7 +110,7 @@ Every random roll goes through `engine.roll()`; tests set `forced_roll` or a see
 - `OverworldPartner`: the lead creature following a breadcrumb trail; `strike_toward(point)` plays the lunge.
 - `OverworldStrike` (pure): damage of a strike or ambush, best move selection, rout check. Wraps `BattleRules.damage` so overworld and battle damage can never drift.
 
-Input routing in the field: `main._unhandled_input` handles Esc (settings), F (strike) and E (interact) unless a menu, dialogue, battle or transition owns the screen. `FieldUI._input` handles Esc (field menu), Tab/P, J, L. `DialoguePanel._unhandled_input` swallows W/S/E while a question is open. `_refresh_world_activity()` is the single place that freezes or resumes the player, partner and every creature.
+Input routing in the field: E interacts. On a normal wild creature it starts a neutral battle. F performs the overworld strike; a one-hit defeat routes a normal creature without opening battle, while a survivor enters battle wounded with player advantage. A boss converts either E interaction or an F strike into its challenge prompt, and F does not damage a boss in the overworld. `FieldUI._input` handles Esc (field menu), Tab/P, J, L. `DialoguePanel._unhandled_input` swallows W/S/E while a question is open. `_refresh_world_activity()` is the single place that freezes or resumes the player, partner and every creature.
 
 ## 7. Quests
 
@@ -136,7 +138,7 @@ Boundary autosaves are called from `main.gd` (`_autosave`). The field also recor
 - `VfxPlayer` + `VfxPreset` + `shaders/vfx_shapes.gdshader`: every effect. `VfxPlayer.play_move` picks the move's preset or an element default.
 - `ScreenTransition` + `shaders/tile_wipe.gdshader`: `cover()` then `reveal()`; the battle scene covers itself on close.
 - `WorldAtmosphere` + `shaders/world_atmosphere.gdshader`, `shaders/foliage_sway.gdshader`: look of the overworld. Toggle `enabled` for screenshots.
-- `OathTheme`: palette, fonts, styleboxes and small builders (`label`, `heading`, `button`, `chip`, `bar`, `portrait`, `gallery`) used by every screen. Design sizes assume the 960x540 canvas.
+- `OathTheme`: palette, fonts, `StyleBoxFlat` resources and small builders (`label`, `heading`, `button`, `chip`, `bar`, `portrait`, `gallery`) used by every screen. Design sizes assume the 960x540 canvas. The current code-built interface is a functional temporary presentation. A later custom pixel-art UI pass can replace or decorate it without changing gameplay logic.
 - `FieldUI`: HUD (top-right glass icons, bottom-left lead status), the overlay pages (menu, party, details, journal, quests, saves) and the reward/notice cards.
 
 ## 10. Maps

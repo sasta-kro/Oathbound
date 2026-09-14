@@ -1,7 +1,9 @@
 # Handoff: Project Status and Roadmap
 
-**As of:** 12 September 2026, commit `71f7b25` ("added save system") plus uncommitted quest-system work.
-**Tests:** 192 / 192 GUT tests passing.
+This file contains historical handoff details and can lag behind the current branch. See `docs/implementation_status.md` for the current verified feature and content status.
+
+**Historical snapshot basis:** 12 September 2026, commit `71f7b25` ("added save system") plus the quest-system work later committed in `35f862e`.
+**Current verification at commit `ea9ffe8`:** 203 / 203 GUT tests passing.
 
 Read in this order: this file, then `Oathbound_Specification_v0.5.md`, then `architecture.md`. `spec_audit_2026-09-12.md` explains every divergence found when the spec was revised.
 
@@ -23,7 +25,7 @@ These are the most recent implementations. The next developer will most likely t
 
 **Files:** `tools/import_monster_sprites.py` (copies `assets/sprites/monster/*` into `game/assets/creatures/<name>/` and writes `content/sprites/<species>_battle.tres`); 17 new species (`creature_earth_03..06`, `fire_03..07`, `water_02..04`, `wind_02..06`), 10 new moves, 3 new abilities (`hellborn`, `bloodthirst`, `broken_oath`), `vfx_beam_fire`; Cinderclaw now uses the Demon_E art; `quest_main_03_the_black_knight`; `scripts/wild_creature.gd` (boss exports), `battle_config.gd` (`boss()`), `battle_engine.gd` (boss intro, bind reason, labels), `battle_scene.gd` (caption follows battle kind), `game_state.gd` (`defeated_bosses`, `record_boss_defeat`), `main.gd` (`_challenge_boss`, boss outcomes); `areas/area_one.tscn` and its layout (BlackKnight at the altar, Guardian moved down to the road's end, four new zones: SlagPit, LeechShallows, BatWood, SquireGraves); `tests/test_boss_battle.gd`.
 
-**How:** the Oathbreaker (Black Knight_C art, level 14, Earth/Fire) stands in front of the altar. It only accepts a challenge while the Scout's third main quest is active; E or F asks "Fight / Not yet". Losing restores it; winning raises the cap to 30 and it never returns. Boss stats were tuned with a headless simulation: a level 12-13 Emberling-led party of three wins roughly a quarter to half the time, a level-15 lead wins almost always.
+**How:** the Oathbreaker (Black Knight_C art, level 14, Earth/Fire) stands in front of the altar. It only accepts a challenge while the Scout's third main quest is active. E interacts and opens the "Fight / Not yet" prompt. F normally performs an overworld strike, but bosses cannot be damaged or routed in the overworld, so an F strike against the Oathbreaker plays the lunge and then opens the same prompt. Normal wild creatures keep the full F behavior: a one-hit defeat skips battle, while a survivor enters battle wounded with player advantage. Losing to the boss restores it; winning raises the cap to 30 and it never returns. Boss stats were tuned with a headless simulation: a level 12-13 Emberling-led party of three wins roughly a quarter to half the time, a level-15 lead wins almost always.
 
 **Deliberate departure:** Spec 19 describes bosses as Oathkeepers with up to three creatures. The Area 1 boss is a single creature by request; the spec section is tagged accordingly. Swapping it for an Oathkeeper later only touches `main.gd` and the scene.
 

@@ -1,8 +1,8 @@
-[gd_resource type="TileSet" format=3]
+[gd_resource type="TileSet" format=3 uid="uid://bk78dfe417ae7"]
 
-[ext_resource type="Texture2D" path="res://assets/tilesets/ft_ground.png" id="1_7nd50"]
-[ext_resource type="Texture2D" path="res://assets/tilesets/ft_road.png" id="2_2ff3m"]
-[ext_resource type="Texture2D" path="res://assets/tilesets/ft_water.png" id="3_a5dqq"]
+[ext_resource type="Texture2D" uid="uid://nmkqt4cafnqv" path="res://assets/tilesets/ft_ground.png" id="1_7nd50"]
+[ext_resource type="Texture2D" uid="uid://d01lcpwr35uh7" path="res://assets/tilesets/ft_road.png" id="2_2ff3m"]
+[ext_resource type="Texture2D" uid="uid://c16sesywc2phe" path="res://assets/tilesets/ft_water.png" id="3_a5dqq"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_wymhv"]
 resource_name = "ft_ground"
