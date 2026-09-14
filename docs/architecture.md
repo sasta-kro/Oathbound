@@ -114,6 +114,7 @@ Input routing in the field: `main._unhandled_input` handles Esc (settings), F (s
 - `QuestData` / `QuestObjective`: content.
 - `QuestLog` (RefCounted, in `GameState.quests`): status per quest id, progress tallies, `report(kind, target)` advances every active quest that matches, `to_dict()`/`from_dict()`.
 - `GameState.accept_quest / refuse_quest / abandon_quest / complete_quest / report_quest_event` wrap the log and emit `quest_changed` and `quest_objective_advanced`.
+- `FieldUI._quests` is the log page (L); `FieldUI.refresh_quest_tracker` rebuilds the field tracker on `quest_changed` / `quest_objective_advanced`.
 - `main._talk_to(actor)`: reports TALK, then asks the actor for `current_quest()` (ready > active > offerable) and runs the right dialogue branch with `DialoguePanel.ask`.
 - Event sources: `_report_area_reached` (REACH), `_rout` and `_on_battle_finished` VICTORY (DEFEAT), BOUND (BIND), `_talk_to` (TALK).
 - `FieldUI._quests` renders the log; `_on_quest_changed` / `_on_quest_objective_advanced` show notices.

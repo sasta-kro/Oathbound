@@ -400,3 +400,28 @@ func test_the_quest_log_page_lists_active_and_fulfilled_quests() -> void:
 	assert_false(main.player.movement_enabled)
 	main.field_ui.close()
 	assert_true(main.player.movement_enabled)
+
+
+func test_the_field_tracker_follows_active_quests() -> void:
+	var main: Node2D = _load_main()
+	var tracker: PanelContainer = main.field_ui.quest_tracker
+	var rows: VBoxContainer = main.field_ui._tracker_rows
+	await get_tree().process_frame
+	assert_false(tracker.visible, "No active quests, no tracker.")
+
+	GameState.accept_quest(_content(MERCHANT_QUEST_ID))
+	await get_tree().process_frame
+	assert_true(tracker.visible)
+	var entry: Node = rows.find_child(String(MERCHANT_QUEST_ID), false, false)
+	assert_not_null(entry)
+	assert_string_contains(entry.get_child(1).text, "0 / 2")
+
+	GameState.report_quest_event(QuestObjective.Kind.DEFEAT, &"creature_water_01")
+	assert_string_contains(rows.find_child(String(MERCHANT_QUEST_ID), false, false).get_child(1).text, "1 / 2")
+	GameState.report_quest_event(QuestObjective.Kind.DEFEAT, &"creature_water_01")
+	assert_eq(rows.find_child(String(MERCHANT_QUEST_ID), false, false).get_child(1).text, "Return to the Merchant")
+
+	GameState.complete_quest(_content(MERCHANT_QUEST_ID))
+	await get_tree().process_frame
+	assert_eq(rows.get_child_count(), 0)
+	assert_false(tracker.visible, "A fulfilled quest leaves the tracker.")

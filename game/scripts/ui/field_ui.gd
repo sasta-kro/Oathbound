@@ -2,6 +2,7 @@ class_name FieldUI
 extends CanvasLayer
 ## Field HUD, journal navigation and transient rewards share one visual language.
 signal changed
+const TRACKED_QUEST_LIMIT := 3
 var root: Control
 var overlay: PanelContainer
 var body: VBoxContainer
@@ -12,6 +13,8 @@ var status_text: Label
 var health_bar: ProgressBar
 var status_hp: Label
 var status_portrait: Control
+var quest_tracker: PanelContainer
+var _tracker_rows: VBoxContainer
 var shade: ColorRect
 var nav_buttons: Dictionary = {}
 var page := ""
@@ -72,8 +75,11 @@ func _ready() -> void:
 	GameState.experience_awarded.connect(show_xp)
 	GameState.quest_changed.connect(_on_quest_changed)
 	GameState.quest_objective_advanced.connect(_on_quest_objective_advanced)
+	GameState.quest_changed.connect(func(_quest, _status): refresh_quest_tracker())
+	GameState.quest_objective_advanced.connect(func(_quest, _index, _done): refresh_quest_tracker())
 	world.settings_menu.closed.connect(_restore_menu_focus)
 	refresh_hud()
+	refresh_quest_tracker()
 
 func _build_hud() -> void:
 	hud = HBoxContainer.new()
@@ -95,6 +101,7 @@ func _build_hud() -> void:
 		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT and _lead != null:
 			_details(_lead))
 	root.add_child(status_panel)
+	_build_quest_tracker()
 
 func refresh_hud() -> void:
 	if _location_tween != null: _location_tween.kill()
@@ -156,6 +163,7 @@ func _rebuild_status(creature: CreatureInstance) -> void:
 func _process(_delta: float) -> void:
 	hud.visible = not world.battle_scene.is_active() and not is_open()
 	status_panel.visible = hud.visible and not world.dialogue_panel.is_open()
+	quest_tracker.visible = status_panel.visible and _tracker_rows.get_child_count() > 0
 	var lead := GameState.lead_creature()
 	if lead != _lead: _rebuild_status(lead)
 	if lead == null:
@@ -637,6 +645,67 @@ func _quest_card(stack: VBoxContainer, quest: QuestData, fulfilled: bool) -> voi
 		if quest.reward_binding_scrolls > 0: parts.append("%d Binding Scroll%s" % [quest.reward_binding_scrolls, "" if quest.reward_binding_scrolls == 1 else "s"])
 		if quest.reward_xp > 0: parts.append("%d EXP each" % quest.reward_xp)
 		card.add_child(OathTheme.label("REWARD  ·  " + "  ·  ".join(parts), 9, OathTheme.MUTED))
+
+## The field's quest tracker (Specification 17.6): a small glass card under
+## the area title naming each active quest and the next thing it asks for,
+## so the player need not open the log to remember. Clicking it opens the log.
+func _build_quest_tracker() -> void:
+	quest_tracker = PanelContainer.new()
+	quest_tracker.name = "QuestTracker"
+	quest_tracker.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+	quest_tracker.offset_left = 14
+	quest_tracker.offset_top = 40
+	quest_tracker.add_theme_stylebox_override("panel", _glass_frame(8))
+	quest_tracker.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	quest_tracker.tooltip_text = "Open the quest log · L"
+	quest_tracker.gui_input.connect(func(event: InputEvent):
+		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+			open_page("quests"))
+	root.add_child(quest_tracker)
+	quest_tracker.add_child(preload("res://scripts/ui/hud_glass.gd").new())
+	_tracker_rows = VBoxContainer.new()
+	_tracker_rows.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_tracker_rows.add_theme_constant_override("separation", 6)
+	quest_tracker.add_child(_tracker_rows)
+	quest_tracker.hide()
+
+func refresh_quest_tracker() -> void:
+	_clear(_tracker_rows)
+	var active := GameState.quests.active_quests()
+	for quest: QuestData in active.slice(0, TRACKED_QUEST_LIMIT):
+		var tint := OathTheme.GOLD if quest.is_main() else OathTheme.JADE
+		var entry := VBoxContainer.new()
+		entry.name = String(quest.id)
+		entry.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		entry.add_theme_constant_override("separation", 1)
+		_tracker_rows.add_child(entry)
+		var title := OathTheme.label(("◆  " if quest.is_main() else "◇  ") + quest.title, 11, tint)
+		title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		entry.add_child(title)
+		var step := OathTheme.label(_next_step(quest), 10, OathTheme.PAPER)
+		step.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		step.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		step.custom_minimum_size.x = 214
+		entry.add_child(step)
+	if active.size() > TRACKED_QUEST_LIMIT:
+		var more := OathTheme.label("+%d more in the quest log" % (active.size() - TRACKED_QUEST_LIMIT), 9, OathTheme.MUTED)
+		more.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_tracker_rows.add_child(more)
+	quest_tracker.reset_size()
+
+## What the player should do next for [param quest]: turn it in when ready,
+## otherwise its first unmet objective, with a tally where it asks for more
+## than one.
+func _next_step(quest: QuestData) -> String:
+	if GameState.quests.is_ready(quest):
+		return "Return to the %s" % String(quest.giver).capitalize()
+	for index: int in quest.objectives.size():
+		var objective: QuestObjective = quest.objectives[index]
+		if objective == null or GameState.quests.is_objective_done(quest, index): continue
+		if objective.required() > 1:
+			return "%s  ·  %d / %d" % [objective.description, GameState.quests.progress(quest, index), objective.required()]
+		return objective.description
+	return ""
 
 func _on_quest_changed(quest: QuestData, status: QuestLog.Status) -> void:
 	match status:

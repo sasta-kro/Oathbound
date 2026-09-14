@@ -1033,7 +1033,7 @@ Reacceptance may use different dialogue, such as the NPC asking whether the play
 - The quest log should be non-intrusive.
 - Objective text should use natural descriptions rather than raw implementation counters where possible.
 
-**[Partial]** The quest log page lists active quests (main first) with objective ticks and tallies, then fulfilled ones; notices announce acceptance, progress and completion. There is no map and therefore no markers.
+**[Partial]** The quest log page lists active quests (main first) with objective ticks and tallies, then fulfilled ones; notices announce acceptance, progress and completion. A small field tracker under the area title (up to three active quests, main first) names each quest's next objective with its tally, or who to return to; clicking it opens the log. There is no map and therefore no markers.
 
 ## 18. Dialogue and Choice
 
