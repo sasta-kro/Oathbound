@@ -3,16 +3,19 @@ extends RefCounted
 ## Elemental type identity for creatures and moves (Specification 10.1).
 ##
 ## Types are an append-only enum: saved resources store the integer value, so
-## existing entries must never be reordered or removed. Adding a fifth type
+## existing entries must never be reordered or removed. Adding a type
 ## means appending it here and adding its rows to the [TypeChart] resource.
 
-enum Type { FIRE, EARTH, WATER, WIND }
+enum Type { FIRE, EARTH, WATER, WIND, NATURE, ROT, STEEL }
 
 const DISPLAY_NAMES: Dictionary = {
 	Type.FIRE: "Fire",
 	Type.EARTH: "Earth",
 	Type.WATER: "Water",
 	Type.WIND: "Wind",
+	Type.NATURE: "Nature",
+	Type.ROT: "Rot",
+	Type.STEEL: "Steel",
 }
 
 const IDS: Dictionary = {
@@ -20,6 +23,9 @@ const IDS: Dictionary = {
 	Type.EARTH: &"earth",
 	Type.WATER: &"water",
 	Type.WIND: &"wind",
+	Type.NATURE: &"nature",
+	Type.ROT: &"rot",
+	Type.STEEL: &"steel",
 }
 
 

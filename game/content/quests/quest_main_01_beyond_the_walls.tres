@@ -1,20 +1,18 @@
-[gd_resource type="Resource" script_class="QuestData" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="QuestData" format=3 uid="uid://c2l15mr4jkgmx"]
 
-[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
-[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+[ext_resource type="Script" uid="uid://2bdtgfl2lw0d" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" uid="uid://c5eoug1dcgomt" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
 
 [sub_resource type="Resource" id="Objective_reach_meadow"]
 script = ExtResource("2_objective")
 kind = 3
 target = &"res://areas/area_one.tscn"
-count = 1
 description = "Pass through the north gate into the meadow"
 
 [sub_resource type="Resource" id="Objective_find_scout"]
 script = ExtResource("2_objective")
 kind = 2
 target = &"scout"
-count = 1
 description = "Find the Scout at the camp by the road"
 
 [resource]
@@ -24,11 +22,9 @@ title = "Beyond the Walls"
 kind = 0
 summary = "A scout of the town is camped past the north gate and has sent no word in days. The Elder wants to know what he has seen."
 giver = &"elder"
-requires = &""
 objectives = Array[ExtResource("2_objective")]([SubResource("Objective_reach_meadow"), SubResource("Objective_find_scout")])
 reward_currency = 40
 reward_binding_scrolls = 1
-reward_xp = 0
 offer_line = "Elder: You have the look of someone who means to leave the walls. Good. A scout of ours is camped past the north gate and has sent no word in days. Find him and hear what he has seen. Will you?"
 accept_option = "I'll find him."
 refuse_option = "Not today."

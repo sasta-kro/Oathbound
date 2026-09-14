@@ -7,6 +7,7 @@ const CINDERCLAW := &"creature_fire_02"
 const LOAMBUCK := &"creature_earth_01"
 const RILLFIN := &"creature_water_01"
 const GUSTPIP := &"creature_wind_01"
+const HEXCALLER := &"creature_wind_06"
 
 ## Forced rolls: 0.0 makes every chance succeed, 0.99 makes only sure things
 ## succeed (see [member BattleEngine.forced_roll]).
@@ -183,7 +184,8 @@ func test_speed_leader_rolls_nothing_and_changes_no_state() -> void:
 
 func test_damage_is_deterministic_and_matches_the_rules() -> void:
 	# Rillfin is the faster side, so the first HIT is its Water Jet landing.
-	var engine := _start(_wild([[RILLFIN, 5]], LOAMBUCK, 1), ALWAYS)
+	# Hexcaller is Wind/Water: Water vs Wind x0.5, Water vs Water x1.0.
+	var engine := _start(_wild([[RILLFIN, 5]], HEXCALLER, 1), ALWAYS)
 	var water_jet := _move(&"move_water_jet_01")
 	var expected: int = BattleRules.damage(
 		water_jet, engine.player.active(), engine.enemy.active(), Content.type_chart
@@ -281,7 +283,7 @@ func test_stun_skips_exactly_one_action() -> void:
 
 
 func test_poison_deals_ten_percent_per_turn_and_wears_off() -> void:
-	var engine := _start(_wild([[RILLFIN, 8], [EMBERLING, 5]], LOAMBUCK, 1), ALWAYS)
+	var engine := _start(_wild([[RILLFIN, 8], [RILLFIN, 5]], LOAMBUCK, 1), ALWAYS)
 	var target := engine.enemy.active()
 	var expected_tick: int = int(floor(target.creature.max_hp() * 0.10))
 

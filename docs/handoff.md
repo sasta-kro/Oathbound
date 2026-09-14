@@ -5,7 +5,7 @@ This file contains historical handoff details and can lag behind the current bra
 **Historical snapshot basis:** 12 September 2026, commit `71f7b25` ("added save system") plus the quest-system work later committed in `35f862e`.
 **Current verification at commit `ea9ffe8`:** 203 / 203 GUT tests passing.
 
-Read in this order: this file, then `Oathbound_Specification_v0.5.md`, then `architecture.md`. `spec_audit_2026-09-12.md` explains every divergence found when the spec was revised.
+Read in this order: this file, then `Oathbound_Specification_v0.6.md`, then `architecture.md`. `spec_audit_2026-09-12.md` explains every divergence found when the spec was revised.
 
 ## 1. What the game is right now
 
@@ -20,6 +20,14 @@ Roughly 10 to 15 minutes of content against a 40 to 60 minute target.
 ## 2. The last three pieces of work, and how they were built
 
 These are the most recent implementations. The next developer will most likely touch them first.
+
+### 2.00 Seven-type chart (14 September 2026)
+
+**Files:** `scripts/creatures/elements.gd` (appended `NATURE`, `ROT`, `STEEL`), `content/types/type_chart_mvp.tres` (28 rows), `scripts/ui/oath_theme.gd` and `scripts/visual/vfx_preset.gd` (colours and default VFX for the new types), spec bumped to v0.6 (section 10).
+
+**How:** every type is weak to two, strong against two and resisted by two. Tests that relied on old matchups (Fire vs Earth neutral, Earth resisted by Wind) now use pairs that keep their original intent.
+
+**Open:** no species or move uses Nature, Rot or Steel yet. Existing matchups changed: Earth now beats Fire, and Fire is resisted by Earth. The Oathbreaker (Earth/Fire) against an Emberling-led party was tuned on the old chart and needs re-simulating.
 
 ### 2.0 Monster roster and the Area 1 boss (14 September 2026)
 

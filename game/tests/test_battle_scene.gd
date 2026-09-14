@@ -15,9 +15,9 @@ func before_each() -> void:
 
 func _config() -> BattleConfig:
 	var party: Array[CreatureInstance] = [Content.spawn_creature(&"creature_fire_01", 5)]
-	# Thick Hide rather than Stonewall, so a level-5 Ember still gets through.
+	# Fire against Fire is neutral both ways, so neither side is favoured by type.
 	var config := BattleConfig.wild(
-		party, Content.spawn_creature(&"creature_earth_01", 3, 1), Content.type_chart
+		party, Content.spawn_creature(&"creature_fire_03", 3, 1), Content.type_chart
 	)
 	config.binding_scrolls = 5
 	config.rng_seed = 3
@@ -62,9 +62,9 @@ func test_battle_opens_with_both_creatures_and_the_command_menu() -> void:
 	assert_eq(_scene.current_menu(), BattleScene.Menu.COMMAND)
 	assert_eq(_scene.menu_labels(), PackedStringArray(["FIGHT", "SWITCH", "ITEM", "BIND", "RUN"]))
 	assert_eq(_scene.player_name.text, "EMBERLING")
-	assert_eq(_scene.enemy_name.text, "LOAMBUCK")
+	assert_eq(_scene.enemy_name.text, "SLAGLING")
 	assert_eq(_scene.enemy_level.text, "Lv 3")
-	assert_eq(_scene.enemy_types.text, "EARTH")
+	assert_eq(_scene.enemy_types.text, "FIRE")
 	var foe: CreatureInstance = _scene.engine.enemy.active().creature
 	assert_eq(_scene.enemy_hp.text, "%d / %d" % [foe.max_hp(), foe.max_hp()])
 
@@ -81,7 +81,7 @@ func test_stage_is_a_side_view_with_the_enemy_mirrored() -> void:
 	assert_eq(_scene.player_visual.position.y, _scene.enemy_visual.position.y, "Both stand on the same ground line.")
 	assert_false(_scene.player_visual.flip_h, "Sprites face right by default.")
 	assert_true(_scene.enemy_visual.flip_h, "The enemy faces the player.")
-	assert_false(_scene.enemy_visual.is_using_placeholder(), "Loambuck ships with battle art.")
+	assert_false(_scene.enemy_visual.is_using_placeholder(), "Slagling ships with battle art.")
 	assert_true(_scene.player_visual.visible and _scene.enemy_visual.visible)
 
 
@@ -268,7 +268,9 @@ func test_an_ambush_opening_beats_the_speed_comparison() -> void:
 
 
 func test_after_the_forced_opening_the_indicator_falls_back_to_speed() -> void:
-	var config := _versus([[&"creature_earth_01", 5]], [&"creature_wind_01", 5])
+	# Deepcrag (Water/Earth) and Gustpip (Wind/Earth) trade neutral or resisted
+	# hits, so the battle survives into turn two.
+	var config := _versus([[&"creature_water_07", 5]], [&"creature_wind_01", 5])
 	config.opening = BattleConfig.Opening.ADVANTAGE
 	_scene.start_battle(config)
 	await wait_frames(2)

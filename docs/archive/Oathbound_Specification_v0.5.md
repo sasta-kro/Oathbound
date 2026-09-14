@@ -1,14 +1,12 @@
-# Oathbound - Complete Game Specification v0.6
+# Oathbound - Complete Game Specification v0.5
 
 **Status:** Single source-of-truth specification for human developers and AI coding agents, revised against the implementation  
-**Date:** 14 September 2026 (v0.5 was 12 September 2026; v0.4 was 25 August 2026; both archived at `docs/archive/`)  
+**Date:** 12 September 2026 (v0.4 was 25 August 2026; archived at `docs/archive/`)  
 **Scope:** Game behavior, content rules, story, player experience, changeability requirements, placeholder policy, and agent interpretation guardrails. This is not an implementation or Godot architecture document; see `docs/architecture.md` for that and `docs/handoff.md` for current status and next steps.
-
-**What changed in v0.6:** the type system grew from four to seven types (Nature, Rot and Steel added) with a new balanced effectiveness table (section 10).
 
 **What changed in v0.5:** decisions already taken in code were folded in (save slots, overworld strike, innate abilities, turn-one opening rule, town as combined hub/starter settlement), and every section now carries an implementation status tag. The audit that produced this revision is `docs/spec_audit_2026-09-12.md`.
 
-**Tech Stack:** [[#Oathbound - Complete Game Specification v0.6#Tech Stack]]
+**Tech Stack:** [[#Oathbound - Complete Game Specification v0.5#Tech Stack]]
 
 ## 1. Document Purpose and Authority
 
@@ -533,45 +531,34 @@ Introducing any other effect category is a specification decision, not a content
 
 ### 10.1 MVP Types
 
-The MVP uses seven elemental types:
+The initial MVP uses four elemental types:
 
 - Fire
 - Earth
 - Water
 - Wind
-- Nature
-- Rot
-- Steel
 
 Creatures may have one or two types. Moves have their own type independently of the user.
 
 A creature's learnable move set is normally thematically compatible with its own type or types, but specific cross-type moves are allowed when explicitly defined by content.
 
-**[Partial]** All seven types exist in code and in the type chart. No shipped species or move uses Nature, Rot or Steel yet.
-
 ### 10.2 Type Effectiveness Table
 
-Every type is weak to exactly two types, strong against exactly two, and resisted by exactly two. The remaining pairs are neutral. No two types are strong against each other. Resistance mirrors weakness: if A is strong against B, B deals 0.5x to A.
+The current balanced type cycle is:
 
-- Fire is strong against Nature and Rot, and weak to Water and Earth.
-- Earth is strong against Fire and Wind, and weak to Steel and Nature.
-- Water is strong against Fire and Steel, and weak to Nature and Wind.
-- Wind is strong against Water and Rot, and weak to Earth and Steel.
-- Nature is strong against Earth and Water, and weak to Fire and Rot.
-- Rot is strong against Nature and Steel, and weak to Fire and Wind.
-- Steel is strong against Earth and Wind, and weak to Rot and Water.
+- Fire is strong against Wind and weak against Water.
+- Water is strong against Fire and weak against Earth.
+- Earth is strong against Water and weak against Wind.
+- Wind is strong against Earth and weak against Fire.
 
-| Attacking Type | Fire Defender | Earth Defender | Water Defender | Wind Defender | Nature Defender | Rot Defender | Steel Defender |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| Fire | 1.0x | 0.5x | 0.5x | 1.0x | 2.0x | 2.0x | 1.0x |
-| Earth | 2.0x | 1.0x | 1.0x | 2.0x | 0.5x | 1.0x | 0.5x |
-| Water | 2.0x | 1.0x | 1.0x | 0.5x | 0.5x | 1.0x | 2.0x |
-| Wind | 1.0x | 0.5x | 2.0x | 1.0x | 1.0x | 2.0x | 0.5x |
-| Nature | 0.5x | 2.0x | 2.0x | 1.0x | 1.0x | 0.5x | 1.0x |
-| Rot | 0.5x | 1.0x | 1.0x | 0.5x | 2.0x | 1.0x | 2.0x |
-| Steel | 1.0x | 2.0x | 0.5x | 2.0x | 1.0x | 0.5x | 1.0x |
+| Attacking Type | Fire Defender | Earth Defender | Water Defender | Wind Defender |
+|---|---:|---:|---:|---:|
+| Fire | 1.0x | 1.0x | 0.5x | 2.0x |
+| Earth | 1.0x | 1.0x | 2.0x | 0.5x |
+| Water | 2.0x | 0.5x | 1.0x | 1.0x |
+| Wind | 0.5x | 2.0x | 1.0x | 1.0x |
 
-This table is intended to be easy to rebalance later. v0.5 used a four-type cycle (Fire, Earth, Water, Wind); it is archived in `docs/archive/`.
+This table is intended to be easy to memorize and easy to rebalance later.
 
 ### 10.3 Dual Types
 
@@ -579,11 +566,10 @@ Against a dual-type creature, the attack multiplier is the product of the two de
 
 Examples:
 
-- Fire against Nature/Rot: 2.0 x 2.0 = 4.0x.
-- Water against Fire/Wind: 2.0 x 0.5 = 1.0x.
-- Earth against Water/Nature: 1.0 x 0.5 = 0.5x.
+- Fire against Water/Wind: 0.5 x 2.0 = 1.0x.
+- Wind against Earth/Water: 2.0 x 1.0 = 2.0x.
 
-With seven types, practical multipliers range from 0.25x to 4.0x.
+With the current four-type table and no duplicate types, practical multipliers remain within 0.5x to 2.0x.
 
 There are no type-based immunities in the MVP.
 

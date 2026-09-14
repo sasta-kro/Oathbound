@@ -1,7 +1,13 @@
-[gd_resource type="Resource" script_class="TypeChart" load_steps=11 format=3]
+[gd_resource type="Resource" script_class="TypeChart" load_steps=31 format=3]
 
 [ext_resource type="Script" path="res://scripts/creatures/type_chart.gd" id="1_chart"]
 [ext_resource type="Script" path="res://scripts/creatures/type_matchup.gd" id="2_matchup"]
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_fire_earth"]
+script = ExtResource("2_matchup")
+attacking = 0
+defending = 1
+multiplier = 0.5
 
 [sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_fire_water"]
 script = ExtResource("2_matchup")
@@ -9,22 +15,40 @@ attacking = 0
 defending = 2
 multiplier = 0.5
 
-[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_fire_wind"]
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_fire_nature"]
 script = ExtResource("2_matchup")
 attacking = 0
-defending = 3
+defending = 4
 multiplier = 2.0
 
-[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_earth_water"]
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_fire_rot"]
+script = ExtResource("2_matchup")
+attacking = 0
+defending = 5
+multiplier = 2.0
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_earth_fire"]
 script = ExtResource("2_matchup")
 attacking = 1
-defending = 2
+defending = 0
 multiplier = 2.0
 
 [sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_earth_wind"]
 script = ExtResource("2_matchup")
 attacking = 1
 defending = 3
+multiplier = 2.0
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_earth_nature"]
+script = ExtResource("2_matchup")
+attacking = 1
+defending = 4
+multiplier = 0.5
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_earth_steel"]
+script = ExtResource("2_matchup")
+attacking = 1
+defending = 6
 multiplier = 0.5
 
 [sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_water_fire"]
@@ -33,25 +57,121 @@ attacking = 2
 defending = 0
 multiplier = 2.0
 
-[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_water_earth"]
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_water_wind"]
 script = ExtResource("2_matchup")
 attacking = 2
-defending = 1
+defending = 3
 multiplier = 0.5
 
-[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_wind_fire"]
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_water_nature"]
 script = ExtResource("2_matchup")
-attacking = 3
-defending = 0
+attacking = 2
+defending = 4
 multiplier = 0.5
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_water_steel"]
+script = ExtResource("2_matchup")
+attacking = 2
+defending = 6
+multiplier = 2.0
 
 [sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_wind_earth"]
 script = ExtResource("2_matchup")
 attacking = 3
 defending = 1
+multiplier = 0.5
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_wind_water"]
+script = ExtResource("2_matchup")
+attacking = 3
+defending = 2
 multiplier = 2.0
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_wind_rot"]
+script = ExtResource("2_matchup")
+attacking = 3
+defending = 5
+multiplier = 2.0
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_wind_steel"]
+script = ExtResource("2_matchup")
+attacking = 3
+defending = 6
+multiplier = 0.5
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_nature_fire"]
+script = ExtResource("2_matchup")
+attacking = 4
+defending = 0
+multiplier = 0.5
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_nature_earth"]
+script = ExtResource("2_matchup")
+attacking = 4
+defending = 1
+multiplier = 2.0
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_nature_water"]
+script = ExtResource("2_matchup")
+attacking = 4
+defending = 2
+multiplier = 2.0
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_nature_rot"]
+script = ExtResource("2_matchup")
+attacking = 4
+defending = 5
+multiplier = 0.5
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_rot_fire"]
+script = ExtResource("2_matchup")
+attacking = 5
+defending = 0
+multiplier = 0.5
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_rot_wind"]
+script = ExtResource("2_matchup")
+attacking = 5
+defending = 3
+multiplier = 0.5
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_rot_nature"]
+script = ExtResource("2_matchup")
+attacking = 5
+defending = 4
+multiplier = 2.0
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_rot_steel"]
+script = ExtResource("2_matchup")
+attacking = 5
+defending = 6
+multiplier = 2.0
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_steel_earth"]
+script = ExtResource("2_matchup")
+attacking = 6
+defending = 1
+multiplier = 2.0
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_steel_water"]
+script = ExtResource("2_matchup")
+attacking = 6
+defending = 2
+multiplier = 0.5
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_steel_wind"]
+script = ExtResource("2_matchup")
+attacking = 6
+defending = 3
+multiplier = 2.0
+
+[sub_resource type="Resource" script_class="TypeMatchup" id="Matchup_steel_rot"]
+script = ExtResource("2_matchup")
+attacking = 6
+defending = 5
+multiplier = 0.5
 
 [resource]
 script = ExtResource("1_chart")
 same_type_attack_bonus = 1.5
-matchups = Array[TypeMatchup]([SubResource("Matchup_fire_water"), SubResource("Matchup_fire_wind"), SubResource("Matchup_earth_water"), SubResource("Matchup_earth_wind"), SubResource("Matchup_water_fire"), SubResource("Matchup_water_earth"), SubResource("Matchup_wind_fire"), SubResource("Matchup_wind_earth")])
+matchups = Array[TypeMatchup]([SubResource("Matchup_fire_earth"), SubResource("Matchup_fire_water"), SubResource("Matchup_fire_nature"), SubResource("Matchup_fire_rot"), SubResource("Matchup_earth_fire"), SubResource("Matchup_earth_wind"), SubResource("Matchup_earth_nature"), SubResource("Matchup_earth_steel"), SubResource("Matchup_water_fire"), SubResource("Matchup_water_wind"), SubResource("Matchup_water_nature"), SubResource("Matchup_water_steel"), SubResource("Matchup_wind_earth"), SubResource("Matchup_wind_water"), SubResource("Matchup_wind_rot"), SubResource("Matchup_wind_steel"), SubResource("Matchup_nature_fire"), SubResource("Matchup_nature_earth"), SubResource("Matchup_nature_water"), SubResource("Matchup_nature_rot"), SubResource("Matchup_rot_fire"), SubResource("Matchup_rot_wind"), SubResource("Matchup_rot_nature"), SubResource("Matchup_rot_steel"), SubResource("Matchup_steel_earth"), SubResource("Matchup_steel_water"), SubResource("Matchup_steel_wind"), SubResource("Matchup_steel_rot")])

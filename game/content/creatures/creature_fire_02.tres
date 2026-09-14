@@ -9,7 +9,7 @@
 [ext_resource type="Resource" path="res://content/moves/move_flame_burst_01.tres" id="6_flame_burst"]
 [ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_quake_step_01.tres" id="7_quake_step"]
 [ext_resource type="Resource" path="res://content/abilities/ability_ember_body.tres" id="8_ember_body"]
-[ext_resource type="Resource" path="res://content/abilities/ability_searing_touch.tres" id="9_searing_touch"]
+[ext_resource type="Resource" uid="uid://c7scajbgbopvj" path="res://content/abilities/ability_searing_touch.tres" id="9_searing_touch"]
 [ext_resource type="SpriteFrames" uid="uid://cverq1qqgmnoa" path="res://content/sprites/creature_fire_02_battle.tres" id="10_battle_sprite"]
 
 [sub_resource type="Resource" id="Learn_ember_1"]

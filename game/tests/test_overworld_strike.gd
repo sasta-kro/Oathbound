@@ -138,12 +138,12 @@ func test_a_downed_creature_cannot_be_routed_again() -> void:
 # --- The opening the strike hands to the battle --------------------------------
 
 
-## A deliberately lopsided matchup: a slow, bulky Loambuck against a fast
+## A deliberately lopsided matchup: a slow, bulky Deepcrag against a fast
 ## Gustpip of the same level. Speed always favours the enemy, so any turn the
 ## player moves first is a turn the opening handed over, and neither side hits
 ## hard enough to end the battle before turn two.
 func _engine(opening: BattleConfig.Opening) -> BattleEngine:
-	var slow_lead: Array[CreatureInstance] = [Content.spawn_creature(&"creature_earth_01", 10, 1)]
+	var slow_lead: Array[CreatureInstance] = [Content.spawn_creature(&"creature_water_07", 10, 0)]
 	var fast_foe: CreatureInstance = Content.spawn_creature(&"creature_wind_01", 10, 0)
 	var config := BattleConfig.wild(slow_lead, fast_foe, Content.type_chart, opening)
 	config.rng_seed = 3

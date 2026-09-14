@@ -10,7 +10,7 @@ const GOLD = Color("d9bb80")
 const LINE = Color("354647")
 const SERIF = preload("res://assets/ui/fonts/display_font.tres")
 const SANS = preload("res://assets/ui/fonts/interface_font.tres")
-const ELEMENT_COLORS = [Color("e9a078"), Color("c6c38a"), Color("83c5dc"), Color("a9d8c2")]
+const ELEMENT_COLORS = [Color("e9a078"), Color("c6c38a"), Color("83c5dc"), Color("a9d8c2"), Color("a8c77e"), Color("b79ac9"), Color("b4bcc6")]
 
 static func box(color: Color, border: Color = LINE, radius: int = 8, padding: int = 14) -> StyleBoxFlat:
 	var s := StyleBoxFlat.new()
@@ -99,7 +99,7 @@ static func chip(text: String, tint: Color = JADE) -> PanelContainer:
 	return panel
 
 static func element(species: CreatureSpecies) -> Color:
-	return ELEMENT_COLORS[clampi(int(species.primary_type), 0, 3)]
+	return ELEMENT_COLORS[clampi(int(species.primary_type), 0, ELEMENT_COLORS.size() - 1)]
 
 static func portrait(species: CreatureSpecies, side: float = 90) -> Control:
 	var view := preload("res://scripts/ui/creature_portrait.gd").new()

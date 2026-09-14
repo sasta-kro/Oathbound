@@ -17,7 +17,7 @@ tools/     External development tools, including the Godot MCP server.
 | Document | Read it for |
 |---|---|
 | `docs/handoff.md` | Current state, what was built last and how, known gaps, roadmap. Start here. |
-| `docs/Oathbound_Specification_v0.5.md` | The gameplay rules, with an implementation status tag per section. |
+| `docs/Oathbound_Specification_v0.6.md` | The gameplay rules, with an implementation status tag per section. |
 | `docs/architecture.md` | How the Godot project is organised: autoloads, layers, content, saving, tests, conventions for contributors and agents. |
 | `docs/map_authoring.md` | Painting areas, spawn zones, exits, NPCs and quests in the editor. |
 | `docs/Oathbound Dev Env Setup (Required).md` | Engine version, terminal `godot`, MCP server, formatters. |

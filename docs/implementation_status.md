@@ -6,7 +6,7 @@
 
 **Automated verification:** 203 of 203 GUT tests passing
 
-This document records current implemented behavior. `Oathbound_Specification_v0.5.md` remains the authority for intended gameplay. `architecture.md` explains system structure.
+This document records current implemented behavior. `Oathbound_Specification_v0.6.md` remains the authority for intended gameplay. `architecture.md` explains system structure.
 
 ## Playable flow
 

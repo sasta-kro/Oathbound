@@ -20,8 +20,8 @@ func _plain_battler(species_path: String, side: int) -> Battler:
 func test_damage_follows_the_provisional_formula() -> void:
 	var attacker := _plain_battler(EMBERLING, BattleTeam.Side.PLAYER)
 	var defender := _plain_battler(LOAMBUCK, BattleTeam.Side.ENEMY)
-	# Base 20 + 48 - 58 = 10, level x1.0, STAB x1.5, Fire vs Earth x1.0.
-	assert_eq(BattleRules.damage(load(EMBER), attacker, defender, Content.type_chart), 15)
+	# Base 20 + 48 - 58 = 10, level x1.0, STAB x1.5, Fire vs Earth x0.5 -> floor(7.5).
+	assert_eq(BattleRules.damage(load(EMBER), attacker, defender, Content.type_chart), 7)
 
 
 func test_type_chart_and_stab_multiply_into_damage() -> void:
@@ -43,8 +43,8 @@ func test_level_multiplier_scales_with_attacker_level() -> void:
 	var defender := _plain_battler(LOAMBUCK, BattleTeam.Side.ENEMY)
 	attacker.creature.level = 11
 	# Attack at level 11 is floor(48 x 1.6) = 76: base 20 + 76 - 58 = 38,
-	# level x1.2, STAB x1.5 -> floor(68.4).
-	assert_eq(BattleRules.damage(load(EMBER), attacker, defender, Content.type_chart), 68)
+	# level x1.2, STAB x1.5, Fire vs Earth x0.5 -> floor(34.2).
+	assert_eq(BattleRules.damage(load(EMBER), attacker, defender, Content.type_chart), 34)
 
 
 func test_abilities_multiply_damage_dealt_and_taken() -> void:
@@ -52,9 +52,9 @@ func test_abilities_multiply_damage_dealt_and_taken() -> void:
 		CreatureInstance.create(load(EMBERLING) as CreatureSpecies, 1), BattleTeam.Side.PLAYER
 	)
 	var defender := _plain_battler(LOAMBUCK, BattleTeam.Side.ENEMY)
-	# Ember Body: Fire damage dealt x1.2 -> floor(15 x 1.2).
+	# Ember Body: Fire damage dealt x1.2 -> floor(7.5 x 1.2).
 	assert_eq(attacker.creature.ability.id, &"ability_ember_body")
-	assert_eq(BattleRules.damage(load(EMBER), attacker, defender, Content.type_chart), 18)
+	assert_eq(BattleRules.damage(load(EMBER), attacker, defender, Content.type_chart), 9)
 
 
 func test_effectiveness_text_matches_the_multiplier() -> void:

@@ -74,13 +74,19 @@ const ELEMENT_PALETTES: Dictionary = {
 	Elements.Type.EARTH: [Color("f0d9a8"), Color("8a5a2b")],
 	Elements.Type.WATER: [Color("d6f4ff"), Color("2b7fd4")],
 	Elements.Type.WIND: [Color("eafff0"), Color("4fbf7a")],
+	Elements.Type.NATURE: [Color("e4f7b8"), Color("4a8a1c")],
+	Elements.Type.ROT: [Color("ead6f2"), Color("6b3f8a")],
+	Elements.Type.STEEL: [Color("f2f5f8"), Color("7d8a99")],
 }
-## Default shape per element, so the four types already read differently.
+## Default shape per element, so the types already read differently.
 const ELEMENT_PATTERNS: Dictionary = {
 	Elements.Type.FIRE: Pattern.BURST,
 	Elements.Type.EARTH: Pattern.RING,
 	Elements.Type.WATER: Pattern.BEAM,
 	Elements.Type.WIND: Pattern.SLASH,
+	Elements.Type.NATURE: Pattern.MOTES,
+	Elements.Type.ROT: Pattern.SPARKS,
+	Elements.Type.STEEL: Pattern.SLASH,
 }
 
 

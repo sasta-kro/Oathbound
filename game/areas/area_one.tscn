@@ -1,4 +1,4 @@
-[gd_scene format=4 uid="uid://05x1su88cw2"]
+[gd_scene format=4 uid="uid://ctqpbv2t1yga"]
 
 [ext_resource type="Script" uid="uid://dlctfqjo0j883" path="res://scripts/world/world_area.gd" id="1_huve6"]
 [ext_resource type="TileSet" uid="uid://daouif03i3wua" path="res://assets/tilesets/overworld.tres" id="2_36e44"]
