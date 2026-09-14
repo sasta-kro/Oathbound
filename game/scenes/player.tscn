@@ -1,15 +1,15 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene format=3 uid="uid://cweby7ntvigo0"]
 
-[ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
-[ext_resource type="SpriteFrames" path="res://content/sprites/player_hero.tres" id="2_hero_frames"]
+[ext_resource type="Script" uid="uid://daqyo77t00hy1" path="res://scripts/player.gd" id="1_player"]
+[ext_resource type="SpriteFrames" uid="uid://0ue7f2v7dtnn" path="res://content/sprites/player_hero.tres" id="2_hero_frames"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
-size = Vector2(40, 40)
+size = Vector2(20, 28)
 
-[node name="Player" type="CharacterBody2D"]
+[node name="Player" type="CharacterBody2D" unique_id=348827474]
 script = ExtResource("1_player")
 
-[node name="Sprite" type="AnimatedSprite2D" parent="."]
+[node name="Sprite" type="AnimatedSprite2D" parent="." unique_id=1375164073]
 texture_filter = 1
 scale = Vector2(2, 2)
 sprite_frames = ExtResource("2_hero_frames")
@@ -17,5 +17,6 @@ animation = &"idle_down"
 autoplay = "idle_down"
 offset = Vector2(0, 4.5)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1033939599]
+position = Vector2(0, 1)
 shape = SubResource("RectangleShape2D_player")
