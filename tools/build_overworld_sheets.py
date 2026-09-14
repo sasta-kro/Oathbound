@@ -61,6 +61,23 @@ WATER_FRAME_SECONDS = 0.3
 # Sprites whose collision box is the full footprint, or a narrow strip.
 TRUNK_COLLISION = "trunk"
 
+# The Emerald trees and bushes are a bright cartoon green that stands out on
+# the olive Cainos grass. Their six leaf shades and five trunk shades map onto
+# a ramp sampled from the Cainos plant sheet, darkest to lightest.
+OLIVE_FOLIAGE = {
+    (65, 102, 90): (52, 54, 20),
+    (55, 123, 84): (80, 86, 22),
+    (42, 148, 77): (96, 101, 22),
+    (52, 172, 92): (112, 114, 26),
+    (85, 199, 104): (128, 127, 36),
+    (143, 213, 123): (146, 142, 58),
+    (93, 71, 53): (70, 54, 40),
+    (131, 95, 61): (96, 76, 52),
+    (147, 117, 69): (110, 92, 62),
+    (163, 140, 77): (128, 112, 76),
+    (188, 167, 105): (150, 134, 96),
+}
+
 
 # ---------------------------------------------------------------------------
 # Terrain sheets: Tiled wang sets become Godot peering bits.
@@ -122,6 +139,16 @@ def load_fantasy(relative: str) -> Image.Image:
     return Image.open(FANTASY_ART / relative).convert("RGBA")
 
 
+def olive(image: Image.Image) -> Image.Image:
+    pixels = image.load()
+    for y in range(image.height):
+        for x in range(image.width):
+            r, g, b, a = pixels[x, y]
+            if a and (r, g, b) in OLIVE_FOLIAGE:
+                pixels[x, y] = OLIVE_FOLIAGE[(r, g, b)] + (a,)
+    return image
+
+
 def split_sprite(name: str, image: Image.Image, base_cells: int, base_kind: str, **base_extra) -> list[Sprite]:
     """Top part drawn over the player, bottom `base_cells` rows blocking.
 
@@ -169,13 +196,15 @@ def nature() -> list[Sprite]:
     for index, base_cells in [(1, 1), (2, 1), (3, 1), (4, 1)]:
         sprites += split_sprite(
             f"tree_{index}",
-            load_fantasy(f"Trees and Bushes/Tree_Emerald_{index}.png"),
+            olive(load_fantasy(f"Trees and Bushes/Tree_Emerald_{index}.png")),
             base_cells,
             "solid",
             collision=TRUNK_COLLISION,
         )
     for index in range(1, 8):
-        sprites.append(Sprite(f"bush_{index}", load_fantasy(f"Trees and Bushes/Bush_Emerald_{index}.png"), "prop"))
+        sprites.append(
+            Sprite(f"bush_{index}", olive(load_fantasy(f"Trees and Bushes/Bush_Emerald_{index}.png")), "prop")
+        )
     for index in [1, 2, 4, 6, 9]:
         sprites.append(Sprite(f"rock_{index}", load_fantasy(f"Rocks/Rock_Brown_{index}.png"), "prop"))
     flowers_red = load_fantasy("Props/Animation/Flowers_Red.png")

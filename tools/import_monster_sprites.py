@@ -13,7 +13,8 @@ both.
 A monster can also be imported in an element palette instead of its own: the
 red and orange pixels of every sheet are rotated towards the element's hue
 (blue for Water, green for Wind, brown for Earth), leaving dark armour, bone
-and outlines alone. That is how one pack fills in for several elements.
+and outlines alone. That is how one pack fills in for several elements. The
+`druid` variant is a hand-tuned recolour with leaves added, see `druid()`.
 
 Usage, from the repository root:
     python3 tools/import_monster_sprites.py
@@ -56,6 +57,37 @@ RED_BAND = (-40.0, 60.0)
 MIN_SATURATION = 0.18
 HUE_SPREAD = 0.35
 
+# The druid variant of Blood Monster_A is hand-tuned rather than hue-rotated:
+# its eight body colours map to moss and bark, the bone ribs on its head turn
+# to bark (the attack slash, the same grey, stays white), a leaf tuft with twig
+# antlers is drawn on top of the head in every frame, and anything left red,
+# the hurt splatter, is rotated to sap green.
+DRUID_BODY = {
+    (162, 43, 75): (96, 118, 52),
+    (110, 20, 56): (66, 84, 38),
+    (49, 19, 57): (74, 52, 34),
+    (207, 69, 84): (140, 166, 72),
+    (31, 26, 26): (40, 30, 22),
+}
+DRUID_RIBS = {(217, 216, 216): (176, 140, 92), (192, 191, 191): (132, 100, 64)}
+# The head's dark colour; its box anchors the tuft and bounds the rib recolour.
+DRUID_HEAD = (49, 19, 57)
+DRUID_SAP = {"hue": 95.0, "saturation": 0.8, "value": 0.9}
+LEAF_LIGHT = (96, 160, 56)
+LEAF_MID = (58, 112, 42)
+LEAF_DARK = (40, 78, 34)
+TWIG = (74, 52, 34)
+OUTLINE = (0, 0, 0)
+# (dx, dy) from the head's top centre, one pixel above the head.
+DRUID_TUFT = {
+    (-1, -1): LEAF_MID, (0, -1): LEAF_LIGHT, (1, -1): LEAF_MID,
+    (-2, -2): LEAF_MID, (-1, -2): LEAF_LIGHT, (0, -2): LEAF_LIGHT, (1, -2): LEAF_MID, (2, -2): LEAF_DARK,
+    (-2, -3): LEAF_DARK, (-1, -3): LEAF_LIGHT, (0, -3): LEAF_MID, (1, -3): LEAF_LIGHT, (2, -3): LEAF_DARK,
+    (-1, -4): LEAF_MID, (0, -4): LEAF_LIGHT, (1, -4): LEAF_MID,
+    (-3, -1): TWIG, (-4, -2): TWIG, (-5, -3): LEAF_LIGHT,
+    (3, -1): TWIG, (4, -2): TWIG, (5, -3): LEAF_LIGHT,
+}
+
 # (sprite pack, palette or None, species id). The asset folder is the pack
 # name in snake case, with the palette appended for a recolour.
 MONSTERS = [
@@ -82,6 +114,7 @@ MONSTERS = [
     ("Demon_C", None, "creature_wind_04"),
     ("Eyeball Monster", None, "creature_wind_05"),
     ("Warlock", "wind", "creature_wind_06"),
+    ("Blood Monster_A", "druid", "creature_earth_01"),
 ]
 
 
@@ -93,23 +126,69 @@ def find_sheet(pack: str, suffixes: list[str]) -> Path | None:
     return None
 
 
+def shift_red(rgb: tuple[int, int, int], palette: dict) -> tuple[int, int, int]:
+    r, g, b = rgb
+    h, sat, val = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+    offset = (h * 360.0 + 180.0) % 360.0 - 180.0
+    if sat < MIN_SATURATION or not RED_BAND[0] <= offset <= RED_BAND[1]:
+        return rgb
+    hue = ((palette["hue"] + offset * HUE_SPREAD) % 360.0) / 360.0
+    nr, ng, nb = colorsys.hsv_to_rgb(hue, min(1.0, sat * palette["saturation"]), min(1.0, val * palette["value"]))
+    return (round(nr * 255), round(ng * 255), round(nb * 255))
+
+
 def recolor(image: Image.Image, palette: dict) -> Image.Image:
     image = image.convert("RGBA")
     pixels = image.load()
     for y in range(image.height):
         for x in range(image.width):
             r, g, b, a = pixels[x, y]
-            if a == 0:
-                continue
-            h, sat, val = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
-            offset = (h * 360.0 + 180.0) % 360.0 - 180.0
-            if sat < MIN_SATURATION or not RED_BAND[0] <= offset <= RED_BAND[1]:
-                continue
-            hue = ((palette["hue"] + offset * HUE_SPREAD) % 360.0) / 360.0
-            nr, ng, nb = colorsys.hsv_to_rgb(
-                hue, min(1.0, sat * palette["saturation"]), min(1.0, val * palette["value"])
+            if a:
+                pixels[x, y] = shift_red((r, g, b), palette) + (a,)
+    return image
+
+
+def druid(image: Image.Image) -> Image.Image:
+    image = image.convert("RGBA")
+    pixels = image.load()
+    head = None
+    for left in range(0, image.width, FRAME):
+        dark = [
+            (x, y)
+            for x in range(left, left + FRAME)
+            for y in range(image.height)
+            if pixels[x, y][3] and pixels[x, y][:3] == DRUID_HEAD
+        ]
+        # A frame hidden by the hurt flash keeps the previous frame's head.
+        if dark:
+            head = (
+                min(x for x, _ in dark) - left,
+                max(x for x, _ in dark) - left,
+                min(y for _, y in dark),
+                max(y for _, y in dark),
             )
-            pixels[x, y] = (round(nr * 255), round(ng * 255), round(nb * 255), a)
+        if head is None:
+            raise SystemExit("Blood Monster_A: first frame has no head colour to anchor the tuft")
+        x0, x1, y0, y1 = head
+        for x in range(left, left + FRAME):
+            for y in range(image.height):
+                r, g, b, a = pixels[x, y]
+                if not a:
+                    continue
+                if (r, g, b) in DRUID_BODY:
+                    pixels[x, y] = DRUID_BODY[(r, g, b)] + (a,)
+                elif (r, g, b) in DRUID_RIBS and x0 - 1 <= x - left <= x1 + 1 and y0 - 1 <= y <= y1 + 1:
+                    pixels[x, y] = DRUID_RIBS[(r, g, b)] + (a,)
+                else:
+                    pixels[x, y] = shift_red((r, g, b), DRUID_SAP) + (a,)
+        centre = left + (x0 + x1) // 2
+        tuft = {(centre + dx, y0 - 1 + dy): colour for (dx, dy), colour in DRUID_TUFT.items()}
+        for x, y in tuft:
+            for nx, ny in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
+                if (nx, ny) not in tuft and pixels[nx, ny][3] == 0:
+                    pixels[nx, ny] = OUTLINE + (255,)
+        for point, colour in tuft.items():
+            pixels[point] = colour + (255,)
     return image
 
 
@@ -141,7 +220,9 @@ def import_monster(pack: str, palette: str | None, species_id: str) -> None:
         count = width // FRAME
         if file_name not in ext_ids:
             image = Image.open(sheet)
-            if palette:
+            if palette == "druid":
+                image = druid(image)
+            elif palette:
                 image = recolor(image, PALETTES[palette])
             image.save(target / file_name)
             ext_ids[file_name] = f"{len(ext_ids) + 1}_{Path(file_name).stem}"
@@ -167,20 +248,28 @@ def import_monster(pack: str, palette: str | None, species_id: str) -> None:
             "}"
         )
 
-    tres = [f'[gd_resource type="SpriteFrames" format=3]', ""]
+    output = SPRITES_DIR / f"{species_id}_battle.tres"
+    # Keep a uid the editor already gave the file, so species referring to it by uid still resolve.
+    uid = ""
+    if output.exists():
+        header = output.read_text().split("\n", 1)[0]
+        if ' uid="' in header:
+            uid = " uid=" + header.split(' uid=', 1)[1].split(" ", 1)[0].rstrip("]")
+    tres = [f'[gd_resource type="SpriteFrames" format=3{uid}]', ""]
     tres.extend(ext_resources)
     tres.append("")
     tres.extend(sub_resources)
     tres.append("[resource]")
     tres.append(f"animations = [{', '.join(animations)}]")
-    (SPRITES_DIR / f"{species_id}_battle.tres").write_text("\n".join(tres) + "\n")
+    output.write_text("\n".join(tres) + "\n")
 
     table = "\n".join(f"| `{name}` | {count} |" for name, count in rows)
-    recolor_note = (
-        f"Recoloured to the {palette} palette by the importer; the original pack is red.\n"
-        if palette
-        else ""
-    )
+    if palette == "druid":
+        recolor_note = "Recoloured to moss and bark, with a leaf tuft drawn on the head, by the importer.\n"
+    elif palette:
+        recolor_note = f"Recoloured to the {palette} palette by the importer; the original pack is red.\n"
+    else:
+        recolor_note = ""
     (target / "SOURCE.md").write_text(
         f"# {pack}{f' ({palette})' if palette else ''}\n\n"
         f"Source: `assets/sprites/monster/{pack}`, copied here because Godot can only\n"
