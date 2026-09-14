@@ -1,8 +1,8 @@
-[gd_resource type="Resource" script_class="MoveData" format=3]
+[gd_resource type="Resource" script_class="MoveData" format=3 uid="uid://daefgomic14u8"]
 
-[ext_resource type="Script" path="res://scripts/creatures/move_data.gd" id="1_move"]
+[ext_resource type="Script" uid="uid://bq5p2dxnovb0r" path="res://scripts/creatures/move_data.gd" id="1_move"]
 [ext_resource type="Resource" path="res://content/vfx/vfx_ring_earth.tres" id="2_vfx"]
-[ext_resource type="Script" path="res://scripts/creatures/stat_modifier.gd" id="3_modifier"]
+[ext_resource type="Script" uid="uid://c8yppijv6s6vv" path="res://scripts/creatures/stat_modifier.gd" id="3_modifier"]
 
 [sub_resource type="Resource" id="Modifier_0"]
 script = ExtResource("3_modifier")
@@ -20,6 +20,5 @@ type = 1
 power = 50
 accuracy = 90
 cooldown_turns = 3
-priority = 0
 stat_modifiers = Array[ExtResource("3_modifier")]([SubResource("Modifier_0")])
 vfx = ExtResource("2_vfx")

@@ -1,11 +1,11 @@
-[gd_resource type="SpriteFrames" format=3]
+[gd_resource type="SpriteFrames" format=3 uid="uid://jc48l8eff7ce"]
 
-[ext_resource type="Texture2D" path="res://assets/creatures/flame_golem/attack_01.png" id="1_attack_01"]
-[ext_resource type="Texture2D" path="res://assets/creatures/flame_golem/attack_02.png" id="2_attack_02"]
-[ext_resource type="Texture2D" path="res://assets/creatures/flame_golem/death.png" id="3_death"]
-[ext_resource type="Texture2D" path="res://assets/creatures/flame_golem/hurt.png" id="4_hurt"]
-[ext_resource type="Texture2D" path="res://assets/creatures/flame_golem/idle.png" id="5_idle"]
-[ext_resource type="Texture2D" path="res://assets/creatures/flame_golem/walk.png" id="6_walk"]
+[ext_resource type="Texture2D" uid="uid://drspjetof6qcd" path="res://assets/creatures/flame_golem/attack_01.png" id="1_attack_01"]
+[ext_resource type="Texture2D" uid="uid://6d42w0v7mima" path="res://assets/creatures/flame_golem/attack_02.png" id="2_attack_02"]
+[ext_resource type="Texture2D" uid="uid://ycv8woltd8qh" path="res://assets/creatures/flame_golem/death.png" id="3_death"]
+[ext_resource type="Texture2D" uid="uid://xlfmd4huae27" path="res://assets/creatures/flame_golem/hurt.png" id="4_hurt"]
+[ext_resource type="Texture2D" uid="uid://di5a00s57x5dd" path="res://assets/creatures/flame_golem/idle.png" id="5_idle"]
+[ext_resource type="Texture2D" uid="uid://b4u15xcpvschm" path="res://assets/creatures/flame_golem/walk.png" id="6_walk"]
 
 [sub_resource type="AtlasTexture" id="attack_0"]
 atlas = ExtResource("1_attack_01")
@@ -221,7 +221,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("attack_8")
 }],
-"loop": false,
+"loop": 0,
 "name": &"attack",
 "speed": 18.0
 }, {
@@ -253,7 +253,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("attack_heavy_8")
 }],
-"loop": false,
+"loop": 0,
 "name": &"attack_heavy",
 "speed": 18.0
 }, {
@@ -276,7 +276,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("death_5")
 }],
-"loop": false,
+"loop": 0,
 "name": &"death",
 "speed": 6.0
 }, {
@@ -293,7 +293,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("hurt_3")
 }],
-"loop": false,
+"loop": 0,
 "name": &"hurt",
 "speed": 12.0
 }, {
@@ -316,7 +316,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("idle_5")
 }],
-"loop": true,
+"loop": 1,
 "name": &"idle",
 "speed": 8.0
 }, {
@@ -357,7 +357,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("walk_11")
 }],
-"loop": true,
+"loop": 1,
 "name": &"walk",
 "speed": 10.0
 }]

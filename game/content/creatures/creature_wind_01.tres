@@ -10,8 +10,8 @@
 [ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_quake_step_01.tres" id="7_quake_step"]
 [ext_resource type="Resource" uid="uid://clfgmuu7pwbi6" path="res://content/abilities/ability_swiftfoot.tres" id="8_swiftfoot"]
 [ext_resource type="Resource" path="res://content/abilities/ability_windrider.tres" id="9_windrider"]
+[ext_resource type="SpriteFrames" uid="uid://bbnmc2dtbyy27" path="res://content/sprites/creature_wind_01_battle.tres" id="10_battle_sprite"]
 
-[ext_resource type="SpriteFrames" path="res://content/sprites/creature_wind_01_battle.tres" id="10_battle_sprite"]
 [sub_resource type="Resource" id="Learn_gust_1"]
 script = ExtResource("2_entry")
 move = ExtResource("4_gust")
