@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_win_lesson"]
+script = ExtResource("2_objective")
+kind = 4
+target = &"field_mending_won"
+count = 1
+description = "Swap to your Loambuck, mend your partner, and swap back"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_main_01b_field_mending"
+title = "Field Mending"
+kind = 0
+summary = "The Scout wants to show how a mender fights before you learn it the hard way: a healer can patch up a partner on the bench, not only itself."
+giver = &"scout"
+requires = &"quest_main_01a_a_second_oath"
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_win_lesson")])
+reward_currency = 40
+reward_binding_scrolls = 1
+reward_xp = 20
+offer_line = "Scout: Out here nothing waits for you to be ready. Let me show you how a mender fights, before you learn it the hard way. Stay by the fire a moment."
+accept_option = "Show me."
+refuse_option = "Later."
+accepted_line = "Scout: Here's the thing most folk get wrong. A healer doesn't only mend itself. It can mend whoever it's sworn to, even one sitting out the fight."
+refused_line = "Scout: Later, then. Don't leave it too long."
+reoffer_line = "Scout: Ready for that lesson now?"
+progress_line = "Scout: Want to go again? Swap, mend, swap back."
+continue_option = "Let's go again."
+abandon_option = "Not now."
+abandoned_line = "Scout: Come find me when you want to try again."
+complete_line = "Scout: See? Your Emberling would have burned out on its own. Swap, mend, swap back. Remember that and the road won't kill you. Now, about that road."
+done_line = "Scout: Swap, mend, swap back."

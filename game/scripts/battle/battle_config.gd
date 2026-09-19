@@ -22,6 +22,11 @@ var is_boss: bool = false
 ## Shown for trainer battles. Empty for wild encounters.
 var enemy_name: String = ""
 var binding_scrolls: int = 0
+## The player's satchel for this battle: item id -> count. Items the battle
+## cannot find in [member item_catalog] are carried through untouched.
+var items: Dictionary = {}
+## Item id -> [ItemData], for every item [member items] may name.
+var item_catalog: Dictionary = {}
 var scroll_multiplier: float = BattleRules.BASIC_SCROLL_MULTIPLIER
 ## False when a newly bound creature would have nowhere to go, in which case
 ## no scroll may be spent (Specification 15.4).
@@ -29,6 +34,18 @@ var has_bind_destination: bool = true
 ## Story-based level cap for player creatures (Specification 9.4).
 var level_cap: int = CreatureRules.GLOBAL_MAX_LEVEL
 var opening: Opening = Opening.NEUTRAL
+## An extra line after the send-outs, for a scripted encounter that wants to
+## say how it began. Empty for none.
+var opening_text: String = ""
+## Modifiers every enemy creature carries from the first turn, for a scripted
+## encounter against a foe that is already worn down. Empty for none.
+var enemy_modifiers: Array[StatModifier] = []
+## The enemy only ever attacks: no heals or buffs. For a scripted foe that
+## must not undo what the lesson asks the player to do to it.
+var enemy_attacks_only: bool = false
+## Every Binding Scroll offered in this battle takes. For a lesson whose
+## point is the bind itself, not the odds.
+var guaranteed_bind: bool = false
 var type_chart: TypeChart
 ## Seed for the battle's random rolls. Negative picks a random seed.
 var rng_seed: int = -1

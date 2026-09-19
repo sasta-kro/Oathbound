@@ -13,13 +13,47 @@ A playable vertical slice of the overworld-and-battle loop in two hand-painted a
 
 - **Town** (walled village, hub and starter settlement in one): Knight heals the party, Elder gives the first main quest, Merchant and Child give side quests.
 - **Area One** (meadow, road, pond, ruins, altar): six spawn zones over six species, a hand-placed hostile Cinderclaw guarding the altar, a Scout NPC with the second main quest.
-- Player starts with a level-7 Emberling and 5 Binding Scrolls. Roam, strike creatures on the field with F, fight 1v1 turn battles, bind creatures, level up, evolve Emberling at 16, complete four quests, save to slots.
+- Player starts with a level-7 Emberling and 5 Binding Scrolls. Roam, strike creatures on the field with F, fight 1v1 turn battles, bind creatures, level up, evolve Emberling at 16, complete twelve quests (the main chain teaches binding and support moves, then ramps the party to about level 15 for the boss), save to slots.
 
 Roughly 10 to 15 minutes of content against a 40 to 60 minute target.
 
 ## 2. The last three pieces of work, and how they were built
 
 These are the most recent implementations. The next developer will most likely touch them first.
+
+### 2.0000000 Shop and inn side quests (19 September 2026)
+
+- Four side quests in `content/quests/quest_side_{a_stocked_satchel,ink_and_oath,a_proper_rest,field_medicine}.tres` use EVENT objectives that `GameState` reports itself: `bought_<item id>` in `buy_item`, `used_<item id>` in `use_item_in_field` and after a battle from `BattleEngine.items_used`, and `rested_at_inn` from `main._offer_rest`.
+- `QuestData.reward_item` / `reward_item_count` pay an item on completion.
+- A vendor or innkeeper with quest business still serves: an offer is followed by the counter once the reply is read, and an errand in progress opens the counter with the progress line as its greeting (`main._serves`, `_serve`).
+
+### 2.000000 Items, vendors, the inn and townsfolk (19 September 2026)
+
+- `ItemData` (`scripts/items/item_data.gd`) is item content loaded by `ContentRegistry` from `content/items/`. It owns the "who can this be used on" rule (`refusal`), shared by the field and the battle engine.
+- `GameState.items` is the satchel (id -> count, saved under `"items"`). Binding Scrolls stay in `GameState.binding_scrolls`; buying one routes there through `add_item`.
+- Battles get a copy of the satchel through `BattleConfig.items` / `item_catalog`; `BattleEngine._use_item` spends it and `main.gd` copies it back, the same pattern as scrolls. `BattleScene` has `Menu.ITEMS` and `Menu.ITEM_TARGET`.
+- `WorldActor` gained `shop_stock`/`shop_title` (vendor), `runs_inn`, `chatter` (small talk that rotates each visit), `barks` (remarks over the head while on screen) and `wander_radius_cells` (strolling; paused through the `wandering_actors` group). `ShopMenu` (`scripts/ui/shop_menu.gd`) is the counter; `FieldUI` has a Satchel page (key I).
+- Town layout adds the Innkeeper, Scribe, Apothecary and seven townsfolk (`_services`, `_townsfolk` in `town_layout.gd`). The layout used `Array[StringName]([...])`, which Godot 4.7.2 rejects in that script, so the bake had been failing silently; it now uses a `_ids()` helper.
+
+### 2.00000 Scripted binding lesson, Scout turn-in (19 September 2026)
+
+**What:** A Second Oath is now a guided battle like Field Mending (`world/field_binding.gd`, `battle/bind_tutorial_guide.gd`). Both lessons go through one path in `main.gd` (`_is_lesson`, `_play_lesson`, `_spawn_lesson_creature`, and a `_lesson` dictionary from each lesson's `stage()` carrying guide, success outcome, story event, lines and a `prepare` callable). `QuestData.turn_in` lets a quest be handed in to someone other than its giver; Beyond the Walls is handed in to the Scout. `WorldActor.current_quest`/`quest_marker` honour it, and `idle_line` makes a giver repeat their last done line. A turn-in chains straight into the same NPC's next offer. The Ruined Road's turn-in and done lines give directions to the Ranger. Field UI "Return to" text uses the turn-in actor.
+
+### 2.0000 Area One pacing: four NPCs and five quests before the boss (19 September 2026)
+
+**What:** between The Ruined Road and The Black Knight the player now works through Scalded Shallows (Ranger), Wings in the Wood (Woodcutter) and The Hollow Watch (Warden), with side quests Leech Shallows (Ranger) and Feathers on the Rise (Hermit). The Black Knight moved from the Scout to the Warden. Spawn levels climb along the path (den 4-6, pit 6-8, wood 8-9, graves 9-11, Guardian 10). `QuestData.recommended_level` + `caution_line` let a giver warn an under-levelled party on accept. On paper the main chain alone brings the Emberling to about 4300 XP (Lv 15; Lv 16 and evolution at 4637), so side quests or extra fights may evolve it just before the boss.
+
+**Files:** `content/quests/quest_main_02a_scalded_shallows`, `02b_wings_in_the_wood`, `02c_the_hollow_watch`, `quest_side_leech_shallows`, `quest_side_feathers_on_the_rise`; `quest_main_02` (turn-in points to the Ranger, XP 40) and `quest_main_03` (giver Warden, requires 02c); `quest_data.gd` (pacing fields), `main.gd` (caution on accept); `areas/area_one.tscn` and `scripts/dev/layouts/area_one_layout.gd` (Ranger, Woodcutter, Hermit, Warden, zone levels, Guardian level, sealed line); `tests/test_quest_pacing.gd`.
+
+**Art debt:** the new NPCs reuse existing sprites (Ranger = scout, Woodcutter = merchant, Hermit = elder, Warden = town knight).
+
+### 2.000 Early-game rework: support moves and the Field Mending tutorial (19 September 2026)
+
+**What:** the main chain no longer jumps from "find the Scout" to "kill three Emberlings". Two Scout quests sit between them: A Second Oath (bind a Loambuck) and Field Mending (a guided battle teaching support moves). Support moves are new: an ALLY-target move lets the user pick any conscious party member, benched or fighting. Loambuck now learns Mend (L1) and Bolster (L5). Binding is easier: a healthy creature binds at its species rate (~40%), rising linearly to 95% at 0 HP.
+
+**Files:** `move_data.gd` (`Target`, `heal_percent`), `battle_action.gd` (`target_index`), `battle_engine.gd` (`_use_support_move`, `_heal`, `_apply_modifiers`, `config.enemy_modifiers`, `config.opening_text`), `battle_team.gd` (`can_target_ally`), `battle_rules.gd` (`heal_amount`, new `bind_chance`), `battle_ai.gd` (support scoring), `battle_event.gd` (`HEALED`), `battle_scene.gd` (TARGET menu, heal numbers, guide banner), new `battle_guide.gd` and `support_tutorial_guide.gd`, new `world/field_mending.gd`, `main.gd` (`_play_field_mending`, `_spawn_ambusher`, tutorial outcomes), `quest_objective.gd` (`EVENT`), `game_state.gd` (`accept_quest` counts party for BIND); content `move_mend_01`, `move_bolster_01`, `vfx_motes_mend`, `quest_main_01a_a_second_oath`, `quest_main_01b_field_mending`; `quest_main_02` now requires `01b`; Scout carries all four Scout quests; `tests/test_support_moves.gd`.
+
+**Balance note:** the additive damage formula barely scales with level (a level-3 Emberling did 46 to a level-7 one), so the tutorial ambusher carries a battle-long -35% Attack modifier to keep the lesson unlosable in practice. Worth revisiting in the damage formula itself.
 
 ### 2.00 Seven-type chart (14 September 2026)
 
@@ -116,7 +150,7 @@ Ordered so each step unlocks the next and keeps the game playable at every commi
 
 ### Later (content and the rest of the story)
 
-12. **Opening sequence and player name.** Short scripted dialogue at the start; name entry; store `player_name`. Medium.
+12. **Player name.** The opening exists (prologue plus the Elder at the well, Specification 4.5); name entry and a stored `player_name` do not. Small.
 13. **Areas 2 and 3, bosses 2 and 3, ending and credits.** Content-heavy; the map pipeline is ready. Species count needs to grow from 6 toward 15+, moves from 10 toward 25+.
 14. **Audio.** Done for the current content: `MusicService` (four CC0 tracks, see `assets/music/SOURCE.md`) and `SfxService` (CC0 hit, bind and faint sounds, see `assets/sfx/SOURCE.md`), music and effects sliders in settings. Remaining: UI sounds (menu move/confirm), move-specific sounds per element, footsteps. Small each.
 15. **Control rebinding** in settings. Medium.

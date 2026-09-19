@@ -5,6 +5,21 @@ extends Resource
 ## This is pure content: adding a move must not require changing creature or
 ## battle rules. Resolution of damage, accuracy rolls, cooldowns and status
 ## application belongs to the battle system.
+##
+## Support moves ([member targets_ally]) differ from the usual creature-battle
+## rule of "heal yourself": the user picks any conscious member of its own
+## party, benched or fighting, as the target. A healer can mend the partner
+## it just relieved, and a buffer can ready whoever comes in next.
+
+## Who a move lands on.
+enum Target {
+	## The opposing active creature. Stat modifiers still follow their own
+	## [member StatModifier.target].
+	OPPONENT,
+	## Any conscious member of the user's party, chosen when the move is used.
+	## Healing and every [constant StatModifier.Target.SELF] modifier go to it.
+	ALLY,
+}
 
 ## Stable content id, independent of [member display_name] (Specification 25.2).
 @export var id: StringName = &""
@@ -20,6 +35,10 @@ extends Resource
 @export_range(0, 10) var cooldown_turns: int = 0
 ## Higher priority resolves first regardless of Speed (Specification 11.4).
 @export_range(-5, 5) var priority: int = 0
+@export var target: Target = Target.OPPONENT
+## HP restored to the target, as a percent of its max HP. Only meaningful for
+## [constant Target.ALLY] moves.
+@export_range(0, 100) var heal_percent: int = 0
 
 @export_group("Status Effect")
 ## Status applied on hit, or NONE.
@@ -46,6 +65,14 @@ func is_damaging() -> bool:
 	return power > 0
 
 
+func targets_ally() -> bool:
+	return target == Target.ALLY
+
+
+func heals() -> bool:
+	return heal_percent > 0
+
+
 func applies_status() -> bool:
 	return status != StatusIds.NONE and status_chance > 0
 
@@ -59,6 +86,10 @@ func validate() -> Array[String]:
 		problems.append("Move '%s' has no display name." % id)
 	if status != StatusIds.NONE and status_chance <= 0:
 		problems.append("Move '%s' declares a status but a 0%% chance." % id)
-	if not is_damaging() and not applies_status() and stat_modifiers.is_empty():
-		problems.append("Move '%s' has no damage, status or stat effect." % id)
+	if not is_damaging() and not applies_status() and not heals() and stat_modifiers.is_empty():
+		problems.append("Move '%s' has no damage, healing, status or stat effect." % id)
+	if heals() and not targets_ally():
+		problems.append("Move '%s' heals but does not target an ally." % id)
+	if targets_ally() and (is_damaging() or applies_status()):
+		problems.append("Move '%s' targets an ally but deals damage or a status." % id)
 	return problems

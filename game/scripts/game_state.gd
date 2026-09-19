@@ -1,6 +1,6 @@
 extends Node
 ## Player-owned progression shared by the overworld and battles: the active
-## party, Binding Scrolls, currency and the story level cap.
+## party, Binding Scrolls, the item satchel, currency and the story level cap.
 ##
 ## Autoloaded as [code]GameState[/code]. [method to_dict] and [method from_dict]
 ## are the whole save format; [SaveService] moves the result to and from disk.
@@ -21,6 +21,8 @@ signal game_saved(slot: int)
 signal quest_changed(quest: QuestData, status: QuestLog.Status)
 ## An objective of an active quest moved; [param done] once it is met.
 signal quest_objective_advanced(quest: QuestData, index: int, done: bool)
+## Coins, Binding Scrolls or satchel items changed hands.
+signal inventory_changed
 
 const STARTER_SPECIES_ID := &"creature_fire_01"
 ## Provisional starter level: with the additive damage formula a level-7
@@ -38,6 +40,11 @@ const BOSS_LEVEL_CAPS: Dictionary = {
 	&"boss_area_01": 30,
 }
 const LEVEL_CAP_RAISED_TEXT := "Your Oathbound can now grow to level %d."
+## Quest EVENT ids the field reports on its own (Specification 17.2): an item
+## bought or used, by item id, and a night at the inn.
+const EVENT_BOUGHT_ITEM := "bought_%s"
+const EVENT_USED_ITEM := "used_%s"
+const EVENT_RESTED_AT_INN := &"rested_at_inn"
 ## Provisional defeat penalty (Specification 20.1).
 const DEFEAT_CURRENCY_PENALTY := 50
 
@@ -45,6 +52,10 @@ var seen_species: Dictionary = {}
 var party: Array[CreatureInstance] = []
 var binding_scrolls: int = STARTING_BINDING_SCROLLS
 var currency: int = 0
+## The satchel: item id -> count, only items the player holds at least one
+## of (Specification 16.1, unlimited). Binding Scrolls are counted in
+## [member binding_scrolls] instead.
+var items: Dictionary = {}
 var level_cap: int = INITIAL_LEVEL_CAP
 ## Ids of every boss beaten, as a set. Beaten bosses never return
 ## (Specification 19).
@@ -73,6 +84,9 @@ var active_slot: int = SaveService.NO_SLOT
 ## continued journey opens where it was saved while a recorded location never
 ## moves the player on its own.
 var _resume_pending: bool = false
+## Set by [method new_game] when the journey begins with the opening at the
+## well, and consumed by the overworld once (Specification 4.5).
+var _opening_pending: bool = false
 
 
 func _ready() -> void:
@@ -85,13 +99,19 @@ func _process(delta: float) -> void:
 		play_seconds += delta
 
 
-## Throws away the current journey and starts over with the starter. Does not
-## touch the save on disk; the title screen erases that deliberately.
-func new_game() -> void:
+## Throws away the current journey and starts over. Does not touch the save
+## on disk; the title screen erases that deliberately.
+##
+## With [param with_opening] the party starts empty and the overworld plays
+## the opening, where the Elder hands over the starter (Specification 4.5).
+## Without it the starter is granted straight away, which is what tests and
+## a field launched directly from the editor want.
+func new_game(with_opening: bool = false) -> void:
 	seen_species.clear()
 	party.clear()
 	binding_scrolls = STARTING_BINDING_SCROLLS
 	currency = 0
+	items.clear()
 	level_cap = INITIAL_LEVEL_CAP
 	defeated_bosses.clear()
 	quests.clear()
@@ -100,7 +120,17 @@ func new_game() -> void:
 	play_seconds = 0.0
 	last_saved_at = 0
 	active_slot = SaveService.NO_SLOT
-	ensure_starter()
+	_opening_pending = with_opening
+	if not with_opening:
+		ensure_starter()
+
+
+## Whether the overworld should play the opening. True once per
+## [code]new_game(true)[/code]; the field consumes it as it starts.
+func take_opening_request() -> bool:
+	var pending: bool = _opening_pending
+	_opening_pending = false
+	return pending
 
 
 func has_location() -> bool:
@@ -151,6 +181,7 @@ func load_game(slot: int) -> bool:
 	from_dict(data)
 	active_slot = slot if SaveService.is_manual_slot(slot) else SaveService.NO_SLOT
 	_resume_pending = has_location()
+	_opening_pending = false
 	return true
 
 
@@ -182,6 +213,7 @@ func to_dict() -> Dictionary:
 		"seen_species": seen,
 		"binding_scrolls": binding_scrolls,
 		"currency": currency,
+		"items": _item_save_data(),
 		"level_cap": level_cap,
 		"defeated_bosses": bosses,
 		"quests": quests.to_dict(),
@@ -214,6 +246,12 @@ func from_dict(data: Dictionary) -> void:
 		seen_species[creature.species_id()] = true
 	binding_scrolls = maxi(0, int(data.get("binding_scrolls", STARTING_BINDING_SCROLLS)))
 	currency = maxi(0, int(data.get("currency", 0)))
+	items.clear()
+	var saved_items: Dictionary = data.get("items", {}) if data.get("items") is Dictionary else {}
+	for id: Variant in saved_items:
+		var item: ItemData = Content.get_item(StringName(String(id)))
+		if item != null and not item.is_binding_scroll():
+			add_item(item, int(saved_items[id]))
 	level_cap = clampi(int(data.get("level_cap", INITIAL_LEVEL_CAP)), 1, CreatureRules.GLOBAL_MAX_LEVEL)
 	defeated_bosses.clear()
 	for id: Variant in data.get("defeated_bosses", []):
@@ -355,13 +393,120 @@ func apply_defeat_penalty() -> void:
 	currency = maxi(0, currency - DEFEAT_CURRENCY_PENALTY)
 
 
+# --- Items and shops ---------------------------------------------------------
+
+
+func item_count(id: StringName) -> int:
+	var item: ItemData = Content.get_item(id)
+	if item != null and item.is_binding_scroll():
+		return binding_scrolls
+	return int(items.get(id, 0))
+
+
+## Puts [param count] of [param item] in the satchel, or on the scroll pile
+## for a Binding Scroll.
+func add_item(item: ItemData, count: int = 1) -> void:
+	if item == null or count <= 0:
+		return
+	if item.is_binding_scroll():
+		binding_scrolls += count
+	else:
+		items[item.id] = int(items.get(item.id, 0)) + count
+	inventory_changed.emit()
+
+
+## Takes one [param item] out of the satchel. False when there was none.
+func remove_item(item: ItemData) -> bool:
+	if item == null or item_count(item.id) <= 0:
+		return false
+	if item.is_binding_scroll():
+		binding_scrolls -= 1
+	else:
+		items[item.id] = int(items[item.id]) - 1
+		if int(items[item.id]) <= 0:
+			items.erase(item.id)
+	inventory_changed.emit()
+	return true
+
+
+## Satchel items in shop order, as [code]{item, count}[/code] pairs.
+func held_items() -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for item: ItemData in Content.all_items():
+		if not item.is_binding_scroll() and item_count(item.id) > 0:
+			out.append({"item": item, "count": item_count(item.id)})
+	return out
+
+
+## Replaces the satchel with counts a battle settled on.
+func set_item_counts(counts: Dictionary) -> void:
+	items.clear()
+	for id: StringName in counts:
+		if int(counts[id]) > 0:
+			items[id] = int(counts[id])
+	inventory_changed.emit()
+
+
+## Buys one [param item] (Specification 16.5, unlimited stock). False when
+## the player cannot afford it.
+func buy_item(item: ItemData) -> bool:
+	if item == null or currency < item.price:
+		return false
+	currency -= item.price
+	add_item(item)
+	report_quest_event(QuestObjective.Kind.EVENT, StringName(EVENT_BOUGHT_ITEM % item.id))
+	return true
+
+
+## Uses [param item] on [param creature] outside battle. Returns the line
+## describing what happened, or the reason it could not be used, and whether
+## the item was spent.
+func use_item_in_field(item: ItemData, creature: CreatureInstance) -> Dictionary:
+	if item == null or item_count(item.id) <= 0:
+		return {"used": false, "text": "You have none left."}
+	if not item.usable_in_field:
+		return {"used": false, "text": "%s can only be used in battle." % item.display_name}
+	var refusal: String = item.refusal(creature)
+	if not refusal.is_empty():
+		return {"used": false, "text": refusal}
+	var restored: int = item.heal_amount(creature)
+	creature.set_hp(creature.current_hp + restored)
+	remove_item(item)
+	party_changed.emit()
+	report_quest_event(QuestObjective.Kind.EVENT, StringName(EVENT_USED_ITEM % item.id))
+	var text: String = (
+		"%s was revived with %d HP." % [creature.display_name(), restored]
+		if item.effect == ItemData.Effect.REVIVE
+		else "%s recovered %d HP." % [creature.display_name(), restored]
+	)
+	return {"used": true, "text": text}
+
+
+func _item_save_data() -> Dictionary:
+	var out: Dictionary = {}
+	var ids: Array = items.keys()
+	ids.sort()
+	for id: StringName in ids:
+		out[String(id)] = int(items[id])
+	return out
+
+
 # --- Quests ------------------------------------------------------------------
 
 
+## Accepts [param quest]. A BIND objective counts Oathbound already in the
+## party, so a player who bound the creature early is never asked to bind a
+## second one into a party that may have no room for it.
 func accept_quest(quest: QuestData) -> bool:
 	if not quests.accept(quest):
 		return false
 	quest_changed.emit(quest, QuestLog.Status.ACTIVE)
+	for objective: QuestObjective in quest.objectives:
+		if objective == null or objective.kind != QuestObjective.Kind.BIND:
+			continue
+		for creature: CreatureInstance in party:
+			if creature.species_id() == objective.target:
+				report_quest_event(QuestObjective.Kind.BIND, objective.target)
 	return true
 
 
@@ -394,6 +539,10 @@ func complete_quest(quest: QuestData) -> PackedStringArray:
 		lines.append(
 			"+%d Binding Scroll%s" % [quest.reward_binding_scrolls, "" if quest.reward_binding_scrolls == 1 else "s"]
 		)
+	var reward_item: ItemData = Content.get_item(quest.reward_item) if quest.reward_item != &"" else null
+	if reward_item != null and quest.reward_item_count > 0:
+		add_item(reward_item, quest.reward_item_count)
+		lines.append("+%d %s" % [quest.reward_item_count, reward_item.display_name])
 	if quest.reward_xp > 0:
 		for creature: CreatureInstance in party:
 			if not creature.is_fainted():

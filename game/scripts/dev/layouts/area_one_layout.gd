@@ -19,6 +19,9 @@ const SEED: int = 0xA1EA
 
 const TOWN_SCENE := "res://areas/town.tscn"
 const SCOUT_SPRITE_FRAMES := "res://content/sprites/npc_scout.tres"
+const KNIGHT_SPRITE_FRAMES := "res://content/sprites/npc_knight.tres"
+const MERCHANT_SPRITE_FRAMES := "res://content/sprites/npc_merchant.tres"
+const ELDER_SPRITE_FRAMES := "res://content/sprites/npc_elder.tres"
 const ROAD_WIDTH: int = 3
 const ROAD: Array = [
 	Vector2i(25, 35),
@@ -82,6 +85,7 @@ func build() -> AreaPainter:
 
 	_ruins(p)
 	_camp(p)
+	_helpers(p)
 	_forests(p)
 	_meadow(p)
 	_creatures(p)
@@ -155,7 +159,66 @@ func _camp(p: AreaPainter) -> void:
 			"sprite_frames": load(SCOUT_SPRITE_FRAMES),
 			"facing": &"left",
 			"dialogue_line": "Scout: Follow the road and you will not get lost. It bends past the pond and climbs to the ruins. The altar is at the very end. Nobody goes further.",
-			"quest_ids": Array[StringName]([&"quest_main_02_the_ruined_road", &"quest_main_03_the_black_knight"]),
+			"quest_ids": Array[StringName]([
+				&"quest_main_01a_a_second_oath",
+				&"quest_main_01b_field_mending",
+				&"quest_main_02_the_ruined_road",
+			]),
+		}
+	)
+
+
+## The people along the way to the altar. Each hands the player on to the
+## next, and each one's quest sends them somewhere a little more dangerous,
+## so the party is around level 15 when the Warden offers the Black Knight.
+func _helpers(p: AreaPainter) -> void:
+	p.add_actor(
+		"Ranger",
+		Vector2i(37, 21),
+		{
+			"display_name": "RANGER",
+			"body_color": Color(0.3, 0.55, 0.35, 1),
+			"sprite_frames": load(SCOUT_SPRITE_FRAMES),
+			"facing": &"right",
+			"dialogue_line": "Ranger: The pond feeds half the meadow. When something troubles the water, everything out here feels it.",
+			"quest_ids": Array[StringName]([&"quest_main_02a_scalded_shallows", &"quest_side_leech_shallows"]),
+		}
+	)
+	p.add_actor(
+		"Woodcutter",
+		Vector2i(10, 21),
+		{
+			"display_name": "WOODCUTTER",
+			"body_color": Color(0.6, 0.45, 0.3, 1),
+			"sprite_frames": load(MERCHANT_SPRITE_FRAMES),
+			"facing": &"up",
+			"dialogue_line": "Woodcutter: The deeper you go into these woods, the meaner the things that live there. Same goes for the road north.",
+			"quest_ids": Array[StringName]([&"quest_main_02b_wings_in_the_wood"]),
+		}
+	)
+	p.add_actor(
+		"Hermit",
+		Vector2i(16, 11),
+		{
+			"display_name": "HERMIT",
+			"body_color": Color(0.55, 0.55, 0.5, 1),
+			"sprite_frames": load(ELDER_SPRITE_FRAMES),
+			"facing": &"right",
+			"dialogue_line": "Hermit: The ruins? Hah. I went up there once, young and proud. Came back down a good deal less of both.",
+			"quest_ids": Array[StringName]([&"quest_side_feathers_on_the_rise"]),
+		}
+	)
+	p.add_actor(
+		"Warden",
+		Vector2i(38, 15),
+		{
+			"display_name": "WARDEN",
+			"body_color": Color(0.25, 0.7, 0.35, 1),
+			"sprite_frames": load(KNIGHT_SPRITE_FRAMES),
+			"facing": &"up",
+			"dialogue_line": "Warden: Rest a moment. I'll see your Oathbound mended. Whatever you do next, don't face the altar tired.",
+			"heals_party": true,
+			"quest_ids": Array[StringName]([&"quest_main_02c_the_hollow_watch", &"quest_main_03_the_black_knight"]),
 		}
 	)
 
@@ -201,17 +264,18 @@ func _meadow(p: AreaPainter) -> void:
 
 func _creatures(p: AreaPainter) -> void:
 	p.add_spawn_zone("LoambuckMeadow", Vector2i(9, 31), _zone("loambuck", 3.0, 3, 2, 4, NEUTRAL))
-	p.add_spawn_zone("EmberlingDen", Vector2i(20, 19), _zone("emberling", 2.5, 2, 3, 5, HOSTILE))
+	# Levels climb along the quest path: den, pit, wood, graves, then the knight.
+	p.add_spawn_zone("EmberlingDen", Vector2i(20, 19), _zone("emberling", 2.5, 2, 4, 6, HOSTILE))
 	p.add_spawn_zone("ShardHollow", Vector2i(28, 20), _zone("rimeshard", 2.5, 2, 3, 5, NEUTRAL))
 	p.add_spawn_zone("TidePool", Vector2i(30, 26), _zone("rillfin", 3.0, 2, 4, 6, NEUTRAL))
-	p.add_spawn_zone("GaleRise", Vector2i(21, 9), _zone("gustpip", 3.0, 2, 4, 6, HOSTILE))
+	p.add_spawn_zone("GaleRise", Vector2i(21, 9), _zone("gustpip", 3.0, 2, 6, 8, HOSTILE))
 	p.add_spawn_zone("CinderRuins", Vector2i(33, 15), _zone("cinderclaw", 2.0, 1, 6, 7, HOSTILE))
-	p.add_spawn_zone("SlagPit", Vector2i(42, 19), _zone("slagling", 3.0, 2, 4, 6, NEUTRAL))
-	p.add_spawn_zone("LeechShallows", Vector2i(44, 26), _zone("leechling", 2.5, 2, 4, 6, NEUTRAL))
-	p.add_spawn_zone("BatWood", Vector2i(9, 17), _zone("scorchbat", 3.0, 2, 3, 5, HOSTILE))
-	p.add_spawn_zone("SquireGraves", Vector2i(31, 6), _zone("hollow_squire", 2.0, 2, 7, 9, HOSTILE))
+	p.add_spawn_zone("SlagPit", Vector2i(42, 19), _zone("slagling", 3.0, 2, 6, 8, NEUTRAL))
+	p.add_spawn_zone("LeechShallows", Vector2i(44, 26), _zone("leechling", 2.5, 2, 6, 8, NEUTRAL))
+	p.add_spawn_zone("BatWood", Vector2i(9, 17), _zone("scorchbat", 3.0, 2, 8, 9, HOSTILE))
+	p.add_spawn_zone("SquireGraves", Vector2i(31, 6), _zone("hollow_squire", 2.0, 2, 9, 11, HOSTILE))
 	# The Area 1 boss in front of the altar. It only accepts a challenge while
-	# the Scout's last quest is under way, and stays beaten once it falls.
+	# the Warden's last quest is under way, and stays beaten once it falls.
 	p.add_creature(
 		"BlackKnight",
 		Vector2i(42, 9),
@@ -222,7 +286,7 @@ func _creatures(p: AreaPainter) -> void:
 			"boss_id": &"boss_area_01",
 			"required_quest": &"quest_main_03_the_black_knight",
 			"challenge_line": "The Black Knight: So. Another who would pass the altar. I swore an oath to guard this place, and I broke it, and still I stand. Come, then. Break yourself against me.",
-			"sealed_line": "A knight in black armour stands before the altar, still as stone. Its helm turns to follow you, but it does not move. Perhaps the Scout knows something about it.",
+			"sealed_line": "A knight in black armour stands before the altar, still as stone. Its helm turns to follow you, but it does not move. Perhaps the warden camped at the edge of the ruins knows something about it.",
 			"victory_line": "The Black Knight: The oath... is finally... ended. The black armour cracks apart and scatters into light. The way past the altar is open.",
 			"leash_radius": 0.0,
 		}
@@ -233,7 +297,7 @@ func _creatures(p: AreaPainter) -> void:
 		Vector2i(35, 11),
 		{
 			"species": load(SPECIES["cinderclaw"]),
-			"level": 8,
+			"level": 10,
 			"disposition": HOSTILE,
 			"leash_radius": 96.0,
 		}

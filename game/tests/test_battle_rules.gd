@@ -76,9 +76,11 @@ func test_hit_chance_applies_accuracy_modifiers() -> void:
 
 func test_bind_chance_rises_as_hp_falls_and_is_clamped() -> void:
 	var target := CreatureInstance.create(load(EMBERLING) as CreatureSpecies, 1)
-	assert_almost_eq(BattleRules.bind_chance(target), 0.45 * 0.25, 0.0001, "Full HP uses the floor.")
+	assert_almost_eq(BattleRules.bind_chance(target), 0.45, 0.0001, "Full HP uses the species rate.")
 	target.set_hp(1)
-	assert_gt(BattleRules.bind_chance(target), 0.4, "Low HP must make binding much likelier.")
+	assert_gt(BattleRules.bind_chance(target), 0.85, "Low HP must make binding much likelier.")
+	target.set_hp(0)
+	assert_almost_eq(BattleRules.bind_chance(target), BattleRules.BIND_MAX_CHANCE, 0.0001)
 
 	var easy := CreatureSpecies.new()
 	easy.base_bind_chance = 1.0

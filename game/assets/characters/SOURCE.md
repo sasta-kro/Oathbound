@@ -25,3 +25,10 @@ pose is column 1.
   `res://content/sprites/npc_merchant.tres`.
 - `character_29.png` - the Child, used by `res://content/sprites/npc_child.tres`.
 - `character_27.png` - the Scout, used by `res://content/sprites/npc_scout.tres`.
+- Townsfolk added with the market and inn, each with a matching
+  `res://content/sprites/npc_*.tres`: `character_21.png` (Innkeeper),
+  `character_3.png` (Scribe), `character_19.png` (Apothecary),
+  `character_9.png` (Gate guard), `character_12.png` (Villager),
+  `character_10.png` (Farmer), `character_2.png` (Old man),
+  `character_30.png` (Fisher), `character_18.png` (Bard),
+  `character_28.png` (Kid).

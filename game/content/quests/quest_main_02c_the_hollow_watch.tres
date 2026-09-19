@@ -1,0 +1,45 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_0"]
+script = ExtResource("2_objective")
+kind = 0
+target = &"creature_earth_03"
+count = 2
+description = "Put two Hollow Squires back in their graves"
+
+[sub_resource type="Resource" id="Objective_1"]
+script = ExtResource("2_objective")
+kind = 0
+target = &"creature_fire_02"
+count = 1
+description = "Bring down the Cinderclaw guarding the road to the altar"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_main_02c_the_hollow_watch"
+title = "The Hollow Watch"
+kind = 0
+summary = "The dead of the old knightly graves walk again, and a Cinderclaw guards the last stretch of road to the altar. The Warden will not let anyone near the Black Knight until they have faced both."
+giver = &"warden"
+requires = &"quest_main_02b_wings_in_the_wood"
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_0"), SubResource("Objective_1")])
+reward_currency = 100
+reward_binding_scrolls = 2
+reward_xp = 100
+recommended_level = 13
+offer_line = "Warden: So you're the one the woodcutter keeps talking about. I'm Serah, warden of the Order. Before anyone goes near that altar, they prove themselves on what guards it. The Hollow Squires in the old graves, and the Cinderclaw on the last stretch of road. Put two squires down and the Cinderclaw with them."
+accept_option = "I'll face them."
+refuse_option = "I need more time."
+accepted_line = "Warden: The graves are just west of the altar. The Cinderclaw stalks the road where the paving starts. Come back to me between fights; I'll see your Oathbound mended."
+caution_line = "Warden: I won't stop you. But the squires were knights once, and they remember how to fight. If your lead were nearer level %d, I'd sleep easier."
+refused_line = "Warden: Take it. The graves have waited a hundred years; they'll wait a few more days."
+reoffer_line = "Warden: Ready to face the graves?"
+progress_line = "Warden: The graves still stir. How do you fare?"
+continue_option = "I'm going back."
+abandon_option = "It's beyond me."
+abandoned_line = "Warden: No shame in knowing your limits. Grow, and return."
+complete_line = "Warden: Two squires at rest and the Cinderclaw down. You fight like one of ours. Then you've earned the truth about what stands at the altar."
+done_line = "Warden: The graves are quiet. Only the knight remains."

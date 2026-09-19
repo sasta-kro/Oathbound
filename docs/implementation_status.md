@@ -39,7 +39,7 @@ Binding is enabled during an ordinary wild battle when all of these conditions a
 - The target is not a boss.
 - The target does not belong to an Oathkeeper.
 
-Boss battles disable binding and running. Trainer battles disable binding. The Item command remains visible but disabled because the inventory system does not exist.
+Boss battles disable binding and running. Trainer battles disable binding. The Item command uses satchel items on any party member and is disabled when no held item would help.
 
 ## Implemented systems
 
@@ -82,7 +82,7 @@ Escape opens the Field Companion menu. That menu provides Journey, Companions, F
 - Areas 2 and 3 do not exist.
 - Hostile Oathkeeper encounters do not exist.
 - Bosses 2 and 3 do not exist.
-- Inventory, items, shops, Creature Hotel, and Experience Vessel use do not exist.
+- Selling items, key items, Creature Hotel, and Experience Vessel use do not exist. Buying, the satchel, battle and field item use, two town vendors and the inn do.
 - Move replacement and move relearning do not exist.
 - Permanent ever-bound journal state is not saved.
 - Revival locations and world reset after defeat do not exist.

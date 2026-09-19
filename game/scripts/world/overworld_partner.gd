@@ -119,6 +119,14 @@ func snap_to_player() -> void:
 		visual.play(CreatureVisual.STATE_IDLE)
 
 
+## Stands the partner at [param point] and keeps it there until the player
+## walks off, for a scripted scene that wants it beside the player rather
+## than underfoot.
+func place_at(point: Vector2) -> void:
+	_trail = PackedVector2Array([point])
+	global_position = point
+
+
 ## Picks up whichever creature now leads the party. A wiped party has no lead,
 ## and the partner leaves the map until something can fight again.
 ##

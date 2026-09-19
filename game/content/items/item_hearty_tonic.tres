@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/item_data.gd" id="1_item"]
+
+[resource]
+script = ExtResource("1_item")
+id = &"item_hearty_tonic"
+display_name = "Hearty Tonic"
+description = "Thick, bitter and strong. Restores a companion to full HP."
+effect = 0
+amount = 100
+price = 55

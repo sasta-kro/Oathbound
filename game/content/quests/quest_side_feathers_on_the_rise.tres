@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_0"]
+script = ExtResource("2_objective")
+kind = 0
+target = &"creature_wind_01"
+count = 3
+description = "Chase three Gustpips off the rise"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_side_feathers_on_the_rise"
+title = "Feathers on the Rise"
+kind = 1
+summary = "The hermit on the hill wants the Gustpips off the rise so he can gather his herbs in peace."
+giver = &"hermit"
+requires = &""
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_0")])
+reward_currency = 45
+reward_binding_scrolls = 0
+reward_xp = 50
+recommended_level = 0
+offer_line = "Hermit: Eh? A visitor. Well, since you're here. The Gustpips on the rise have gone mad this spring, diving at anyone who comes up for herbs. Chase a few off and an old man can gather his roots again."
+accept_option = "I'll chase them off."
+refuse_option = "Another time."
+accepted_line = "Hermit: They're quick and they strike from above. Earth knocks them out of the air."
+refused_line = "Hermit: Hmph. Young people."
+reoffer_line = "Hermit: Gustpips still diving at me. Well?"
+progress_line = "Hermit: Still feathers everywhere, I see."
+continue_option = "Give me time."
+abandon_option = "I'll leave the rise alone."
+abandoned_line = "Hermit: Of course you will."
+complete_line = "Hermit: Ha! Quiet on the rise. Here, coins I had no use for. Mind how you spend them."
+done_line = "Hermit: The roots are coming up well this year."

@@ -1,0 +1,38 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_0"]
+script = ExtResource("2_objective")
+kind = 0
+target = &"creature_fire_03"
+count = 3
+description = "Drive three Slaglings back into the pit east of the pond"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_main_02a_scalded_shallows"
+title = "Scalded Shallows"
+kind = 0
+summary = "Slaglings have crawled out of the pit east of the pond and are boiling the shallows. The Ranger keeping watch there wants them driven back."
+giver = &"ranger"
+requires = &"quest_main_02_the_ruined_road"
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_0")])
+reward_currency = 70
+reward_binding_scrolls = 1
+reward_xp = 60
+recommended_level = 9
+offer_line = "Ranger: You're the one who cleared the road? Then you're who I need. Slaglings are crawling out of the pit east of here and sitting in the shallows till the water steams. The fish are floating belly-up. Drive three of them back and the pit settles."
+accept_option = "I'll drive them back."
+refuse_option = "Not yet."
+accepted_line = "Ranger: They're slow and they're tough. Water and earth put them out quicker than fire does. Your Loambuck will earn its keep here."
+caution_line = "Ranger: Hm. Slaglings hit harder than Emberlings, and yours still look green. I'd want them nearer level %d before wading in. Your call."
+refused_line = "Ranger: Then I'll keep watching the water boil."
+reoffer_line = "Ranger: The shallows are still steaming. Changed your mind?"
+progress_line = "Ranger: How goes it at the pit?"
+continue_option = "Still at it."
+abandon_option = "I can't manage it."
+abandoned_line = "Ranger: They're stubborn things. Come back when you're ready."
+complete_line = "Ranger: The water's cooling already. Good work. Now listen: the woodcutter in the west wood has been shouting about bats for days. If you're heading for the ruins, you'll want to be stronger than you are, and those bats will see to that."
+done_line = "Ranger: The shallows are quiet. Try the west wood if you want a harder fight."

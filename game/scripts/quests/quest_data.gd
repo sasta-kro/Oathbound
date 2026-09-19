@@ -23,14 +23,19 @@ const DEFAULT_REOFFER_LINE := "Have you changed your mind?"
 const DEFAULT_PROGRESS_LINE := "How is it going?"
 const DEFAULT_ABANDONED_LINE := "I see. Come back if you change your mind."
 const DEFAULT_DONE_LINE := "Thank you again for your help."
+const DEFAULT_CAUTION_LINE := "They look your Oathbound over. \"Watch yourself out there. I'd feel better if they were nearer level %d.\""
 
 @export var id: StringName = &""
 @export var title: String = ""
 @export var kind: Kind = Kind.SIDE
 ## One or two sentences for the log.
 @export_multiline var summary: String = ""
-## Actor id of the NPC who offers the quest and takes it back in.
+## Actor id of the NPC who offers the quest, and takes it back in unless
+## [member turn_in] names someone else.
 @export var giver: StringName = &""
+## Actor id of the NPC the finished quest is handed in to, when that is not
+## the giver ("find the scout" is turned in to the scout). Empty for the giver.
+@export var turn_in: StringName = &""
 ## Quest that must be completed before this one is offered. Empty for none.
 @export var requires: StringName = &""
 @export var objectives: Array[QuestObjective] = []
@@ -40,6 +45,18 @@ const DEFAULT_DONE_LINE := "Thank you again for your help."
 @export var reward_binding_scrolls: int = 0
 ## XP given to every conscious party member on completion.
 @export var reward_xp: int = 0
+## An item handed over on completion, by id, and how many. Empty for none.
+@export var reward_item: StringName = &""
+@export_range(0, 99) var reward_item_count: int = 1
+
+@export_group("Pacing")
+## The lead Oathbound's level this quest is written for. When the lead is
+## below it on accepting, the giver says [member caution_line]: a nudge, not a
+## gate. 0 for none.
+@export_range(0, 100) var recommended_level: int = 0
+## Said on accepting while under-levelled. [code]%d[/code] is replaced by
+## [member recommended_level].
+@export_multiline var caution_line: String = ""
 
 @export_group("Dialogue")
 ## The ask. Shown with the accept and refuse options.
@@ -60,6 +77,11 @@ const DEFAULT_DONE_LINE := "Thank you again for your help."
 @export_multiline var complete_line: String = ""
 ## Every talk after completion.
 @export_multiline var done_line: String = ""
+
+
+## Who takes the finished quest back.
+func turn_in_actor() -> StringName:
+	return turn_in if turn_in != &"" else giver
 
 
 func is_main() -> bool:
@@ -99,6 +121,17 @@ func refused_text() -> String:
 	return refused_line if not refused_line.is_empty() else abandoned_text()
 
 
+## Whether a party led at [param lead_level] is below what this quest is
+## written for.
+func is_underleveled(lead_level: int) -> bool:
+	return recommended_level > 0 and lead_level < recommended_level
+
+
+func caution_text() -> String:
+	var line: String = caution_line if not caution_line.is_empty() else DEFAULT_CAUTION_LINE
+	return line % recommended_level if "%d" in line else line
+
+
 func complete_text() -> String:
 	return complete_line if not complete_line.is_empty() else done_text()
 
@@ -121,6 +154,8 @@ func validate(registry: Node = null) -> Array[String]:
 			problems.append("Quest '%s' has an empty objective slot." % id)
 			continue
 		problems.append_array(objective.validate(id, registry))
+	if reward_item != &"" and registry != null and registry.has_method(&"has_item") and not registry.has_item(reward_item):
+		problems.append("Quest '%s' rewards item '%s' which is not in the item registry." % [id, reward_item])
 	if requires == id:
 		problems.append("Quest '%s' requires itself." % id)
 	elif requires != &"" and registry != null and not registry.has_quest(requires):

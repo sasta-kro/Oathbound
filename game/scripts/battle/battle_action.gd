@@ -18,12 +18,21 @@ var kind: Kind = Kind.MOVE
 var move: MoveData
 ## Party slot to bring in, for [constant Kind.SWITCH].
 var party_index: int = -1
+## Party slot of the user's own side a support move lands on, for a
+## [constant Kind.MOVE] whose move targets an ally. -1 means the user itself.
+var target_index: int = -1
+## The item to use, for [constant Kind.ITEM]. It lands on [member target_index].
+var item: ItemData
 
 
-static func use_move(chosen: MoveData) -> BattleAction:
+## [param ally_index] only matters for a move that targets an ally
+## ([method MoveData.targets_ally]): the party slot, benched or active, it
+## lands on. Left at -1 the user targets itself.
+static func use_move(chosen: MoveData, ally_index: int = -1) -> BattleAction:
 	var action := BattleAction.new()
 	action.kind = Kind.MOVE
 	action.move = chosen
+	action.target_index = ally_index
 	return action
 
 
@@ -38,6 +47,15 @@ static func switch_to(index: int) -> BattleAction:
 	var action := BattleAction.new()
 	action.kind = Kind.SWITCH
 	action.party_index = index
+	return action
+
+
+## Uses [param chosen] on party slot [param index] (Specification 16.3).
+static func use_item(chosen: ItemData, index: int) -> BattleAction:
+	var action := BattleAction.new()
+	action.kind = Kind.ITEM
+	action.item = chosen
+	action.target_index = index
 	return action
 
 

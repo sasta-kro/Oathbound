@@ -10,7 +10,8 @@ extends RefCounted
 ##  row 4      town wall, gate in the middle (columns 17-19)
 ##  rows 6-9   three houses along the road from the gate
 ##  rows 10-17 the square: paved plaza, well, lamp posts, statue
-##  rows 11-16 market on the west side, pond on the east
+##  rows 11-16 market on the west side, pond on the east; the inn is the big
+##             house north of the pond
 ##  rows 19-22 three houses and the camp along the south road
 ##  row 24     town wall
 ## ```
@@ -23,6 +24,7 @@ const KNIGHT_SPRITE_FRAMES := "res://content/sprites/npc_knight.tres"
 const ELDER_SPRITE_FRAMES := "res://content/sprites/npc_elder.tres"
 const MERCHANT_SPRITE_FRAMES := "res://content/sprites/npc_merchant.tres"
 const CHILD_SPRITE_FRAMES := "res://content/sprites/npc_child.tres"
+const NPC_SPRITES_DIR := "res://content/sprites/npc_%s.tres"
 
 const WALL_TOP_ROW: int = 4
 const WALL_BOTTOM_ROW: int = 24
@@ -135,11 +137,15 @@ func build() -> AreaPainter:
 	p.place_split("tree_2", Vector2i(9, 17))
 
 	_people(p)
+	_services(p)
+	_townsfolk(p)
 	_dressing(p)
 	_forest_outside(p)
 
 	p.set_player_start(Vector2i(18, 16))
 	p.add_entrance("FromAreaOne", Vector2i(18, 7))
+	# Where a new journey starts, facing the Elder by the well (Opening).
+	p.add_entrance("OpeningSpot", Vector2i(18, 15))
 	p.add_exit("ToAreaOne", Rect2i(17, 0, 3, 3), AREA_ONE_SCENE, "FromTown")
 	p.add_bounds()
 	return p
@@ -171,14 +177,14 @@ func _people(p: AreaPainter) -> void:
 	)
 	p.add_actor(
 		"Elder",
-		Vector2i(24, 11),
+		Vector2i(17, 15),
 		{
 			"display_name": "ELDER",
 			"body_color": Color(0.75, 0.62, 0.86, 1),
 			"sprite_frames": load(ELDER_SPRITE_FRAMES),
-			"facing": &"left",
+			"facing": &"right",
 			"dialogue_line": "Elder: The board has work for anyone willing to leave the walls. Wild Oathbound roam the meadow, and worse things by the ruins.",
-			"quest_ids": Array[StringName]([&"quest_main_01_beyond_the_walls"]),
+			"quest_ids": _ids([&"quest_main_01_beyond_the_walls"]),
 		}
 	)
 	p.add_actor(
@@ -189,7 +195,7 @@ func _people(p: AreaPainter) -> void:
 			"body_color": Color(0.9, 0.6, 0.3, 1),
 			"sprite_frames": load(MERCHANT_SPRITE_FRAMES),
 			"dialogue_line": "Merchant: Fresh bread, dried fish, and a crate I have not opened since the caravan came. Take a look.",
-			"quest_ids": Array[StringName]([&"quest_side_the_crossing"]),
+			"quest_ids": _ids([&"quest_side_the_crossing"]),
 		}
 	)
 	p.add_actor(
@@ -201,7 +207,148 @@ func _people(p: AreaPainter) -> void:
 			"sprite_frames": load(CHILD_SPRITE_FRAMES),
 			"facing": &"up",
 			"dialogue_line": "Child: I saw a Loambuck from the wall! It had leaves on its back. Can I come with you? No? Fine.",
-			"quest_ids": Array[StringName]([&"quest_side_leaf_hat"]),
+			"quest_ids": _ids([&"quest_side_leaf_hat"]),
+		}
+	)
+
+
+## The inn and the two market vendors (Specification 16.5). Service NPCs
+## stand still; the vendors flank the Merchant's stall on the market road.
+func _services(p: AreaPainter) -> void:
+	p.add_actor(
+		"Innkeeper",
+		Vector2i(27, 10),
+		{
+			"display_name": "INNKEEPER",
+			"sprite_frames": load(NPC_SPRITES_DIR % "innkeeper"),
+			"dialogue_line": "Innkeeper: Welcome to the Hearthside. Beds are warm and the stew is hot. Stay the night? Oathsworn sleep free.",
+			"chatter": PackedStringArray([
+				"Innkeeper: Back again? Your Oathbound look like they could use a proper bed.",
+				"Innkeeper: The Fisher swears he caught tonight's stew. He didn't. Rest a while?",
+			]),
+			"barks": PackedStringArray(["Stew's on!", "Rooms free tonight!", "Wipe your boots, please."]),
+			"runs_inn": true,
+		}
+	)
+	p.add_actor(
+		"Scribe",
+		Vector2i(4, 12),
+		{
+			"display_name": "SCRIBE",
+			"sprite_frames": load(NPC_SPRITES_DIR % "scribe"),
+			"dialogue_line": "Scribe: Binding Scrolls, inked by my own hand. Oath-script holds better than any rope.",
+			"chatter": PackedStringArray([
+				"Scribe: A worn-down creature listens closer. Weaken it before you offer the scroll.",
+				"Scribe: Failed binding? The scroll crumbles, but the lesson stays. Buy another.",
+			]),
+			"barks": PackedStringArray(["Scrolls! Fresh-inked scrolls!", "Bind your next friend!"]),
+			"shop_title": "Scribe's Stall",
+			"quest_ids": _ids([&"quest_side_ink_and_oath"]),
+			"shop_stock": _ids([&"item_binding_scroll"]),
+		}
+	)
+	p.add_actor(
+		"Apothecary",
+		Vector2i(11, 12),
+		{
+			"display_name": "APOTHECARY",
+			"sprite_frames": load(NPC_SPRITES_DIR % "apothecary"),
+			"dialogue_line": "Apothecary: Salves for scrapes, tonics for worse, and a draught for when the worst has already happened.",
+			"chatter": PackedStringArray([
+				"Apothecary: Clearwater from the well, blessed twice. Burns and poisons don't stand a chance.",
+				"Apothecary: Keep a salve in your satchel. The meadow bites harder than it looks.",
+			]),
+			"barks": PackedStringArray(["Salves and tonics!", "Mind your wounds, traveller."]),
+			"shop_title": "Apothecary",
+			"quest_ids": _ids([&"quest_side_a_stocked_satchel"]),
+			"shop_stock": _ids([&"item_herb_salve", &"item_hearty_tonic", &"item_ember_draught", &"item_clearwater_vial"]),
+		}
+	)
+
+
+## People who make the town feel lived in: a guard at the gate, a fisher at
+## the pond, a bard by the fire, and a few who stroll about.
+func _townsfolk(p: AreaPainter) -> void:
+	p.add_actor(
+		"Guard",
+		Vector2i(16, 5),
+		{
+			"display_name": "GUARD",
+			"sprite_frames": load(NPC_SPRITES_DIR % "guard"),
+			"dialogue_line": "Guard: The gate stays open while the sun is up. After dark, knock twice and say your oath.",
+			"chatter": PackedStringArray(["Guard: Wild ones don't come past the wall. Mostly."]),
+			"barks": PackedStringArray(["Quiet day.", "Mind the ruins out there."]),
+		}
+	)
+	p.add_actor(
+		"OldMan",
+		Vector2i(22, 12),
+		{
+			"display_name": "OLD MAN",
+			"sprite_frames": load(NPC_SPRITES_DIR % "old_man"),
+			"facing": &"left",
+			"dialogue_line": "Old Man: When I was your age, the Skeleton Lord was a story told to keep children inside the walls.",
+			"chatter": PackedStringArray(["Old Man: Sit a while. Well water tastes better when you're not rushing."]),
+			"barks": PackedStringArray(["Hmph. Pigeons.", "Back in my day..."]),
+			"quest_ids": _ids([&"quest_side_a_proper_rest"]),
+		}
+	)
+	p.add_actor(
+		"Fisher",
+		Vector2i(30, 13),
+		{
+			"display_name": "FISHER",
+			"sprite_frames": load(NPC_SPRITES_DIR % "fisher"),
+			"facing": &"up",
+			"dialogue_line": "Fisher: Nothing biting but leeches. Don't tell the Innkeeper, she thinks I catch the stew.",
+			"barks": PackedStringArray(["Come on, bite...", "Was that a ripple?"]),
+		}
+	)
+	p.add_actor(
+		"Bard",
+		Vector2i(11, 21),
+		{
+			"display_name": "BARD",
+			"sprite_frames": load(NPC_SPRITES_DIR % "bard"),
+			"facing": &"right",
+			"dialogue_line": "Bard: I'm writing a ballad about the Black Knight. I just need someone to go and beat him first.",
+			"chatter": PackedStringArray(["Bard: Every oath has a verse. Yours hasn't been written yet."]),
+			"barks": PackedStringArray(["♪ Oh, the meadow grass was green... ♪", "♪ ...and the scroll held true ♪"]),
+		}
+	)
+	p.add_actor(
+		"Kid",
+		Vector2i(15, 21),
+		{
+			"display_name": "KID",
+			"sprite_frames": load(NPC_SPRITES_DIR % "kid"),
+			"dialogue_line": "Kid: I'm faster than an Emberling! Watch! ...Okay, not yet. Soon.",
+			"barks": PackedStringArray(["Can't catch me!", "Race you to the well!"]),
+			"wander_radius_cells": 2.0,
+		}
+	)
+	p.add_actor(
+		"Villager",
+		Vector2i(20, 17),
+		{
+			"display_name": "VILLAGER",
+			"sprite_frames": load(NPC_SPRITES_DIR % "villager"),
+			"dialogue_line": "Villager: The market's busier since the caravan came. Even the Scribe is selling scrolls again.",
+			"chatter": PackedStringArray(["Villager: If you're heading out, the Apothecary's salves are worth every coin."]),
+			"barks": PackedStringArray(["Fresh bread smells lovely today.", "Has anyone seen my cat?"]),
+			"wander_radius_cells": 3.0,
+		}
+	)
+	p.add_actor(
+		"Farmer",
+		Vector2i(8, 18),
+		{
+			"display_name": "FARMER",
+			"sprite_frames": load(NPC_SPRITES_DIR % "farmer"),
+			"dialogue_line": "Farmer: Loambucks keep nibbling the hay. Can't blame them, it's good hay.",
+			"barks": PackedStringArray(["Hay won't stack itself.", "Rain's coming, I can feel it."]),
+			"quest_ids": _ids([&"quest_side_field_medicine"]),
+			"wander_radius_cells": 2.0,
 		}
 	)
 
@@ -236,3 +383,11 @@ func _forest_outside(p: AreaPainter) -> void:
 	p.plant_forest(Rect2i(0, 5, 1, SIZE.y - 7), FOREST_TREES, FOREST_STEP, 0)
 	p.plant_forest(Rect2i(SIZE.x - 2, 4, 1, SIZE.y - 6), FOREST_TREES, FOREST_STEP, 0)
 	p.plant_forest(Rect2i(SIZE.x - 1, 5, 1, SIZE.y - 7), FOREST_TREES, FOREST_STEP, 0)
+
+
+## A typed id list for an actor's exported [code]Array[StringName][/code].
+static func _ids(ids: Array) -> Array[StringName]:
+	var out: Array[StringName] = []
+	for id: Variant in ids:
+		out.append(StringName(id))
+	return out

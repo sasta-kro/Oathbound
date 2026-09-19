@@ -9,10 +9,10 @@ extends RefCounted
 ## `LevelMultiplier = 1 + (Level - 1) / 50` (Specification 11.8).
 const LEVEL_MULTIPLIER_DIVISOR := 50.0
 
-## Binding chance placeholder (Specification 15.3).
+## Binding chance placeholder (Specification 15.3). A healthy creature binds
+## at its species rate (about 40 percent for most); every point of missing HP
+## closes the gap toward [constant BIND_MAX_CHANCE].
 const BASIC_SCROLL_MULTIPLIER := 1.0
-const BIND_HP_FLOOR := 0.25
-const BIND_HP_WEIGHT := 0.75
 const BIND_MIN_CHANCE := 0.05
 const BIND_MAX_CHANCE := 0.95
 
@@ -98,14 +98,27 @@ static func hit_chance(move: MoveData, attacker: Battler) -> int:
 	return clampi(int(round(chance)), 0, 100)
 
 
-## `Chance = Base x Scroll x (0.25 + 0.75 x MissingHP)`, clamped
-## (Specification 15.3).
+## `Start = Base x Scroll`, then
+## `Chance = Start + (Max - Start) x MissingHP`, clamped (Specification 15.3).
+## A creature on its last sliver of HP binds at [constant BIND_MAX_CHANCE].
 static func bind_chance(
 	target: CreatureInstance, scroll_multiplier: float = BASIC_SCROLL_MULTIPLIER
 ) -> float:
-	var hp_factor: float = BIND_HP_FLOOR + BIND_HP_WEIGHT * target.missing_hp_fraction()
-	var chance: float = target.species.base_bind_chance * scroll_multiplier * hp_factor
+	var start: float = clampf(
+		target.species.base_bind_chance * scroll_multiplier, BIND_MIN_CHANCE, BIND_MAX_CHANCE
+	)
+	var chance: float = start + (BIND_MAX_CHANCE - start) * target.missing_hp_fraction()
 	return clampf(chance, BIND_MIN_CHANCE, BIND_MAX_CHANCE)
+
+
+## HP a healing move restores to [param target]: its share of max HP, at
+## least 1, and never more than is missing.
+static func heal_amount(move: MoveData, target: CreatureInstance) -> int:
+	if move == null or not move.heals() or target == null or target.is_fainted():
+		return 0
+	var missing: int = target.max_hp() - target.current_hp
+	var share: int = maxi(1, int(ceil(float(target.max_hp()) * float(move.heal_percent) / 100.0)))
+	return clampi(share, 0, missing)
 
 
 static func run_chance(runner_speed: int, chaser_speed: int, previous_attempts: int) -> float:

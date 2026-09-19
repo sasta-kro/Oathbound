@@ -1,0 +1,38 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_0"]
+script = ExtResource("2_objective")
+kind = 0
+target = &"creature_wind_02"
+count = 3
+description = "Clear three Scorchbats out of the west wood"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_main_02b_wings_in_the_wood"
+title = "Wings in the Wood"
+kind = 0
+summary = "Scorchbats have roosted in the west wood and set the woodcutter's stacks alight twice. He wants them gone before the whole wood goes up."
+giver = &"woodcutter"
+requires = &"quest_main_02a_scalded_shallows"
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_0")])
+reward_currency = 80
+reward_binding_scrolls = 1
+reward_xp = 80
+recommended_level = 11
+offer_line = "Woodcutter: Ranger sent you? Bless her. Scorchbats have roosted in my wood, and twice now they've lit my stacks. Fast, nasty, they come at you before you see them. Clear three out and I'll owe you."
+accept_option = "I'll clear them out."
+refuse_option = "Maybe later."
+accepted_line = "Woodcutter: They swoop on anyone who gets close. Strike first if you can, and keep your Loambuck ready to patch up whoever takes the burns."
+caution_line = "Woodcutter: Mind, these bats are no meadow pests. I've seen them tear through Oathbound tougher-looking than yours. Nearer level %d, I'd say, before you go poking at the roost."
+refused_line = "Woodcutter: I'll be here, beating out fires."
+reoffer_line = "Woodcutter: Still bats in my wood. You up for it now?"
+progress_line = "Woodcutter: Any luck with the roost?"
+continue_option = "Working on it."
+abandon_option = "They're too fast for me."
+abandoned_line = "Woodcutter: Can't blame you. Come back when you've got your feet under you."
+complete_line = "Woodcutter: Quiet! First quiet night in a week. Here, take this. And a word: a warden of the Knight Order came down the road yesterday asking for anyone who'd faced the ruins. She's camped at their edge, north-east."
+done_line = "Woodcutter: The warden's at the edge of the ruins, north-east. Tell her I sent you."

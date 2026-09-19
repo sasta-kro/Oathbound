@@ -99,7 +99,9 @@ There is no required mentor character and no rival character in the MVP.
 
 ### 4.5 Opening Sequence
 
-**[Not started]** There is no opening yet. The game grants the starter (a level-7 Emberling, `creature_fire_01`) and 5 Binding Scrolls silently when the party is empty, and drops the player in the town square. The Elder's first quest currently stands in for the tutorial. The starter level is Provisional; it was picked so the starter beats the level-3 Loambucks outside the gate.
+**[Partial]** "Begin your journey" opens a prologue (`scenes/prologue.tscn`): the Elder, alone on a dark stage, explains the Verdant Reach and what an Oathbound is, with the Emberling shown on stage. Escape skips it. The field then opens on the player standing with the Elder by the well in the town square (`OpeningSpot` marker). The Elder says the player has come of age and chosen the oath, hands over the starter (a level-7 Emberling, `creature_fire_01`) and the 5 Binding Scrolls, explains fire's strengths and the F strike and binding, warns that the Skeleton Lord is restless again, and sends the player to the scout, which accepts the first main quest. The journey is first autosaved when the scene ends. All lines live in `scripts/world/game_opening.gd`. A field started any other way (editor, tests, a save whose party is empty) still gets the starter silently. The player does not start at home and there is no name entry yet. The starter level is Provisional; it was picked so the starter beats the level-3 Loambucks outside the gate.
+
+NPCs show a quest mark over their heads (`WorldActor.quest_marker`): "!" for a quest they can offer or when an active quest asks the player to talk to them, "?" when a quest is ready to hand in to them. Yellow for main quests, blue for side quests; a main quest wins over a side one on the same NPC.
 
 The opening should take approximately **1 to 2 minutes** before normal exploration begins.
 
@@ -239,7 +241,7 @@ NPC behavior depends on role:
 - Hostile Oathkeepers may stand still, patrol short routes, or approach the player after detection.
 - NPC movement must remain bounded to valid terrain.
 
-**[Partial]** Friendly NPCs (`WorldActor`) stand still. Wild creatures roam and chase (Section 7). Hostile Oathkeepers do not exist.
+**[Partial]** Service NPCs stand still. Some town NPCs stroll within a small radius of their spot (`WorldActor.wander_radius_cells`) and pause with the rest of the world during dialogue, menus and battles. NPCs turn to face the player when spoken to, and some call out short remarks over their heads while on screen (`barks`). Wild creatures roam and chase (Section 7). Hostile Oathkeepers do not exist.
 
 ### 6.3 Interactable Objects
 
@@ -622,7 +624,7 @@ When every equipped move is on cooldown the creature **Waits**, doing nothing th
 
 Unavailable actions stay visible and explain why they are unavailable when selected.
 
-**[Partial]** Attack, Switch, Bind, Run and Wait work. Item is always disabled because there is no inventory.
+**[Partial]** Attack, Switch, Item, Bind, Run and Wait work. Item opens the satchel's battle items, then asks which party member, benched or fighting, it is for; it is disabled when no held item would help anyone. Tutorial lessons keep the satchel shut.
 
 ### 11.3 Turn Resolution
 
@@ -742,7 +744,9 @@ A move may define:
 
 A move may deal damage and apply an additional effect in the same use.
 
-**[Implemented]** as `MoveData` resources under `content/moves/`. Ten moves exist. Presentation reference is a `VfxPreset` (Section 23.6).
+**[Implemented]** as `MoveData` resources under `content/moves/`. Presentation reference is a `VfxPreset` (Section 23.6).
+
+**Support moves (added 19 September 2026, Provisional).** A move may target an ally instead of the opponent (`MoveData.target = ALLY`). Unlike the familiar "heal yourself" rule, the user chooses any conscious member of its own party, benched or fighting; the battle screen opens a target menu for it. Support moves never miss. A healing move restores `heal_percent` of the target's max HP (at least 1, never more than is missing). Its SELF stat modifiers go to the chosen ally; a buff on a benched ally stays on it and starts counting down once it is sent in. The enemy AI heals whichever conscious ally is at least 40 percent down, weighing HP restored at 1.2x against expected damage. Loambuck is the first healer and buffer: Mend (heal 35 percent, cooldown 2) from level 1 and Bolster (ally Attack +30 percent for 3 turns, cooldown 3) from level 5, replacing Guard Stance in its learnset.
 
 ### 11.12 Battle Presentation and Pacing
 
@@ -799,7 +803,7 @@ Multiple statuses may exist on the same creature at once.
 - Temporary stat modifiers are not statuses.
 - The status set must be replaceable or extensible later without redefining the battle loop.
 
-**[Implemented]** Sections 12.1 to 12.4, except the cure-all item (no items). Known edge: a stunned creature switched out keeps its stun until its next action.
+**[Implemented]** Sections 12.1 to 12.4. The cure-all is the Clearwater Vial, usable in battle only. Known edge: a stunned creature switched out keeps its stun until its next action.
 
 ## 13. Battle Outcomes and Rewards
 
@@ -888,13 +892,15 @@ Creature level does not directly reduce binding chance in the MVP.
 
 A Provisional placeholder formula may use:
 
-`Chance = BaseBindChance x ScrollMultiplier x (0.25 + 0.75 x MissingHPFraction)`
+`Start = BaseBindChance x ScrollMultiplier`
 
-Then clamp to a reasonable minimum/maximum such as 5 to 95 percent.
+`Chance = Start + (0.95 - Start) x MissingHPFraction`
+
+Then clamp to 5 to 95 percent. A healthy creature binds at its species rate (0.4 for most species); a creature on its last sliver of HP binds at 95 percent.
 
 The exact formula is tunable and should remain separate from battle sequencing.
 
-**[Implemented]** with the placeholder formula and the 5 to 95 percent clamp. Only the basic scroll grade (multiplier 1.0) exists. Species bind chances range from 0.22 (Cinderclaw) to 0.5 (Gustpip).
+**[Implemented]** with the placeholder formula and the 5 to 95 percent clamp (revised 19 September 2026: the old `0.25 + 0.75 x Missing` factor left even a nearly beaten creature at about 40 percent). Only the basic scroll grade (multiplier 1.0) exists. Species bind chances range from 0.22 (Cinderclaw) to 0.5 (Gustpip).
 
 ### 15.4 Full Party Handling
 
@@ -975,7 +981,7 @@ Battle defeat removes a fixed amount of currency as a defeat penalty. Exact amou
 
 A player with zero currency must never be prevented from recovering their party.
 
-**[Not started]** for all of Section 16 except: one currency (shown as coins) and the Binding Scroll count exist, are earned and spent, and are saved. Healing is free at the town Knight. The defeat penalty is Provisional **50 coins** and never takes the balance below zero.
+**[Partial]** One currency (coins) and an unlimited satchel exist and are saved. Items are content (`content/items/*.tres`, `ItemData`): Herb Salve (40% HP, 20 coins), Hearty Tonic (full HP, 55), Rekindling Draught (revive at 50%, 90), Clearwater Vial (clears statuses, battle only, 25) and the Binding Scroll (40), which adds to the scroll count rather than the satchel. All prices are Provisional. The Satchel page (I) uses items in the field. Town services: the Scribe sells Binding Scrolls, the Apothecary sells the healing items, and the Innkeeper offers a free night's rest that heals the party and autosaves. The Knight still heals for free. Selling, dropping, key items, the Creature Hotel and move relearning do not exist. The defeat penalty is Provisional **50 coins** and never takes the balance below zero.
 
 ## 17. Quests
 
@@ -992,7 +998,13 @@ Quests cannot permanently fail. They remain pending, may be abandoned through na
 
 A quest is in one of five states: new, refused, active, abandoned, completed. Refused and abandoned quests are offered again with a "changed your mind?" line. Abandoning throws away progress. A main quest may require a previous main quest to be complete before it is offered.
 
-**[Implemented]** `scripts/quests/`, `content/quests/`. Four quests ship: two main (Beyond the Walls, The Ruined Road) and two side (The Leaf Hat, The Crossing).
+**[Implemented]** `scripts/quests/`, `content/quests/`. Twelve quests ship: eight main and four side (The Leaf Hat, The Crossing, Leech Shallows, Feathers on the Rise). The main chain introduces one mechanic per step, then ramps difficulty so the lead is about level 15 at the boss: Beyond the Walls (Elder: reach the meadow, find the Scout; handed in to the Scout through `QuestData.turn_in`), A Second Oath (Scout: a guided binding battle, below), Field Mending (Scout: a guided support battle, below), The Ruined Road (Scout: three Emberlings, zone Lv 4-6), Scalded Shallows (Ranger: three Slaglings, Lv 6-8), Wings in the Wood (Woodcutter: three Scorchbats, Lv 8-9), The Hollow Watch (Warden: two Hollow Squires at Lv 9-11 and the level-10 Cinderclaw Guardian), The Black Knight (Warden: the level-14 Area 1 boss). Each giver's turn-in line points to the next. A quest may set `recommended_level`; accepting it with a lead below that level makes the giver say a `caution_line` (a nudge, never a gate). The Warden heals the party, as a rest stop before the altar. `tests/test_quest_pacing.gd` replays the chain's XP on paper and asserts the starter reaches the boss at level 14-15.
+
+A Second Oath is a handheld tutorial (`scripts/world/field_binding.gd`). Accepting it brings a level-3 wild Loambuck up to the Scout's fire. It fights with Attack -40 percent and only attacks (`BattleConfig.enemy_attacks_only`; it keeps Mend, because once bound it is the player's healer for Field Mending). A `BindTutorialGuide` allows only FIGHT until it is at or below 60 percent HP, then only BIND, and the scroll always takes (`BattleConfig.guaranteed_bind`). Binding it completes the objective; any other end costs nothing and talking to the Scout brings another. A Loambuck already in the party counts on accept, and a full party is told to come back with room.
+
+When a turn-in leaves the same NPC with the next quest to offer, the conversation runs straight into the offer. An NPC with nothing left to offer repeats the done line of their last finished quest, so the Scout keeps giving directions to the Ranger after The Ruined Road.
+
+Field Mending is a handheld tutorial. Accepting it at the Scout's camp springs a wild level-3 Emberling out of the grass (`scripts/world/field_mending.gd`). The player's striker opens at 30 percent HP; the ambusher opens at half HP with Attack -35 percent for the fight, and running is off. A `SupportTutorialGuide` (`scripts/battle/`) narrows the menus and shows a banner for each step: switch to the healer, use Mend on the benched striker, switch back, attack. Winning reports the story event `field_mending_won`. Losing costs nothing and talking to the Scout replays it. A party with no healer is told the lesson instead.
 
 ### 17.2 Supported Quest Objective Types
 
@@ -1009,7 +1021,7 @@ One player action may progress multiple compatible active quests.
 
 Unless a quest explicitly says otherwise, objectives begin counting only after the quest has been accepted.
 
-**[Partial]** Defeat, bind, talk-to and reach-area objectives exist, with counts. Retrieve-item, deliver-a-creature and escort do not (no items, no Hotel).
+**[Partial]** Defeat, bind, talk-to and reach-area objectives exist, with counts, plus an EVENT objective for scripted story moments (a tutorial battle won) and for the field's own events: `bought_<item id>`, `used_<item id>` (field or battle) and `rested_at_inn`. Four town side quests use them: A Stocked Satchel (Apothecary), Ink and Oath (Scribe), A Proper Night's Sleep (Old Man, sleep at the inn) and Field Medicine (Farmer, use a salve). Accepting a quest with a bind objective counts matching creatures already in the party, so a player who bound early is never asked for a second one. Retrieve-item, deliver-a-creature and escort do not (no items, no Hotel).
 
 ### 17.3 Quest Rewards
 
@@ -1023,7 +1035,7 @@ Quest rewards may include:
 
 Different quests should feel narratively distinct even when they reuse the same underlying objective type.
 
-**[Partial]** Currency, Binding Scrolls and XP (to every non-fainted party member) are paid. Item and Oathbound rewards wait on those systems.
+**[Partial]** Currency, Binding Scrolls, items (`reward_item`, `reward_item_count`) and XP (to every non-fainted party member) are paid. Oathbound rewards wait on the Creature Hotel.
 
 ### 17.4 Capture-and-Deliver Quests
 

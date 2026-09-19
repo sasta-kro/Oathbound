@@ -6,7 +6,8 @@
 [ext_resource type="Resource" path="res://content/growth/growth_bulky.tres" id="3_growth"]
 [ext_resource type="Resource" uid="uid://c7scajbgbopvj" path="res://content/abilities/ability_searing_touch.tres" id="3_w5hh5"]
 [ext_resource type="Resource" path="res://content/moves/move_stone_toss_01.tres" id="4_stone_toss"]
-[ext_resource type="Resource" uid="uid://yy88er3s78cw" path="res://content/moves/move_guard_stance_01.tres" id="5_guard_stance"]
+[ext_resource type="Resource" path="res://content/moves/move_mend_01.tres" id="5_mend"]
+[ext_resource type="Resource" path="res://content/moves/move_bolster_01.tres" id="5_bolster"]
 [ext_resource type="Resource" uid="uid://dywchce8ppf42" path="res://content/moves/move_venom_spit_01.tres" id="6_venom_spit"]
 [ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_quake_step_01.tres" id="7_quake_step"]
 [ext_resource type="Resource" uid="uid://hy2bjnv2kuj3" path="res://content/abilities/ability_stonewall.tres" id="8_stonewall"]
@@ -16,10 +17,14 @@
 script = ExtResource("2_entry")
 move = ExtResource("4_stone_toss")
 
-[sub_resource type="Resource" id="Learn_guard_stance_5"]
+[sub_resource type="Resource" id="Learn_mend_1"]
+script = ExtResource("2_entry")
+move = ExtResource("5_mend")
+
+[sub_resource type="Resource" id="Learn_bolster_5"]
 script = ExtResource("2_entry")
 level = 5
-move = ExtResource("5_guard_stance")
+move = ExtResource("5_bolster")
 
 [sub_resource type="Resource" id="Learn_venom_spit_11"]
 script = ExtResource("2_entry")
@@ -41,6 +46,6 @@ base_attack = 46
 base_defense = 58
 base_speed = 30
 growth = ExtResource("3_growth")
-learnset = Array[ExtResource("2_entry")]([SubResource("Learn_stone_toss_1"), SubResource("Learn_guard_stance_5"), SubResource("Learn_venom_spit_11"), SubResource("Learn_quake_step_18")])
+learnset = Array[ExtResource("2_entry")]([SubResource("Learn_stone_toss_1"), SubResource("Learn_mend_1"), SubResource("Learn_bolster_5"), SubResource("Learn_venom_spit_11"), SubResource("Learn_quake_step_18")])
 ability_pool = Array[ExtResource("1_jrofs")]([ExtResource("8_stonewall"), ExtResource("3_w5hh5")])
 battle_sprite = ExtResource("10_battle_sprite")

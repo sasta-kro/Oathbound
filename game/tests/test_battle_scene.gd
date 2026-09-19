@@ -115,7 +115,7 @@ func test_unavailable_commands_explain_themselves() -> void:
 	assert_eq(_scene.current_menu(), BattleScene.Menu.COMMAND, "Nothing was chosen.")
 	assert_string_contains(_scene.current_message(), "no Binding Scrolls")
 	_scene.press_entry(2)
-	assert_string_contains(_scene.current_message(), "no usable items")
+	assert_string_contains(_scene.current_message(), "no items that would help")
 
 
 func test_finishing_the_battle_closes_the_screen_and_reports_the_engine() -> void:

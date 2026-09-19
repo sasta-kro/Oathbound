@@ -113,9 +113,10 @@ func _load_slot(slot: int) -> void:
 		# The file vanished or broke since the screen was built.
 		_close_loader()
 
+## A new journey opens with the prologue, which hands over to the field.
 func _begin_anew() -> void:
-	GameState.new_game()
-	_enter_world()
+	GameState.new_game(true)
+	get_tree().change_scene_to_file("res://scenes/prologue.tscn")
 
 func _enter_world() -> void:
 	get_tree().change_scene_to_file("res://main.tscn")

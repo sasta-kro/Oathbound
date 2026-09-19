@@ -11,6 +11,8 @@ extends CanvasLayer
 
 ## The reply the player picked from [method ask].
 signal choice_made(index: int)
+## A plain line was closed, whether by the player or by the field.
+signal dismissed
 
 const OPTION_PREFIX := "▸  "
 const OPTION_IDLE_PREFIX := "    "
@@ -50,6 +52,12 @@ func show_line(line: String) -> void:
 	_prompt.text = "E  /  CONTINUE"
 	_reveal()
 
+## Shows [param line] and waits until it is closed, for scripted scenes that
+## play several lines in a row.
+func say(line: String) -> void:
+	show_line(line)
+	await dismissed
+
 ## Shows [param line] with [param options] to reply with and returns the
 ## index chosen. Awaiting it pauses the caller until the player decides.
 func ask(line: String, options: PackedStringArray) -> int:
@@ -82,10 +90,13 @@ func ask(line: String, options: PackedStringArray) -> int:
 ## "no reply" (-1), so nothing awaiting it is left hanging.
 func close() -> void:
 	var was_asking: bool = is_asking()
+	var was_open: bool = is_open()
 	_clear_choices()
 	panel.hide()
 	if was_asking:
 		choice_made.emit(-1)
+	elif was_open:
+		dismissed.emit()
 
 func is_open() -> bool:
 	return panel.visible

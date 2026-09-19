@@ -10,6 +10,7 @@ const SPECIES_DIR := "res://content/creatures"
 const MOVES_DIR := "res://content/moves"
 const ABILITIES_DIR := "res://content/abilities"
 const QUESTS_DIR := "res://content/quests"
+const ITEMS_DIR := "res://content/items"
 const TYPE_CHART_PATH := "res://content/types/type_chart_mvp.tres"
 
 var type_chart: TypeChart
@@ -18,6 +19,7 @@ var _species: Dictionary = {}
 var _moves: Dictionary = {}
 var _abilities: Dictionary = {}
 var _quests: Dictionary = {}
+var _items: Dictionary = {}
 
 
 func _ready() -> void:
@@ -30,6 +32,7 @@ func reload() -> void:
 	_moves.clear()
 	_abilities.clear()
 	_quests.clear()
+	_items.clear()
 	_load_directory(SPECIES_DIR, _species, "species")
 	_load_directory(MOVES_DIR, _moves, "move")
 	_load_directory(ABILITIES_DIR, _abilities, "ability")
@@ -37,11 +40,13 @@ func reload() -> void:
 	# directory only means nobody in the world has work to offer.
 	if DirAccess.dir_exists_absolute(QUESTS_DIR):
 		_load_directory(QUESTS_DIR, _quests, "quest")
+	if DirAccess.dir_exists_absolute(ITEMS_DIR):
+		_load_directory(ITEMS_DIR, _items, "item")
 	_load_type_chart()
 	DevLog.info(
 		(
-			"ContentRegistry loaded %d species, %d moves, %d abilities and %d quests."
-			% [_species.size(), _moves.size(), _abilities.size(), _quests.size()]
+			"ContentRegistry loaded %d species, %d moves, %d abilities, %d quests and %d items."
+			% [_species.size(), _moves.size(), _abilities.size(), _quests.size(), _items.size()]
 		)
 	)
 
@@ -60,6 +65,26 @@ func get_ability(id: StringName) -> AbilityData:
 
 func get_quest(id: StringName) -> QuestData:
 	return _quests.get(id) as QuestData
+
+
+func get_item(id: StringName) -> ItemData:
+	return _items.get(id) as ItemData
+
+
+func has_item(id: StringName) -> bool:
+	return _items.has(id)
+
+
+## Every item, cheapest first, then by id.
+func all_items() -> Array[ItemData]:
+	var out: Array[ItemData] = []
+	for item: ItemData in _items.values():
+		out.append(item)
+	out.sort_custom(
+		func(a: ItemData, b: ItemData) -> bool:
+			return a.price < b.price if a.price != b.price else String(a.id) < String(b.id)
+	)
+	return out
 
 
 func has_species(id: StringName) -> bool:
@@ -158,6 +183,8 @@ func validate() -> Array[String]:
 		problems.append_array(ability.validate())
 	for quest: QuestData in all_quests():
 		problems.append_array(quest.validate(self))
+	for item: ItemData in all_items():
+		problems.append_array(item.validate())
 	if type_chart == null:
 		problems.append("No type chart loaded from '%s'." % TYPE_CHART_PATH)
 	return problems

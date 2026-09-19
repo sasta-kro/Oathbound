@@ -23,6 +23,7 @@ const SOUNDS: Dictionary = {
 	&"bind_success": {"files": ["res://assets/sfx/bind_success.ogg"], "db": 0.0},
 	&"bind_fail": {"files": ["res://assets/sfx/bind_fail.ogg"], "db": 6.0},
 	&"faint": {"files": ["res://assets/sfx/faint.ogg"], "db": -3.0},
+	&"boss_victory": {"files": ["res://assets/sfx/boss_victory.ogg"], "db": 0.0},
 }
 
 ## Sounds that can overlap before the oldest is cut off.

@@ -119,7 +119,7 @@ func refresh_hud() -> void:
 		_location_tween.tween_property(location, "modulate:a", 0.0, 0.8)
 		_location_tween.tween_callback(location.queue_free)
 	hud.add_child(OathTheme.spacer(false))
-	for item in [["party", "Party · Tab / P", "party"], ["journal", "Journal · J", "journal"], ["quests", "Quest log · L", "quests"], ["menu", "Menu · Esc", "menu"]]:
+	for item in [["party", "Party · Tab / P", "party"], ["satchel", "Satchel · I", "satchel"], ["journal", "Journal · J", "journal"], ["quests", "Quest log · L", "quests"], ["menu", "Menu · Esc", "menu"]]:
 		var b := Button.new()
 		b.name = String(item[0]).capitalize() + "Button"
 		b.icon = load("res://assets/ui/icons/%s.svg" % item[2])
@@ -161,7 +161,7 @@ func _rebuild_status(creature: CreatureInstance) -> void:
 	info.add_child(status_hp)
 
 func _process(_delta: float) -> void:
-	hud.visible = not world.battle_scene.is_active() and not is_open()
+	hud.visible = not world.battle_scene.is_active() and not is_open() and not world.is_in_opening()
 	status_panel.visible = hud.visible and not world.dialogue_panel.is_open()
 	quest_tracker.visible = status_panel.visible and _tracker_rows.get_child_count() > 0
 	var lead := GameState.lead_creature()
@@ -184,6 +184,8 @@ func _process(_delta: float) -> void:
 func _input(event: InputEvent) -> void:
 	if world.settings_menu.is_open() or world.transition.is_busy(): return
 	if world.battle_scene.is_active() or world.dialogue_panel.is_open(): return
+	if world.shop_menu != null and world.shop_menu.is_open(): return
+	if world.is_in_opening() or world.is_evolving(): return
 	if event.is_action_pressed("open_settings"):
 		if is_open(): _go_back()
 		else: open_page("menu")
@@ -195,6 +197,10 @@ func _input(event: InputEvent) -> void:
 		if event.keycode == KEY_P or (event.keycode == KEY_TAB and not is_open()):
 			if is_open(): close()
 			else: open_page("party")
+			get_viewport().set_input_as_handled()
+		elif event.keycode == KEY_I:
+			if is_open() and page == "satchel": close()
+			else: open_page("satchel")
 			get_viewport().set_input_as_handled()
 		elif event.keycode == KEY_J:
 			if is_open() and page == "journal": close()
@@ -213,10 +219,14 @@ func _build_sidebar(layout: HBoxContainer) -> void:
 	sidebar.add_child(OathTheme.label("◇   O A T H B O U N D", 10, OathTheme.GOLD))
 	sidebar.add_child(OathTheme.heading("Field companion", 22))
 	sidebar.add_child(OathTheme.rule())
-	for item in [["menu", "01    Journey"], ["party", "02    Companions"], ["journal", "03    Field journal"], ["quests", "04    Quest log"], ["saves", "05    Save journey"]]:
+	for item in [["menu", "01    Journey"], ["party", "02    Companions"], ["satchel", "03    Satchel"], ["journal", "04    Field journal"], ["evolutions", "05    Evolutions"], ["quests", "06    Quest log"], ["saves", "07    Save journey"]]:
 		var b := OathTheme.button(item[1], open_page.bind(item[0]))
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		b.custom_minimum_size.y = 43
+		b.custom_minimum_size.y = 34
+		# Tighter than the theme's buttons, so seven pages fit the 540px canvas.
+		b.add_theme_stylebox_override("hover", _nav_style(Color("253c3b"), OathTheme.JADE))
+		b.add_theme_stylebox_override("pressed", _nav_style(Color("314840"), OathTheme.GOLD))
+		b.add_theme_stylebox_override("focus", _nav_style(Color.TRANSPARENT, OathTheme.GOLD))
 		sidebar.add_child(b)
 		nav_buttons[item[0]] = b
 	sidebar.add_child(OathTheme.spacer())
@@ -224,6 +234,12 @@ func _build_sidebar(layout: HBoxContainer) -> void:
 	sidebar.add_child(OathTheme.heading("Every oath matters.", 21))
 	sidebar.add_child(OathTheme.rule())
 	sidebar.add_child(OathTheme.button("Return to field   Esc", close))
+
+func _nav_style(color: Color, border: Color) -> StyleBoxFlat:
+	var style := OathTheme.box(color, border, 5, 10)
+	style.content_margin_top = 6
+	style.content_margin_bottom = 6
+	return style
 
 func _restore_menu_focus() -> void:
 	if is_open():
@@ -256,12 +272,14 @@ func open_page(next: String) -> void:
 	shade.show()
 	for key: String in nav_buttons:
 		var selected := key == next or (next == "details" and key == _return_page)
-		var style := OathTheme.box(Color("283d37") if selected else Color.TRANSPARENT, OathTheme.GOLD if selected else Color.TRANSPARENT, 5, 10)
+		var style := _nav_style(Color("283d37") if selected else Color.TRANSPARENT, OathTheme.GOLD if selected else Color.TRANSPARENT)
 		nav_buttons[key].add_theme_stylebox_override("normal", style)
 		nav_buttons[key].add_theme_color_override("font_color", OathTheme.GOLD if selected else OathTheme.MUTED)
 	match page:
 		"party": _party()
+		"satchel": _satchel()
 		"journal": _journal()
+		"evolutions": _evolutions()
 		"quests": _quests()
 		"saves": _saves()
 		"details": pass
@@ -322,7 +340,7 @@ func _menu() -> void:
 	body.add_child(OathTheme.label("LAST SAVED %s  ·  Played %s  ·  The field autosaves as you travel" % [saved.to_upper(), SaveService.describe_duration(int(GameState.play_seconds))], 9, OathTheme.MUTED))
 
 func _saves() -> void:
-	_header("05  /  SAVE JOURNEY", "Keep this moment.", "Save to a slot, return to an earlier one, or clear one out. Loading leaves anything unsaved behind.")
+	_header("07  /  SAVE JOURNEY", "Keep this moment.", "Save to a slot, return to an earlier one, or clear one out. Loading leaves anything unsaved behind.")
 	var list := SaveSlotList.new()
 	list.can_save = true
 	list.can_load = true
@@ -350,6 +368,64 @@ func _party() -> void:
 		if i < GameState.party.size(): _party_card(row, GameState.party[i], i)
 		else: _empty_card(row, i)
 	body.add_child(OathTheme.label("%d / %d OATHS BOUND    ·    Your first healthy companion leads in the field." % [GameState.party.size(), GameState.PARTY_CAPACITY], 9, OathTheme.MUTED))
+
+## What the player carries (Specification 16): coins and scrolls up top, then
+## every satchel item with a button per companion it could help right now.
+func _satchel() -> void:
+	_header("03  /  SATCHEL", "What you carry.", "Salves and draughts work here or in battle. Clearwater only matters mid-fight, where poisons and burns take hold.")
+	var metrics := HBoxContainer.new()
+	body.add_child(metrics)
+	for item in [[str(GameState.currency), "COINS"], [str(GameState.binding_scrolls), "BINDING SCROLLS"]]:
+		var panel := PanelContainer.new()
+		panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		metrics.add_child(panel)
+		var col := VBoxContainer.new()
+		col.add_theme_constant_override("separation", 0)
+		panel.add_child(col)
+		col.add_child(OathTheme.heading(item[0], 24))
+		col.add_child(OathTheme.label(item[1], 9, OathTheme.MUTED))
+	var held: Array[Dictionary] = GameState.held_items()
+	if held.is_empty():
+		body.add_child(OathTheme.paragraph("Your satchel is empty. The stalls in the town market sell salves, draughts and Binding Scrolls.", 12))
+		return
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	body.add_child(scroll)
+	var stack := VBoxContainer.new()
+	stack.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(stack)
+	for entry: Dictionary in held:
+		var item: ItemData = entry.item
+		var card := PanelContainer.new()
+		card.add_theme_stylebox_override("panel", OathTheme.box(OathTheme.SURFACE, OathTheme.LINE, 6, 10))
+		stack.add_child(card)
+		var col := VBoxContainer.new()
+		col.add_theme_constant_override("separation", 4)
+		card.add_child(col)
+		var title := HBoxContainer.new()
+		col.add_child(title)
+		title.add_child(OathTheme.label(item.display_name, 15))
+		title.add_child(OathTheme.label("x%d" % int(entry.count), 13, OathTheme.GOLD))
+		col.add_child(OathTheme.paragraph(item.description, 11))
+		if not item.usable_in_field:
+			continue
+		var targets := HBoxContainer.new()
+		targets.add_theme_constant_override("separation", 6)
+		col.add_child(targets)
+		for creature: CreatureInstance in GameState.party:
+			var b := OathTheme.button("%s  %d/%d" % [creature.display_name(), creature.current_hp, creature.max_hp()], _use_item.bind(item, creature))
+			b.custom_minimum_size.y = 28
+			b.add_theme_font_size_override("font_size", 11)
+			var refusal: String = item.refusal(creature)
+			b.disabled = not refusal.is_empty()
+			b.tooltip_text = refusal if not refusal.is_empty() else "Use on %s" % creature.display_name()
+			targets.add_child(b)
+
+func _use_item(item: ItemData, creature: CreatureInstance) -> void:
+	var result: Dictionary = GameState.use_item_in_field(item, creature)
+	show_notice(String(result.text))
+	open_page("satchel")
 
 func _party_card(row: HBoxContainer, creature: CreatureInstance, index: int) -> void:
 	var tint := OathTheme.element(creature.species)
@@ -444,7 +520,6 @@ func _details(creature: CreatureInstance, specimen: bool = false) -> void:
 		lead.disabled = creature.is_fainted() or is_lead
 		lead.tooltip_text = "Heal this companion before selecting it as lead." if creature.is_fainted() else ""
 		left.add_child(lead)
-		if creature.can_evolve(): left.add_child(OathTheme.button("Evolve companion  →", _evolve.bind(creature), true))
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -483,8 +558,7 @@ func _details(creature: CreatureInstance, specimen: bool = false) -> void:
 		move_box.add_child(OathTheme.label("%s  ·  %s  ·  %d%% accuracy" % [Elements.display_name(move.type), "%d power" % move.power if move.power > 0 else "Status", move.accuracy], 9, OathTheme.MUTED))
 		move_box.add_child(OathTheme.paragraph(move.description, 10))
 		if move.cooldown_turns > 0: move_box.add_child(OathTheme.label("Cooldown: %d turns" % move.cooldown_turns, 9, OathTheme.MUTED))
-	if specimen and creature.species.evolves_into != null:
-		info.add_child(OathTheme.paragraph("Evolves into %s at level %d." % [creature.species.evolves_into.display_name, creature.species.evolution_level], 11, OathTheme.GOLD))
+	_evolution_record(info, creature, specimen)
 
 func _set_lead(creature: CreatureInstance) -> void:
 	if not GameState.party.has(creature) or creature.is_fainted(): return
@@ -494,16 +568,163 @@ func _set_lead(creature: CreatureInstance) -> void:
 	world.partner.refresh_lead()
 	_details(creature)
 
-func _evolve(creature: CreatureInstance) -> void:
-	if not GameState.party.has(creature) or not creature.evolve(): return
-	GameState.seen_species[creature.species_id()] = true
-	GameState.party_changed.emit()
-	world.partner.refresh_lead()
-	_details(creature)
+## Where a creature sits in its line of evolution, on its record: the form it
+## grew from and the one it grows into, with the condition and, for a
+## companion, how close it is.
+func _evolution_record(info: VBoxContainer, creature: CreatureInstance, specimen: bool) -> void:
+	var species := creature.species
+	var previous := _evolves_from(species)
+	if previous == null and not species.evolves(): return
+	info.add_child(OathTheme.rule())
+	info.add_child(OathTheme.label("EVOLUTION", 9, OathTheme.GOLD))
+	var line := HBoxContainer.new()
+	line.add_theme_constant_override("separation", 8)
+	info.add_child(line)
+	if previous != null:
+		line.add_child(_stage_card(previous, 64, false))
+		line.add_child(_condition_marker(previous))
+	line.add_child(_stage_card(species, 64, true))
+	if species.evolves():
+		line.add_child(_condition_marker(species))
+		line.add_child(_stage_card(species.evolves_into, 64, false))
+		if not specimen: info.add_child(_evolution_progress(creature))
+	else:
+		info.add_child(OathTheme.paragraph("Final form. %s has no further evolution." % species.display_name, 11))
+
+## The species that evolves into [param species], or null for a first form.
+func _evolves_from(species: CreatureSpecies) -> CreatureSpecies:
+	for other: CreatureSpecies in Content.all_species():
+		if other.evolves_into == species: return other
+	return null
+
+## Every line of evolution in the region, first form first.
+func _evolution_lines() -> Array[Array]:
+	var lines: Array[Array] = []
+	for species: CreatureSpecies in Content.all_species():
+		if not species.evolves() or _evolves_from(species) != null: continue
+		var line: Array[CreatureSpecies] = []
+		var stage := species
+		while stage != null and not line.has(stage):
+			line.append(stage)
+			stage = stage.evolves_into if stage.evolves() else null
+		lines.append(line)
+	return lines
+
+## The evolution page: each line of growth with preview sprites of every
+## form, what it takes to move from one to the next, and how far along the
+## companions walking that line are.
+func _evolutions() -> void:
+	var lines := _evolution_lines()
+	_header("05  /  EVOLUTIONS", "Bonds that deepen.", "%02d lines of growth recorded  /  Companions evolve on their own once they reach the level shown." % lines.size())
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	body.add_child(scroll)
+	var stack := VBoxContainer.new()
+	stack.name = "EvolutionStack"
+	stack.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	stack.add_theme_constant_override("separation", 10)
+	scroll.add_child(stack)
+	if lines.is_empty():
+		stack.add_child(OathTheme.paragraph("No creature in this region is known to evolve.", 13))
+		return
+	for line: Array in lines:
+		_evolution_line_card(stack, line)
+
+func _evolution_line_card(stack: VBoxContainer, line: Array) -> void:
+	var first: CreatureSpecies = line[0]
+	var tint := OathTheme.element(first)
+	var panel := PanelContainer.new()
+	panel.name = String(first.id)
+	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	panel.add_theme_stylebox_override("panel", OathTheme.box(OathTheme.SURFACE, tint.darkened(0.55), 6, 12))
+	stack.add_child(panel)
+	var card := VBoxContainer.new()
+	card.add_theme_constant_override("separation", 8)
+	panel.add_child(card)
+	var names: PackedStringArray = []
+	for species: CreatureSpecies in line: names.append(species.display_name)
+	var top := HBoxContainer.new()
+	top.add_theme_constant_override("separation", 8)
+	card.add_child(top)
+	top.add_child(OathTheme.chip(first.type_display_name().to_upper(), tint))
+	top.add_child(OathTheme.heading("  ·  ".join(names), 20))
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+	card.add_child(row)
+	for i in line.size():
+		var species: CreatureSpecies = line[i]
+		row.add_child(_stage_card(species, 64, _is_bound(species)))
+		if i < line.size() - 1: row.add_child(_condition_marker(species))
+	for creature: CreatureInstance in GameState.party:
+		if line.has(creature.species) and creature.species.evolves():
+			card.add_child(_evolution_progress(creature))
+
+## One form in a line: an animated preview of its sprite, its name, and
+## whether the player has met it.
+func _stage_card(species: CreatureSpecies, height: float, highlighted: bool) -> PanelContainer:
+	var tint := OathTheme.element(species)
+	var panel := PanelContainer.new()
+	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	panel.add_theme_stylebox_override("panel", OathTheme.box(Color("122124"), tint.darkened(0.3) if highlighted else OathTheme.LINE, 6, 8))
+	var col := VBoxContainer.new()
+	col.add_theme_constant_override("separation", 3)
+	panel.add_child(col)
+	var state := "BOUND" if _is_bound(species) else ("SEEN" if GameState.seen_species.has(species.id) else "UNSEEN")
+	col.add_child(OathTheme.label(state, 8, OathTheme.GOLD if state == "BOUND" else OathTheme.MUTED))
+	col.add_child(OathTheme.gallery(species, height))
+	var title := OathTheme.heading(species.display_name, 18)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	col.add_child(title)
+	var kind := OathTheme.label(species.type_display_name(), 9, tint)
+	kind.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	col.add_child(kind)
+	return panel
+
+## The arrow between two forms, carrying what it takes to cross it.
+func _condition_marker(species: CreatureSpecies) -> VBoxContainer:
+	var col := VBoxContainer.new()
+	col.alignment = BoxContainer.ALIGNMENT_CENTER
+	col.custom_minimum_size.x = 86
+	col.add_theme_constant_override("separation", 2)
+	for item in [["→", 22, OathTheme.GOLD, true], ["LEVEL %d" % species.evolution_level, 10, OathTheme.GOLD, false], ["Reach level %d" % species.evolution_level, 9, OathTheme.MUTED, false]]:
+		var text: Label = OathTheme.heading(item[0], item[1]) if item[3] else OathTheme.label(item[0], item[1], item[2])
+		if item[3]: text.add_theme_color_override("font_color", item[2])
+		text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		col.add_child(text)
+	if species.evolution_level > GameState.level_cap:
+		var capped := OathTheme.paragraph("Above the level cap of %d" % GameState.level_cap, 8, OathTheme.ELEMENT_COLORS[0])
+		capped.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		col.add_child(capped)
+	return col
+
+## How far [param creature] is from its next form.
+func _evolution_progress(creature: CreatureInstance) -> VBoxContainer:
+	var target := creature.species.evolution_level
+	var tint := OathTheme.element(creature.species)
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 3)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+	box.add_child(row)
+	row.add_child(OathTheme.portrait(creature.species, 22))
+	row.add_child(OathTheme.label("%s  ·  Lv. %d / %d" % [creature.display_name(), creature.level, target], 11))
+	row.add_child(OathTheme.spacer(false))
+	var remaining := target - creature.level
+	var status := "Ready to evolve" if remaining <= 0 else "%d level%s to %s" % [remaining, "" if remaining == 1 else "s", creature.species.evolves_into.display_name]
+	if remaining > 0 and target > GameState.level_cap: status += "  ·  Beat the next boss to raise the cap"
+	row.add_child(OathTheme.label(status, 9, OathTheme.GOLD if remaining <= 0 else OathTheme.MUTED))
+	box.add_child(OathTheme.bar(clampf(float(creature.level) / maxi(1, target), 0, 1), tint))
+	return box
+
+func _is_bound(species: CreatureSpecies) -> bool:
+	for creature: CreatureInstance in GameState.party:
+		if creature.species == species: return true
+	return false
 
 func _journal() -> void:
 	var known := GameState.seen_species.size()
-	_header("03  /  FIELD JOURNAL", "The wild, collected.", "%02d species encountered  /  %02d catalogued in this region" % [known, Content.all_species().size()])
+	_header("04  /  FIELD JOURNAL", "The wild, collected.", "%02d species encountered  /  %02d catalogued in this region" % [known, Content.all_species().size()])
 	var search := LineEdit.new()
 	search.placeholder_text = "Search by name or element…"
 	search.text = journal_filter
@@ -579,7 +800,7 @@ func _journal() -> void:
 func _quests() -> void:
 	var active := GameState.quests.active_quests()
 	var done := GameState.quests.completed_quests()
-	_header("04  /  QUEST LOG", "Oaths to the living.", "%02d in progress  /  %02d fulfilled" % [active.size(), done.size()])
+	_header("06  /  QUEST LOG", "Oaths to the living.", "%02d in progress  /  %02d fulfilled" % [active.size(), done.size()])
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -623,7 +844,7 @@ func _quest_card(stack: VBoxContainer, quest: QuestData, fulfilled: bool) -> voi
 	top.add_child(OathTheme.heading(quest.title, 22))
 	top.add_child(OathTheme.spacer(false))
 	if fulfilled: top.add_child(OathTheme.label("FULFILLED", 9, OathTheme.MUTED))
-	elif ready: top.add_child(OathTheme.label("RETURN TO %s" % String(quest.giver).to_upper(), 9, tint))
+	elif ready: top.add_child(OathTheme.label("RETURN TO %s" % String(quest.turn_in_actor()).to_upper(), 9, tint))
 	if not quest.summary.is_empty(): card.add_child(OathTheme.paragraph(quest.summary, 11))
 	for index: int in quest.objectives.size():
 		var objective: QuestObjective = quest.objectives[index]
@@ -698,7 +919,7 @@ func refresh_quest_tracker() -> void:
 ## than one.
 func _next_step(quest: QuestData) -> String:
 	if GameState.quests.is_ready(quest):
-		return "Return to the %s" % String(quest.giver).capitalize()
+		return "Return to the %s" % String(quest.turn_in_actor()).capitalize()
 	for index: int in quest.objectives.size():
 		var objective: QuestObjective = quest.objectives[index]
 		if objective == null or GameState.quests.is_objective_done(quest, index): continue
@@ -710,16 +931,23 @@ func _next_step(quest: QuestData) -> String:
 func _on_quest_changed(quest: QuestData, status: QuestLog.Status) -> void:
 	match status:
 		QuestLog.Status.ACTIVE: show_notice("Quest accepted  ·  %s" % quest.title)
-		QuestLog.Status.COMPLETED: show_notice("Quest complete  ·  %s" % quest.title)
+		QuestLog.Status.COMPLETED: celebrate_quest(quest)
 		QuestLog.Status.ABANDONED: show_notice("Quest set aside  ·  %s" % quest.title)
 	if is_open() and page == "quests": open_page("quests")
+
+## The fanfare and banner for a quest turned in; reward lines still arrive
+## as notices beside it.
+func celebrate_quest(quest: QuestData) -> void:
+	var celebration := QuestCelebration.new()
+	root.add_child(celebration)
+	celebration.play(quest)
 
 func _on_quest_objective_advanced(quest: QuestData, index: int, done: bool) -> void:
 	var objective: QuestObjective = quest.objectives[index]
 	if done:
 		show_notice("◆  %s" % objective.description)
 		if GameState.quests.is_ready(quest):
-			show_notice("Return to the %s  ·  %s" % [String(quest.giver), quest.title])
+			show_notice("Return to the %s  ·  %s" % [String(quest.turn_in_actor()), quest.title])
 	else:
 		show_notice("◇  %s  ·  %d / %d" % [objective.description, GameState.quests.progress(quest, index), objective.required()])
 	if is_open() and page == "quests": open_page("quests")

@@ -13,7 +13,7 @@ extends CanvasLayer
 ## carries the outcome, rewards and any bound creature.
 signal battle_finished(engine: BattleEngine)
 
-enum Menu { NONE, COMMAND, MOVES, PARTY }
+enum Menu { NONE, COMMAND, MOVES, PARTY, TARGET, ITEMS, ITEM_TARGET }
 
 
 ## One row of the command window.
@@ -136,6 +136,11 @@ const DAMAGE_NUMBER_SECONDS := 0.7
 ## status windows, which sit in front of the stage.
 const DAMAGE_NUMBER_OFFSET := Vector2(0.0, -78.0)
 const DAMAGE_NEUTRAL_COLOR := Color(1.0, 0.95, 0.9)
+const HEAL_NUMBER_COLOR := Color(0.6, 1.0, 0.6)
+const HEAL_FLASH_COLOR := Color(0.6, 1.0, 0.6)
+## The guide's banner, under the status windows and above the creatures.
+const GUIDE_BANNER_RECT := Rect2(160, 162, 640, 40)
+const GUIDE_FONT_SIZE := 14
 const DAMAGE_STRONG_COLOR := Color(1.0, 0.65, 0.3)
 const DAMAGE_WEAK_COLOR := Color(0.7, 0.75, 0.8)
 
@@ -154,6 +159,9 @@ var skip_presentation: bool = false
 var transition: ScreenTransition
 
 var engine: BattleEngine
+## Optional [BattleGuide] narrowing the player's choices, for tutorials.
+## Given to [method start_battle] and dropped when the battle closes.
+var guide: BattleGuide
 ## SPEED TIE belongs to the matchup rather than one side, so it lives under the
 ## encounter caption instead of in a status panel. Kept as a field so tests and
 ## refresh logic can reach it.
@@ -182,6 +190,8 @@ var _shake_tween: Tween
 var _idle_row_style: StyleBoxEmpty
 ## The spaced-out heading above the stage; follows the kind of battle.
 var _caption: Label
+var _guide_banner: PanelContainer
+var _guide_label: Label
 var _selected_row_style: StyleBoxFlat
 
 @onready var root: Control = $Root
@@ -242,9 +252,12 @@ func is_active() -> bool:
 
 
 ## Opens the screen and runs the battle described by [param config]. Returns
-## once the opening presentation is done and the player is choosing.
-func start_battle(config: BattleConfig) -> void:
+## once the opening presentation is done and the player is choosing. A
+## [param with_guide] walks the player through it; see [BattleGuide].
+func start_battle(config: BattleConfig, with_guide: BattleGuide = null) -> void:
 	engine = BattleEngine.new(config)
+	guide = with_guide
+	_refresh_guide_banner()
 	_awaiting_dismiss = false
 	_caption.text = caption_for(config)
 	_close_menu()
@@ -338,32 +351,42 @@ func _continue() -> void:
 
 func _open_command_menu() -> void:
 	_refresh_initiative_indicators()
+	_refresh_guide_banner()
 	var options: Dictionary = engine.options()
 	var active: Battler = engine.player.active()
 	_begin_menu(Menu.COMMAND)
-	_add_entry("FIGHT", _open_moves_menu, "Choose one of %s's moves." % active.display_name())
-	_add_entry(
+	_add_guided_entry(
+		BattleGuide.FIGHT,
+		"FIGHT",
+		_open_moves_menu,
+		"Choose one of %s's moves." % active.display_name(),
+	)
+	_add_guided_entry(
+		BattleGuide.SWITCH,
 		"SWITCH",
 		_open_party_menu.bind(false),
 		"Switch to another Oathbound. This uses your turn.",
 		bool(options["can_switch"]),
 		String(options["switch_reason"]),
 	)
-	_add_entry(
+	_add_guided_entry(
+		BattleGuide.ITEM,
 		"ITEM",
-		Callable(),
-		"Use an item.",
+		_open_item_menu,
+		"Use an item from your satchel. This uses your turn.",
 		bool(options["can_item"]),
 		String(options["item_reason"]),
 	)
-	_add_entry(
+	_add_guided_entry(
+		BattleGuide.BIND,
 		"BIND",
 		_choose_bind,
 		_bind_hint(),
 		bool(options["can_bind"]),
 		String(options["bind_reason"]),
 	)
-	_add_entry(
+	_add_guided_entry(
+		BattleGuide.RUN,
 		"RUN",
 		_choose_run,
 		"Try to escape the battle.",
@@ -371,6 +394,22 @@ func _open_command_menu() -> void:
 		String(options["run_reason"]),
 	)
 	_end_menu()
+
+
+## A command row the guide, if any, may hold back. Its own reason wins when
+## the rules already forbid the command.
+func _add_guided_entry(
+	command: StringName,
+	label: String,
+	callback: Callable,
+	hint: String,
+	enabled: bool = true,
+	disabled_reason: String = ""
+) -> void:
+	if enabled and guide != null and not guide.allows_command(engine, command):
+		enabled = false
+		disabled_reason = guide.instruction(engine)
+	_add_entry(label, callback, hint, enabled, disabled_reason)
 
 
 func _open_moves_menu() -> void:
@@ -382,13 +421,11 @@ func _open_moves_menu() -> void:
 		var label: String = (
 			move.display_name if ready else "%s (%d)" % [move.display_name, remaining]
 		)
-		_add_entry(
-			label,
-			_choose_move.bind(move),
-			_move_hint(move),
-			ready,
-			"%s is cooling down for %d more turns." % [move.display_name, remaining],
-		)
+		var reason: String = "%s is cooling down for %d more turns." % [move.display_name, remaining]
+		if ready and guide != null and not guide.allows_move(engine, move):
+			ready = false
+			reason = guide.instruction(engine)
+		_add_entry(label, _choose_move.bind(move), _move_hint(move), ready, reason)
 	if not active.has_ready_move():
 		_add_entry("WAIT", _choose_wait, "Every move is cooling down. Wait out the turn.")
 	_end_menu()
@@ -412,15 +449,93 @@ func _open_party_menu(forced: bool) -> void:
 		var callback: Callable = (
 			_choose_replacement.bind(index) if forced else _choose_switch.bind(index)
 		)
-		_add_entry(label, callback, "Send out %s." % creature.display_name(), bench.has(index), reason)
+		var allowed: bool = bench.has(index)
+		if allowed and guide != null and not guide.allows_switch(engine, index):
+			allowed = false
+			reason = guide.instruction(engine)
+		_add_entry(label, callback, "Send out %s." % creature.display_name(), allowed, reason)
 	_end_menu()
 	if forced:
 		_hide_initiative_indicators()
 		_say("Choose your next Oathbound.")
 
 
+## Picking who a support move lands on (Specification 11.11, extended): every
+## party member is listed, and any conscious one, benched or fighting, can be
+## chosen.
+func _open_target_menu(move: MoveData) -> void:
+	var team: BattleTeam = engine.player
+	_begin_menu(Menu.TARGET)
+	for index: int in team.battlers.size():
+		var creature: CreatureInstance = team.battlers[index].creature
+		var where: String = "fighting" if index == team.active_index else "bench"
+		var label := "%s  %d/%d  (%s)" % [
+			creature.display_name(), creature.current_hp, creature.max_hp(), where
+		]
+		var allowed: bool = team.can_target_ally(index)
+		var reason: String = "%s has fainted." % creature.display_name()
+		if allowed and guide != null and not guide.allows_target(engine, move, index):
+			allowed = false
+			reason = guide.instruction(engine)
+		_add_entry(
+			label,
+			_choose_move_on.bind(move, index),
+			"Use %s on %s." % [move.display_name, creature.display_name()],
+			allowed,
+			reason,
+		)
+	_end_menu()
+
+
+## The satchel's battle items (Specification 16.3). An item nobody in the
+## party could use right now is listed but greyed out.
+func _open_item_menu() -> void:
+	var usable: Array[ItemData] = engine.usable_items()
+	_begin_menu(Menu.ITEMS)
+	for id: StringName in engine.config.item_catalog:
+		var item: ItemData = engine.config.item_catalog[id]
+		var count: int = engine.item_count(item)
+		if count <= 0 or not item.usable_in_battle:
+			continue
+		_add_entry(
+			"%s  x%d" % [item.display_name, count],
+			_open_item_target_menu.bind(item),
+			item.description,
+			usable.has(item),
+			"Nobody in your party needs a %s right now." % item.display_name,
+		)
+	_end_menu()
+
+
+## Who the item goes to: every party member, benched or fighting.
+func _open_item_target_menu(item: ItemData) -> void:
+	var team: BattleTeam = engine.player
+	_begin_menu(Menu.ITEM_TARGET)
+	for index: int in team.battlers.size():
+		var creature: CreatureInstance = team.battlers[index].creature
+		var where: String = "fighting" if index == team.active_index else "bench"
+		var label := "%s  %d/%d  (%s)" % [
+			creature.display_name(), creature.current_hp, creature.max_hp(), where
+		]
+		var refusal: String = engine.item_refusal(item, index)
+		_add_entry(
+			label,
+			_choose_item.bind(item, index),
+			"Use the %s on %s." % [item.display_name, creature.display_name()],
+			refusal.is_empty(),
+			refusal,
+		)
+	_end_menu()
+
+
 func _cancel_menu() -> void:
 	match _menu:
+		Menu.ITEM_TARGET:
+			_open_item_menu()
+		Menu.ITEMS:
+			_open_command_menu()
+		Menu.TARGET:
+			_open_moves_menu()
 		Menu.MOVES:
 			_open_command_menu()
 		Menu.PARTY:
@@ -466,8 +581,15 @@ func _add_entry(
 	_entries.append(entry)
 
 
+## The cursor starts on the first row that can be chosen, so a guided menu
+## opens on the row the guide wants.
 func _end_menu() -> void:
-	_set_cursor(0)
+	var first: int = 0
+	for index: int in _entries.size():
+		if _entries[index].enabled:
+			first = index
+			break
+	_set_cursor(first)
 
 
 ## Default buttons are tall enough to push the window over the stage, so rows
@@ -528,8 +650,16 @@ func _close_menu() -> void:
 
 func _move_hint(move: MoveData) -> String:
 	var parts: PackedStringArray = [Elements.display_name(move.type).to_upper()]
-	parts.append("Power %d" % move.power if move.is_damaging() else "No damage")
-	parts.append("Accuracy %d%%" % move.accuracy)
+	if move.targets_ally():
+		if move.heals():
+			parts.append("Heals %d%% HP" % move.heal_percent)
+		for modifier: StatModifier in move.stat_modifiers:
+			if modifier != null and modifier.target == StatModifier.Target.SELF:
+				parts.append("%s %+d%%" % [Stats.display_name(modifier.stat), modifier.percent])
+		parts.append("Any ally, benched or fighting")
+	else:
+		parts.append("Power %d" % move.power if move.is_damaging() else "No damage")
+		parts.append("Accuracy %d%%" % move.accuracy)
 	if move.cooldown_turns > 0:
 		parts.append("Cooldown %d" % move.cooldown_turns)
 	if move.priority > 0:
@@ -547,8 +677,7 @@ func _move_hint(move: MoveData) -> String:
 
 
 func _bind_hint() -> String:
-	var target: CreatureInstance = engine.enemy.active().creature
-	var chance: float = BattleRules.bind_chance(target, engine.config.scroll_multiplier)
+	var chance: float = engine.bind_chance()
 	return "Offer a Binding Scroll (%d left). Chance now: %d%%." % [
 		engine.binding_scrolls, int(round(chance * 100.0))
 	]
@@ -558,7 +687,15 @@ func _bind_hint() -> String:
 
 
 func _choose_move(move: MoveData) -> void:
+	# With nobody else able to take it, a support move lands on the user.
+	if move.targets_ally() and engine.player.usable_bench_indices().size() > 0:
+		_open_target_menu(move)
+		return
 	_run_turn(BattleAction.use_move(move))
+
+
+func _choose_move_on(move: MoveData, ally_index: int) -> void:
+	_run_turn(BattleAction.use_move(move, ally_index))
 
 
 func _choose_wait() -> void:
@@ -567,6 +704,10 @@ func _choose_wait() -> void:
 
 func _choose_switch(index: int) -> void:
 	_run_turn(BattleAction.switch_to(index))
+
+
+func _choose_item(item: ItemData, index: int) -> void:
+	_run_turn(BattleAction.use_item(item, index))
 
 
 func _choose_bind() -> void:
@@ -579,14 +720,21 @@ func _choose_run() -> void:
 
 func _choose_replacement(index: int) -> void:
 	_close_menu()
-	await _play_events(engine.replace_fainted(index))
+	await _play_events(_observed(engine.replace_fainted(index)))
 	_continue()
 
 
 func _run_turn(action: BattleAction) -> void:
 	_close_menu()
-	await _play_events(engine.take_turn(action))
+	await _play_events(_observed(engine.take_turn(action)))
 	_continue()
+
+
+## Lets the guide see what just happened before it is played back.
+func _observed(events: Array[BattleEvent]) -> Array[BattleEvent]:
+	if guide != null:
+		guide.observe(engine, events)
+	return events
 
 
 ## Closes the screen. When a [member transition] is set the screen is covered
@@ -595,6 +743,7 @@ func _finish() -> void:
 	_awaiting_dismiss = false
 	_close_menu()
 	_hide_initiative_indicators()
+	_guide_banner.hide()
 	if transition != null:
 		await transition.cover(ScreenTransition.Style.WORLD)
 	root.hide()
@@ -624,10 +773,20 @@ func _present(event: BattleEvent) -> void:
 			_show_creature(event.side)
 			await _wait(SEND_OUT_SECONDS)
 		BattleEvent.Kind.MOVE_USED:
-			_visual_for(event.side).play_attack()
-			_lunge(event.side)
-			_play_move_vfx(event.side, event.data.get("move") as MoveData)
+			var used: MoveData = event.data.get("move") as MoveData
+			# A support move is cast in place; only an attack steps forward.
+			if used == null or not used.targets_ally():
+				_visual_for(event.side).play_attack()
+				_lunge(event.side)
+			_play_move_vfx(event.side, used)
 			await _wait(ATTACK_SECONDS)
+		BattleEvent.Kind.HEALED:
+			# A benched ally is healed off stage; only its line says so.
+			if bool(event.data.get("on_field", false)):
+				_flash(_visual_for(event.side), HEAL_FLASH_COLOR)
+				_show_number(event.side, "+%d" % int(event.data.get("amount", 0)), HEAL_NUMBER_COLOR)
+				_tween_hp(event.side)
+				await _wait(HP_TWEEN_SECONDS)
 		BattleEvent.Kind.HIT, BattleEvent.Kind.STATUS_DAMAGE:
 			var target: CreatureVisual = _visual_for(event.side)
 			var multiplier: float = float(event.data.get("multiplier", 1.0))
@@ -718,13 +877,20 @@ func _dodge(side: int) -> void:
 ## A rising "-12" over the creature that was hit, coloured by how well the move
 ## landed. Presentation only: the exact numbers live in the status panels.
 func _show_damage(side: int, amount: int, multiplier: float) -> void:
-	if skip_presentation or amount <= 0:
+	if amount <= 0:
+		return
+	_show_number(side, "-%d" % amount, _damage_color(multiplier))
+
+
+## A number rising over a creature: damage taken or HP restored.
+func _show_number(side: int, text: String, color: Color) -> void:
+	if skip_presentation or text.is_empty():
 		return
 	var label := Label.new()
-	label.text = "-%d" % amount
+	label.text = text
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.add_theme_font_size_override("font_size", DAMAGE_NUMBER_FONT_SIZE)
-	label.add_theme_color_override("font_color", _damage_color(multiplier))
+	label.add_theme_color_override("font_color", color)
 	label.add_theme_color_override("font_outline_color", Color(0.0, 0.0, 0.0, 0.75))
 	label.add_theme_constant_override("outline_size", 5)
 	stage.add_child(label)
@@ -1036,6 +1202,18 @@ func _say(text: String) -> void:
 	message_label.text = text
 
 
+## Shows the guide's current instruction, or hides the banner when there is
+## no guide or nothing to say.
+func _refresh_guide_banner() -> void:
+	var text: String = guide.instruction(engine) if guide != null and engine != null else ""
+	_guide_label.text = text
+	_guide_banner.visible = not text.is_empty()
+
+
+func guide_text() -> String:
+	return _guide_label.text if _guide_banner.visible else ""
+
+
 func _wait(seconds: float) -> void:
 	if skip_presentation or not is_inside_tree():
 		return
@@ -1096,3 +1274,15 @@ func _polish_chrome() -> void:
 	speed_tie_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	speed_tie_label.hide()
 	root.add_child(speed_tie_label)
+	_guide_banner = PanelContainer.new()
+	_guide_banner.position = GUIDE_BANNER_RECT.position
+	_guide_banner.size = GUIDE_BANNER_RECT.size
+	_guide_banner.add_theme_stylebox_override(
+		"panel", OathTheme.box(Color(OathTheme.INK, 0.94), OathTheme.GOLD, 6, 8)
+	)
+	_guide_label = OathTheme.label("", GUIDE_FONT_SIZE, OathTheme.GOLD)
+	_guide_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_guide_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_guide_banner.add_child(_guide_label)
+	_guide_banner.hide()
+	root.add_child(_guide_banner)

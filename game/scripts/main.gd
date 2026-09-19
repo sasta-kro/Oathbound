@@ -24,6 +24,15 @@ const AUTOSAVED_TEXT := "Autosaved"
 const SAVED_TEXT := "Saved to %s"
 const BATTLE_MUSIC_ID: StringName = &"battle"
 const BOSS_FIGHT_OPTIONS: PackedStringArray = ["Fight", "Not yet"]
+## The beat between the starter appearing and the Elder speaking again.
+const STARTER_ENTRANCE_SECONDS: float = 0.6
+const WILD_CREATURE_SCENE: PackedScene = preload("res://scenes/wild_creature.tscn")
+## How long the tutorial's ambusher takes to burst out of the grass.
+const AMBUSHER_ENTRANCE_SECONDS: float = 0.35
+const INN_OPTIONS: PackedStringArray = ["Rest for the night", "Not now"]
+const INN_RESTED_TEXT := "You sleep soundly. Your companions wake fully rested."
+## How long the screen stays dark while the player sleeps at the inn.
+const INN_NIGHT_SECONDS: float = 0.8
 
 @onready var area: WorldArea = $Area
 @onready var player: Player = $Player
@@ -35,6 +44,8 @@ const BOSS_FIGHT_OPTIONS: PackedStringArray = ["Fight", "Not yet"]
 @onready var partner: OverworldPartner = $OverworldPartner
 
 var field_ui: FieldUI
+var evolution_screen: EvolutionScreen
+var shop_menu: ShopMenu
 
 var _battling_creature: WildCreature
 ## Species of the creature the open battle is against, for the quest log.
@@ -42,6 +53,19 @@ var _battling_species: StringName = &""
 ## Set while one area is being swapped for another, so a second exit trigger
 ## during the wipe cannot start a second swap.
 var _travelling: bool = false
+## Set while the opening scene with the Elder plays. The world stays still,
+## nothing is saved, and the player can only read on.
+var _in_opening: bool = false
+## Set while companions that reached their evolution level are evolving.
+var _evolving: bool = false
+## The lesson the open battle teaches, as [method FieldBinding.stage] or
+## [method FieldMending.stage] returns it: its guide, how it is won and what
+## the Scout says after. Empty for every ordinary battle. A lesson costs
+## nothing to lose.
+var _lesson: Dictionary = {}
+## Set while the tutorial's ambush plays out before its battle opens, so the
+## player cannot walk off or swing at the ambusher between lines.
+var _staging_tutorial: bool = false
 
 
 func _ready() -> void:
@@ -49,9 +73,17 @@ func _ready() -> void:
 	field_ui = FieldUI.new()
 	add_child(field_ui)
 	field_ui.changed.connect(_refresh_world_activity)
+	evolution_screen = EvolutionScreen.new()
+	add_child(evolution_screen)
+	shop_menu = ShopMenu.new()
+	add_child(shop_menu)
+	shop_menu.closed.connect(_on_shop_closed)
+	var opening: bool = GameState.take_opening_request()
 	if GameState.take_resume_request() and _restore_saved_area():
 		player.global_position = GameState.player_position
 		player.face(GameState.player_facing)
+	elif opening:
+		player.global_position = area.entrance_position(GameOpening.PLAYER_SPOT)
 	else:
 		player.global_position = area.player_start_position()
 	partner.snap_to_player()
@@ -66,9 +98,111 @@ func _ready() -> void:
 	_wire_area()
 	_play_area_music()
 	_report_area_reached()
+	if opening:
+		# The opening saves once it is over, with the starter in hand.
+		_play_opening()
+		return
 	# Entering the field is entering an area (Specification 21.2), so a fresh
 	# journey can be continued from the title screen straight away.
 	_autosave(false)
+	# A journey saved before evolution was automatic may hold companions that
+	# are already past their evolution level.
+	_evolve_ready_party.call_deferred()
+
+
+## The first scene of a new journey (Specification 4.5): the Elder, waiting
+## by the well, hands over the starter and sends the player to the scout.
+## The prologue scene left the screen dark, so this opens by revealing it.
+func _play_opening() -> void:
+	_in_opening = true
+	_refresh_world_activity()
+	var elder: WorldActor = _actor_with_id(GameOpening.ELDER_ID)
+	if elder != null:
+		player.face(GameOpening.facing_toward(player.global_position, elder.global_position))
+	await transition.reveal(ScreenTransition.Style.WORLD)
+
+	for line: String in GameOpening.WELCOME:
+		await _say(line)
+	GameState.ensure_starter()
+	var starter: CreatureInstance = GameState.lead_creature()
+	if starter != null:
+		# The partner follows the party on its own; this only makes it arrive,
+		# at the player's side away from the Elder.
+		var away: Vector2 = Vector2.RIGHT
+		if elder != null and not elder.global_position.is_equal_approx(player.global_position):
+			away = elder.global_position.direction_to(player.global_position)
+		partner.place_at(player.global_position + away * float(WorldArea.GRID_SIZE))
+		partner.scale = Vector2.ZERO
+		create_tween().tween_property(partner, "scale", Vector2.ONE, 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		field_ui.show_notice(GameOpening.STARTER_JOINED_TEXT % starter.display_name())
+		await get_tree().create_timer(STARTER_ENTRANCE_SECONDS).timeout
+	for line: String in GameOpening.STARTER_EXPLAINED:
+		await _say(line)
+	for line: String in GameOpening.THREAT:
+		await _say(line)
+
+	var reply: int = await _ask(GameOpening.ASK, GameOpening.REPLIES)
+	var quest: QuestData = Content.get_quest(GameOpening.FIRST_QUEST_ID)
+	if quest != null:
+		GameState.accept_quest(quest)
+	await _say(GameOpening.SEND_OFF[clampi(reply, 0, GameOpening.SEND_OFF.size() - 1)])
+	_in_opening = false
+	_autosave(false)
+	_refresh_world_activity()
+
+
+## Shows a line and waits for the player to read past it.
+func _say(line: String) -> void:
+	_open_dialogue(line)
+	await dialogue_panel.dismissed
+
+
+## The actor in the current area with [param id], or null.
+func _actor_with_id(id: StringName) -> WorldActor:
+	for actor: WorldActor in get_tree().get_nodes_in_group(WorldActor.GROUP):
+		if actor.actor_id() == id:
+			return actor
+	return null
+
+
+func is_evolving() -> bool:
+	return _evolving
+
+
+## Evolves every companion that has reached its evolution level, one screen at
+## a time (Specification 9.7). Evolution is automatic: it runs once the world
+## is calm after whatever raised the level, and a creature whose new form is
+## already past its own evolution level evolves again straight away.
+func _evolve_ready_party() -> void:
+	if _evolving or not _party_can_evolve():
+		return
+	_evolving = true
+	_refresh_world_activity()
+	while transition.is_busy() or battle_scene.is_active():
+		await get_tree().process_frame
+	if dialogue_panel.is_open():
+		await dialogue_panel.dismissed
+	for creature: CreatureInstance in GameState.party.duplicate():
+		while GameState.party.has(creature) and creature.can_evolve():
+			if not await evolution_screen.play(creature):
+				break
+			GameState.seen_species[creature.species_id()] = true
+	GameState.party_changed.emit()
+	partner.refresh_lead()
+	_evolving = false
+	_autosave(false)
+	_refresh_world_activity()
+
+
+func _party_can_evolve() -> bool:
+	for creature: CreatureInstance in GameState.party:
+		if creature.can_evolve():
+			return true
+	return false
+
+
+func is_in_opening() -> bool:
+	return _in_opening
 
 
 func _exit_tree() -> void:
@@ -81,7 +215,7 @@ func _exit_tree() -> void:
 func _notification(what: int) -> void:
 	if what != NOTIFICATION_WM_CLOSE_REQUEST:
 		return
-	if battle_scene.is_active() or _travelling:
+	if battle_scene.is_active() or _travelling or _in_opening:
 		return
 	_record_location()
 	GameState.autosave()
@@ -111,6 +245,9 @@ func _restore_saved_area() -> bool:
 ## saved by hand. Silent when the disk refuses, since the warning is already
 ## logged and the player can do nothing about it mid-game.
 func _autosave(announce: bool = true) -> void:
+	# Mid-opening the party may still be empty; the scene saves when it ends.
+	if _in_opening:
+		return
 	_record_location()
 	if GameState.autosave() and announce:
 		field_ui.show_notice(AUTOSAVED_TEXT)
@@ -118,6 +255,8 @@ func _autosave(announce: bool = true) -> void:
 
 ## A save the player asked for from the menu. Returns whether it reached disk.
 func save_to_slot(slot: int) -> bool:
+	if _in_opening:
+		return false
 	_record_location()
 	var ok: bool = GameState.save_game(slot)
 	if ok:
@@ -224,6 +363,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		return
 
+	# The counter takes its own keys, Escape included.
+	if shop_menu.is_open():
+		return
+
 	if event.is_action_pressed(&"open_settings"):
 		get_viewport().set_input_as_handled()
 		_toggle_settings()
@@ -261,6 +404,9 @@ func _interact() -> void:
 		_close_dialogue()
 		return
 
+	# Between the opening's lines there is nobody else to talk to.
+	if _in_opening or _staging_tutorial:
+		return
 	var actor: WorldActor = nearest_actor_in_reach()
 	if actor == null:
 		return
@@ -277,20 +423,38 @@ func _interact() -> void:
 ## Talking to an NPC: healing and small talk, or quest business when the
 ## actor has any (Specification 17, 18.4). Talking is itself something a
 ## quest can ask for, so it is reported before the actor's own quests are
-## looked at and a "find the scout" errand completes on arrival.
+## looked at and a "find the scout" errand completes on arrival. When a
+## turn-in leaves the same person with the next step to offer, the
+## conversation runs straight on into it.
 func _talk_to(actor: WorldActor) -> void:
+	actor.face_toward(player.global_position)
 	if actor.heals_party:
 		GameState.heal_party()
 		_autosave()
 	GameState.report_quest_event(QuestObjective.Kind.TALK, actor.actor_id())
 	var quest: QuestData = actor.current_quest(GameState.quests, Content)
 	if quest == null:
-		_open_dialogue(actor.dialogue_line)
+		if _serves(actor):
+			_serve(actor, actor.idle_line(GameState.quests, Content))
+		else:
+			_open_dialogue(actor.idle_line(GameState.quests, Content))
 		return
 	if GameState.quests.is_ready(quest):
-		_open_dialogue(quest.complete_text())
 		_show_reward_lines(GameState.complete_quest(quest))
 		_autosave()
+		var next: QuestData = actor.current_quest(GameState.quests, Content)
+		if next == null or not GameState.quests.can_offer(next):
+			_open_dialogue(quest.complete_text())
+			_evolve_ready_party()
+			return
+		await _say(quest.complete_text())
+		await _offer(next)
+		_evolve_ready_party()
+		return
+	# A vendor or innkeeper with an errand running still serves: the errand is
+	# usually to buy from them or sleep under their roof.
+	if GameState.quests.is_active(quest.id) and _serves(actor):
+		_serve(actor, quest.progress_text())
 		return
 	if GameState.quests.is_active(quest.id):
 		var reply: int = await _ask(quest.progress_text(), [quest.continue_option, quest.abandon_option])
@@ -300,17 +464,171 @@ func _talk_to(actor: WorldActor) -> void:
 			_autosave()
 		elif reply == 0:
 			_close_dialogue()
+			# A lesson lost or cut short is picked up where it began.
+			if _is_lesson(quest):
+				_play_lesson(quest)
 		return
+	await _offer(quest)
+	# Whatever the answer, a vendor still opens the counter once the reply
+	# has been read.
+	if _serves(actor):
+		if dialogue_panel.is_open():
+			await dialogue_panel.dismissed
+		_serve(actor, actor.idle_line(GameState.quests, Content))
+
+
+func _serves(actor: WorldActor) -> bool:
+	return actor.is_vendor() or actor.runs_inn
+
+
+func _serve(actor: WorldActor, greeting: String) -> void:
+	if actor.is_vendor():
+		_open_shop(actor, greeting)
+	else:
+		_offer_rest(actor, greeting)
+
+
+## A vendor's counter (Specification 16.5). The vendor's small talk is the
+## greeting over their wares.
+func _open_shop(actor: WorldActor, greeting: String) -> void:
+	var title: String = actor.shop_title if not actor.shop_title.is_empty() else actor.display_name.capitalize()
+	shop_menu.open(title, greeting, actor.stock(Content))
+	_refresh_world_activity()
+
+
+func _on_shop_closed() -> void:
+	_autosave(false)
+	_refresh_world_activity()
+
+
+## The inn (Specification 16.5, 16.6): a night's rest heals the whole party
+## and saves, free like every healing service in the MVP.
+func _offer_rest(actor: WorldActor, greeting: String) -> void:
+	var choice: int = await _ask(greeting, INN_OPTIONS)
+	if choice != 0:
+		_close_dialogue()
+		return
+	_close_dialogue()
+	_travelling = true
+	_refresh_world_activity()
+	await transition.cover(ScreenTransition.Style.WORLD)
+	GameState.heal_party()
+	GameState.report_quest_event(QuestObjective.Kind.EVENT, GameState.EVENT_RESTED_AT_INN)
+	await get_tree().create_timer(INN_NIGHT_SECONDS).timeout
+	await transition.reveal(ScreenTransition.Style.WORLD)
+	_travelling = false
+	_autosave()
+	_open_dialogue(INN_RESTED_TEXT)
+
+
+## Puts [param quest] to the player and plays out their answer.
+func _offer(quest: QuestData) -> void:
 	var line: String = quest.reoffer_text() if GameState.quests.was_declined(quest.id) else quest.offer_line
 	var choice: int = await _ask(line, [quest.accept_option, quest.refuse_option])
 	if choice == 0:
 		GameState.accept_quest(quest)
-		_open_dialogue(quest.accepted_text())
 		_autosave()
+		# A gentle word when the party is behind the quest's pace; it never
+		# stops the player going.
+		var lead: CreatureInstance = GameState.lead_creature()
+		if lead != null and quest.is_underleveled(lead.level):
+			await _say(quest.caution_text())
+		# A lesson whose goal is already met (a Loambuck bound early) is
+		# simply handed in next time.
+		if _is_lesson(quest) and not GameState.quests.is_ready(quest):
+			await _say(quest.accepted_text())
+			_play_lesson(quest)
+			return
+		_open_dialogue(quest.accepted_text())
 	elif choice == 1:
 		GameState.refuse_quest(quest)
 		_open_dialogue(quest.refused_text())
 		_autosave()
+
+
+## Whether [param quest] is taught by a scripted, guided battle.
+func _is_lesson(quest: QuestData) -> bool:
+	return quest.id in [FieldBinding.QUEST_ID, FieldMending.QUEST_ID]
+
+
+func _play_lesson(quest: QuestData) -> void:
+	match quest.id:
+		FieldBinding.QUEST_ID:
+			_play_field_binding()
+		FieldMending.QUEST_ID:
+			_play_field_mending()
+
+
+## The binding lesson (see [FieldBinding]): a wild Loambuck wanders up to the
+## Scout's fire, and the battle that follows walks the player through wearing
+## it down and offering it a Binding Scroll.
+func _play_field_binding() -> void:
+	if GameState.party_is_full():
+		_open_dialogue(FieldBinding.PARTY_FULL_LINE)
+		return
+	var species: CreatureSpecies = Content.get_species(FieldBinding.SPECIES_ID)
+	if species == null:
+		return
+	# The Scout sees the party rested before the lesson starts.
+	GameState.heal_party()
+	_staging_tutorial = true
+	await _say(FieldBinding.APPROACH[0])
+	var loambuck: WildCreature = _spawn_lesson_creature(species, FieldBinding.LEVEL, FieldBinding.APPROACH_DISTANCE_CELLS)
+	await get_tree().create_timer(AMBUSHER_ENTRANCE_SECONDS).timeout
+	for index: int in range(1, FieldBinding.APPROACH.size()):
+		await _say(FieldBinding.APPROACH[index])
+	_staging_tutorial = false
+	_start_wild_battle(loambuck, BattleConfig.Opening.NEUTRAL, FieldBinding.stage())
+
+
+## The support-move lesson (see [FieldMending]): a wild Emberling bursts
+## out of the grass by the Scout's camp, and the battle that follows walks the
+## player through switching to their healer, mending the striker on the bench
+## and switching back. With no healer in the party the lesson is only told.
+func _play_field_mending() -> void:
+	var cast: Dictionary = FieldMending.roles(GameState.party)
+	if cast.is_empty():
+		GameState.report_quest_event(QuestObjective.Kind.EVENT, FieldMending.EVENT_ID)
+		_open_dialogue(FieldMending.NO_HEALER_LINE)
+		_autosave()
+		return
+	var species: CreatureSpecies = Content.get_species(FieldMending.ENEMY_SPECIES_ID)
+	if species == null:
+		return
+	_staging_tutorial = true
+	await _say(FieldMending.AMBUSH[0])
+	var ambusher: WildCreature = _spawn_lesson_creature(
+		species, FieldMending.ENEMY_LEVEL, FieldMending.AMBUSH_DISTANCE_CELLS
+	)
+	FieldMending.wear_down(ambusher.encounter_instance())
+	SfxService.play(&"hit")
+	await get_tree().create_timer(AMBUSHER_ENTRANCE_SECONDS).timeout
+	for index: int in range(1, FieldMending.AMBUSH.size()):
+		await _say(FieldMending.AMBUSH[index])
+	_staging_tutorial = false
+	_start_wild_battle(ambusher, BattleConfig.Opening.NEUTRAL, FieldMending.stage(cast))
+
+
+## A one-off wild creature for a lesson, placed [param distance_cells] from
+## the player on the side away from the Scout, and gone once the battle is
+## over, whatever its outcome.
+func _spawn_lesson_creature(species: CreatureSpecies, level: int, distance_cells: float) -> WildCreature:
+	var away: Vector2 = Vector2.LEFT
+	var scout: WorldActor = _actor_with_id(FieldMending.SCOUT_ID)
+	if scout != null and not scout.global_position.is_equal_approx(player.global_position):
+		away = scout.global_position.direction_to(player.global_position)
+	var at: Vector2 = player.global_position + away * distance_cells * float(WorldArea.GRID_SIZE)
+	var creature: WildCreature = WILD_CREATURE_SCENE.instantiate()
+	creature.configure(species, level, at, 0.0, WildCreature.Disposition.NEUTRAL, 0.0)
+	creature.ability_index = 0
+	creature.defeated.connect(func(_c: WildCreature) -> void: creature.queue_free())
+	var host: Node = area.get_node_or_null(^"Actors")
+	(host if host != null else area).add_child(creature)
+	creature.global_position = at
+	creature.set_roaming(false)
+	creature.scale = Vector2.ZERO
+	create_tween().tween_property(creature, "scale", Vector2.ONE, AMBUSHER_ENTRANCE_SECONDS).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	return creature
 
 
 ## Puts a line with replies to the player and waits for the answer. The
@@ -429,6 +747,7 @@ func _rout(creature: WildCreature, defeated: CreatureInstance) -> void:
 	GameState.report_quest_event(QuestObjective.Kind.DEFEAT, defeated.species_id())
 	_autosave()
 	_refresh_world_activity()
+	_evolve_ready_party()
 
 
 ## Stepping up to a boss. It names the fight and lets the player walk away,
@@ -499,12 +818,17 @@ func _on_creature_reached_player(creature: WildCreature) -> void:
 	_start_wild_battle(creature, BattleConfig.Opening.DISADVANTAGE)
 
 
+## [param lesson] is what a lesson's [code]stage()[/code] returns, for a
+## guided battle (see [member _lesson]). Empty for every ordinary encounter.
 func _start_wild_battle(
-	creature: WildCreature, opening: BattleConfig.Opening = BattleConfig.Opening.NEUTRAL
+	creature: WildCreature,
+	opening: BattleConfig.Opening = BattleConfig.Opening.NEUTRAL,
+	lesson: Dictionary = {},
 ) -> void:
 	if dialogue_panel.is_open():
 		dialogue_panel.close()
 	_battling_creature = creature
+	_lesson = lesson
 	if not GameState.has_usable_party_member():
 		GameState.heal_party()
 
@@ -514,14 +838,27 @@ func _start_wild_battle(
 	if opening == BattleConfig.Opening.DISADVANTAGE:
 		_apply_ambush(enemy)
 
+	var party: Array[CreatureInstance] = GameState.party
+	if lesson.has("party"):
+		party = lesson.party
 	var config := (
-		BattleConfig.boss(GameState.party, enemy, Content.type_chart, opening)
+		BattleConfig.boss(party, enemy, Content.type_chart, opening)
 		if creature.is_boss()
-		else BattleConfig.wild(GameState.party, enemy, Content.type_chart, opening)
+		else BattleConfig.wild(party, enemy, Content.type_chart, opening)
 	)
 	config.binding_scrolls = GameState.binding_scrolls
+	# A lesson is fought with the Scout's borrowed party, so the satchel stays
+	# shut for it.
+	if lesson.is_empty():
+		config.items = GameState.items.duplicate()
+		for item: ItemData in Content.all_items():
+			config.item_catalog[item.id] = item
 	config.has_bind_destination = not GameState.party_is_full()
 	config.level_cap = GameState.level_cap
+	var guide: BattleGuide = null
+	if not lesson.is_empty():
+		guide = lesson.guide
+		(lesson.prepare as Callable).call(config, enemy, party)
 
 	# The world stops the moment the encounter is decided, so the player is not
 	# still walking behind the wipe.
@@ -530,7 +867,7 @@ func _start_wild_battle(
 	await transition.cover(ScreenTransition.Style.BATTLE)
 	# `start_battle` shows the screen before it awaits its opening messages, so
 	# the reveal uncovers a battle that is already on screen.
-	battle_scene.start_battle(config)
+	battle_scene.start_battle(config, guide)
 	await transition.reveal(ScreenTransition.Style.BATTLE)
 	_refresh_world_activity()
 
@@ -549,6 +886,10 @@ func _apply_ambush(attacker: CreatureInstance) -> void:
 
 func _on_battle_finished(engine: BattleEngine) -> void:
 	GameState.binding_scrolls = engine.binding_scrolls
+	if not engine.config.item_catalog.is_empty():
+		GameState.set_item_counts(engine.items)
+	for used: StringName in engine.items_used:
+		GameState.report_quest_event(QuestObjective.Kind.EVENT, StringName(GameState.EVENT_USED_ITEM % used))
 	GameState.currency += engine.currency_earned
 	if engine.currency_earned > 0:
 		field_ui.show_notice("+%d coins" % engine.currency_earned)
@@ -556,6 +897,11 @@ func _on_battle_finished(engine: BattleEngine) -> void:
 	_battling_creature = null
 	var species: StringName = _battling_species
 	_battling_species = &""
+	var lesson: Dictionary = _lesson
+	_lesson = {}
+	var lesson_won: bool = not lesson.is_empty() and engine.outcome == lesson.success
+	if lesson_won and lesson.event != &"":
+		GameState.report_quest_event(QuestObjective.Kind.EVENT, lesson.event)
 	# A creature the battle took leaves the map as light rather than simply
 	# blinking out, but not yet: the wipe is still over the screen, and an
 	# effect played under it would come and go unseen.
@@ -580,6 +926,11 @@ func _on_battle_finished(engine: BattleEngine) -> void:
 			taken = creature
 			was_bound = true
 			GameState.report_quest_event(QuestObjective.Kind.BIND, species)
+		BattleEngine.Outcome.DEFEAT when not lesson.is_empty():
+			# Losing the lesson costs nothing; the Scout patches everyone up.
+			GameState.heal_party()
+			if creature != null:
+				creature.mark_defeated()
 		BattleEngine.Outcome.DEFEAT:
 			# No revival location exists yet, so recovery happens in place
 			# (Specification 20.1 steps 2, 4 and 5).
@@ -607,12 +958,17 @@ func _on_battle_finished(engine: BattleEngine) -> void:
 	if taken != null:
 		taken.play_rout(not was_bound)
 		if taken.is_boss():
+			SfxService.play(&"boss_victory")
+			MusicService.duck(2.6)
 			if not taken.victory_line.is_empty():
 				_open_dialogue(taken.victory_line)
 			# Shown directly: the reward filter would drop a line about levels.
 			for line: String in boss_lines:
 				field_ui.show_notice(line)
+	if not lesson.is_empty():
+		_open_dialogue(lesson.won_line if lesson_won else lesson.lost_line)
 	_refresh_world_activity()
+	_evolve_ready_party()
 
 
 func _open_dialogue(line: String) -> void:
@@ -628,8 +984,12 @@ func _close_dialogue() -> void:
 func _world_is_paused() -> bool:
 	return (
 		_travelling
+		or _in_opening
+		or _staging_tutorial
+		or _evolving
 		or settings_menu.is_open()
 		or (field_ui != null and field_ui.is_open())
+		or (shop_menu != null and shop_menu.is_open())
 		or battle_scene.is_active()
 		or dialogue_panel.is_open()
 		or transition.is_busy()
@@ -647,3 +1007,4 @@ func _set_world_active(active: bool) -> void:
 	player.strike_enabled = active
 	partner.following_enabled = active
 	get_tree().call_group(WildCreature.CREATURE_GROUP, &"set_roaming", active)
+	get_tree().call_group(WorldActor.WANDERER_GROUP, &"set_roaming", active)

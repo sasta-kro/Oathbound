@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_0"]
+script = ExtResource("2_objective")
+kind = 0
+target = &"creature_water_02"
+count = 2
+description = "Clear two Leechlings from the reeds east of the pond"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_side_leech_shallows"
+title = "Leech Shallows"
+kind = 1
+summary = "Leechlings in the reeds east of the pond have been bleeding the Ranger's traps dry."
+giver = &"ranger"
+requires = &""
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_0")])
+reward_currency = 40
+reward_binding_scrolls = 1
+reward_xp = 40
+recommended_level = 0
+offer_line = "Ranger: Something else, if you've the time. Leechlings in the reeds east of the pond keep draining my traps before I can check them. Clear a couple out?"
+accept_option = "Sure."
+refuse_option = "Not now."
+accepted_line = "Ranger: They're slippery, and water shrugs off your Emberling's fire. Earth hits them well."
+refused_line = "Ranger: Fair enough."
+reoffer_line = "Ranger: Leechlings are still at my traps. Interested now?"
+progress_line = "Ranger: Any luck in the reeds?"
+continue_option = "Still looking."
+abandon_option = "I'll leave them be."
+abandoned_line = "Ranger: Suit yourself."
+complete_line = "Ranger: My traps held something besides leeches this morning. Thank you. Take a scroll; I never use them."
+done_line = "Ranger: The reeds are clear. For now."

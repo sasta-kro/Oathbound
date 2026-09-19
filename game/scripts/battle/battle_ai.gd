@@ -15,6 +15,10 @@ const USEFUL_STATUS_SCORE := 20.0
 const USEFUL_BUFF_SCORE := 15.0
 ## Score for a non-damaging move that would currently do nothing useful.
 const USELESS_SCORE := 1.0
+## A heal is only worth a turn once its target is at least this far down.
+const HEAL_THRESHOLD := 0.4
+## HP restored is weighed against HP a damaging move would take off.
+const HEAL_WEIGHT := 1.2
 
 var profile: Profile = Profile.ORDINARY
 
@@ -23,18 +27,55 @@ func choose_action(engine: BattleEngine) -> BattleAction:
 	var user: Battler = engine.enemy.active()
 	var target: Battler = engine.player.active()
 	var best_move: MoveData = null
+	var best_ally: int = -1
 	var best_score: float = -INF
 	for move: MoveData in user.creature.moves:
 		if not user.is_move_ready(move):
 			continue
-		var score: float = _score(move, user, target, engine)
+		if engine.config.enemy_attacks_only and not move.is_damaging():
+			continue
+		var ally: int = -1
+		var score: float
+		if move.targets_ally():
+			ally = _best_ally_for(move, engine.enemy)
+			score = _support_score(move, engine.enemy.battlers[ally])
+		else:
+			score = _score(move, user, target, engine)
 		var wins_tie: bool = is_equal_approx(score, best_score) and engine.roll() < 0.5
 		if score > best_score or wins_tie:
 			best_score = score
 			best_move = move
+			best_ally = ally
 	if best_move == null:
 		return BattleAction.wait()
-	return BattleAction.use_move(best_move)
+	return BattleAction.use_move(best_move, best_ally)
+
+
+## The party slot a support move helps most: the conscious member it scores
+## highest on, the active creature winning ties.
+func _best_ally_for(move: MoveData, team: BattleTeam) -> int:
+	var best: int = team.active_index
+	var best_score: float = _support_score(move, team.active())
+	for index: int in team.battlers.size():
+		var battler: Battler = team.battlers[index]
+		if battler.is_fainted():
+			continue
+		var score: float = _support_score(move, battler)
+		if score > best_score:
+			best = index
+			best_score = score
+	return best
+
+
+func _support_score(move: MoveData, ally: Battler) -> float:
+	var score: float = USELESS_SCORE
+	if move.heals() and ally.creature.missing_hp_fraction() >= HEAL_THRESHOLD:
+		score = float(BattleRules.heal_amount(move, ally.creature)) * HEAL_WEIGHT
+	for modifier: StatModifier in move.stat_modifiers:
+		if modifier != null and modifier.target == StatModifier.Target.SELF:
+			if not ally.has_modifier_for(modifier.stat):
+				score = maxf(score, USEFUL_BUFF_SCORE)
+	return score
 
 
 func _score(move: MoveData, user: Battler, target: Battler, engine: BattleEngine) -> float:

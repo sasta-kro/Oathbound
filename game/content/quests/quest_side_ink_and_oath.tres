@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_1"]
+script = ExtResource("2_objective")
+kind = 4
+target = &"bought_item_binding_scroll"
+count = 2
+description = "Buy two Binding Scrolls from the Scribe"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_side_ink_and_oath"
+title = "Ink and Oath"
+kind = 1
+giver = &"scribe"
+requires = &""
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_1")])
+summary = "The Scribe has inked a fresh batch of scrolls and promises a third to anyone who buys two."
+reward_xp = 10
+reward_item = &"item_binding_scroll"
+reward_item_count = 1
+offer_line = "Scribe: A new batch, still drying. Buy two and I will write you a third myself. Every Oathkeeper should carry spares."
+accept_option = "Deal."
+refuse_option = "Not today."
+accepted_line = "Scribe: Excellent. Forty coins a scroll, and mind the wet ink."
+refused_line = "Scribe: The offer keeps. The ink does too, mostly."
+reoffer_line = "Scribe: Still interested in two scrolls and a third for free?"
+progress_line = "Scribe: Two scrolls from this stall, and the third is yours."
+abandoned_line = "Scribe: Another time, then."
+complete_line = "Scribe: As promised. This one I inked slowly. It should hold."
+done_line = "Scribe: If a scroll crumbles, it was the creature that refused, not the ink."

@@ -18,6 +18,9 @@ enum Kind {
 	STATUS_DAMAGE,
 	STATUS_ENDED,
 	STAT_CHANGED,
+	## A support move restored HP. data: target_index, amount, hp, max_hp,
+	## on_field (whether the healed creature is the one fighting).
+	HEALED,
 	FAINTED,
 	XP_GAINED,
 	LEVEL_UP,

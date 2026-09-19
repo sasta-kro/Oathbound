@@ -26,6 +26,11 @@ var phase: Phase = Phase.NOT_STARTED
 var outcome: Outcome = Outcome.NONE
 var turn_number: int = 0
 var binding_scrolls: int = 0
+## Item id -> count left in the satchel. The caller copies it back after the
+## battle, the same way as [member binding_scrolls].
+var items: Dictionary = {}
+## Ids of the items spent this battle, one entry per use, for the quest log.
+var items_used: Array[StringName] = []
 var run_attempts: int = 0
 ## The wild creature that joined the player after a successful binding.
 var bound_creature: CreatureInstance
@@ -51,6 +56,7 @@ func start() -> Array[BattleEvent]:
 	player = BattleTeam.create(config.player_party, BattleTeam.Side.PLAYER)
 	enemy = BattleTeam.create(config.enemy_party, BattleTeam.Side.ENEMY)
 	binding_scrolls = config.binding_scrolls
+	items = config.items.duplicate()
 	if config.rng_seed >= 0:
 		rng.seed = config.rng_seed
 	else:
@@ -62,6 +68,10 @@ func start() -> Array[BattleEvent]:
 		return events
 
 	phase = Phase.CHOOSING
+	for battler: Battler in enemy.battlers:
+		for modifier: StatModifier in config.enemy_modifiers:
+			if modifier != null:
+				battler.add_modifier(modifier)
 	var foe: Battler = enemy.active()
 	foe.participated = true
 	var intro: String = "A wild %s appeared!" % foe.display_name()
@@ -86,6 +96,8 @@ func start() -> Array[BattleEvent]:
 ## extended). The blow itself landed in the overworld, so there is nothing to
 ## resolve here: only the reason the HP bars start where they do.
 func _announce_opening(foe: Battler, events: Array[BattleEvent]) -> void:
+	if not config.opening_text.is_empty():
+		events.append(BattleEvent.message(config.opening_text))
 	match config.opening:
 		BattleConfig.Opening.ADVANTAGE:
 			events.append(
@@ -121,13 +133,45 @@ func options() -> Dictionary:
 	return {
 		"can_switch": not player.usable_bench_indices().is_empty(),
 		"switch_reason": "You have no other Oathbound able to fight.",
-		"can_item": false,
-		"item_reason": "You have no usable items.",
+		"can_item": not usable_items().is_empty(),
+		"item_reason": "You have no items that would help right now.",
 		"can_bind": bind_reason.is_empty(),
 		"bind_reason": bind_reason,
 		"can_run": run_reason.is_empty(),
 		"run_reason": run_reason,
 	}
+
+
+## Battle items the player holds at least one of and could use on someone
+## right now, in catalog order.
+func usable_items() -> Array[ItemData]:
+	var out: Array[ItemData] = []
+	for id: StringName in config.item_catalog:
+		var item: ItemData = config.item_catalog[id]
+		if int(items.get(id, 0)) <= 0 or not item.usable_in_battle:
+			continue
+		for index: int in player.battlers.size():
+			if item_refusal(item, index).is_empty():
+				out.append(item)
+				break
+	return out
+
+
+func item_count(item: ItemData) -> int:
+	return int(items.get(item.id, 0)) if item != null else 0
+
+
+## Why [param item] cannot be used on party slot [param index], or an empty
+## string when it can. Any slot, benched or fighting, may be chosen.
+func item_refusal(item: ItemData, index: int) -> String:
+	if item == null or item_count(item) <= 0:
+		return "You have none left."
+	if not item.usable_in_battle:
+		return "%s can't be used in battle." % item.display_name
+	if index < 0 or index >= player.battlers.size():
+		return "There is nobody there."
+	var battler: Battler = player.battlers[index]
+	return item.refusal(battler.creature, battler.statuses)
 
 
 ## Type multiplier a move would have against the current enemy, for the
@@ -155,6 +199,14 @@ func speed_leader() -> int:
 	if foe_speed > own_speed:
 		return BattleTeam.Side.ENEMY
 	return BattleEvent.NO_SIDE
+
+
+## The chance a Binding Scroll offered now takes on the enemy's active
+## creature (Specification 15.3), or certainty in a lesson that guarantees it.
+func bind_chance() -> float:
+	if config.guaranteed_bind:
+		return 1.0
+	return BattleRules.bind_chance(enemy.active().creature, config.scroll_multiplier)
 
 
 ## Random number in [0, 1). See [member forced_roll].
@@ -235,6 +287,8 @@ func _validate_player_action(action: BattleAction) -> String:
 					"%s is not ready for %d more turns."
 					% [action.move.display_name, active.cooldown_remaining(action.move)]
 				)
+			if action.move.targets_ally() and not player.can_target_ally(action.target_index):
+				return "%s can't reach that Oathbound." % action.move.display_name
 		BattleAction.Kind.WAIT:
 			if active.has_ready_move():
 				return "%s still has a move ready." % active.display_name()
@@ -242,7 +296,7 @@ func _validate_player_action(action: BattleAction) -> String:
 			if not player.usable_bench_indices().has(action.party_index):
 				return String(available["switch_reason"])
 		BattleAction.Kind.ITEM:
-			return String(available["item_reason"])
+			return item_refusal(action.item, action.target_index)
 		BattleAction.Kind.BIND:
 			if not bool(available["can_bind"]):
 				return String(available["bind_reason"])
@@ -277,7 +331,7 @@ func _turn_order(player_action: BattleAction, enemy_action: BattleAction) -> Arr
 func _resolve(side: int, action: BattleAction, events: Array[BattleEvent]) -> void:
 	match action.kind:
 		BattleAction.Kind.MOVE:
-			_use_move(side, action.move, events)
+			_use_move(side, action.move, events, action.target_index)
 		BattleAction.Kind.WAIT:
 			events.append(
 				BattleEvent.create(
@@ -289,7 +343,7 @@ func _resolve(side: int, action: BattleAction, events: Array[BattleEvent]) -> vo
 		BattleAction.Kind.SWITCH:
 			_switch(side, action.party_index, events)
 		BattleAction.Kind.ITEM:
-			events.append(BattleEvent.message(String(options()["item_reason"])))
+			_use_item(action.item, action.target_index, events)
 		BattleAction.Kind.BIND:
 			_attempt_bind(events)
 		BattleAction.Kind.RUN:
@@ -299,7 +353,9 @@ func _resolve(side: int, action: BattleAction, events: Array[BattleEvent]) -> vo
 # --- Moves -------------------------------------------------------------------
 
 
-func _use_move(side: int, move: MoveData, events: Array[BattleEvent]) -> void:
+## [param ally_index] is the party slot a support move lands on; see
+## [member BattleAction.target_index].
+func _use_move(side: int, move: MoveData, events: Array[BattleEvent], ally_index: int = -1) -> void:
 	var user: Battler = _team(side).active()
 	var target: Battler = _team(_other(side)).active()
 
@@ -324,6 +380,9 @@ func _use_move(side: int, move: MoveData, events: Array[BattleEvent]) -> void:
 		return
 
 	user.start_cooldown(move)
+	if move.targets_ally():
+		_use_support_move(side, user, move, ally_index, events)
+		return
 	events.append(
 		BattleEvent.create(
 			BattleEvent.Kind.MOVE_USED,
@@ -355,10 +414,68 @@ func _use_move(side: int, move: MoveData, events: Array[BattleEvent]) -> void:
 	if move.applies_status() and not target.is_fainted():
 		_try_apply_status(user, target, move, events)
 
+	_apply_modifiers(move, user, target, events)
+
+
+## A move that lands on the user's own side (Specification 11.11, extended):
+## it never misses, and heals or buffs whichever conscious party member was
+## chosen, benched or fighting. Modifiers aimed at the opponent still reach it.
+func _use_support_move(
+	side: int, user: Battler, move: MoveData, ally_index: int, events: Array[BattleEvent]
+) -> void:
+	var team: BattleTeam = _team(side)
+	var index: int = team.active_index
+	if ally_index != -1 and team.can_target_ally(ally_index):
+		index = ally_index
+	var ally: Battler = team.battlers[index]
+	var text := "%s used %s!" % [_label(user), move.display_name]
+	if ally != user:
+		text = "%s used %s on %s!" % [_label(user), move.display_name, _label(ally)]
+	events.append(
+		BattleEvent.create(
+			BattleEvent.Kind.MOVE_USED, side, text, {"move": move, "target_index": index}
+		)
+	)
+	if move.heals():
+		_heal(team, index, move, events)
+	_apply_modifiers(move, ally, _team(_other(side)).active(), events)
+
+
+func _heal(team: BattleTeam, index: int, move: MoveData, events: Array[BattleEvent]) -> void:
+	var ally: Battler = team.battlers[index]
+	var creature: CreatureInstance = ally.creature
+	var amount: int = BattleRules.heal_amount(move, creature)
+	creature.set_hp(creature.current_hp + amount)
+	var text: String = (
+		"%s recovered %d HP." % [_label(ally), amount]
+		if amount > 0
+		else "%s is already at full health." % _label(ally)
+	)
+	events.append(
+		BattleEvent.create(
+			BattleEvent.Kind.HEALED,
+			team.side,
+			text,
+			{
+				"target_index": index,
+				"amount": amount,
+				"hp": creature.current_hp,
+				"max_hp": creature.max_hp(),
+				"on_field": index == team.active_index,
+			},
+		)
+	)
+
+
+## Applies a move's stat modifiers. [param own] receives the SELF ones: the
+## user for an ordinary move, the chosen ally for a support move.
+func _apply_modifiers(
+	move: MoveData, own: Battler, opponent: Battler, events: Array[BattleEvent]
+) -> void:
 	for modifier: StatModifier in move.stat_modifiers:
 		if modifier == null:
 			continue
-		var recipient: Battler = user if modifier.target == StatModifier.Target.SELF else target
+		var recipient: Battler = own if modifier.target == StatModifier.Target.SELF else opponent
 		if recipient.is_fainted():
 			continue
 		recipient.add_modifier(modifier)
@@ -532,10 +649,62 @@ func _switch(side: int, party_index: int, events: Array[BattleEvent]) -> void:
 	events.append(BattleEvent.create(BattleEvent.Kind.SEND_OUT, side, text))
 
 
+## Spends [param item] on party slot [param index]. Healing reuses the HEALED
+## event a support move plays, so the screen shows it the same way.
+func _use_item(item: ItemData, index: int, events: Array[BattleEvent]) -> void:
+	var refusal: String = item_refusal(item, index)
+	if not refusal.is_empty():
+		events.append(BattleEvent.message(refusal))
+		return
+	items[item.id] = item_count(item) - 1
+	items_used.append(item.id)
+	var battler: Battler = player.battlers[index]
+	var creature: CreatureInstance = battler.creature
+	events.append(
+		BattleEvent.create(
+			BattleEvent.Kind.MESSAGE,
+			BattleTeam.Side.PLAYER,
+			"You used a %s on %s." % [item.display_name, battler.display_name()],
+		)
+	)
+	match item.effect:
+		ItemData.Effect.HEAL, ItemData.Effect.REVIVE:
+			var amount: int = item.heal_amount(creature)
+			creature.set_hp(creature.current_hp + amount)
+			var text: String = (
+				"%s was revived with %d HP!" % [battler.display_name(), amount]
+				if item.effect == ItemData.Effect.REVIVE
+				else "%s recovered %d HP." % [_label(battler), amount]
+			)
+			events.append(
+				BattleEvent.create(
+					BattleEvent.Kind.HEALED,
+					BattleTeam.Side.PLAYER,
+					text,
+					{
+						"target_index": index,
+						"amount": amount,
+						"hp": creature.current_hp,
+						"max_hp": creature.max_hp(),
+						"on_field": index == player.active_index,
+					},
+				)
+			)
+		ItemData.Effect.CURE:
+			battler.statuses.clear()
+			events.append(
+				BattleEvent.create(
+					BattleEvent.Kind.MESSAGE,
+					BattleTeam.Side.PLAYER,
+					"%s feels clear-headed again." % _label(battler),
+				)
+			)
+
+
 func _attempt_bind(events: Array[BattleEvent]) -> void:
 	var target: Battler = enemy.active()
 	binding_scrolls -= 1
-	var chance: float = BattleRules.bind_chance(target.creature, config.scroll_multiplier)
+	var chance: float = bind_chance()
 	events.append(
 		BattleEvent.create(
 			BattleEvent.Kind.BIND_ATTEMPT,

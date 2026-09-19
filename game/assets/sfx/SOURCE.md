@@ -13,3 +13,4 @@ unchanged. Sound ids are registered in `scripts/audio/sfx_service.gd`.
 | `bind_success.ogg` | `bind_success` | magical_3.ogg | Magic Spell SFX | JaggedStone | https://opengameart.org/content/magic-spell-sfx |
 | `bind_fail.ogg` | `bind_fail` | book_01.ogg | 80 CC0 RPG SFX | rubberduck | https://opengameart.org/content/80-cc0-rpg-sfx |
 | `faint.ogg` | `faint` | creature_die_01.ogg | 80 CC0 RPG SFX | rubberduck | https://opengameart.org/content/80-cc0-rpg-sfx |
+| `boss_victory.ogg` | `boss_victory` | original | synthesized for Oathbound (brass arpeggio, held C major chord, bell sparkle) | project | n/a |

@@ -41,6 +41,9 @@ var _active: int = 0
 var _current_id: StringName = &""
 var _music_volume: float = DEFAULT_MUSIC_VOLUME
 var _fade: Tween
+## Extra multiplier under a jingle, so a fanfare is not buried in the track.
+var _duck_level: float = 1.0
+var _duck: Tween
 var _settings_loaded: bool = false
 
 
@@ -107,6 +110,22 @@ func set_music_volume(volume: float) -> void:
 	music_volume_changed.emit(_music_volume)
 
 
+## Lowers the music to [param level] for [param seconds], then brings it
+## back, so a jingle such as the quest fanfare reads over the track.
+func duck(seconds: float, level: float = 0.3) -> void:
+	if _duck != null:
+		_duck.kill()
+	_duck = create_tween()
+	_duck.tween_method(_set_duck_level, _duck_level, level, 0.15)
+	_duck.tween_interval(maxf(seconds - 0.15, 0.0))
+	_duck.tween_method(_set_duck_level, level, 1.0, 0.8)
+
+
+func _set_duck_level(level: float) -> void:
+	_duck_level = level
+	_apply_volumes()
+
+
 ## Runs one tween that takes [param outgoing] to silence and, when it is not
 ## -1, [param incoming] to full. Players left silent are stopped at the end.
 func _crossfade(outgoing: int, incoming: int) -> void:
@@ -136,7 +155,7 @@ func _apply_volumes() -> void:
 
 
 func _apply_volume(index: int) -> void:
-	var level: float = _music_volume * _fade_levels[index]
+	var level: float = _music_volume * _fade_levels[index] * _duck_level
 	_players[index].volume_db = linear_to_db(maxf(level, SILENT_LEVEL))
 
 

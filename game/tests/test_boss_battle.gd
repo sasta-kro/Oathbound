@@ -46,7 +46,15 @@ func _load_main_in_area_one() -> Node2D:
 ## Plays the main story up to the boss quest through the real quest chain.
 func _reach_the_boss_quest() -> void:
 	var log: QuestLog = GameState.quests
-	for id: StringName in [&"quest_main_01_beyond_the_walls", &"quest_main_02_the_ruined_road"]:
+	for id: StringName in [
+		&"quest_main_01_beyond_the_walls",
+		&"quest_main_01a_a_second_oath",
+		&"quest_main_01b_field_mending",
+		&"quest_main_02_the_ruined_road",
+		&"quest_main_02a_scalded_shallows",
+		&"quest_main_02b_wings_in_the_wood",
+		&"quest_main_02c_the_hollow_watch",
+	]:
 		var quest: QuestData = Content.get_quest(id)
 		assert_true(log.accept(quest), "%s can be accepted." % id)
 		for objective: QuestObjective in quest.objectives:
@@ -101,11 +109,12 @@ func test_a_beaten_boss_survives_a_save_and_load() -> void:
 	assert_eq(GameState.level_cap, 30)
 
 
-func test_the_boss_quest_follows_the_ruined_road() -> void:
+func test_the_boss_quest_follows_the_hollow_watch() -> void:
 	var quest: QuestData = Content.get_quest(BOSS_QUEST_ID)
 	assert_not_null(quest)
 	assert_true(quest.is_main())
-	assert_eq(quest.requires, &"quest_main_02_the_ruined_road")
+	assert_eq(quest.requires, &"quest_main_02c_the_hollow_watch")
+	assert_eq(quest.giver, &"warden")
 	assert_eq(quest.objectives[0].target, OATHBREAKER)
 
 

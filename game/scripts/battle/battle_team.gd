@@ -44,6 +44,14 @@ func usable_bench_indices() -> Array[int]:
 	return out
 
 
+## Whether a support move may land on slot [param index]: any conscious party
+## member, active or benched. -1 stands for the active creature.
+func can_target_ally(index: int) -> bool:
+	if index == -1:
+		return active() != null and not active().is_fainted()
+	return index >= 0 and index < battlers.size() and not battlers[index].is_fainted()
+
+
 func first_usable_index() -> int:
 	for index: int in battlers.size():
 		if not battlers[index].is_fainted():

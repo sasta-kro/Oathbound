@@ -1,17 +1,18 @@
 class_name QuestObjective
 extends Resource
 ## One thing a quest asks for (Specification 17.2): defeat, bind, talk to,
-## or reach something, [member count] times.
+## or reach something, or see a scripted moment through, [member count] times.
 ##
 ## Objectives are matched against events the overworld reports: a species
 ## id for DEFEAT and BIND, an actor id for TALK, an area scene path for
-## REACH. The [member description] is what the log shows, worded naturally
+## REACH, and a story event id for EVENT (a tutorial battle won, an item
+## bought or used, a night at the inn; see [GameState]). The [member description] is what the log shows, worded naturally
 ## rather than as a raw counter ("Drive three Emberlings off the road").
 
-enum Kind { DEFEAT, BIND, TALK, REACH }
+enum Kind { DEFEAT, BIND, TALK, REACH, EVENT }
 
 @export var kind: Kind = Kind.DEFEAT
-## Species id, actor id or area scene path, depending on [member kind].
+## Species id, actor id, area scene path or event id, depending on [member kind].
 @export var target: StringName = &""
 ## How many times the event has to happen. Ignored below 1.
 @export_range(1, 99) var count: int = 1

@@ -262,6 +262,11 @@ func encounter_instance() -> CreatureInstance:
 	return _encounter
 
 
+## Wild creatures never carry a quest mark.
+func _shows_quest_marker() -> bool:
+	return false
+
+
 func is_boss() -> bool:
 	return boss_id != &""
 

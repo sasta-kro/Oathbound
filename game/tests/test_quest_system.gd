@@ -5,6 +5,8 @@ extends GutTest
 
 const SCRATCH_DIR := "user://gut_scratch/test_quest_system"
 const MAIN_QUEST_ID := &"quest_main_01_beyond_the_walls"
+const BIND_MAIN_QUEST_ID := &"quest_main_01a_a_second_oath"
+const LESSON_MAIN_QUEST_ID := &"quest_main_01b_field_mending"
 const SECOND_MAIN_QUEST_ID := &"quest_main_02_the_ruined_road"
 const CHILD_QUEST_ID := &"quest_side_leaf_hat"
 const MERCHANT_QUEST_ID := &"quest_side_the_crossing"
@@ -66,7 +68,9 @@ func test_shipped_quests_load_and_validate() -> void:
 	assert_eq(Content.validate(), [] as Array[String], "Quest content must reference real species, areas and quests.")
 	assert_true(_content(MAIN_QUEST_ID).is_main())
 	assert_false(_content(CHILD_QUEST_ID).is_main())
-	assert_eq(_content(SECOND_MAIN_QUEST_ID).requires, MAIN_QUEST_ID, "The main story is a chain.")
+	assert_eq(_content(BIND_MAIN_QUEST_ID).requires, MAIN_QUEST_ID, "The main story is a chain.")
+	assert_eq(_content(LESSON_MAIN_QUEST_ID).requires, BIND_MAIN_QUEST_ID)
+	assert_eq(_content(SECOND_MAIN_QUEST_ID).requires, LESSON_MAIN_QUEST_ID)
 
 
 func test_the_game_stays_playable_with_no_quests_at_all() -> void:
@@ -291,7 +295,7 @@ func test_the_town_npcs_carry_their_quests() -> void:
 	var meadow: Node = autofree((load(AREA_ONE) as PackedScene).instantiate())
 	assert_eq(
 		(meadow.get_node("Actors/Scout") as WorldActor).quest_ids,
-		[SECOND_MAIN_QUEST_ID, &"quest_main_03_the_black_knight"] as Array[StringName]
+		[BIND_MAIN_QUEST_ID, LESSON_MAIN_QUEST_ID, SECOND_MAIN_QUEST_ID] as Array[StringName]
 	)
 
 
