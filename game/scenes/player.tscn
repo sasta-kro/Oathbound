@@ -4,7 +4,7 @@
 [ext_resource type="SpriteFrames" uid="uid://0ue7f2v7dtnn" path="res://content/sprites/player_hero.tres" id="2_hero_frames"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
-size = Vector2(20, 28)
+size = Vector2(24, 8)
 
 [node name="Player" type="CharacterBody2D" unique_id=348827474]
 script = ExtResource("1_player")
@@ -18,5 +18,5 @@ autoplay = "idle_down"
 offset = Vector2(0, 4.5)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1033939599]
-position = Vector2(0, 1)
+position = Vector2(0, 15)
 shape = SubResource("RectangleShape2D_player")
