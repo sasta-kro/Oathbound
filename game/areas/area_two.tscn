@@ -112,7 +112,7 @@ position = Vector2(1188, -912)
 position = Vector2(-948, -720)
 display_name = "ALDRIC"
 sprite_frames = ExtResource("6_6wj0o")
-dialogue_line = "Aldric: Another one. Put the scroll away, lad, I'm no wild thing. Aldric of the Order, champion of the ninth watch. I came down that same stair thirty years ago carrying the same rite you are carrying, and I got as far as the door at the bottom and found I did not have it in me. The stair only opens for whoever finishes, and the day you set the rite down is the day it stops knowing your name. So I stayed, and I made myself useful, and we have been keeping things ready for whoever came next. Come on."
+dialogue_line = "Aldric: Another one. Put the scroll away, lad, I'm no wild thing. Aldric of the Order, champion of the ninth watch.\n\nI came down that same stair thirty years ago carrying the same rite you are carrying, and I got as far as the door at the bottom and found I did not have it in me.\n\nSo I stayed, and I made myself useful, and we have been keeping things ready for whoever came next. Come on."
 quest_ids = Array[StringName]([&"quest_main_04_to_the_archivist", &"quest_main_09_the_kingsworn", &"quest_main_10_the_dead_wood"])
 
 [node name="Bellkeeper" parent="Actors" unique_id=1349997354 instance=ExtResource("4_6lfkq")]
@@ -120,7 +120,7 @@ position = Vector2(-1428, 24)
 display_name = "THE BELLKEEPER"
 sprite_frames = ExtResource("7_aqf68")
 facing = &"right"
-dialogue_line = "The Bellkeeper: Rest, and let me see to your Oathbound. You heard the bells, didn't you. I ring them, by hand, every time the sleep thins, and I have done since before your town had a name, because someone has to call you people down. And when I am not on the rope I am holding the inside of that door, because things come up these halls when he stirs, and not one of them has ever reached the Reach."
+dialogue_line = "The Bellkeeper: Rest, and let me see to your Oathbound. You heard the bells, didn't you. I ring them, by hand, every time the sleep thins, because someone has to call you people down.\n\nAnd when I am not on the rope I am holding the inside of that door, because things in these halls, not one of them should ever reach the outside world."
 heals_party = true
 quest_ids = Array[StringName]([&"quest_main_07_the_inside_of_the_door", &"quest_main_07_to_the_nurse"])
 
@@ -128,14 +128,14 @@ quest_ids = Array[StringName]([&"quest_main_07_the_inside_of_the_door", &"quest_
 position = Vector2(300, -768)
 display_name = "THE ARCHIVIST"
 sprite_frames = ExtResource("8_ffk3y")
-dialogue_line = "The Archivist: Everyone who came down that stair is in this book, and everything they learned about him before the wood had them. It is not a monument, it is a manual. Forty-one champions have pressed him under, and every one of them wrote down what it cost, so that the forty-second would not have to find it out the same way."
+dialogue_line = "The Archivist: I have recorded everyone that have came down this path, holding an oath of their own. I witness their bravery, fear and courage.\n\nMost of all I witness heroism in each and everyone of them. The people that came and the people stayed behind, it takes a great deal of it for either choice."
 quest_ids = Array[StringName]([&"quest_main_05_the_record", &"quest_main_05_to_the_gravewright"])
 
 [node name="Gravewright" parent="Actors" unique_id=1916680945 instance=ExtResource("4_6lfkq")]
 position = Vector2(-84, 408)
 display_name = "THE GRAVEWRIGHT"
 sprite_frames = ExtResource("9_tq63f")
-dialogue_line = "The Gravewright: Mind where you tread. They are all champions, every one of these. I dig for the ones who make it this far and no further, and I take the seal-iron off them so it can go home even when they can't. Bring me any you find. They should not be left lying in his halls."
+dialogue_line = "The Gravewright: Mind where you tread. They are all champions, every one of these. I dig for the ones who make it this far and no further, and I take the seal-iron off them so it can go home even when they can't.\n\nThey should not be left lying in his halls."
 quest_ids = Array[StringName]([&"quest_main_06_what_the_dead_carry", &"quest_main_06_to_the_bellkeeper"])
 
 [node name="Nurse" parent="Actors" unique_id=519508671 instance=ExtResource("4_6lfkq")]
@@ -143,7 +143,7 @@ position = Vector2(1284, 720)
 display_name = "THE NURSE"
 sprite_frames = ExtResource("10_rrgey")
 facing = &"up"
-dialogue_line = "The Nurse: Sit down, you're grey. There is no trick to what is down here and no secret anybody is keeping from you. A king asked the god of the dead for more than a man may have, and the world has been paying the bill ever since, and the bill comes due every few decades and somebody has to go and pay it. That is all of it. What I care about is that you go up that road fed, rested and carrying enough scrolls. Forty of us did not. I have opinions about that."
+dialogue_line = "The Nurse: A king asked the god of the dead for more than a man may have, and the world has been paying the bill ever since, and the bill comes due every few decades and somebody has to go and pay it.\n\nThat is all of it. What I care about is that you go up that road fed, rested."
 quest_ids = Array[StringName]([&"quest_main_08_a_champions_kit", &"quest_main_08_to_aldric"])
 
 [node name="Kingsworn" parent="Actors" unique_id=1799946491 instance=ExtResource("5_pvqrj")]
@@ -152,9 +152,9 @@ species = ExtResource("13_2tttn")
 level = 28
 ability_index = 0
 boss_id = &"boss_area_02"
-challenge_line = "The Kingsworn: Far enough. I know what you are; one comes every few winters now, and each of you is younger than the last. My brother keeps the door above. I keep this one. He chose what he keeps. I did not have to choose, because my oath was never broken - it held, through all of it, and it holds now. That is the whole horror of me, and it will not move me aside. Draw."
-sealed_line = "A knight in gold-white fire stands between you and the stair down, unmoving. He does not draw. Not yet, he says. You have not seen what is below, and I will not spend you for nothing. Go and be told first. Then come back and mean it."
-victory_line = "The Kingsworn: Ah. Held, and still not enough. He lowers his sword and steps off the stair, and the blue fire on him gutters low. Go down, then. He is through there, on the seat, where he has been since the hour he unmade us. Tell him his knight kept faith. He will not care. He never did."
+challenge_line = "The Kingsworn: Far enough. I know what you are; one comes every few winters now, and each of you is younger than the last.\n\nMy brother keeps the door above. I keep this one.\n\nHe may have abandoned our king but. I did not, because my oath was held, through all of it, and it holds now still.\n\nIf you wish to harm him best me as others have done before."
+sealed_line = "A knight in gold-white fire stands between you and the stair down, unmoving. He does not draw. Not yet, he says.\n\nYou have not seen what this oath means yet.\n\nGo and be told first. Then come back and mean it."
+victory_line = "The Kingsworn: Ah. Held, and still not enough. He lowers his sword and steps off the stair, and the blue fire on him gutters low.\n\nGo down, then. He is through there, on the seat, where he has been since the hour he unmade us.\n\nTell him his knight kept faith. He will not care. He never did, but I shall do it again at his next awakening as well"
 leash_radius = 0.0
 chatter = PackedStringArray()
 barks = PackedStringArray()
@@ -163,7 +163,7 @@ barks = PackedStringArray()
 position = Vector2(858, 805)
 display_name = "THE QUARTERMASTER"
 sprite_frames = ExtResource("9_tq63f")
-dialogue_line = "The Quartermaster: Coin is coin, even down here. I buy off the ones who come back and sell to the ones going on, and I have stopped asking which of you is which. Take the salve. Take two."
+dialogue_line = "The Quartermaster:  Coin is coin, even down here. I buy off the ones who come back and sell to the ones going on, and I have stopped asking which of you is which. Take the salve. Take two."
 shop_stock = Array[StringName]([&"item_herb_salve", &"item_hearty_tonic", &"item_ember_draught", &"item_clearwater_vial"])
 shop_title = "Deepmarket Stall"
 
@@ -180,7 +180,7 @@ position = Vector2(996, 1008)
 display_name = "THE LAMPLIGHTER"
 sprite_frames = ExtResource("14_ffk3y")
 facing = &"up"
-dialogue_line = "The Lamplighter: Sit down by the fire. There is a bed behind the crates and it is nobody's tonight. I keep the flames going on this stretch, and I put the champions back together before they go up that hall. Most of them come back down it on a board. You will not, if you sleep first."
+dialogue_line = "The Lamplighter:  Sit down by the fire. There is a bed behind the crates and it is nobody's tonight. I keep the flames going on this stretch, and I put the champions back together before they go up that hall.\n\n Most of them come back down it on a board. You will not, if you sleep first."
 heals_party = true
 runs_inn = true
 
@@ -333,7 +333,9 @@ position = Vector2(1188, -1032)
 target_area_path = "res://areas/area_three.tscn"
 target_entrance = &"FromAreaTwo"
 required_boss = &"boss_area_02"
+required_quest = &"quest_main_09_the_kingsworn"
 locked_line = "The stair down is a black throat in the wall, and the Kingsworn is standing in it. Not while I hold this door, he says."
+unreported_line = "The Kingsworn has stepped aside, and the stair is a black throat with nothing in it.\n\nAldric is still sitting where he sat down. Go and tell him. He will send you down himself as he has done countless times before."
 signpost_text = "DOWN TO THE DEAD CITY"
 size_in_cells = Vector2(1, 0.5)
 

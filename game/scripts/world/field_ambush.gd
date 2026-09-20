@@ -10,7 +10,7 @@ extends RefCounted
 ## party's lead when the screen opens, and takes the first turn. The blow
 ## reports [constant EVENT_ID], which is the quest's only objective.
 
-const QUEST_ID: StringName = &"quest_main_01d_caught_in_the_open"
+const QUEST_ID: StringName = &"quest_main_01f_caught_in_the_open"
 ## The story event the quest's objective waits for: a hostile creature's
 ## overworld strike landing on the player.
 const EVENT_ID: StringName = &"ambush_taken"
@@ -38,8 +38,9 @@ const CHARGE: PackedStringArray = [
 	"Scout: Right. Stay exactly where you are, and whatever you feel like doing, don't.",
 	"Scout: There it is. Emberling, and it has already seen you. Watch it gather itself before it hits: that pause is your whole warning. This once, wear it.",
 ]
-## Held on screen while it closes.
-const PROMPT := "Stand your ground. Let it reach you and land its blow."
+## Held on screen while it closes. The player could not move or swing now
+## even if they wanted to, which is the point: this one is watched, not done.
+const PROMPT := "Hold still. Let it reach you and land the first blow."
 ## Said as the battle opens, after the engine's own account of the blow.
 ## [code]%s[/code] is the player's lead.
 const OPENING_TEXT := "It reached you before the fight began, so it takes this turn and %s answers after it."

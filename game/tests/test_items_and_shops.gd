@@ -217,7 +217,7 @@ func _reach(id: StringName) -> QuestData:
 
 
 func test_buying_a_salve_stocks_the_satchel_quest_and_pays_an_item() -> void:
-	var quest := _reach(&"quest_main_01g_a_stocked_satchel")
+	var quest := _reach(&"quest_main_01i_a_stocked_satchel")
 	GameState.currency = 100
 	assert_false(GameState.quests.is_ready(quest))
 	GameState.buy_item(_item(SALVE))
@@ -249,7 +249,7 @@ func test_a_salve_used_in_the_field_or_a_battle_counts_for_field_medicine() -> v
 
 
 func test_a_night_at_the_inn_counts_for_the_scouts_errand() -> void:
-	var quest := _reach(&"quest_main_01f_a_bed_at_the_hearthside")
+	var quest := _reach(&"quest_main_01h_a_bed_at_the_hearthside")
 	GameState.report_quest_event(QuestObjective.Kind.EVENT, GameState.EVENT_RESTED_AT_INN)
 	assert_true(GameState.quests.is_ready(quest))
 	assert_eq(quest.turn_in_actor(), &"innkeeper", "The Innkeeper takes it in where the bed is.")

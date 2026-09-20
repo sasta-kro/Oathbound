@@ -83,3 +83,103 @@ func test_every_quest_offer_names_its_speaker() -> void:
 			"",
 			"%s is spoken by someone." % quest.id,
 		)
+
+
+# --- Passages in several boxes ------------------------------------------------
+
+
+func test_a_blank_line_starts_a_new_box() -> void:
+	assert_eq(
+		DialoguePanel.pages_of("First box.\n\nSecond box."),
+		PackedStringArray(["First box.", "Second box."]),
+	)
+
+
+func test_a_passage_without_blank_lines_is_one_box() -> void:
+	assert_eq(DialoguePanel.pages_of("All of it at once."), PackedStringArray(["All of it at once."]))
+
+
+## Run-on blank lines and trailing whitespace are the shape of hand-edited
+## Markdown, and must not turn into empty boxes the player has to click past.
+func test_extra_blank_lines_do_not_make_empty_boxes() -> void:
+	assert_eq(
+		DialoguePanel.pages_of("\n\nFirst.\n\n\n\nSecond.\n\n"),
+		PackedStringArray(["First.", "Second."]),
+	)
+
+
+func test_the_interact_key_walks_the_boxes_in_order() -> void:
+	var panel: DialoguePanel = _panel()
+
+	panel.show_line("Warden: The knight has stood aside.\n\nFind them. Do as they say.")
+
+	assert_eq(panel.page_count(), 2, "Two boxes.")
+	assert_eq(panel.dialogue_text.text, "The knight has stood aside.")
+	assert_true(panel.has_more_pages(), "There is another box to come.")
+
+	assert_true(panel.advance(), "The key is spent walking to the next box.")
+	assert_eq(panel.dialogue_text.text, "Find them. Do as they say.")
+	assert_false(panel.has_more_pages(), "That was the last of it.")
+	assert_false(panel.advance(), "Past the last box the key closes the line instead.")
+	panel.close()
+
+
+## The name is taken off the front of the passage once, so it stands over
+## every box rather than only the first.
+func test_the_speaker_stands_over_every_box() -> void:
+	var panel: DialoguePanel = _panel()
+
+	panel.show_line("Warden: The knight has stood aside.\n\nFind them.")
+
+	assert_eq(panel.speaker_label.text, "WARDEN")
+	assert_eq(panel.dialogue_text.text, "The knight has stood aside.")
+	panel.advance()
+	assert_eq(panel.speaker_label.text, "WARDEN", "Still the Warden on the second box.")
+	assert_true(panel.speaker_label.visible)
+	assert_eq(panel.dialogue_text.text, "Find them.", "And the name is not read again.")
+	panel.close()
+
+
+## The replies belong on the box that actually asks, so the player reads the
+## whole ask before being given the choice.
+func test_the_replies_wait_for_the_last_box() -> void:
+	var panel: DialoguePanel = _panel()
+
+	panel.ask(
+		"Warden: He is your last gate.\n\nWill you face him?",
+		PackedStringArray(["I will.", "Not yet."]),
+	)
+
+	assert_false(panel.is_asking(), "The first box is still being read.")
+	assert_eq(panel.dialogue_text.text, "He is your last gate.")
+
+	assert_true(panel.advance(), "The key walks to the box that asks.")
+	assert_true(panel.is_asking(), "Now the replies are up.")
+	assert_eq(panel.dialogue_text.text, "Will you face him?")
+	assert_false(panel.advance(), "A box waiting on a reply does not walk on.")
+	panel.close()
+
+
+## A question is still a question while its earlier boxes are being read, so
+## anything that would close a plain line has to leave it alone.
+func test_a_question_is_protected_before_its_replies_appear() -> void:
+	var panel: DialoguePanel = _panel()
+
+	panel.ask(
+		"Elder: The bells rang.\n\nWill you go?",
+		PackedStringArray(["I will.", "Not yet."]),
+	)
+
+	assert_false(panel.is_asking(), "The replies are a box away.")
+	assert_true(panel.has_question(), "But there is still a question waiting.")
+	panel.read_through()
+	assert_true(panel.is_asking())
+	assert_true(panel.has_question())
+	panel.close()
+
+
+func test_a_plain_line_is_not_a_question() -> void:
+	var panel: DialoguePanel = _panel()
+	panel.show_line("Elder: Good morning.\n\nMind the road.")
+	assert_false(panel.has_question())
+	panel.close()

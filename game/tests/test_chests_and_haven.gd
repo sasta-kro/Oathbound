@@ -136,3 +136,12 @@ func test_a_party_that_has_rested_nowhere_wakes_in_the_town() -> void:
 		main.area.player_start_position(),
 		"On the town's own starting spot."
 	)
+
+
+func test_a_mend_reports_whether_anyone_was_hurt() -> void:
+	var lead: CreatureInstance = GameState.party[0]
+	lead.set_hp(1)
+
+	assert_true(GameState.heal_party(), "A hurt party is worth telling the player about.")
+	assert_eq(lead.current_hp, lead.max_hp())
+	assert_false(GameState.heal_party(), "A party already well was not mended.")

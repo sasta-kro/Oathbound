@@ -92,6 +92,10 @@ const MENU_TEXT_COLOR := Color(0.87, 0.87, 0.83)
 const MENU_SELECTED_TEXT_COLOR := Color(1.0, 0.97, 0.85)
 const MENU_HIGHLIGHT_COLOR := Color("2b4037")
 const MENU_HIGHLIGHT_BORDER_COLOR := Color("d9bb80")
+## Every submenu ends in this row, so backing out is reachable with the mouse
+## as well as with the cancel key.
+const BACK_LABEL := "BACK"
+const BACK_HINT := "Go back. (Esc)"
 const CURSOR_PREFIX := "▶ "
 const IDLE_PREFIX := "  "
 const DISMISS_HINT := "  ▼"
@@ -340,7 +344,11 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed(&"interact"):
 		press_entry(_cursor)
 	elif event.is_action_pressed(&"cancel"):
-		_cancel_menu()
+		# Escape is both this and the settings key. The command menu has
+		# nowhere to back out to, so there the key is left for the settings
+		# screen rather than swallowed.
+		if not _cancel_menu():
+			return
 	else:
 		return
 	get_viewport().set_input_as_handled()
@@ -438,6 +446,7 @@ func _open_moves_menu() -> void:
 		_add_entry(label, _choose_move.bind(move), _move_hint(move), ready, reason)
 	if not active.has_ready_move():
 		_add_entry("WAIT", _choose_wait, "Every move is cooling down. Wait out the turn.")
+	_add_back_entry()
 	_end_menu()
 
 
@@ -464,6 +473,8 @@ func _open_party_menu(forced: bool) -> void:
 			allowed = false
 			reason = guide.instruction(engine)
 		_add_entry(label, callback, "Send out %s." % creature.display_name(), allowed, reason)
+	if not forced:
+		_add_back_entry()
 	_end_menu()
 	if forced:
 		_hide_initiative_indicators()
@@ -494,6 +505,7 @@ func _open_target_menu(move: MoveData) -> void:
 			allowed,
 			reason,
 		)
+	_add_back_entry()
 	_end_menu()
 
 
@@ -514,6 +526,7 @@ func _open_item_menu() -> void:
 			usable.has(item),
 			"Nobody in your party needs a %s right now." % item.display_name,
 		)
+	_add_back_entry()
 	_end_menu()
 
 
@@ -535,10 +548,18 @@ func _open_item_target_menu(item: ItemData) -> void:
 			refusal.is_empty(),
 			refusal,
 		)
+	_add_back_entry()
 	_end_menu()
 
 
-func _cancel_menu() -> void:
+func _add_back_entry() -> void:
+	_add_entry(BACK_LABEL, func() -> void: _cancel_menu(), BACK_HINT)
+
+
+## Steps back out of the open submenu. Returns false when there is nowhere to
+## go: the command menu, or the forced menu that picks a replacement for a
+## fainted creature.
+func _cancel_menu() -> bool:
 	match _menu:
 		Menu.ITEM_TARGET:
 			_open_item_menu()
@@ -549,8 +570,12 @@ func _cancel_menu() -> void:
 		Menu.MOVES:
 			_open_command_menu()
 		Menu.PARTY:
-			if not _party_menu_forced:
-				_open_command_menu()
+			if _party_menu_forced:
+				return false
+			_open_command_menu()
+		_:
+			return false
+	return true
 
 
 func _begin_menu(menu: Menu) -> void:

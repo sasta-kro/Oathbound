@@ -76,7 +76,7 @@ func test_town_and_area_one_are_linked_both_ways() -> void:
 	assert_has(targets, "res://areas/area_two.tscn")
 
 
-func test_the_way_to_area_two_is_sealed_until_the_black_knight_falls() -> void:
+func test_the_way_to_area_two_is_sealed_until_the_black_knight_is_reported() -> void:
 	var area_one: WorldArea = _load_area("res://areas/area_one.tscn")
 	var onward: AreaExit = null
 	for exit: AreaExit in area_one.find_children("*", "AreaExit", true, false):
@@ -86,12 +86,27 @@ func test_the_way_to_area_two_is_sealed_until_the_black_knight_falls() -> void:
 	if onward == null:
 		return
 	assert_eq(onward.required_boss, &"boss_area_01", "The stair waits on the Black Knight.")
+	assert_eq(
+		onward.required_quest,
+		&"quest_main_03_the_black_knight",
+		"And on the Warden hearing that he fell."
+	)
 	GameState.defeated_bosses.erase(&"boss_area_01")
+	GameState.quests.clear()
 	assert_true(onward.is_locked(), "The stair is sealed while the knight stands.")
 	assert_ne(onward.locked_text(), "", "A sealed way tells the player why.")
+
 	GameState.record_boss_defeat(&"boss_area_01")
-	assert_false(onward.is_locked(), "Beating the knight opens the stair.")
+	assert_true(onward.is_locked(), "A knight down but unreported still holds the stair.")
+	assert_ne(onward.locked_text(), "", "An unreported knight tells the player why.")
+
+	GameState.quests.from_dict({
+		"quest_main_03_the_black_knight": {"status": QuestLog.Status.COMPLETED, "progress": [1]},
+	})
+	assert_false(onward.is_locked(), "Reporting the knight opens the stair.")
+
 	GameState.defeated_bosses.erase(&"boss_area_01")
+	GameState.quests.clear()
 
 
 func test_area_two_leads_back_to_area_one_and_on_to_area_three() -> void:
@@ -105,16 +120,32 @@ func test_area_two_leads_back_to_area_one_and_on_to_area_three() -> void:
 	assert_eq(down.target_area_path, "res://areas/area_three.tscn")
 	assert_eq(down.target_entrance, &"FromAreaTwo")
 	assert_eq(down.required_boss, &"boss_area_02", "The stair down waits on the Kingsworn.")
+	assert_eq(
+		down.required_quest,
+		&"quest_main_09_the_kingsworn",
+		"And on Aldric hearing that he stepped aside."
+	)
 
 
-func test_the_stair_down_to_area_three_opens_once_the_kingsworn_falls() -> void:
+func test_the_stair_down_to_area_three_opens_once_the_kingsworn_is_reported() -> void:
 	var area_two: WorldArea = _load_area("res://areas/area_two.tscn")
 	var down: AreaExit = area_two.get_node("Exits/ToAreaThree") as AreaExit
 	GameState.defeated_bosses.erase(&"boss_area_02")
+	GameState.quests.clear()
 	assert_true(down.is_locked(), "The stair holds while the Kingsworn stands.")
+	assert_ne(down.locked_text(), "", "A sealed way tells the player why.")
+
 	GameState.defeated_bosses[&"boss_area_02"] = true
-	assert_false(down.is_locked(), "The stair opens once he falls.")
+	assert_true(down.is_locked(), "A Kingsworn down but unreported still holds the stair.")
+	assert_ne(down.locked_text(), "", "An unreported Kingsworn tells the player why.")
+
+	GameState.quests.from_dict({
+		"quest_main_09_the_kingsworn": {"status": QuestLog.Status.COMPLETED, "progress": [1]},
+	})
+	assert_false(down.is_locked(), "Reporting to Aldric opens the stair.")
+
 	GameState.defeated_bosses.erase(&"boss_area_02")
+	GameState.quests.clear()
 
 
 func test_unknown_entrance_falls_back_to_the_player_start() -> void:

@@ -2,7 +2,7 @@
 
 **Status:** Single source-of-truth specification for human developers and AI coding agents, revised against the implementation  
 **Date:** 14 September 2026 (v0.5 was 12 September 2026; v0.4 was 25 August 2026; both archived at `docs/archive/`)  
-**Scope:** Game behavior, content rules, story, player experience, changeability requirements, placeholder policy, and agent interpretation guardrails. This is not an implementation or Godot architecture document; see `docs/architecture.md` for that and `docs/handoff.md` for current status and next steps.
+**Scope:** Game behavior, content rules, story, player experience, changeability requirements, placeholder policy, and agent interpretation guardrails. This is not an implementation or Godot architecture document; see `docs/architecture.md` for that and `docs/implementation_status.md` for current status, with dated audits under `docs/audits/`.
 
 **What changed in v0.6:** the type system grew from four to seven types (Nature, Rot and Steel added) with a new balanced effectiveness table (section 10).
 
@@ -497,7 +497,7 @@ Branching evolution is Deferred.
 - When learning a fifth move, the player chooses an existing move to forget or refuses the new move.
 - Forgotten eligible moves can later be relearned through a dedicated service NPC in Hub 1.
 
-**[Partial]** Learning into a free slot works. The fifth-move replace-or-refuse choice does **not** exist yet: the new move is skipped with a message and, because the relearn NPC also does not exist, it is lost for now. Both are on the roadmap.
+**[Partial]** Learning into a free slot works, and so does the fifth-move replace-or-refuse choice: a move with no free slot is announced where it was won and then put to the player on `MoveLearnScreen`, which the field shows once the world is calm (`GameState.pending_move_learns`, `Main._settle_growth`). The relearn NPC in Hub 1 does **not** exist yet, so a move refused today cannot be picked up again. That is on the roadmap.
 
 ### 9.9 Innate Abilities
 
@@ -1745,7 +1745,7 @@ This document intentionally does **not** define:
 - Plugin/MCP setup.
 - Detailed implementation tasks.
 
-Those belong in `docs/architecture.md` (codebase map), `docs/map_authoring.md` (building areas), `docs/handoff.md` (status and roadmap) and `docs/Oathbound Dev Env Setup (Required).md` (tooling).
+Those belong in `docs/architecture.md` (codebase map), `docs/map_authoring.md` (building areas), `docs/implementation_status.md` and `docs/audits/` (status and roadmap) and `docs/Oathbound Dev Env Setup (Required).md` (tooling).
 
 
 

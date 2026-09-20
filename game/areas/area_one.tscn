@@ -129,7 +129,7 @@ body_color = Color(0.35, 0.6, 0.85, 1)
 sprite_frames = ExtResource("npc_scout_frames")
 facing = &"left"
 dialogue_line = "Scout: Follow the road and you will not get lost. It bends past the pond and climbs to the ruins. The altar is at the very end, and the knight is in front of it, same as he always is."
-quest_ids = Array[StringName]([&"quest_main_01a_a_second_oath", &"quest_main_01b_field_mending", &"quest_main_01c_strike_first", &"quest_main_01d_caught_in_the_open", &"quest_main_01e_no_battle_at_all", &"quest_main_01f_a_bed_at_the_hearthside", &"quest_main_02_the_ruined_road", &"quest_main_02_to_the_ranger"])
+quest_ids = Array[StringName]([&"quest_main_01a_a_second_oath", &"quest_main_01b_room_for_more", &"quest_main_01c_field_mending", &"quest_main_01d_who_walks_in_front", &"quest_main_01e_strike_first", &"quest_main_01f_caught_in_the_open", &"quest_main_01g_no_battle_at_all", &"quest_main_01h_a_bed_at_the_hearthside", &"quest_main_02_the_ruined_road", &"quest_main_02_to_the_ranger"])
 
 [node name="Ranger" parent="Actors" unique_id=1167905662 instance=ExtResource("5_10dds")]
 position = Vector2(600, 168)
@@ -155,7 +155,7 @@ display_name = "HERMIT"
 body_color = Color(0.55, 0.55, 0.5, 1)
 sprite_frames = ExtResource("npc_elder_frames")
 facing = &"right"
-dialogue_line = "Hermit: The ruins? Hah. I went up there once, young and proud, and the knight sent me back down a good deal less of both. Kindly, mind. He is always kind about it."
+dialogue_line = "Hermit: The ruins? Hah. I went up there once, young and proud, and the knight sent me back down kindly. He is always kind about it."
 quest_ids = Array[StringName]([&"quest_side_feathers_on_the_rise"])
 
 [node name="Warden" parent="Actors" unique_id=1634673678 instance=ExtResource("5_10dds")]
@@ -184,9 +184,9 @@ level = 14
 ability_index = 0
 boss_id = &"boss_area_01"
 required_quest = &"quest_main_03_the_black_knight"
-challenge_line = "The Oathbreaker: So. She has the water, the wood and the iron, and she sends me another one. Good. Hear it the way every one of you hears it. They named me Oathbreaker. I did not break it. It was broken for me, in the hour my king reached past what a king may touch, and it went through his knights before it ever reached his son. What I keep now, I chose. I keep this door, and I do not open it for anyone who cannot take it from me. Come and show me you can carry him."
-sealed_line = "The knight in black armour stands where he has always stood, between you and the altar. His helm tilts as you come up, almost a greeting. The Oathbreaker: Not yet. The rite is not whole, and I do not spend anyone who is not ready for me. Go back to the warden camped at the edge of the ruins. When she sends you, I will be here. I am always here."
-victory_line = "The Oathbreaker: Good. That is the one I was waiting for. He grounds his sword and steps out of the way of the altar. Set them down. Water, wood and iron, the three things he has none of and the only three that will hold him. The stone drinks the offerings and wakes, and a stair opens beneath the altar. Go down and put him back to sleep. I will be standing here when you come up. And when your children come up. It does not end. It only holds."
+challenge_line = "The Oathbreaker: So. She has the water, the wood and the iron, and she sends me another one. Good.\n\nHear it the way every one of you hears it. They named me Oathbreaker. I did not break it.\n\nIt was broken for me, in the hour my king reached past what a king may touch, and it went through his knights before it ever reached his son.\n\nWhat I keep now, I chose. I keep this door, and I do not open it for anyone who cannot take it from me. Come and show me you can carry him."
+sealed_line = "Not yet. The rite is not whole,"
+victory_line = "The Oathbreaker: Good. That is the one I was waiting for.\n\nHe grounds his sword and steps out of the way of the altar. Set them down. Water, wood and iron.\n\nThe stone drinks the offerings and wakes, and a stair opens beneath the altar.\n\nGo down and put him back to sleep once more."
 leash_radius = 0.0
 chatter = PackedStringArray()
 barks = PackedStringArray()
@@ -287,12 +287,14 @@ target_entrance = &"FromAreaOne"
 size_in_cells = Vector2(3, 1)
 
 [node name="ToAreaTwo" parent="Exits" unique_id=504597718 instance=ExtResource("17_mvasf")]
-position = Vector2(816, -552)
+position = Vector2(816, -504)
 target_area_path = "res://areas/area_two.tscn"
 target_entrance = &"FromAreaOne"
 required_boss = &"boss_area_01"
+required_quest = &"quest_main_03_the_black_knight"
 locked_line = "The altar is cold, dark stone, and the seal in it is holding. The stair beneath it opens for the rite and nothing else, and nothing is set on it while the Oathbreaker keeps the door."
-size_in_cells = Vector2(2, 1)
+unreported_line = "The knight has stood aside, and the stair is open, and there is nothing under the altar but dark.\n\nThe Warden is still down at the ruins waiting to hear it from you, and no champion has ever gone down that stair without being sent. Go and tell her first."
+size_in_cells = Vector2(2, 2)
 
 [node name="PlayerStart" type="Marker2D" parent="." unique_id=1563490855]
 position = Vector2(24, 696)
@@ -303,6 +305,7 @@ position = Vector2(24, 696)
 
 [node name="TreasureChest2" parent="Chests" unique_id=1095749859 instance=ExtResource("25_o8h4y")]
 position = Vector2(-1037, -30)
+chest_id = &"chest_area_one_meadow"
 
 [node name="Bounds" type="StaticBody2D" parent="." unique_id=405875092]
 

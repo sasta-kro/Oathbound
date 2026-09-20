@@ -3,6 +3,14 @@ extends CanvasLayer
 ## Field HUD, journal navigation and transient rewards share one visual language.
 signal changed
 const TRACKED_QUEST_LIMIT := 3
+## How much of the party page the paddock strip may take, in pixels. Past
+## this it scrolls sideways instead of pushing the page off the canvas.
+const KEPT_STRIP_HEIGHT := 44
+## The element chart's grid, in pixels.
+const CHART_CELL := 34
+const CHART_LABEL_WIDTH := 74
+const CHART_STRONG := Color("6fd18a")
+const CHART_WEAK := Color("d1725f")
 var root: Control
 var overlay: PanelContainer
 var body: VBoxContainer
@@ -208,6 +216,8 @@ func _input(event: InputEvent) -> void:
 	if world.battle_scene.is_active() or world.dialogue_panel.is_open(): return
 	if world.shop_menu != null and world.shop_menu.is_open(): return
 	if world.is_in_opening() or world.is_evolving(): return
+	# A lesson that holds the player to one key holds the menus too.
+	if world.is_lesson_locked(): return
 	if event.is_action_pressed("open_settings"):
 		if is_open(): _go_back()
 		else: open_page("menu")
@@ -241,11 +251,11 @@ func _build_sidebar(layout: HBoxContainer) -> void:
 	sidebar.add_child(OathTheme.label("◇   O A T H B O U N D", 10, OathTheme.GOLD))
 	sidebar.add_child(OathTheme.heading("Field companion", 22))
 	sidebar.add_child(OathTheme.rule())
-	for item in [["menu", "01    Journey"], ["party", "02    Companions"], ["satchel", "03    Satchel"], ["journal", "04    Field journal"], ["evolutions", "05    Evolutions"], ["quests", "06    Quest log"], ["saves", "07    Save journey"]]:
+	for item in [["menu", "Journey"], ["party", "Companions"], ["satchel", "Satchel"], ["journal", "Field journal"], ["elements", "Element chart"], ["controls", "Controls"], ["quests", "Quest log"], ["saves", "Save journey"]]:
 		var b := OathTheme.button(item[1], open_page.bind(item[0]))
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		b.custom_minimum_size.y = 34
-		# Tighter than the theme's buttons, so seven pages fit the 540px canvas.
+		b.custom_minimum_size.y = 29
+		# Tighter than the theme's buttons, so every page fits the 540px canvas.
 		b.add_theme_stylebox_override("hover", _nav_style(Color("253c3b"), OathTheme.JADE))
 		b.add_theme_stylebox_override("pressed", _nav_style(Color("314840"), OathTheme.GOLD))
 		b.add_theme_stylebox_override("focus", _nav_style(Color.TRANSPARENT, OathTheme.GOLD))
@@ -301,7 +311,8 @@ func open_page(next: String) -> void:
 		"party": _party()
 		"satchel": _satchel()
 		"journal": _journal()
-		"evolutions": _evolutions()
+		"elements": _elements()
+		"controls": _controls()
 		"quests": _quests()
 		"saves": _saves()
 		"details": pass
@@ -318,7 +329,7 @@ func _header(kicker: String, title: String, description: String = "") -> void:
 	if not description.is_empty(): body.add_child(OathTheme.paragraph(description, 11))
 
 func _menu() -> void:
-	_header("01  /  YOUR JOURNEY", "A moment between adventures.")
+	_header("YOUR JOURNEY", "A moment between adventures.")
 	var hero := PanelContainer.new()
 	hero.custom_minimum_size.y = 148
 	hero.add_theme_stylebox_override("panel", OathTheme.box(Color.TRANSPARENT, OathTheme.LINE, 8, 0))
@@ -362,7 +373,7 @@ func _menu() -> void:
 	body.add_child(OathTheme.label("LAST SAVED %s  ·  Played %s  ·  The field autosaves as you travel" % [saved.to_upper(), SaveService.describe_duration(int(GameState.play_seconds))], 9, OathTheme.MUTED))
 
 func _saves() -> void:
-	_header("07  /  SAVE JOURNEY", "Keep this moment.", "Save to a slot, return to an earlier one, or clear one out. Loading leaves anything unsaved behind.")
+	_header("SAVE JOURNEY", "Keep this moment.", "Save to a slot, return to an earlier one, or clear one out. Loading leaves anything unsaved behind.")
 	var list := SaveSlotList.new()
 	list.can_save = true
 	list.can_load = true
@@ -382,19 +393,76 @@ func _saves() -> void:
 	body.add_child(list)
 
 func _party() -> void:
-	_header("02  /  YOUR COMPANIONS", "Bound together.", "A shared path. A stronger bond. Choose a companion to see their story.")
+	_header("YOUR COMPANIONS", "Bound together.", "A shared path. A stronger bond. Choose a companion to see their story.")
 	var row := HBoxContainer.new()
 	row.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	body.add_child(row)
 	for i in GameState.PARTY_CAPACITY:
 		if i < GameState.party.size(): _party_card(row, GameState.party[i], i)
 		else: _empty_card(row, i)
-	body.add_child(OathTheme.label("%d / %d OATHS BOUND    ·    Your first healthy companion leads in the field." % [GameState.party.size(), GameState.PARTY_CAPACITY], 9, OathTheme.MUTED))
+	body.add_child(OathTheme.label("%d / %d OATHS BOUND    ·    Whoever walks in front fights first, and takes the blows in the field." % [GameState.party.size(), GameState.PARTY_CAPACITY], 9, OathTheme.MUTED))
+	_keeping_row()
+
+## The paddock (Specification 9.3): everyone bound but not walking. Three
+## walk with the player and the rest are kept, healed and out of the weather,
+## and either can be swapped for the other from here at any time.
+func _keeping_row() -> void:
+	var heading := HBoxContainer.new()
+	body.add_child(heading)
+	heading.add_child(OathTheme.label("KEPT AT THE HEARTHSIDE  ·  %d / %d" % [GameState.kept.size(), GameState.KEEPING_CAPACITY], 10, OathTheme.GOLD))
+	heading.add_child(OathTheme.spacer(false))
+	heading.add_child(OathTheme.label("Send one away to make room, call one out to take its place." if not GameState.kept.is_empty() else "Anything you bind with a full party waits here.", 9, OathTheme.MUTED))
+	if GameState.kept.is_empty():
+		return
+	# The paddock holds thirty; the page holds one strip. It scrolls sideways
+	# rather than growing past the bottom of the canvas.
+	var strip := ScrollContainer.new()
+	strip.custom_minimum_size.y = KEPT_STRIP_HEIGHT
+	strip.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	strip.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	body.add_child(strip)
+	var kept_row := HBoxContainer.new()
+	kept_row.add_theme_constant_override("separation", 6)
+	strip.add_child(kept_row)
+	for index in GameState.kept.size():
+		kept_row.add_child(_kept_card(GameState.kept[index], index))
+
+## One kept Oathbound, as a single row: who it is, and the button that brings
+## it back out.
+func _kept_card(creature: CreatureInstance, index: int) -> PanelContainer:
+	var tint := OathTheme.element(creature.species)
+	var panel := PanelContainer.new()
+	panel.add_theme_stylebox_override("panel", OathTheme.box(Color("14202299"), tint.darkened(0.6), 7, 6))
+	var card := HBoxContainer.new()
+	card.add_theme_constant_override("separation", 6)
+	panel.add_child(card)
+	card.add_child(OathTheme.portrait(creature.species, 26))
+	var info := VBoxContainer.new()
+	info.add_theme_constant_override("separation", 0)
+	card.add_child(info)
+	info.add_child(OathTheme.label(creature.display_name(), 10, tint))
+	info.add_child(OathTheme.label("Lv. %d" % creature.level, 9, OathTheme.MUTED))
+	var call_out := OathTheme.button("Call out", _call_out.bind(index))
+	call_out.add_theme_font_size_override("font_size", 10)
+	call_out.disabled = GameState.party_is_full()
+	call_out.tooltip_text = "Send a companion to the Hearthside first." if call_out.disabled else "Bring %s back into the party." % creature.display_name()
+	card.add_child(call_out)
+	return panel
+
+func _call_out(index: int) -> void:
+	if GameState.call_out_of_keeping(index):
+		world.partner.refresh_lead()
+		open_page("party")
+
+func _send_to_keeping(index: int) -> void:
+	if GameState.send_to_keeping(index):
+		world.partner.refresh_lead()
+		open_page("party")
 
 ## What the player carries (Specification 16): coins and scrolls up top, then
 ## every satchel item with a button per companion it could help right now.
 func _satchel() -> void:
-	_header("03  /  SATCHEL", "What you carry.", "Salves and draughts work here or in battle. Clearwater only matters mid-fight, where poisons and burns take hold.")
+	_header("SATCHEL", "What you carry.", "Salves and draughts work here or in battle. Clearwater only matters mid-fight, where poisons and burns take hold.")
 	var metrics := HBoxContainer.new()
 	body.add_child(metrics)
 	for item in [[str(GameState.currency), "COINS"], [str(GameState.binding_scrolls), "BINDING SCROLLS"]]:
@@ -465,8 +533,8 @@ func _party_card(row: HBoxContainer, creature: CreatureInstance, index: int) -> 
 	top.add_child(OathTheme.label("0%d" % (index + 1), 11, OathTheme.MUTED))
 	top.add_child(OathTheme.spacer(false))
 	top.add_child(OathTheme.label("LEAD" if creature == GameState.lead_creature() else "COMPANION", 9, tint))
-	card.add_child(OathTheme.gallery(creature.species, 108))
-	card.add_child(OathTheme.heading(creature.display_name(), 27))
+	card.add_child(OathTheme.gallery(creature.species, 56))
+	card.add_child(OathTheme.heading(creature.display_name(), 19))
 	var badges := HBoxContainer.new()
 	card.add_child(badges)
 	badges.add_child(OathTheme.chip(creature.species.type_display_name(), tint))
@@ -475,8 +543,31 @@ func _party_card(row: HBoxContainer, creature: CreatureInstance, index: int) -> 
 	card.add_child(OathTheme.bar(creature.hp_fraction(), tint if not creature.is_fainted() else OathTheme.MUTED))
 	card.add_child(OathTheme.label("%d / %d HP%s" % [creature.current_hp, creature.max_hp(), "  ·  Fainted" if creature.is_fainted() else ""], 10, OathTheme.MUTED))
 	var inspect := OathTheme.button("View companion    →", _details.bind(creature))
-	inspect.add_theme_font_size_override("font_size", 11)
+	inspect.add_theme_font_size_override("font_size", 10)
 	card.add_child(inspect)
+	var actions := HBoxContainer.new()
+	actions.add_theme_constant_override("separation", 4)
+	card.add_child(actions)
+	var lead := OathTheme.button("Walk in front", _take_lead.bind(index))
+	lead.add_theme_font_size_override("font_size", 10)
+	lead.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	lead.disabled = index == 0 or creature.is_fainted()
+	lead.tooltip_text = (
+		"%s already walks in front." % creature.display_name() if index == 0
+		else "A fainted companion cannot lead." if creature.is_fainted()
+		else "Put %s in front: it fights first and takes the blows in the field." % creature.display_name()
+	)
+	actions.add_child(lead)
+	var keep := OathTheme.button("Send to keeping", _send_to_keeping.bind(index))
+	keep.add_theme_font_size_override("font_size", 10)
+	keep.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	keep.disabled = GameState.party.size() <= 1 or not GameState.has_keeping_room()
+	keep.tooltip_text = (
+		"Somebody has to walk with you." if GameState.party.size() <= 1
+		else "The paddock is full." if not GameState.has_keeping_room()
+		else "%s waits at the Hearthside until you want it." % creature.display_name()
+	)
+	actions.add_child(keep)
 	var highlight := func(active: bool):
 		var tween := create_tween()
 		tween.tween_property(style, "border_color", tint if active else tint.darkened(0.55), 0.15)
@@ -583,12 +674,14 @@ func _details(creature: CreatureInstance, specimen: bool = false) -> void:
 	_evolution_record(info, creature, specimen)
 
 func _set_lead(creature: CreatureInstance) -> void:
-	if not GameState.party.has(creature) or creature.is_fainted(): return
-	GameState.party.erase(creature)
-	GameState.party.push_front(creature)
-	GameState.party_changed.emit()
-	world.partner.refresh_lead()
+	if GameState.set_lead(GameState.party.find(creature)):
+		world.partner.refresh_lead()
 	_details(creature)
+
+func _take_lead(index: int) -> void:
+	if GameState.set_lead(index):
+		world.partner.refresh_lead()
+		open_page("party")
 
 ## Where a creature sits in its line of evolution, on its record: the form it
 ## grew from and the one it grows into, with the condition and, for a
@@ -620,70 +713,6 @@ func _evolves_from(species: CreatureSpecies) -> CreatureSpecies:
 	return null
 
 ## Every line of evolution in the region, first form first.
-func _evolution_lines() -> Array[Array]:
-	var lines: Array[Array] = []
-	for species: CreatureSpecies in Content.all_species():
-		if not species.evolves() or _evolves_from(species) != null: continue
-		var line: Array[CreatureSpecies] = []
-		var stage := species
-		while stage != null and not line.has(stage):
-			line.append(stage)
-			stage = stage.evolves_into if stage.evolves() else null
-		lines.append(line)
-	return lines
-
-## The evolution page: each line of growth with preview sprites of every
-## form, what it takes to move from one to the next, and how far along the
-## companions walking that line are.
-func _evolutions() -> void:
-	var lines := _evolution_lines()
-	_header("05  /  EVOLUTIONS", "Bonds that deepen.", "%02d lines of growth recorded  /  Companions evolve on their own once they reach the level shown." % lines.size())
-	var scroll := ScrollContainer.new()
-	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	body.add_child(scroll)
-	var stack := VBoxContainer.new()
-	stack.name = "EvolutionStack"
-	stack.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	stack.add_theme_constant_override("separation", 10)
-	scroll.add_child(stack)
-	if lines.is_empty():
-		stack.add_child(OathTheme.paragraph("No creature in this region is known to evolve.", 13))
-		return
-	for line: Array in lines:
-		_evolution_line_card(stack, line)
-
-func _evolution_line_card(stack: VBoxContainer, line: Array) -> void:
-	var first: CreatureSpecies = line[0]
-	var tint := OathTheme.element(first)
-	var panel := PanelContainer.new()
-	panel.name = String(first.id)
-	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	panel.add_theme_stylebox_override("panel", OathTheme.box(OathTheme.SURFACE, tint.darkened(0.55), 6, 12))
-	stack.add_child(panel)
-	var card := VBoxContainer.new()
-	card.add_theme_constant_override("separation", 8)
-	panel.add_child(card)
-	var names: PackedStringArray = []
-	for species: CreatureSpecies in line: names.append(species.display_name)
-	var top := HBoxContainer.new()
-	top.add_theme_constant_override("separation", 8)
-	card.add_child(top)
-	top.add_child(OathTheme.chip(first.type_display_name().to_upper(), tint))
-	top.add_child(OathTheme.heading("  ·  ".join(names), 20))
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 8)
-	card.add_child(row)
-	for i in line.size():
-		var species: CreatureSpecies = line[i]
-		row.add_child(_stage_card(species, 64, _is_bound(species)))
-		if i < line.size() - 1: row.add_child(_condition_marker(species))
-	for creature: CreatureInstance in GameState.party:
-		if line.has(creature.species) and creature.species.evolves():
-			card.add_child(_evolution_progress(creature))
-
-## One form in a line: an animated preview of its sprite, its name, and
-## whether the player has met it.
 func _stage_card(species: CreatureSpecies, height: float, highlighted: bool) -> PanelContainer:
 	var tint := OathTheme.element(species)
 	var panel := PanelContainer.new()
@@ -744,9 +773,114 @@ func _is_bound(species: CreatureSpecies) -> bool:
 		if creature.species == species: return true
 	return false
 
+## Every matchup in one grid (Specification 10): a row per attacking type, a
+## column per defender, and a mark where it matters. The chart is content, so
+## this reads it rather than repeating it.
+func _elements() -> void:
+	_header(
+		"ELEMENT CHART",
+		"What beats what.",
+		"Read a row: your move's element across, the defender's down. Strong doubles the damage, resisted halves it.",
+	)
+	var grid := GridContainer.new()
+	grid.columns = Elements.Type.size() + 1
+	grid.add_theme_constant_override("h_separation", 3)
+	grid.add_theme_constant_override("v_separation", 3)
+	body.add_child(grid)
+	grid.add_child(_chart_corner())
+	for defending: int in Elements.Type.size():
+		grid.add_child(_chart_head(defending, false))
+	for attacking: int in Elements.Type.size():
+		grid.add_child(_chart_head(attacking, true))
+		for defending: int in Elements.Type.size():
+			grid.add_child(_chart_cell(attacking, defending))
+	var key := HBoxContainer.new()
+	key.add_theme_constant_override("separation", 10)
+	body.add_child(key)
+	key.add_child(OathTheme.label("×2  STRONG", 9, CHART_STRONG))
+	key.add_child(OathTheme.label("×½  RESISTED", 9, CHART_WEAK))
+	key.add_child(OathTheme.label("·  NEITHER", 9, OathTheme.MUTED))
+	key.add_child(OathTheme.spacer(false))
+	key.add_child(OathTheme.label("An Oathbound of two elements takes both, multiplied together.", 9, OathTheme.MUTED))
+
+func _chart_corner() -> Control:
+	var corner := OathTheme.label("ATK  ╲  DEF", 8, OathTheme.MUTED)
+	corner.custom_minimum_size = Vector2(CHART_LABEL_WIDTH, CHART_CELL)
+	corner.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	return corner
+
+func _chart_head(type: int, row: bool) -> Control:
+	var tint := OathTheme.element_color(type)
+	var label := OathTheme.label(
+		Elements.display_name(type) if row else Elements.display_name(type).substr(0, 3).to_upper(),
+		9,
+		tint,
+	)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER if not row else HORIZONTAL_ALIGNMENT_LEFT
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.custom_minimum_size = Vector2(CHART_LABEL_WIDTH if row else CHART_CELL, CHART_CELL)
+	return label
+
+func _chart_cell(attacking: int, defending: int) -> Control:
+	var multiplier: float = Content.type_chart.matchup_multiplier(attacking, defending)
+	var strong: bool = multiplier > 1.0
+	var weak: bool = multiplier < 1.0
+	var tint: Color = CHART_STRONG if strong else CHART_WEAK if weak else OathTheme.MUTED
+	var panel := PanelContainer.new()
+	panel.custom_minimum_size = Vector2(CHART_CELL, CHART_CELL)
+	panel.tooltip_text = "%s against %s: ×%s" % [
+		Elements.display_name(attacking), Elements.display_name(defending), String.num(multiplier, 2)
+	]
+	panel.add_theme_stylebox_override(
+		"panel", OathTheme.box(Color(tint, 0.14 if strong or weak else 0.04), Color(tint, 0.5 if strong or weak else 0.12), 5, 2)
+	)
+	var mark := OathTheme.label("×2" if strong else "×½" if weak else "·", 9, tint)
+	mark.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	mark.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	panel.add_child(mark)
+	return panel
+
+## Every key the game listens to, in the order a player meets them.
+func _controls() -> void:
+	_header("CONTROLS", "How to play.", "The field first, then the battle screen. Nothing here is rebound in play.")
+	for section: Array in [
+		["IN THE FIELD", [
+			["W  A  S  D", "Walk"],
+			["F", "Strike whatever you are facing, before the fight starts"],
+			["E", "Talk, open a chest, read on"],
+			["Tab  /  P", "Companions: who walks in front, and who waits at the Hearthside"],
+			["I", "Satchel"],
+			["J", "Field journal"],
+			["L", "Quest log"],
+			["Esc", "This menu, and back out of it"],
+		]],
+		["IN A BATTLE", [
+			["W  /  S", "Choose a command, a move or a companion"],
+			["E", "Confirm"],
+			["Esc", "Back out of a menu"],
+		]],
+		["WORTH KNOWING", [
+			["Strike first", "A blow landed in the field opens the battle a turn ahead"],
+			["Be struck first", "A creature that reaches you takes that turn instead"],
+			["A big enough swing", "Finishes a weak creature outright, with no battle at all"],
+		]],
+	]:
+		body.add_child(OathTheme.label(String(section[0]), 9, OathTheme.GOLD))
+		var grid := GridContainer.new()
+		grid.columns = 2
+		grid.add_theme_constant_override("h_separation", 18)
+		grid.add_theme_constant_override("v_separation", 4)
+		body.add_child(grid)
+		for row: Array in section[1]:
+			var key := OathTheme.label(String(row[0]), 11, OathTheme.PAPER)
+			key.custom_minimum_size.x = 150
+			grid.add_child(key)
+			grid.add_child(OathTheme.label(String(row[1]), 11, OathTheme.MUTED))
+		body.add_child(OathTheme.spacer())
+
 func _journal() -> void:
 	var known := GameState.seen_species.size()
-	_header("04  /  FIELD JOURNAL", "The wild, collected.", "%02d species encountered  /  %02d catalogued in this region" % [known, Content.all_species().size()])
+	_header("FIELD JOURNAL", "The wild, collected.", "%02d species encountered  /  %02d catalogued in this region" % [known, Content.all_species().size()])
 	var search := LineEdit.new()
 	search.placeholder_text = "Search by name or element…"
 	search.text = journal_filter
@@ -757,7 +891,8 @@ func _journal() -> void:
 	filters.add_theme_constant_override("separation", 6)
 	body.add_child(filters)
 	var filter_buttons: Array[Button] = []
-	for i in range(-1, 4):
+	# One button per element, and "All species" in front of them.
+	for i in range(-1, Elements.Type.size()):
 		var b := OathTheme.button("All species" if i == -1 else Elements.display_name(i), func(): pass)
 		b.custom_minimum_size.y = 28
 		b.add_theme_font_size_override("font_size", 10)
@@ -822,7 +957,7 @@ func _journal() -> void:
 func _quests() -> void:
 	var active := GameState.quests.active_quests()
 	var done := GameState.quests.completed_quests()
-	_header("06  /  QUEST LOG", "Oaths to the living.", "%02d in progress  /  %02d fulfilled" % [active.size(), done.size()])
+	_header("QUEST LOG", "Oaths to the living.", "%02d in progress  /  %02d fulfilled" % [active.size(), done.size()])
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED

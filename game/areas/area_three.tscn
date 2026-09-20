@@ -385,11 +385,11 @@ script = ExtResource("6_bovfl")
 display_name = "A DEAD CHAMPION"
 sprite_frames = ExtResource("7_5s5ja")
 facing = &"right"
-dialogue_line = "A dead champion of the Order sits with her back to a dead tree, seal-iron still on her chest, and does not get up. You made it further than I did, she says, without much interest. He is up the road, past the pillars, on the barrow. Mind the two in the glades. You will think you know them. You met the real ones on your way down and you left them both standing. Go on. I will keep the stair."
+dialogue_line = "A dead champion of the Order sits with her back to a dead tree, seal-iron still on her chest, and does not get up.\n\nYou made it further than I did, she says, without much interest. He is up the road, past the pillars, on the barrow.\n\nMind the two in the glades. You will think you know them. You met the real ones on your way down and you left them both standing. Go on. I will keep the stair."
 heals_party = true
 chatter = PackedStringArray()
 barks = PackedStringArray()
-quest_ids = Array[StringName]([&"quest_main_11_the_two_he_trusted", &"quest_main_12_the_road_to_the_barrow", &"quest_main_13_the_king_in_the_barrow"])
+quest_ids = Array[StringName]([&"quest_main_13_the_king_in_the_barrow"])
 
 [node name="HouseholdKnightWest" type="CharacterBody2D" parent="Actors" unique_id=1375537974 groups=["world_actors"] instance=ExtResource("8_2egwx")]
 position = Vector2(-312, 24)
@@ -418,9 +418,9 @@ species = ExtResource("12_f641o")
 level = 38
 ability_index = 0
 boss_id = &"boss_area_03"
-challenge_line = "The Skeleton Lord: Another of the little wardens. Do you know what you are interrupting? I am waiting. I have been waiting on this seat since the hour I reached past the door of the world and took my son back through it. He is still coming. He has been coming for four hundred years. Put your oath down and wait with me, or put it to use. It makes very little difference which."
+challenge_line = "The Skeleton Lord: Another of the little wardens.\n\nDo you know what you are interrupting? I am waiting. I have been waiting on this seat since the hour I reached past the door of the world and took my son back through it.\n\nHe is still coming. He has been coming for four hundred years. Put your oath down and wait with me, or put it to use. It makes very little difference which."
 sealed_line = "A crowned thing sits on the barrow at the end of the wood, wrapped in green fire, and does not look up. Whatever is left of the Kingsworn's faith is the only reason it has not already noticed you."
-victory_line = "The Skeleton Lord: Ah. There. The green fire goes out of him one thread at a time, and the crown slides off a skull that is only a skull. Not gone, he says, as the seat empties. Only set down again. Come back in a hundred years and I will still be waiting on him, and so will whoever they send. The bells begin to ring somewhere far above, and for once nobody is pulling the rope."
+victory_line = "The Skeleton Lord: Ah. There. The green fire goes out of him one thread at a time, and the crown slides off a skull that is only a skull.\n\nNot gone, he says, as the seat empties. Only set down again. Come back in a hundred years and I will still be waiting on him, and so will whoever they send.\n\nThe bells begin to ring somewhere far above, and for once nobody is pulling the rope."
 leash_radius = 0.0
 chatter = PackedStringArray()
 barks = PackedStringArray()

@@ -12,16 +12,16 @@ description = "Walk up to the creature and hit it with F before it moves"
 
 [resource]
 script = ExtResource("1_quest")
-id = &"quest_main_01c_strike_first"
+id = &"quest_main_01e_strike_first"
 title = "Strike First"
 kind = 0
-summary = "The Scout has watched you stand and wait for things to come at you. Out on the road the first blow is usually the one that decides the fight, and it is thrown with F, in the open, before a battle ever opens."
+summary = "The Scout has watched you stand and wait for things to come at you.\n\nOut on the road the first blow is usually the one that decides the fight, and it is thrown with F, in the open, before a battle ever opens."
 giver = &"scout"
-requires = &"quest_main_01b_field_mending"
+requires = &"quest_main_01d_who_walks_in_front"
 objectives = Array[ExtResource("2_objective")]([SubResource("Objective_strike")])
 reward_currency = 20
 reward_xp = 15
-offer_line = "Scout: Third thing, and it is the one that keeps you alive. You have been standing about waiting for these things to come to you. Don't. Out here you hit first. Press F and whichever Oathbound walks at your shoulder throws its best blow the way you're facing. Land it before the fight opens and you start that fight a turn up. Let me find you something to practise on."
+offer_line = "Scout: Third thing, and it is the one that keeps you alive.\n\nYou have been standing about waiting for these things to come to you. Don't. Out here you hit first.\n\nPress F and whichever Oathbound walks at your shoulder throws its best blow the way you're facing.\n\nLand it before the fight opens and you start that fight a turn up. Let me find you something to practise on."
 accept_option = "Show me."
 refuse_option = "Later."
 accepted_line = "Scout: There's one in the grass down the slope. Walk up on it and hit F. Close enough to touch, mind; your partner has arms, not a bow."

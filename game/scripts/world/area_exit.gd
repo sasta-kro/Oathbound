@@ -53,9 +53,19 @@ const CHEVRON_SECONDS: float = 1.4
 ## Boss that must fall before this exit opens. Empty for a way that is open
 ## from the start (Specification 19).
 @export var required_boss: StringName = &""
+## Quest that must be finished before this exit opens, on top of [member
+## required_boss]. A boss that falls out in the field is not the same as a
+## boss reported back to the person who sent you, and the story only moves on
+## the report, so the way stays shut until the quest is turned in.
+@export var required_quest: StringName = &""
 ## What the player is told when they walk into the exit while it is still
 ## sealed. Empty falls back to [constant DEFAULT_LOCKED_LINE].
 @export_multiline var locked_line: String = ""
+## What the player is told once the boss is down but [member required_quest]
+## has not been turned in yet, which is the moment they need pointing at the
+## quest giver rather than at the boss. Empty falls back to [member
+## locked_line].
+@export_multiline var unreported_line: String = ""
 ## Whether the exit carries a name plate and chevrons in the game. Off for a
 ## way the map already announces on its own.
 @export var signpost: bool = true
@@ -86,9 +96,11 @@ func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 	if signpost:
 		_raise_signpost()
-		# The plate stops saying SEALED the moment the boss holding the way
-		# falls, without the player having to leave and come back.
+		# The plate stops saying SEALED the moment the way opens, without the
+		# player having to leave and come back: when the boss holding it
+		# falls, and again when the quest holding it is turned in.
 		GameState.boss_defeated.connect(refresh_signpost.unbind(1))
+		GameState.quest_changed.connect(refresh_signpost.unbind(2))
 		set_process(true)
 	else:
 		set_process(false)
@@ -167,14 +179,33 @@ func _on_body_entered(body: Node2D) -> void:
 		player_entered.emit(self)
 
 
-## True while the exit names a boss the player has not beaten yet. The
-## overworld turns the player back instead of travelling.
+## True while the exit names a boss the player has not beaten yet, or a quest
+## they have not turned in. The overworld turns the player back instead of
+## travelling.
 func is_locked() -> bool:
-	return required_boss != &"" and not GameState.has_defeated_boss(required_boss)
+	return _boss_stands() or _report_owed()
 
 
 func locked_text() -> String:
+	if _report_owed() and unreported_line != "":
+		return unreported_line
 	return locked_line if locked_line != "" else DEFAULT_LOCKED_LINE
+
+
+## Whether the boss holding this way is still standing.
+func _boss_stands() -> bool:
+	return required_boss != &"" and not GameState.has_defeated_boss(required_boss)
+
+
+## Whether the way is held by a quest that is finished in the field but not
+## yet reported back. False while the boss still stands, so the boss line is
+## the one the player hears first.
+func _report_owed() -> bool:
+	if required_quest == &"" or _boss_stands():
+		return false
+	if Engine.is_editor_hint() or GameState.quests == null:
+		return false
+	return not GameState.quests.is_completed(required_quest)
 
 
 func size_in_pixels() -> Vector2:

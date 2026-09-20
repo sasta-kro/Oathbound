@@ -8,6 +8,13 @@ extends CanvasLayer
 ## interact to confirm, or click. While replies are on screen the panel
 ## swallows those inputs itself, so the overworld never sees the confirm
 ## press as a "close dialogue".
+##
+## A passage with blank lines in it is a passage in several boxes. The panel
+## shows one at a time and the interact key walks them, so a long speech is
+## read at the player's pace instead of filling half the screen at once. The
+## speaker's name is taken off the front of the whole passage, so the caption
+## stands over every box of it. A question's replies appear on the last box,
+## which is the one that actually asks.
 
 ## The reply the player picked from [method ask].
 signal choice_made(index: int)
@@ -36,6 +43,14 @@ var _prompt: Label
 var _choices: VBoxContainer
 var _option_buttons: Array[Button] = []
 var _selected: int = 0
+## Who is speaking the passage, taken off its front once and kept over every
+## box of it.
+var _speaker: String = ""
+## The passage being read, already split into boxes, and which one is up.
+var _pages: PackedStringArray = []
+var _page: int = 0
+## Replies waiting for the last box of the passage. Empty for plain speech.
+var _pending_options: PackedStringArray = []
 
 func _ready() -> void:
 	panel.theme = OathTheme.make()
@@ -60,10 +75,72 @@ func _ready() -> void:
 	panel.hide()
 
 func show_line(line: String) -> void:
-	_clear_choices()
-	_set_line(line)
-	_prompt.text = "E  /  CONTINUE"
+	_begin(line, PackedStringArray())
 	_reveal()
+
+
+## Splits a passage into its boxes on blank lines. A passage with no blank
+## line in it is one box, so nothing that was written as a single line is
+## broken up.
+static func pages_of(body: String) -> PackedStringArray:
+	var pages: PackedStringArray = []
+	for chunk: String in body.split("\n\n", false):
+		var page: String = chunk.strip_edges()
+		if not page.is_empty():
+			pages.append(page)
+	if pages.is_empty():
+		pages.append(body.strip_edges())
+	return pages
+
+
+## Moves to the next box of the passage. True when there was one, so the
+## overworld knows the interact key was spent here rather than on closing.
+func advance() -> bool:
+	if not is_open() or is_asking():
+		return false
+	if _page + 1 >= _pages.size():
+		return false
+	_page += 1
+	_render()
+	return true
+
+
+## Walks to the last box of the passage, which is where a question's replies
+## live. What a player does by holding the interact key down.
+func read_through() -> void:
+	while advance():
+		pass
+
+
+## Whether the passage has more boxes after the one on screen.
+func has_more_pages() -> bool:
+	return is_open() and _page + 1 < _pages.size()
+
+
+func page_count() -> int:
+	return _pages.size()
+
+
+## Takes the speaker off the passage and breaks the rest into boxes.
+func _begin(line: String, options: PackedStringArray) -> void:
+	var parts: PackedStringArray = split_speaker(line)
+	_speaker = parts[0]
+	_pages = pages_of(parts[1])
+	_page = 0
+	_pending_options = options
+	_render()
+
+
+## Draws the box that is up, with the replies if it is the last one.
+func _render() -> void:
+	_clear_choices()
+	speaker_label.visible = not _speaker.is_empty()
+	speaker_label.text = _speaker.to_upper()
+	dialogue_text.text = _pages[_page] if _page < _pages.size() else ""
+	if _pending_options.is_empty() or _page + 1 < _pages.size():
+		_prompt.text = "E  /  MORE" if _page + 1 < _pages.size() else "E  /  CONTINUE"
+		return
+	_build_options(_pending_options)
 
 
 ## Splits "Elder: Good morning." into the speaker and what they said. A line
@@ -85,11 +162,14 @@ static func body_of(line: String) -> String:
 	return split_speaker(line)[1]
 
 
+## The first box of a passage, which is what the panel shows when the line
+## opens. The same as [method body_of] for anything written as one box.
+static func first_page_of(line: String) -> String:
+	return pages_of(body_of(line))[0]
+
+
 func _set_line(line: String) -> void:
-	var parts: PackedStringArray = split_speaker(line)
-	speaker_label.text = parts[0].to_upper()
-	speaker_label.visible = not parts[0].is_empty()
-	dialogue_text.text = parts[1]
+	_begin(line, PackedStringArray())
 
 ## Shows [param line] and waits until it is closed, for scripted scenes that
 ## play several lines in a row.
@@ -103,8 +183,14 @@ func ask(line: String, options: PackedStringArray) -> int:
 	if options.is_empty():
 		show_line(line)
 		return -1
-	_clear_choices()
-	_set_line(line)
+	_begin(line, options)
+	_reveal()
+	var chosen: int = await choice_made
+	return chosen
+
+
+## Puts the replies on screen under the last box of the passage.
+func _build_options(options: PackedStringArray) -> void:
 	_prompt.text = "W / S  CHOOSE   ·   E  REPLY"
 	for index: int in options.size():
 		var button := Button.new()
@@ -121,9 +207,6 @@ func ask(line: String, options: PackedStringArray) -> int:
 		_option_buttons.append(button)
 	_choices.show()
 	_select(0)
-	_reveal()
-	var chosen: int = await choice_made
-	return chosen
 
 ## Closes the panel. A question still waiting on the player resolves as
 ## "no reply" (-1), so nothing awaiting it is left hanging.
@@ -143,6 +226,14 @@ func is_open() -> bool:
 ## Whether replies are on screen waiting for the player.
 func is_asking() -> bool:
 	return is_open() and not _option_buttons.is_empty()
+
+
+## Whether the passage being read ends in a question, even while the replies
+## are still boxes away. The overworld protects one of these from keys that
+## would otherwise close a line, so a question cannot be lost by swinging
+## part-way through the ask.
+func has_question() -> bool:
+	return is_open() and not _pending_options.is_empty()
 
 func selected_index() -> int:
 	return _selected

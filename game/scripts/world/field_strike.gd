@@ -5,12 +5,13 @@ extends RefCounted
 ## [FieldMending] is.
 ##
 ## Accepting the quest at the Scout's camp puts a young Loambuck in the grass
-## a few paces off, and then nothing happens at all: the lesson waits on the
-## player walking up to it and swinging. The blow reports [constant EVENT_ID],
-## which is the quest's only objective, and the battle it opens is one the
-## player enters with the creature already wounded and a turn behind.
+## within arm's reach, turns the player to face it and takes everything but
+## the attack key away, so the lesson is one keypress and cannot be walked
+## out of. The blow reports [constant EVENT_ID], which is the quest's only
+## objective, and the battle it opens is one the player enters with the
+## creature already wounded and a turn behind.
 
-const QUEST_ID: StringName = &"quest_main_01c_strike_first"
+const QUEST_ID: StringName = &"quest_main_01e_strike_first"
 ## The story event the quest's objective waits for: the player's own swing,
 ## landed in the overworld rather than on the battle screen.
 const EVENT_ID: StringName = &"first_strike_landed"
@@ -28,19 +29,18 @@ const HP_FRACTION := 0.5
 ## Its blows only sting. The lesson is the swing and the head start, not the
 ## fight that follows, and the fight that follows must not be close.
 const ATTACK_PERCENT := -60
-## How far off the quarry is put, in cells, on the side away from the Scout:
-## far enough that the player has to close the distance themselves, which is
-## half of what a strike is.
-const DISTANCE_CELLS := 3.0
+## How far off the quarry is put, in cells, on the side away from the Scout.
+## Inside the player's strike reach, because they are held in place for this:
+## the lesson is the key and what it buys, not the walk up to it.
+const DISTANCE_CELLS := 1.5
 
 ## Spoken after the quest is accepted, before the quarry is put in the grass.
 const SIGHTING: PackedStringArray = [
 	"Scout: Hold on. There, down the slope, in the tall grass...",
-	"Scout: A Loambuck, head down and chewing. It hasn't seen you. Walk up on it and hit it before it does.",
+	"Scout: A Loambuck, head down and chewing, and it has not seen you. Stay exactly where you are and hit it before it does.",
 ]
-## Held on screen while the player closes the distance. [code]%s[/code] is
-## the quarry's name.
-const PROMPT := "Get beside the %s and press F to strike first."
+## Held on screen until the swing lands. [code]%s[/code] is the quarry's name.
+const PROMPT := "Press F to strike the %s before it knows you are there."
 ## Said as the battle opens, after the engine's own account of the blow.
 ## [code]%s[/code] is the player's lead.
 const OPENING_TEXT := "Your blow landed before the fight began, so %s takes this turn whatever the Loambuck would have done with it."

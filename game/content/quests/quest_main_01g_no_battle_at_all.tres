@@ -12,16 +12,16 @@ description = "Cut a weak creature down with F without a battle opening at all"
 
 [resource]
 script = ExtResource("1_quest")
-id = &"quest_main_01e_no_battle_at_all"
+id = &"quest_main_01g_no_battle_at_all"
 title = "No Battle At All"
 kind = 0
-summary = "A blow big enough to finish a creature outright never opens a battle screen: it falls in the grass where it stands, and it still pays what it would have paid. The Scout would rather the player learned that now than found it out by accident halfway up the road."
+summary = "A blow big enough to finish a creature outright never opens a battle screen: it falls in the grass where it stands, and it still pays what it would have paid.\n\nThe Scout would rather the player learned that now than found it out by accident halfway up the road."
 giver = &"scout"
-requires = &"quest_main_01d_caught_in_the_open"
+requires = &"quest_main_01f_caught_in_the_open"
 objectives = Array[ExtResource("2_objective")]([SubResource("Objective_rout")])
 reward_currency = 20
 reward_xp = 10
-offer_line = "Scout: One more on that key, and this is the part nobody believes until they see it. If your swing is bigger than what is left of the thing you swing at, there is no battle. None. It goes down in the grass, you collect what it was carrying, and you keep walking. That is how a long road gets walked: you do not fight everything on it, you step over most of it."
+offer_line = "Scout: One more on that key, and this is the part nobody believes until they see it.\n\nIf your swing is bigger than what is left of the thing you swing at, there is no battle. None.\n\nIt goes down in the grass, you collect what it was carrying, and you keep walking.\n\nThat is how a long road gets walked: you do not fight everything on it, you step over most of it."
 accept_option = "Show me that."
 refuse_option = "Another time."
 accepted_line = "Scout: I'll find you something small. Don't feel clever about it; it is half dead already, and that is the whole point. Big swing, little thing, no fight."
@@ -31,5 +31,5 @@ progress_line = "Scout: It's still down there. Get close and hit it with F; it w
 continue_option = "I'll put it down."
 abandon_option = "Not now."
 abandoned_line = "Scout: As you like. The grass is full of them."
-complete_line = "Scout: No screen, no turns, no scrolls, and your purse is heavier anyway. Learn to read what is worth a fight and what is worth a swing and this road gets a good deal shorter. Right. That is everything I know about hitting things. Two errands before you go, and neither of them is a fight."
+complete_line = "Scout: No screen, no turns, no scrolls, and your purse is heavier anyway.\n\nLearn to read what is worth a fight and what is worth a swing and this road gets a good deal shorter. Right.\n\nThat is everything I know about hitting things. Two errands before you go, and neither of them is a fight."
 done_line = "Scout: If it is nearly dead, do not fight it. Swing at it."

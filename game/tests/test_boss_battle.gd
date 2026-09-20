@@ -49,13 +49,15 @@ func _reach_the_boss_quest() -> void:
 	for id: StringName in [
 		&"quest_main_01_beyond_the_walls",
 		&"quest_main_01a_a_second_oath",
-		&"quest_main_01b_field_mending",
-		&"quest_main_01c_strike_first",
-		&"quest_main_01d_caught_in_the_open",
-		&"quest_main_01e_no_battle_at_all",
-		&"quest_main_01f_a_bed_at_the_hearthside",
-		&"quest_main_01g_a_stocked_satchel",
-		&"quest_main_01h_the_road_is_waiting",
+		&"quest_main_01b_room_for_more",
+		&"quest_main_01c_field_mending",
+		&"quest_main_01d_who_walks_in_front",
+		&"quest_main_01e_strike_first",
+		&"quest_main_01f_caught_in_the_open",
+		&"quest_main_01g_no_battle_at_all",
+		&"quest_main_01h_a_bed_at_the_hearthside",
+		&"quest_main_01i_a_stocked_satchel",
+		&"quest_main_01j_the_road_is_waiting",
 		&"quest_main_02_the_ruined_road",
 		&"quest_main_02_to_the_ranger",
 		&"quest_main_02a_scalded_shallows",
@@ -145,7 +147,7 @@ func test_the_boss_will_not_fight_until_its_quest_is_active() -> void:
 	var boss: WildCreature = _boss_of(main)
 	main._challenge_boss(boss)
 	assert_false(main.dialogue_panel.is_asking(), "No challenge is offered yet.")
-	assert_eq(main.dialogue_panel.dialogue_text.text, DialoguePanel.body_of(boss.sealed_line))
+	assert_eq(main.dialogue_panel.dialogue_text.text, DialoguePanel.first_page_of(boss.sealed_line))
 	assert_false(main.battle_scene.is_active())
 
 
@@ -155,8 +157,11 @@ func test_the_boss_lets_the_player_walk_away_from_the_challenge() -> void:
 	var main: Node2D = _load_main_in_area_one()
 	var boss: WildCreature = _boss_of(main)
 	main._challenge_boss(boss)
+	# The knight's challenge runs to several boxes, so it is read through
+	# before the replies are there to pick from.
+	assert_eq(main.dialogue_panel.dialogue_text.text, DialoguePanel.first_page_of(boss.challenge_line))
+	main.dialogue_panel.read_through()
 	assert_true(main.dialogue_panel.is_asking(), "The knight puts the challenge.")
-	assert_eq(main.dialogue_panel.dialogue_text.text, DialoguePanel.body_of(boss.challenge_line))
 	main.dialogue_panel._confirm(1)
 	await get_tree().process_frame
 	assert_false(main.dialogue_panel.is_open(), "Not yet closes the line.")

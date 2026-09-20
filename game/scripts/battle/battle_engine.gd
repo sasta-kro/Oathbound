@@ -597,15 +597,18 @@ func _award_xp(recipient: Battler, xp: int, events: Array[BattleEvent]) -> void:
 					{"move": move},
 				)
 			)
-	# The replace-or-refuse choice is a menu of its own (Specification 9.8);
-	# until it exists the move is skipped and can be relearned in Hub 1.
+	# The replace-or-refuse choice is a screen of its own (Specification 9.8)
+	# and the battle cannot stop to show it, so the offer is only announced
+	# here and handed to the field, which puts it to the player once the
+	# battle screen is gone.
 	for move: MoveData in needs_choice:
+		GameState.queue_move_learn(creature, move)
 		events.append(
 			BattleEvent.create(
-				BattleEvent.Kind.MOVE_LEARN_SKIPPED,
+				BattleEvent.Kind.MOVE_LEARN_PENDING,
 				recipient.side,
 				(
-					BattleRules.MOVE_LEARN_SKIPPED_TEXT
+					BattleRules.MOVE_LEARN_PENDING_TEXT
 					% [creature.display_name(), move.display_name]
 				),
 				{"move": move},

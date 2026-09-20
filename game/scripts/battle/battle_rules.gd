@@ -50,7 +50,7 @@ const NOT_VERY_EFFECTIVE_TEXT := "It's not very effective..."
 const XP_GAINED_TEXT := "%s gained %d XP."
 const LEVEL_UP_TEXT := "%s grew to level %d!"
 const MOVE_LEARNED_TEXT := "%s learned %s!"
-const MOVE_LEARN_SKIPPED_TEXT := "%s wants to learn %s, but already knows four moves."
+const MOVE_LEARN_PENDING_TEXT := "%s wants to learn %s, but already knows four moves."
 const EVOLUTION_READY_TEXT := "%s is ready to evolve!"
 
 

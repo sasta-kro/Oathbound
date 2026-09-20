@@ -1,9 +1,11 @@
 extends GutTest
-## The stair behind the altar: sealed while the Black Knight stands, and the
-## way into Area Two once it falls (Specification 19).
+## The stair behind the altar: sealed while the Black Knight stands, sealed
+## again until his fall is reported to the Warden, and the way into Area Two
+## once it is (Specification 19).
 
 const SCRATCH_DIR := "user://gut_scratch/test_area_gate"
 const BOSS_ID := &"boss_area_01"
+const BOSS_QUEST_ID := &"quest_main_03_the_black_knight"
 const AREA_ONE := "res://areas/area_one.tscn"
 const AREA_TWO := "res://areas/area_two.tscn"
 ## Long enough for the screen wipe to cover, swap the area and reveal again.
@@ -36,6 +38,21 @@ func _load_main_in_area_one() -> Node2D:
 
 func _stair_of(main: Node2D) -> AreaExit:
 	return main.area.get_node("Exits/ToAreaTwo") as AreaExit
+
+
+## Puts the knight down and tells the Warden about it, which is everything
+## the stair asks for.
+func _finish_the_knight() -> void:
+	GameState.record_boss_defeat(BOSS_ID)
+	_report_to_the_warden()
+
+
+## Marks the Oathbreaker quest turned in, without walking the whole chain
+## that leads to it.
+func _report_to_the_warden() -> void:
+	GameState.quests.from_dict({
+		String(BOSS_QUEST_ID): {"status": QuestLog.Status.COMPLETED, "progress": [1]},
+	})
 
 
 func _beacon_of(main: Node2D) -> AltarBeacon:
@@ -74,11 +91,34 @@ func test_the_stair_turns_the_player_back_while_the_knight_stands() -> void:
 	assert_true(main.dialogue_panel.is_open(), "The player is told why the way is shut.")
 
 
-func test_beating_the_knight_opens_the_stair_to_area_two() -> void:
+## The knight falling out at the altar is not the story moving. The Warden
+## sends the champion down, so the stair waits on her hearing it first.
+func test_the_stair_waits_on_the_warden_hearing_it() -> void:
 	var main: Node2D = _load_main_in_area_one()
 	GameState.record_boss_defeat(BOSS_ID)
 	var stair: AreaExit = _stair_of(main)
-	assert_false(stair.is_locked(), "The knight's fall opens the stair.")
+	assert_true(stair.is_locked(), "A knight down but unreported still holds the stair.")
+	assert_string_contains(stair.locked_text(), "Warden", "The player is sent to the Warden.")
+
+	await _step_into(main, stair)
+
+	assert_eq(main.area.scene_file_path, AREA_ONE, "An unreported knight must not travel.")
+	assert_true(main.dialogue_panel.is_open(), "The player is told why the way is shut.")
+
+
+## And the report on its own is not enough either, in case a save ever lands
+## with the quest done and the boss flag missing.
+func test_the_report_alone_does_not_open_the_stair() -> void:
+	var main: Node2D = _load_main_in_area_one()
+	_report_to_the_warden()
+	assert_true(_stair_of(main).is_locked(), "The knight still has to fall.")
+
+
+func test_beating_the_knight_opens_the_stair_to_area_two() -> void:
+	var main: Node2D = _load_main_in_area_one()
+	_finish_the_knight()
+	var stair: AreaExit = _stair_of(main)
+	assert_false(stair.is_locked(), "The knight's fall, once reported, opens the stair.")
 
 	await _step_into(main, stair)
 	await _settle_travel(main)
@@ -89,7 +129,7 @@ func test_beating_the_knight_opens_the_stair_to_area_two() -> void:
 
 func test_area_two_puts_the_player_clear_of_the_way_back() -> void:
 	var main: Node2D = _load_main_in_area_one()
-	GameState.record_boss_defeat(BOSS_ID)
+	_finish_the_knight()
 
 	await _step_into(main, _stair_of(main))
 	await _settle_travel(main)

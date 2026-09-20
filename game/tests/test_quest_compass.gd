@@ -5,7 +5,7 @@ extends GutTest
 const TOWN := "res://areas/town.tscn"
 const AREA_ONE := "res://areas/area_one.tscn"
 const AREA_TWO := "res://areas/area_two.tscn"
-const BED_QUEST_ID := &"quest_main_01f_a_bed_at_the_hearthside"
+const BED_QUEST_ID := &"quest_main_01h_a_bed_at_the_hearthside"
 
 var _log: QuestLog
 
@@ -54,7 +54,7 @@ func test_a_finished_quest_points_at_whoever_takes_it_in() -> void:
 
 
 func test_an_errand_to_go_and_see_somebody_points_at_them() -> void:
-	_accept(&"quest_main_01h_the_road_is_waiting")
+	_accept(&"quest_main_01j_the_road_is_waiting")
 	assert_eq(QuestCompass.target_actor(_log), &"scout", "Walking back up is the whole errand.")
 
 
@@ -66,7 +66,7 @@ func test_the_main_story_is_pointed_at_before_a_side_errand() -> void:
 		for _step: int in objective.required():
 			_log.report(objective.kind, objective.target)
 	assert_true(_log.is_ready(side))
-	_accept(&"quest_main_01h_the_road_is_waiting")
+	_accept(&"quest_main_01j_the_road_is_waiting")
 
 	assert_eq(QuestCompass.target_actor(_log), &"scout")
 

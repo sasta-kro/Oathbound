@@ -35,6 +35,12 @@ const STARTER_LEVEL := 7
 const STARTING_BINDING_SCROLLS := 5
 ## Active party maximum (Specification 9.2).
 const PARTY_CAPACITY := 3
+## How many Oathbound the paddock keeps for the player (Specification 9.3).
+## Deep enough that nobody has to choose between binding and keeping.
+const KEEPING_CAPACITY := 30
+## Where a newly bound Oathbound went, from [method take_in].
+const JOINED_PARTY := &"party"
+const WENT_TO_KEEPING := &"keeping"
 ## Level cap before the Area 1 boss falls (Specification 9.4).
 const INITIAL_LEVEL_CAP := 20
 ## The level cap each boss victory raises the party to (Specification 5.2,
@@ -55,6 +61,11 @@ const FINAL_BOSS_TEXT := "The rite closes over him. The king sleeps."
 const EVENT_BOUGHT_ITEM := "bought_%s"
 const EVENT_USED_ITEM := "used_%s"
 const EVENT_RESTED_AT_INN := &"rested_at_inn"
+## Reported the first time an Oathbound is sent to the paddock or called back
+## out of it, for the lesson that teaches the keeping (Specification 9.3).
+const EVENT_KEPT_AN_OATHBOUND := &"kept_an_oathbound"
+## Reported when the player changes which Oathbound walks in front.
+const EVENT_CHANGED_LEAD := &"changed_lead"
 ## Provisional defeat penalty (Specification 20.1).
 const DEFEAT_CURRENCY_PENALTY := 50
 ## Where a journey that has never rested anywhere wakes up after a rout: the
@@ -63,6 +74,8 @@ const DEFAULT_HAVEN_AREA := "res://areas/town.tscn"
 
 var seen_species: Dictionary = {}
 var party: Array[CreatureInstance] = []
+## Everyone bound but not walking: healed, kept and saved with the journey.
+var kept: Array[CreatureInstance] = []
 var binding_scrolls: int = STARTING_BINDING_SCROLLS
 var currency: int = 0
 ## The satchel: item id -> count, only items the player holds at least one
@@ -82,6 +95,14 @@ var story_complete: bool = false
 ## Standing with every quest (Specification 17). Built in [method _ready]
 ## because it reads content from the registry.
 var quests: QuestLog
+
+## Moves a companion has grown into but has no free slot for, each entry a
+## {"creature": CreatureInstance, "move": MoveData}. The replace-or-refuse
+## choice (Specification 9.8) is a screen of its own, and a battle cannot stop
+## to show it, so the moves wait here until the field is calm again. Not
+## saved: an unanswered offer is a moment, not part of the journey, and the
+## move stays relearnable in Hub 1 either way.
+var pending_move_learns: Array[Dictionary] = []
 
 ## Scene path of the area the player was last recorded in, or empty when the
 ## journey has not left the shipped starting area yet.
@@ -142,6 +163,7 @@ func _process(delta: float) -> void:
 func new_game(with_opening: bool = false) -> void:
 	seen_species.clear()
 	party.clear()
+	kept.clear()
 	binding_scrolls = STARTING_BINDING_SCROLLS
 	currency = 0
 	items.clear()
@@ -272,9 +294,7 @@ func take_resume_request() -> bool:
 
 ## The whole save. Content is referenced by id, JSON-friendly throughout.
 func to_dict() -> Dictionary:
-	var party_data: Array = []
-	for creature: CreatureInstance in party:
-		party_data.append(creature.to_dict())
+	var party_data: Array = _creature_save_data(party)
 	var seen: Array = []
 	for id: StringName in seen_species:
 		seen.append(String(id))
@@ -291,6 +311,7 @@ func to_dict() -> Dictionary:
 		"saved_at": last_saved_at,
 		"play_seconds": int(play_seconds),
 		"party": party_data,
+		"kept": _creature_save_data(kept),
 		"seen_species": seen,
 		"binding_scrolls": binding_scrolls,
 		"currency": currency,
@@ -329,6 +350,14 @@ func from_dict(data: Dictionary) -> void:
 		var creature: CreatureInstance = CreatureInstance.from_dict(entry, Content)
 		if creature != null and not party_is_full():
 			party.append(creature)
+	kept.clear()
+	for entry: Variant in data.get("kept", []):
+		if not entry is Dictionary:
+			continue
+		var kept_creature: CreatureInstance = CreatureInstance.from_dict(entry, Content)
+		if kept_creature != null and has_keeping_room():
+			kept.append(kept_creature)
+			seen_species[kept_creature.species_id()] = true
 	seen_species.clear()
 	for id: Variant in data.get("seen_species", []):
 		seen_species[StringName(String(id))] = true
@@ -393,14 +422,84 @@ func party_is_full() -> bool:
 	return party.size() >= PARTY_CAPACITY
 
 
-## Adds a creature to the party. Returns false when it is full; the Creature
-## Hotel (Specification 9.3) is the destination in that case once it exists.
+## Adds a creature to the party. Returns false when it is full; use
+## [method take_in] to let the paddock catch the overflow.
 func add_to_party(creature: CreatureInstance) -> bool:
 	if creature == null or party_is_full():
 		return false
 	seen_species[creature.species_id()] = true
 	party.append(creature)
 	party_changed.emit()
+	return true
+
+
+# --- The paddock (Specification 9.3) -----------------------------------------
+##
+## Three walk with the player; everyone else is kept, and nothing bound is
+## ever turned away for want of room. Kept Oathbound are healed, out of the
+## weather and saved with the journey, and they can be swapped for a
+## companion at any time, because the alternative is a player who stops
+## binding anything once the third slot fills.
+
+
+func has_keeping_room() -> bool:
+	return kept.size() < KEEPING_CAPACITY
+
+
+## Takes [param creature] into the journey: into the party when there is room
+## for it, and into the paddock when there is not. Returns where it went, as
+## [constant JOINED_PARTY] or [constant WENT_TO_KEEPING], or an empty name
+## when it could not be taken at all.
+func take_in(creature: CreatureInstance) -> StringName:
+	if creature == null:
+		return &""
+	if add_to_party(creature):
+		return JOINED_PARTY
+	if not has_keeping_room():
+		return &""
+	seen_species[creature.species_id()] = true
+	kept.append(creature)
+	party_changed.emit()
+	return WENT_TO_KEEPING
+
+
+## Sends the party member at [param index] to the paddock. Refused when it
+## would leave nobody to walk with, or when the paddock is full.
+func send_to_keeping(index: int) -> bool:
+	if index < 0 or index >= party.size() or party.size() <= 1 or not has_keeping_room():
+		return false
+	var creature: CreatureInstance = party[index]
+	party.remove_at(index)
+	creature.heal_full()
+	kept.append(creature)
+	party_changed.emit()
+	report_quest_event(QuestObjective.Kind.EVENT, EVENT_KEPT_AN_OATHBOUND)
+	return true
+
+
+## Calls the kept Oathbound at [param index] back into the party. Refused
+## when the party is full, so the swap is always deliberate.
+func call_out_of_keeping(index: int) -> bool:
+	if index < 0 or index >= kept.size() or party_is_full():
+		return false
+	var creature: CreatureInstance = kept[index]
+	kept.remove_at(index)
+	party.append(creature)
+	party_changed.emit()
+	report_quest_event(QuestObjective.Kind.EVENT, EVENT_KEPT_AN_OATHBOUND)
+	return true
+
+
+## Puts the party member at [param index] in front, which is who fights first
+## and who lands and takes blows in the field (Specification 9.2).
+func set_lead(index: int) -> bool:
+	if index <= 0 or index >= party.size() or party[index].is_fainted():
+		return false
+	var creature: CreatureInstance = party[index]
+	party.remove_at(index)
+	party.push_front(creature)
+	party_changed.emit()
+	report_quest_event(QuestObjective.Kind.EVENT, EVENT_CHANGED_LEAD)
 	return true
 
 
@@ -420,11 +519,50 @@ func has_usable_party_member() -> bool:
 	return false
 
 
+## Remembers that [param creature] reached [param move] with no room for it,
+## so the field can offer the choice once it is somewhere it can be shown.
+## Only party members are queued: a lesson's borrowed creature is not the
+## player's to reshape, and an offer already waiting is not doubled up.
+func queue_move_learn(creature: CreatureInstance, move: MoveData) -> void:
+	if creature == null or move == null or creature.knows_move(move):
+		return
+	if not party.has(creature):
+		return
+	for entry: Dictionary in pending_move_learns:
+		if entry["creature"] == creature and entry["move"] == move:
+			return
+	pending_move_learns.append({"creature": creature, "move": move})
+
+
+## The next offer to put to the player, or an empty dictionary when there is
+## none left. Offers for a creature that has since left the party, or that
+## found room for the move another way, are dropped rather than shown.
+func take_pending_move_learn() -> Dictionary:
+	while not pending_move_learns.is_empty():
+		var entry: Dictionary = pending_move_learns.pop_front()
+		var creature: CreatureInstance = entry["creature"]
+		var move: MoveData = entry["move"]
+		if creature == null or not party.has(creature) or creature.knows_move(move):
+			continue
+		if creature.has_free_move_slot():
+			creature.learn_move(move)
+			party_changed.emit()
+			continue
+		return entry
+	return {}
+
+
 ## Full heal, as a healing service would do (Specification 16.6, 20.1).
-func heal_party() -> void:
+## Returns true when anyone was actually hurt, so a healer can tell the player
+## what its table just did rather than leaving the mend invisible.
+func heal_party() -> bool:
+	var mended: bool = false
 	for creature: CreatureInstance in party:
+		if creature.current_hp < creature.max_hp():
+			mended = true
 		creature.heal_full()
 	party_changed.emit()
+	return mended
 
 
 ## Pays out a creature defeated outside a battle, such as one routed by an
@@ -462,11 +600,12 @@ func _award_xp(creature: CreatureInstance, xp: int) -> PackedStringArray:
 	for move: MoveData in creature.moves:
 		if not known_before.has(move):
 			lines.append(BattleRules.MOVE_LEARNED_TEXT % [creature.display_name(), move.display_name])
-	# The replace-or-refuse menu does not exist yet (Specification 9.8), so an
-	# overspilling move is reported and can be relearned in Hub 1.
+	# A move with nowhere to go is announced here and offered for real once
+	# the field is calm again (Specification 9.8).
 	for move: MoveData in needs_choice:
+		queue_move_learn(creature, move)
 		lines.append(
-			BattleRules.MOVE_LEARN_SKIPPED_TEXT % [creature.display_name(), move.display_name]
+			BattleRules.MOVE_LEARN_PENDING_TEXT % [creature.display_name(), move.display_name]
 		)
 	if result.evolution_ready:
 		lines.append(BattleRules.EVOLUTION_READY_TEXT % creature.display_name())
@@ -621,6 +760,14 @@ func use_item_in_field(item: ItemData, creature: CreatureInstance) -> Dictionary
 		else "%s recovered %d HP." % [creature.display_name(), restored]
 	)
 	return {"used": true, "text": text}
+
+
+## Every creature in [param creatures] as save data, in order.
+func _creature_save_data(creatures: Array[CreatureInstance]) -> Array:
+	var out: Array = []
+	for creature: CreatureInstance in creatures:
+		out.append(creature.to_dict())
+	return out
 
 
 func _item_save_data() -> Dictionary:

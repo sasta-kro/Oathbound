@@ -93,7 +93,7 @@ func test_fight_lists_moves_with_a_type_hint_and_resolves_a_turn() -> void:
 
 	_scene.press_entry(0)
 	assert_eq(_scene.current_menu(), BattleScene.Menu.MOVES)
-	assert_eq(_scene.menu_labels(), PackedStringArray(["Ember"]))
+	assert_eq(_scene.menu_labels(), PackedStringArray(["Ember", "BACK"]))
 	assert_string_contains(_scene.current_message(), "Power 20")
 	assert_string_contains(_scene.current_message(), "Accuracy 95%")
 
@@ -349,3 +349,48 @@ func test_closing_the_battle_hides_every_initiative_indicator() -> void:
 	assert_false(_scene.player_initiative_badge.visible)
 	assert_false(_scene.enemy_initiative_badge.visible)
 	assert_false(_scene.speed_tie_label.visible)
+
+
+func test_every_submenu_offers_a_way_back() -> void:
+	# Two companions, so SWITCH is a command the player can actually pick.
+	_scene.start_battle(_versus([[&"creature_fire_01", 5], [&"creature_earth_01", 5]], [&"creature_fire_03", 3]))
+	await wait_frames(2)
+
+	_scene.press_entry(0)
+	assert_eq(_scene.current_menu(), BattleScene.Menu.MOVES)
+	assert_eq(_scene.menu_labels()[-1], BattleScene.BACK_LABEL)
+	_scene.press_entry(_scene.menu_labels().size() - 1)
+	assert_eq(_scene.current_menu(), BattleScene.Menu.COMMAND, "BACK returns to the commands.")
+
+	_scene.press_entry(1)
+	assert_eq(_scene.current_menu(), BattleScene.Menu.PARTY)
+	assert_true(_scene._cancel_menu(), "A switch chosen by mistake can be taken back.")
+	assert_eq(_scene.current_menu(), BattleScene.Menu.COMMAND)
+
+
+func test_the_command_menu_has_nowhere_to_back_out_to() -> void:
+	_scene.start_battle(_config())
+	await wait_frames(2)
+
+	assert_false(
+		_scene._cancel_menu(),
+		"Unhandled, so the cancel key can still reach the settings screen.",
+	)
+	assert_eq(_scene.current_menu(), BattleScene.Menu.COMMAND)
+	assert_false(_scene.menu_labels().has(BattleScene.BACK_LABEL))
+
+
+func test_choosing_a_replacement_cannot_be_backed_out_of() -> void:
+	var config := _config()
+	config.player_party = [
+		Content.spawn_creature(&"creature_fire_01", 5),
+		Content.spawn_creature(&"creature_earth_01", 5),
+	]
+	_scene.start_battle(config)
+	await wait_frames(2)
+	_scene.engine.player.active().creature.set_hp(0)
+	_scene._open_party_menu(true)
+
+	assert_eq(_scene.current_menu(), BattleScene.Menu.PARTY)
+	assert_false(_scene.menu_labels().has(BattleScene.BACK_LABEL))
+	assert_false(_scene._cancel_menu())

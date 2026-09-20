@@ -52,7 +52,7 @@ func test_field_evolves_ready_companions_automatically_and_pauses_the_world() ->
 	await get_tree().process_frame
 	var creature := _ready_creature()
 	GameState.party = [creature]
-	main._evolve_ready_party()
+	main._settle_growth()
 	await get_tree().process_frame
 	assert_true(main.is_evolving())
 	assert_false(main.player.movement_enabled)
@@ -63,20 +63,6 @@ func test_field_evolves_ready_companions_automatically_and_pauses_the_world() ->
 	assert_eq(creature.species_id(), SECOND_FORM)
 	assert_true(GameState.seen_species.has(SECOND_FORM))
 	assert_false(main.is_evolving())
-
-
-func test_evolutions_page_lists_every_line_with_its_conditions() -> void:
-	main.field_ui.open_page("evolutions")
-	var stack: VBoxContainer = main.field_ui.body.find_child("EvolutionStack", true, false)
-	assert_not_null(stack)
-	var lines := 0
-	for species: CreatureSpecies in Content.all_species():
-		if species.evolves():
-			lines += 1
-			assert_not_null(stack.find_child(String(species.id), true, false), "a card for %s" % species.id)
-	assert_eq(stack.get_child_count(), lines)
-	var texts: Array = stack.find_children("*", "Label", true, false).map(func(l: Label): return l.text)
-	assert_has(texts, "LEVEL %d" % Content.get_species(FIRST_FORM).evolution_level)
 
 
 func test_companion_record_shows_evolution_instead_of_a_manual_button() -> void:

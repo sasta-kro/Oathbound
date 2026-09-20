@@ -10,7 +10,7 @@ extends RefCounted
 ## striker on the bench, switches back and finishes the fight. Winning reports
 ## [constant EVENT_ID], which is the quest's only objective.
 
-const QUEST_ID: StringName = &"quest_main_01b_field_mending"
+const QUEST_ID: StringName = &"quest_main_01c_field_mending"
 ## The story event the quest's objective waits for.
 const EVENT_ID: StringName = &"field_mending_won"
 

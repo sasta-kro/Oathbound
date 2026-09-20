@@ -25,8 +25,8 @@ const PROLOGUE: PackedStringArray = [
 	"Most oaths are quiet ones. Farmers plough with their Oathbound, healers mend with them, children grow up beside them. Ours has never been quiet.",
 	"We are not the village we look like. We are what is left of the Guardian Order, and we have kept one watch and no other since before the road had a name.",
 	"North of the gate, at the end of that road, there is an altar. A whole kingdom is sealed inside it. Its king, its knights, its walls, folded down into stone.",
-	"That king had a son, and the son died, and the king would not have it. He reached for a magic no crown was ever meant to touch. It brought the boy back wrong, and it took the kingdom with him, and every knight who had sworn to him besides.",
-	"Our Order sealed all of it away rather than let it walk. We have kept that seal ever since. It thins. It always thins, and the dead king stirs under it, and the town sends one of its own up the road to put him back down. It has been done more times than we have names for. It will be done again after you.",
+	"That king had a son, and the son died, and the king would not have it.\n\nHe reached for a magic no crown was ever meant to touch. It brought the boy back wrong, and it took the kingdom with him, and every knight who had sworn to him besides.",
+	"Our Order sealed all of it away rather than let it walk.\n\nWe have kept that seal ever since. It thins. It always thins, and the dead king stirs under it, and the town sends one of its own up the road to put him back down.\n\nIt has been done more times than we have names for. It will be done again after you.",
 	"The bells beneath the altar rang last night. Come. I will be waiting for you by the well in the square.",
 ]
 const PROLOGUE_CREATURE_PAGE: int = 2

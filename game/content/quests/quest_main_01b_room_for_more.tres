@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_keep"]
+script = ExtResource("2_objective")
+kind = 4
+target = &"kept_an_oathbound"
+count = 1
+description = "Open your party page (Tab) and send one Oathbound to keeping, or call one back"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_main_01b_room_for_more"
+title = "Room for More"
+kind = 0
+summary = "Three Oathbound walk with you and no more, but nothing you bind is ever turned away: whatever will not fit walks down to the Hearthside and waits in the paddock until you send for it.\n\nSending one away and calling it back is done from the party page."
+giver = &"scout"
+requires = &"quest_main_01a_a_second_oath"
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_keep")])
+reward_currency = 20
+reward_binding_scrolls = 1
+reward_xp = 10
+offer_line = "Scout: Before you get attached to those two, learn the rule.\n\nThree walk with you. Only three, ever; more than that and you are managing a crowd instead of fighting.\n\nBut nothing you bind is wasted: whatever will not fit goes down to the paddock at the Hearthside, where it is fed and kept and healed, and it waits there until you send for it.\n\nOpen your party page and try it, here, where nothing is chasing you."
+accept_option = "Show me the paddock."
+refuse_option = "Later."
+accepted_line = "Scout: Tab opens it, or the party button up top. Pick one of yours and send it to keeping, then call it straight back out.\n\nThat is the whole system. Do it once and you will never be afraid to use a scroll again."
+refused_line = "Scout: Then you will stand in a meadow full of Oathbound one day with three slots and no idea what to do about it."
+reoffer_line = "Scout: Ready to learn where the spare ones go?"
+progress_line = "Scout: Party page. Tab. Send one to keeping, and call it back when you see how it works."
+continue_option = "I'll try it now."
+abandon_option = "Not now."
+abandoned_line = "Scout: When you are ready."
+complete_line = "Scout: That is it. Fed, healed and waiting, and you can trade any of them in or out whenever you like.\n\nNow use your scrolls freely: a full party is no reason to walk past something worth having. Right, back to the fire.\n\nThere is a thing your Loambuck can do that nobody has shown you."
+done_line = "Scout: Three walk, the rest are kept. Bind everything."

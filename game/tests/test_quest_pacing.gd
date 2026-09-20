@@ -18,13 +18,15 @@ const KING_TARGET_LEVEL := 38
 const CHAIN: Array[StringName] = [
 	&"quest_main_01_beyond_the_walls",
 	&"quest_main_01a_a_second_oath",
-	&"quest_main_01b_field_mending",
-	&"quest_main_01c_strike_first",
-	&"quest_main_01d_caught_in_the_open",
-	&"quest_main_01e_no_battle_at_all",
-	&"quest_main_01f_a_bed_at_the_hearthside",
-	&"quest_main_01g_a_stocked_satchel",
-	&"quest_main_01h_the_road_is_waiting",
+	&"quest_main_01b_room_for_more",
+	&"quest_main_01c_field_mending",
+	&"quest_main_01d_who_walks_in_front",
+	&"quest_main_01e_strike_first",
+	&"quest_main_01f_caught_in_the_open",
+	&"quest_main_01g_no_battle_at_all",
+	&"quest_main_01h_a_bed_at_the_hearthside",
+	&"quest_main_01i_a_stocked_satchel",
+	&"quest_main_01j_the_road_is_waiting",
 	&"quest_main_02_the_ruined_road",
 	&"quest_main_02_to_the_ranger",
 	&"quest_main_02a_scalded_shallows",
@@ -48,8 +50,6 @@ const DEEP_CHAIN: Array[StringName] = [
 	&"quest_main_08_to_aldric",
 	KINGSWORN_QUEST_ID,
 	&"quest_main_10_the_dead_wood",
-	&"quest_main_11_the_two_he_trusted",
-	&"quest_main_12_the_road_to_the_barrow",
 	KING_QUEST_ID,
 ]
 ## Where each half of the deep chain is fought, so a quest's foes are costed
@@ -68,8 +68,6 @@ const DEEP_CHAIN_AREA: Dictionary = {
 	&"quest_main_08_to_aldric": AREA_TWO,
 	KINGSWORN_QUEST_ID: AREA_TWO,
 	&"quest_main_10_the_dead_wood": AREA_THREE,
-	&"quest_main_11_the_two_he_trusted": AREA_THREE,
-	&"quest_main_12_the_road_to_the_barrow": AREA_THREE,
 	KING_QUEST_ID: AREA_THREE,
 }
 ## Fights a player picks up walking between quest areas, as a rough share of
@@ -222,17 +220,23 @@ func test_the_deep_chain_reaches_the_king_near_level_38() -> void:
 			earned += float(BattleRules.xp_for_defeating(foe) * objective.required())
 		lead.gain_xp(int(earned * (1.0 + INCIDENTAL_SHARE)) + quest.reward_xp)
 	gut.p("Lead reaches the Kingsworn at level %d and the king at level %d." % [at_kingsworn, lead.level])
-	assert_between(
+	# A floor, not a window. Quests are written for what they are about
+	# rather than to a level budget, and grinding is the answer to a fight
+	# the player cannot win, so coming out above the target is fine.
+	assert_gte(
 		at_kingsworn,
 		KINGSWORN_TARGET_LEVEL - 2,
-		KINGSWORN_TARGET_LEVEL,
-		"Around level 28 when Aldric offers the Kingsworn."
+		"At least level 26 when Aldric offers the Kingsworn."
 	)
-	assert_between(
+	# Area Three is deliberately short: two quests, the wood and the king.
+	# The chain alone does not carry the player to the king's recommended
+	# level, so the last stretch is grinding ground rather than a guided
+	# climb. The floor here only holds the gap to something a party can
+	# close in the wood rather than having to go back up two areas for it.
+	assert_gte(
 		lead.level,
-		KING_TARGET_LEVEL - 2,
-		KING_TARGET_LEVEL,
-		"Around level 38 when the Last Champion offers the king."
+		KING_TARGET_LEVEL - 6,
+		"At least level 32 when the Last Champion offers the king."
 	)
 
 

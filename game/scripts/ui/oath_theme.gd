@@ -99,7 +99,13 @@ static func chip(text: String, tint: Color = JADE) -> PanelContainer:
 	return panel
 
 static func element(species: CreatureSpecies) -> Color:
-	return ELEMENT_COLORS[clampi(int(species.primary_type), 0, ELEMENT_COLORS.size() - 1)]
+	return element_color(int(species.primary_type))
+
+
+## The colour of one element, for anything drawn per type rather than per
+## creature (the element chart, a move's mark).
+static func element_color(type: int) -> Color:
+	return ELEMENT_COLORS[clampi(type, 0, ELEMENT_COLORS.size() - 1)]
 
 static func portrait(species: CreatureSpecies, side: float = 90) -> Control:
 	var view := preload("res://scripts/ui/creature_portrait.gd").new()

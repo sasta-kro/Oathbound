@@ -12,12 +12,12 @@ description = "Swap to your Loambuck, mend your partner, and swap back"
 
 [resource]
 script = ExtResource("1_quest")
-id = &"quest_main_01b_field_mending"
+id = &"quest_main_01c_field_mending"
 title = "Field Mending"
 kind = 0
 summary = "The Scout wants to show how a mender fights before the altar road teaches it the hard way: a healer can patch up a partner on the bench, not only itself."
 giver = &"scout"
-requires = &"quest_main_01a_a_second_oath"
+requires = &"quest_main_01b_room_for_more"
 objectives = Array[ExtResource("2_objective")]([SubResource("Objective_win_lesson")])
 reward_currency = 40
 reward_binding_scrolls = 1
@@ -32,5 +32,5 @@ progress_line = "Scout: Want to go again? Swap, mend, swap back."
 continue_option = "Let's go again."
 abandon_option = "Not now."
 abandoned_line = "Scout: Come find me when you want to try again."
-complete_line = "Scout: See? Your Emberling would have burned out on its own. Swap, mend, swap back. Remember that and the road won't kill you. Sit down again, though. Mending is what you do after a blow lands, and I would rather teach you the blow."
+complete_line = "Scout: See? Your Emberling would have burned out on its own. Swap, mend, swap back. Remember that and the road won't kill you.\n\nSit down again, though. Mending is what you do after a blow lands, and I would rather teach you the blow."
 done_line = "Scout: Swap, mend, swap back."

@@ -7,9 +7,11 @@ extends GutTest
 const SCRATCH_DIR := "user://gut_scratch/test_field_lessons"
 const AREA_ONE := "res://areas/area_one.tscn"
 const SALVE := &"item_herb_salve"
-const BED_QUEST_ID := &"quest_main_01f_a_bed_at_the_hearthside"
-const SATCHEL_QUEST_ID := &"quest_main_01g_a_stocked_satchel"
-const BACK_QUEST_ID := &"quest_main_01h_the_road_is_waiting"
+const KEEPING_QUEST_ID := &"quest_main_01b_room_for_more"
+const LEAD_QUEST_ID := &"quest_main_01d_who_walks_in_front"
+const BED_QUEST_ID := &"quest_main_01h_a_bed_at_the_hearthside"
+const SATCHEL_QUEST_ID := &"quest_main_01i_a_stocked_satchel"
+const BACK_QUEST_ID := &"quest_main_01j_the_road_is_waiting"
 const ROAD_QUEST_ID := &"quest_main_02_the_ruined_road"
 ## A little longer than the beat a staged creature takes to appear.
 const ENTRANCE_WAIT: float = 0.5
@@ -62,6 +64,7 @@ func _reach(id: StringName) -> QuestData:
 func test_the_lessons_run_in_order_from_the_fire_to_the_town_and_back() -> void:
 	var order: Array[StringName] = [
 		FieldMending.QUEST_ID,
+		LEAD_QUEST_ID,
 		FieldStrike.QUEST_ID,
 		FieldAmbush.QUEST_ID,
 		FieldRout.QUEST_ID,
@@ -74,6 +77,7 @@ func test_the_lessons_run_in_order_from_the_fire_to_the_town_and_back() -> void:
 	# of, so the tutorial never sends anyone back across the map to be told
 	# the next thing.
 	var givers: Dictionary = {
+		LEAD_QUEST_ID: &"scout",
 		FieldStrike.QUEST_ID: &"scout",
 		FieldAmbush.QUEST_ID: &"scout",
 		FieldRout.QUEST_ID: &"scout",
@@ -115,6 +119,8 @@ func test_the_errands_are_handed_in_where_they_happen() -> void:
 
 func test_each_lesson_waits_on_the_one_thing_it_teaches() -> void:
 	var waits: Dictionary = {
+		KEEPING_QUEST_ID: GameState.EVENT_KEPT_AN_OATHBOUND,
+		LEAD_QUEST_ID: GameState.EVENT_CHANGED_LEAD,
 		FieldStrike.QUEST_ID: FieldStrike.EVENT_ID,
 		FieldAmbush.QUEST_ID: FieldAmbush.EVENT_ID,
 		FieldRout.QUEST_ID: FieldRout.EVENT_ID,
@@ -304,7 +310,9 @@ func test_the_strike_lesson_puts_a_quarry_in_the_grass_and_hands_the_world_back(
 	assert_not_null(quarry, "The lesson waits on a creature of its own.")
 	assert_eq(quarry.species.id, FieldStrike.SPECIES_ID)
 	assert_eq(quarry.disposition, WildCreature.Disposition.NEUTRAL, "It is grazing, not hunting.")
-	assert_true(main.player.movement_enabled, "Walking up to it is half of the lesson.")
+	assert_false(main.player.movement_enabled, "The lesson is one key, not a walk.")
+	assert_true(main.player.strike_enabled, "And that key is the attack key.")
+	assert_true(main.player.strike_covers(quarry.global_position), "It is staged inside reach.")
 	assert_true(main._field_lesson_waits_on(quarry, true), "It waits on the player's own swing.")
 	assert_false(main._field_lesson_waits_on(quarry, false))
 
@@ -315,8 +323,7 @@ func test_swinging_at_the_quarry_is_what_the_strike_lesson_asked_for() -> void:
 
 	main._play_field_strike()
 	var quarry: WildCreature = await _stage(main, FieldStrike.SIGHTING.size())
-	main.player.global_position = quarry.global_position + Vector2(-32, 0)
-	main.player.face(GameOpening.facing_toward(main.player.global_position, quarry.global_position))
+	# Nothing is moved into place: the staging already did that.
 	await main._strike()
 
 	assert_true(GameState.quests.is_ready(quest), "The swing is the objective.")
@@ -367,13 +374,53 @@ func test_the_rout_lesson_stages_something_any_lead_can_finish() -> void:
 	assert_true(bool(main._field_lesson.needs_rout), "A swing that leaves it standing is not the lesson.")
 	assert_true(main._field_lesson.battle.is_empty(), "No battle is meant to open at all.")
 
-	main.player.global_position = spent.global_position + Vector2(34, 0)
-	main.player.face(GameOpening.facing_toward(main.player.global_position, spent.global_position))
 	await main._strike()
 
 	assert_true(GameState.quests.is_ready(quest), "Cutting it down is the objective.")
 	assert_false(main.battle_scene.is_active(), "The swing that finishes it opens no battle.")
 	assert_true(main._field_lesson.is_empty(), "A lesson that is answered stops watching.")
+
+
+## The ambush is watched, not done. A stray step or a panicked swing used to
+## be able to end the lesson with a freed creature still in its record, which
+## crashed the next thing that read it.
+func test_the_ambush_lesson_takes_the_players_keys_away() -> void:
+	var main: Node2D = _load_main_in_area_one()
+	_reach(FieldAmbush.QUEST_ID)
+
+	main._play_field_ambush()
+	var hunter: WildCreature = await _stage(main, FieldAmbush.CHARGE.size())
+
+	assert_eq(main.lesson_lock(), main.LOCK_STILL, "Standing still is the whole lesson.")
+	assert_false(main.player.movement_enabled, "The player cannot walk out of it.")
+	assert_false(main.player.strike_enabled, "And cannot swing first by accident.")
+	main._strike()
+	await wait_physics_frames(2)
+	assert_false(main.battle_scene.is_active(), "The attack key does nothing at all.")
+	assert_true(is_instance_valid(hunter), "So the staged creature is still there.")
+	assert_true(main._field_lesson_waits_on(hunter, false), "The lesson is still waiting on it.")
+	assert_true(main.is_lesson_locked(), "And the menus stay shut with it.")
+
+
+## Whatever happens to a staged creature, the record must never be left
+## holding a freed object: reading one is a crash, not a bug report.
+func test_a_staged_creature_cut_down_outside_a_battle_leaves_no_wreckage() -> void:
+	var main: Node2D = _load_main_in_area_one()
+	_reach(FieldRout.QUEST_ID)
+
+	main._play_field_rout()
+	var spent: WildCreature = await _stage(main, FieldRout.SIGHTING.size())
+	spent.play_rout()
+	await wait_seconds(1.6)
+
+	assert_false(is_instance_valid(spent), "The creature is gone.")
+	assert_true(main._field_lesson.is_empty(), "And the lesson went with it.")
+	assert_false(main.is_lesson_locked(), "The player has their keys back.")
+	assert_true(main.player.movement_enabled)
+	# The things that read the record must survive the creature being gone.
+	assert_false(main._field_lesson_waits_on(null, true))
+	main._settle_field_lesson()
+	main._abandon_field_lesson()
 
 
 ## A lesson creature belongs to the camp it was staged in. Walking off leaves

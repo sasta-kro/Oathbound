@@ -30,6 +30,12 @@ const WILD_CREATURE_SCENE: PackedScene = preload("res://scenes/wild_creature.tsc
 ## How long the tutorial's ambusher takes to burst out of the grass.
 const AMBUSHER_ENTRANCE_SECONDS: float = 0.35
 const INN_OPTIONS: PackedStringArray = ["Rest for the night", "Not now"]
+## A lesson that wants one swing and nothing else: the player is held in
+## place, facing the creature it staged, and only the attack key answers.
+const LOCK_ATTACK := &"attack"
+## A lesson that wants the player to do nothing at all, because the thing
+## being taught is what happens to somebody standing still.
+const LOCK_STILL := &"still"
 ## Shown as the lid comes up, for a chest whose author wrote no line of its
 ## own: one for a chest with something in it, one for a chest without.
 const CHEST_OPENED_TEXT := "The lid gives, and you empty the chest."
@@ -39,6 +45,13 @@ const CHEST_EMPTY_HANDED_TEXT := "The chest holds nothing but dust."
 const WOKEN_AT_HAVEN_TEXT := "You wake under %s's roof. Your Oathbound have been revived, but %d coins are gone."
 const WOKEN_BY_THE_ROAD_TEXT := "You wake by the road. Your Oathbound have been revived, but %d coins are gone."
 const INN_RESTED_TEXT := "You sleep soundly. Your companions wake fully rested."
+## A mend is otherwise invisible: the party page is shut and the healer only
+## makes small talk, so the service says outright what it did.
+const PARTY_HEALED_TEXT := "Your party was fully healed."
+const PARTY_ALREADY_WELL_TEXT := "Your party is already in good health."
+## Shown when a newly bound Oathbound has nowhere to walk and is kept
+## instead (Specification 9.3).
+const KEPT_TEXT := "%s is kept for you. Call it out from your party page whenever you want it."
 ## How long the screen stays dark while the player sleeps at the inn.
 const INN_NIGHT_SECONDS: float = 0.8
 
@@ -53,6 +66,7 @@ const INN_NIGHT_SECONDS: float = 0.8
 
 var field_ui: FieldUI
 var evolution_screen: EvolutionScreen
+var move_learn_screen: MoveLearnScreen
 var shop_menu: ShopMenu
 
 var _battling_creature: WildCreature
@@ -78,10 +92,11 @@ var _staging_tutorial: bool = false
 ## [FieldAmbush] and [FieldRout]): the creature it staged, the event it
 ## reports when the lesson's one move happens, whether that move is the
 ## player's own swing or the creature's, whether the swing has to put the
-## creature down outright, the instruction held on screen meanwhile, and the
-## battle the blow opens, if it opens one. Empty when no lesson is waiting.
-## Unlike [member _lesson] this outlives no battle: it is answered out in the
-## world, before any battle opens.
+## creature down outright, the instruction held on screen meanwhile, the
+## battle the blow opens if it opens one, and how tightly the player is held
+## while it plays out ([constant LOCK_ATTACK] or [constant LOCK_STILL]).
+## Empty when no lesson is waiting. Unlike [member _lesson] this outlives no
+## battle: it is answered out in the world, before any battle opens.
 var _field_lesson: Dictionary = {}
 
 
@@ -92,6 +107,8 @@ func _ready() -> void:
 	field_ui.changed.connect(_refresh_world_activity)
 	evolution_screen = EvolutionScreen.new()
 	add_child(evolution_screen)
+	move_learn_screen = MoveLearnScreen.new()
+	add_child(move_learn_screen)
 	shop_menu = ShopMenu.new()
 	add_child(shop_menu)
 	shop_menu.closed.connect(_on_shop_closed)
@@ -127,7 +144,7 @@ func _ready() -> void:
 	_autosave(false)
 	# A journey saved before evolution was automatic may hold companions that
 	# are already past their evolution level.
-	_evolve_ready_party.call_deferred()
+	_settle_growth.call_deferred()
 
 
 ## The first scene of a new journey (Specification 4.5): the Elder, waiting
@@ -185,16 +202,28 @@ func _actor_with_id(id: StringName) -> WorldActor:
 	return null
 
 
-func is_evolving() -> bool:
+func is_settling_growth() -> bool:
 	return _evolving
 
 
-## Evolves every companion that has reached its evolution level, one screen at
-## a time (Specification 9.7). Evolution is automatic: it runs once the world
-## is calm after whatever raised the level, and a creature whose new form is
-## already past its own evolution level evolves again straight away.
-func _evolve_ready_party() -> void:
-	if _evolving or not _party_can_evolve():
+## Whether a growth screen is up. Kept under the old name for [FieldUI] and
+## the tests that were written against it.
+func is_evolving() -> bool:
+	return is_settling_growth()
+
+
+## Everything a level gain owes the player, once the world is calm enough to
+## show it: first the moves that had no free slot (Specification 9.8), then
+## the evolutions (Specification 9.7).
+##
+## Both are handled here rather than where the levels were won, because the
+## battle screen, a wipe or an open line of dialogue would all be in the way.
+## Evolution is automatic, and a creature whose new form is already past its
+## own evolution level evolves again straight away.
+func _settle_growth() -> void:
+	if _evolving:
+		return
+	if not _party_can_evolve() and GameState.pending_move_learns.is_empty():
 		return
 	_evolving = true
 	_refresh_world_activity()
@@ -202,6 +231,7 @@ func _evolve_ready_party() -> void:
 		await get_tree().process_frame
 	if dialogue_panel.is_open():
 		await dialogue_panel.dismissed
+	await _teach_pending_moves()
 	for creature: CreatureInstance in GameState.party.duplicate():
 		while GameState.party.has(creature) and creature.can_evolve():
 			if not await evolution_screen.play(creature):
@@ -212,6 +242,17 @@ func _evolve_ready_party() -> void:
 	_evolving = false
 	_autosave(false)
 	_refresh_world_activity()
+
+
+## Puts every waiting replace-or-refuse offer to the player, one screen at a
+## time. An offer whose creature has since left the party, or that has found
+## room another way, is dropped by [method GameState.take_pending_move_learn]
+## without a screen.
+func _teach_pending_moves() -> void:
+	var offer: Dictionary = GameState.take_pending_move_learn()
+	while not offer.is_empty():
+		await move_learn_screen.play(offer["creature"], offer["move"])
+		offer = GameState.take_pending_move_learn()
 
 
 func _party_can_evolve() -> bool:
@@ -439,18 +480,21 @@ func _toggle_settings() -> void:
 		settings_menu.open()
 
 
-## The interact key in the overworld: it closes an open line of dialogue, or
-## else acts on the nearest actor within reach. A line waiting on a reply
-## takes the key itself, so it never arrives here.
+## The interact key in the overworld: it walks a passage that has more boxes
+## to show, closes the line once it is read out, or else acts on the nearest
+## actor within reach. A line waiting on a reply takes the key itself, so it
+## never arrives here.
 func _interact() -> void:
 	if dialogue_panel.is_asking():
 		return
 	if dialogue_panel.is_open():
-		_close_dialogue()
+		if not dialogue_panel.advance():
+			_close_dialogue()
 		return
 
-	# Between the opening's lines there is nobody else to talk to.
-	if _in_opening or _staging_tutorial:
+	# Between the opening's lines, and while a lesson holds the player to one
+	# thing, there is nobody else to talk to.
+	if _in_opening or _staging_tutorial or is_lesson_locked():
 		return
 	var chest: TreasureChest = nearest_chest_in_reach()
 	if chest != null:
@@ -501,7 +545,9 @@ func _open_chest(chest: TreasureChest) -> void:
 func _talk_to(actor: WorldActor) -> void:
 	actor.face_toward(player.global_position)
 	if actor.heals_party:
-		GameState.heal_party()
+		field_ui.show_notice(
+			PARTY_HEALED_TEXT if GameState.heal_party() else PARTY_ALREADY_WELL_TEXT
+		)
 		# A healer's table is somewhere to wake after a rout (Specification
 		# 20.1), and the player is standing on a walkable spot beside it.
 		GameState.record_haven(area.scene_file_path, player.global_position, actor.display_name)
@@ -524,17 +570,17 @@ func _talk_to(actor: WorldActor) -> void:
 			# The last quest pays enough XP to evolve something, and the
 			# ending takes the world away for good, so the evolution has to
 			# be seen through before the wood starts to turn.
-			await _evolve_ready_party()
+			await _settle_growth()
 			await _play_epilogue()
 			return
 		var next: QuestData = actor.current_quest(GameState.quests, Content)
 		if next == null or not GameState.quests.can_offer(next):
 			_open_dialogue(quest.complete_text())
-			_evolve_ready_party()
+			_settle_growth()
 			return
 		await _say(quest.complete_text())
 		await _offer(next)
-		_evolve_ready_party()
+		_settle_growth()
 		return
 	# A vendor or innkeeper with an errand running still serves: the errand is
 	# usually to buy from them or sleep under their roof.
@@ -622,6 +668,7 @@ func _offer_rest(actor: WorldActor, greeting: String) -> void:
 	var bed: Vector2 = player.global_position
 	await transition.cover(ScreenTransition.Style.WORLD)
 	GameState.heal_party()
+	field_ui.show_notice(PARTY_HEALED_TEXT)
 	GameState.record_haven(area.scene_file_path, bed, actor.display_name)
 	GameState.report_quest_event(QuestObjective.Kind.EVENT, GameState.EVENT_RESTED_AT_INN)
 	await get_tree().create_timer(INN_NIGHT_SECONDS).timeout
@@ -837,6 +884,10 @@ func _begin_field_lesson(
 		"prompt": prompt,
 		"battle": battle,
 		"needs_rout": needs_rout,
+		# A lesson about the player's own swing leaves them the attack key
+		# and nothing else; one about being swung at leaves them nothing, so
+		# a stray step or a panicked swing cannot cost them the lesson.
+		"lock": LOCK_ATTACK if on_strike else LOCK_STILL,
 	}
 	field_ui.show_prompt(prompt)
 	# The staging held the world still through the Scout's lines. Unlike the
@@ -850,8 +901,15 @@ func _begin_field_lesson(
 func _field_lesson_waits_on(creature: WildCreature, by_strike: bool) -> bool:
 	if _field_lesson.is_empty() or bool(_field_lesson.on_strike) != by_strike:
 		return false
-	var quarry: WildCreature = _field_lesson.creature
-	return is_instance_valid(quarry) and quarry == creature
+	return _staged_creature() == creature
+
+
+## The creature the open lesson staged, or null once it has been freed. Read
+## untyped on purpose: assigning a freed object to a typed variable is itself
+## an error, so this is the only place the record's creature is unpacked.
+func _staged_creature() -> WildCreature:
+	var quarry: Variant = _field_lesson.get("creature")
+	return quarry if is_instance_valid(quarry) else null
 
 
 ## The blow the lesson was waiting for has landed. The quest hears about it
@@ -867,6 +925,19 @@ func _clear_field_lesson() -> void:
 	_field_lesson = {}
 	if field_ui != null:
 		field_ui.hide_prompt()
+	# The lesson was holding the player's keys; they get them back.
+	_refresh_world_activity()
+
+
+## How tightly a lesson is holding the player right now, or empty.
+func lesson_lock() -> StringName:
+	return _field_lesson.get("lock", &"")
+
+
+## Whether a lesson is holding the player to one thing, so menus and the
+## interact key stay shut until it is over.
+func is_lesson_locked() -> bool:
+	return lesson_lock() != &""
 
 
 ## Takes back a staged creature that is still standing, for a lesson the
@@ -874,8 +945,8 @@ func _clear_field_lesson() -> void:
 func _abandon_field_lesson() -> void:
 	if _field_lesson.is_empty():
 		return
-	var quarry: WildCreature = _field_lesson.creature
-	if is_instance_valid(quarry):
+	var quarry: WildCreature = _staged_creature()
+	if quarry != null:
 		quarry.queue_free()
 	_clear_field_lesson()
 
@@ -888,8 +959,8 @@ func _abandon_field_lesson() -> void:
 func _settle_field_lesson() -> void:
 	if _field_lesson.is_empty():
 		return
-	var quarry: WildCreature = _field_lesson.creature
-	if is_instance_valid(quarry) and quarry.is_interactable():
+	var quarry: WildCreature = _staged_creature()
+	if quarry != null and quarry.is_interactable():
 		field_ui.show_prompt(_field_lesson.prompt)
 		return
 	_clear_field_lesson()
@@ -915,7 +986,14 @@ func _spawn_lesson_creature(
 	var creature: WildCreature = WILD_CREATURE_SCENE.instantiate()
 	creature.configure(species, level, at, leash_radius, disposition, detection_radius)
 	creature.ability_index = 0
-	creature.defeated.connect(func(_c: WildCreature) -> void: creature.queue_free())
+	creature.defeated.connect(
+		func(_c: WildCreature) -> void:
+			# A lesson creature cut down without a battle (the rout lesson, or
+			# a swing at the ambusher) leaves nothing to watch, and a freed
+			# creature must never sit in the lesson record.
+			_settle_field_lesson()
+			creature.queue_free()
+	)
 	# Staged after the area was wired, so it is hooked up by hand: a hostile
 	# one ([FieldAmbush]) reaches the player through this signal and nothing
 	# else.
@@ -924,6 +1002,9 @@ func _spawn_lesson_creature(
 	(host if host != null else area).add_child(creature)
 	creature.global_position = at
 	creature.set_roaming(false)
+	# A lesson that holds the player still has to leave them facing the thing
+	# they are being told to hit, or told to wait for.
+	player.face(GameOpening.facing_toward(player.global_position, at))
 	creature.scale = Vector2.ZERO
 	create_tween().tween_property(creature, "scale", Vector2.ONE, AMBUSHER_ENTRANCE_SECONDS).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	return creature
@@ -991,7 +1072,9 @@ func _report_area_reached() -> void:
 ## creature that survives becomes a battle the player opens ahead on, and one
 ## that does not never sees a battle screen.
 func _strike() -> void:
-	if dialogue_panel.is_asking():
+	# A question is never swung away from, whether or not its replies are on
+	# screen yet: the ask may still have boxes to go.
+	if dialogue_panel.has_question():
 		return
 	if dialogue_panel.is_open():
 		_close_dialogue()
@@ -1083,7 +1166,7 @@ func _rout(creature: WildCreature, defeated: CreatureInstance) -> void:
 	GameState.report_quest_event(QuestObjective.Kind.DEFEAT, defeated.species_id())
 	_autosave()
 	_refresh_world_activity()
-	_evolve_ready_party()
+	_settle_growth()
 
 
 ## Stepping up to a boss. It names the fight and lets the player walk away,
@@ -1213,7 +1296,9 @@ func _start_wild_battle(
 		config.items = GameState.items.duplicate()
 		for item: ItemData in Content.all_items():
 			config.item_catalog[item.id] = item
-	config.has_bind_destination = not GameState.party_is_full()
+	# A full party is no longer a reason to refuse a scroll: whatever will not
+	# walk with the player is kept for them (Specification 9.3).
+	config.has_bind_destination = not GameState.party_is_full() or GameState.has_keeping_room()
 	config.level_cap = GameState.level_cap
 	var guide: BattleGuide = null
 	if not lesson.is_empty():
@@ -1284,7 +1369,9 @@ func _on_battle_finished(engine: BattleEngine) -> void:
 				creature.back_off()
 				creature.refresh_health()
 		BattleEngine.Outcome.BOUND:
-			GameState.add_to_party(engine.bound_creature)
+			var went: StringName = GameState.take_in(engine.bound_creature)
+			if went == GameState.WENT_TO_KEEPING:
+				field_ui.show_notice(KEPT_TEXT % engine.bound_creature.display_name())
 			taken = creature
 			was_bound = true
 			GameState.report_quest_event(QuestObjective.Kind.BIND, species)
@@ -1334,7 +1421,7 @@ func _on_battle_finished(engine: BattleEngine) -> void:
 		_open_dialogue(lesson.won_line if lesson_won else lesson.lost_line)
 	_settle_field_lesson()
 	_refresh_world_activity()
-	_evolve_ready_party()
+	_settle_growth()
 
 
 ## Carries the beaten party back to the last inn bed or healer's table they
@@ -1397,8 +1484,11 @@ func _refresh_world_activity() -> void:
 
 
 func _set_world_active(active: bool) -> void:
-	player.movement_enabled = active
-	player.strike_enabled = active
+	# A lesson can hold the player still while the world keeps moving: the
+	# ambush has to arrive, and the swing has to be the only answer to it.
+	var lock: StringName = lesson_lock()
+	player.movement_enabled = active and lock == &""
+	player.strike_enabled = active and lock != LOCK_STILL
 	partner.following_enabled = active
 	get_tree().call_group(WildCreature.CREATURE_GROUP, &"set_roaming", active)
 	get_tree().call_group(WorldActor.WANDERER_GROUP, &"set_roaming", active)

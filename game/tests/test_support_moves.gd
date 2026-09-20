@@ -277,7 +277,11 @@ func test_a_loambuck_already_in_the_party_counts_for_the_bind_quest() -> void:
 
 func test_winning_the_lesson_readies_its_quest() -> void:
 	var log: QuestLog = GameState.quests
-	for id: StringName in [&"quest_main_01_beyond_the_walls", &"quest_main_01a_a_second_oath"]:
+	for id: StringName in [
+		&"quest_main_01_beyond_the_walls",
+		&"quest_main_01a_a_second_oath",
+		&"quest_main_01b_room_for_more",
+	]:
 		var quest: QuestData = Content.get_quest(id)
 		log.accept(quest)
 		for objective: QuestObjective in quest.objectives:
@@ -288,9 +292,10 @@ func test_winning_the_lesson_readies_its_quest() -> void:
 	log.accept(lesson)
 	GameState.report_quest_event(QuestObjective.Kind.EVENT, FieldMending.EVENT_ID)
 	assert_true(log.is_ready(lesson))
-	assert_true(log.can_offer(Content.get_quest(FieldStrike.QUEST_ID)) == false)
+	var next_lesson: QuestData = Content.get_quest(&"quest_main_01d_who_walks_in_front")
+	assert_true(log.can_offer(next_lesson) == false)
 	log.complete(lesson)
-	assert_true(log.can_offer(Content.get_quest(FieldStrike.QUEST_ID)))
+	assert_true(log.can_offer(next_lesson))
 
 
 # --- The binding lesson ------------------------------------------------------
@@ -384,13 +389,15 @@ func test_the_scout_points_to_the_ranger_once_the_road_is_clear() -> void:
 	for id: StringName in [
 		&"quest_main_01_beyond_the_walls",
 		&"quest_main_01a_a_second_oath",
-		&"quest_main_01b_field_mending",
-		&"quest_main_01c_strike_first",
-		&"quest_main_01d_caught_in_the_open",
-		&"quest_main_01e_no_battle_at_all",
-		&"quest_main_01f_a_bed_at_the_hearthside",
-		&"quest_main_01g_a_stocked_satchel",
-		&"quest_main_01h_the_road_is_waiting",
+		&"quest_main_01b_room_for_more",
+		&"quest_main_01c_field_mending",
+		&"quest_main_01d_who_walks_in_front",
+		&"quest_main_01e_strike_first",
+		&"quest_main_01f_caught_in_the_open",
+		&"quest_main_01g_no_battle_at_all",
+		&"quest_main_01h_a_bed_at_the_hearthside",
+		&"quest_main_01i_a_stocked_satchel",
+		&"quest_main_01j_the_road_is_waiting",
 		&"quest_main_02_the_ruined_road",
 		&"quest_main_02_to_the_ranger",
 	]:

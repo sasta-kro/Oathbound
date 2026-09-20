@@ -94,13 +94,72 @@ func test_three_companions_fit_the_logical_viewport() -> void:
 		GameState.party.append(CreatureInstance.create(species, 7))
 	main.field_ui.open_page("party")
 	await wait_frames(3)
-	var minimum: Vector2 = main.field_ui.overlay.get_combined_minimum_size()
+	var minimum: Vector2 = main.field_ui.body.get_combined_minimum_size()
 	assert_lte(minimum.x, 912.0, "Three party cards must fit the 960px canvas.")
 	assert_lte(minimum.y, 500.0, "Party controls must fit the 540px canvas.")
 	GameState.party.assign(original)
+
+## The paddock strip must not push the party page off the bottom of the
+## canvas, however many Oathbound are kept.
+func test_a_full_paddock_still_fits_the_logical_viewport() -> void:
+	var original := GameState.party.duplicate()
+	var original_kept := GameState.kept.duplicate()
+	GameState.party.clear()
+	for species in Content.all_species().slice(0, 3):
+		GameState.party.append(CreatureInstance.create(species, 7))
+	for species in Content.all_species().slice(0, 12):
+		GameState.kept.append(CreatureInstance.create(species, 7))
+	main.field_ui.open_page("party")
+	await wait_frames(3)
+	var minimum: Vector2 = main.field_ui.body.get_combined_minimum_size()
+	assert_lte(minimum.y, 500.0, "A page with a full paddock still fits the 540px canvas.")
+	assert_lte(minimum.x, 912.0)
+	GameState.party.assign(original)
+	GameState.kept.assign(original_kept)
 
 func _visible_children(parent: Node) -> int:
 	var count := 0
 	for child in parent.get_children():
 		if child is Control and child.visible: count += 1
 	return count
+
+# --- The reference pages ------------------------------------------------------
+
+func test_the_element_chart_reads_the_real_matchups() -> void:
+	main.field_ui.open_page("elements")
+	await wait_frames(2)
+	var marks: Array = main.field_ui.body.find_children("*", "Label", true, false).map(func(l: Label): return l.text)
+	var strong := 0
+	var weak := 0
+	for attacking in Elements.Type.size():
+		for defending in Elements.Type.size():
+			var multiplier: float = Content.type_chart.matchup_multiplier(attacking, defending)
+			if multiplier > 1.0: strong += 1
+			elif multiplier < 1.0: weak += 1
+	assert_gt(strong, 0, "The chart has matchups to show.")
+	assert_eq(marks.count("×2"), strong, "Every strong matchup is marked.")
+	assert_eq(marks.count("×½"), weak, "And every resisted one.")
+	for type in Elements.Type.size():
+		assert_has(marks, Elements.display_name(type), "%s has a row." % Elements.display_name(type))
+
+func test_the_controls_page_names_every_key_the_game_listens_to() -> void:
+	main.field_ui.open_page("controls")
+	await wait_frames(2)
+	var texts: Array = main.field_ui.body.find_children("*", "Label", true, false).map(func(l: Label): return l.text)
+	for key in ["W  A  S  D", "F", "E", "Tab  /  P", "I", "J", "L", "Esc"]:
+		assert_has(texts, key, "%s is documented." % key)
+
+func test_the_menu_has_no_numbers_and_no_evolutions_tab() -> void:
+	assert_false(main.field_ui.nav_buttons.has("evolutions"), "Evolution reads on a companion's record.")
+	for page in ["elements", "controls"]:
+		assert_true(main.field_ui.nav_buttons.has(page), "%s is a page." % page)
+	for key: String in main.field_ui.nav_buttons:
+		var label: String = (main.field_ui.nav_buttons[key] as Button).text
+		assert_false(label.strip_edges().begins_with("0"), "%s is not numbered." % label)
+
+func test_the_journal_filters_by_every_element() -> void:
+	main.field_ui.open_page("journal")
+	await wait_frames(2)
+	var texts: Array = main.field_ui.body.find_children("*", "Button", true, false).map(func(b: Button): return b.text)
+	for type in Elements.Type.size():
+		assert_has(texts, Elements.display_name(type), "%s can be filtered for." % Elements.display_name(type))
