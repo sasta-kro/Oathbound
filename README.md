@@ -23,7 +23,7 @@ tools/     External development tools, including the Godot MCP server.
 | `docs/map_authoring.md` | Painting areas, spawn zones, exits, NPCs and quests in the editor. |
 | `docs/commit_hygiene.md` | Required serialization steps before committing editor and generated files. |
 | `docs/Oathbound Dev Env Setup (Required).md` | Engine version, terminal `godot`, MCP server, formatters. |
-| `docs/spec_audit_2026-09-12.md` | The v0.4-to-v0.5 audit: every divergence between spec and code. |
+| `docs/audits/spec_audit_2026-09-12.md` | The v0.4-to-v0.5 audit: every divergence between spec and code. |
 | `docs/archive/` | Superseded specification versions. |
 
 Implementation files must not silently change the specification. Conflicts, missing decisions, and non-trivial assumptions should be reported for review.

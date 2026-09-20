@@ -6,7 +6,7 @@
 
 **What changed in v0.6:** the type system grew from four to seven types (Nature, Rot and Steel added) with a new balanced effectiveness table (section 10).
 
-**What changed in v0.5:** decisions already taken in code were folded in (save slots, overworld strike, innate abilities, turn-one opening rule, town as combined hub/starter settlement), and every section now carries an implementation status tag. The audit that produced this revision is `docs/spec_audit_2026-09-12.md`.
+**What changed in v0.5:** decisions already taken in code were folded in (save slots, overworld strike, innate abilities, turn-one opening rule, town as combined hub/starter settlement), and every section now carries an implementation status tag. The audit that produced this revision is `docs/audits/spec_audit_2026-09-12.md`.
 
 **Tech Stack:** [[#Oathbound - Complete Game Specification v0.6#Tech Stack]]
 
