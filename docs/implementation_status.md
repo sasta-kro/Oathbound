@@ -1,12 +1,12 @@
 # Implementation Status
 
-**Date:** 20 September 2026
+**Date:** 21 September 2026
 
-**Commit reviewed:** `ea9ffe8`
+**Commit reviewed:** `17fb9f2`
 
-**Automated verification:** 203 of 203 GUT tests passing
+**Automated verification:** 346 of 346 GUT tests passing
 
-This document records current implemented behavior. `Oathbound_Specification_v0.6.md` remains the authority for intended gameplay. `architecture.md` explains system structure.
+This document records current implemented behavior. `Oathbound_Specification_v0.6.md` remains the authority for intended gameplay. `architecture.md` explains system structure. `handoff.md` holds the full status audit.
 
 ## Playable flow
 
@@ -14,12 +14,13 @@ The current build provides this playable sequence:
 
 1. Start or continue a journey from the title screen.
 2. Explore Town and Area One with continuous eight-direction movement.
-3. Talk to NPCs and accept quests.
+3. Work through the taught first hour: binding, field mending, the overworld strike, the ambush, the rout, the inn and the satchel.
 4. Approach a visible wild creature with E, or strike it with F.
-5. Fight, bind, defeat, or escape from ordinary wild creatures.
-6. Complete the third main quest and challenge the Area One boss.
-7. Defeat the boss to raise the level cap from 20 to 30.
-8. Save manually or continue from an autosave.
+5. Fight, bind, defeat, or escape from ordinary wild creatures; use satchel items in the field and in battle; buy from vendors and rest at the inn.
+6. Complete the main quests, challenge the Area One boss, and raise the level cap.
+7. Descend through Area Two (sealed stair, garrison camp, chests) and into Area Three.
+8. Defeat the king in the barrow; the epilogue plays once and stays ended across saves.
+9. Save manually or continue from an autosave; a routed party wakes at its last haven.
 
 ## Overworld input and encounters
 
@@ -43,30 +44,34 @@ Boss battles disable binding and running. Trainer battles disable binding. The I
 
 ## Implemented systems
 
-- Two connected areas: Town and Area One.
+- Four connected areas: Town, Area One, Area Two (the catacombs), Area Three (the dead wood and the barrow).
 - Continuous analog movement with eight-direction facing.
 - Visible neutral and hostile wild creatures.
 - Dynamic spawn zones and timed respawning.
-- Overworld companion and overworld strike.
+- Overworld companion and overworld strike with rout, wounded entry, and ambush openings.
 - One-versus-one active-creature battles with parties of up to three.
-- Moves, cooldowns, accuracy, priority, switching, binding, running, XP, evolution, abilities, and three status conditions.
-- Five quests with acceptance, refusal, abandonment, progress, completion, rewards, and a field tracker.
-- One Area One boss with quest gating, persistent defeat state, and a level-cap reward.
+- Moves, cooldowns, accuracy, priority with turn-order indicators, switching, support moves with ally targeting, item use, binding, running, XP, evolution, abilities, three status conditions, and a damage floor.
+- Guided tutorial battles and scripted field lessons.
+- Thirty-two main quests and six side quests with acceptance, refusal, abandonment, progress, completion, rewards, turn-in to a non-giver, a field tracker, and a quest compass with HUD arrow.
+- Boss gating with persistent defeat state, level-cap rewards, sealed doorways, and altar-beacon portals.
+- Items, the satchel, vendors, the inn, chests, and haven-based defeat recovery.
+- An epilogue that plays once and persists.
 - Title screen, one autosave, three manual save slots, backup saves, and corruption fallback.
-- Party, details, journal, quest, save, display, audio, and battle interfaces.
+- Party, details, journal, quest, satchel, save, shop, inn, display, audio, and battle interfaces.
 - Background music, battle music, binding sounds, hit sounds, faint sounds, and persisted audio settings.
 - Procedural battle VFX, screen transitions, world atmosphere, and foliage animation.
 
 ## Content and art status
 
-- Creature species: 26.
-- Moves: 21.
+- Creature species: 28.
+- Moves: 23.
 - Abilities: 10.
-- Quests: 5.
-- Creature battle sprite resources: 26.
-- Every shipped creature species has a battle sprite.
+- Quests: 38 (32 main, 6 side).
+- Items: 5.
+- Types: 7 (fire, earth, water, wind, nature, rot, steel).
+- Creature battle sprite resources: every shipped species has one.
 - No shipped species currently has a separate overworld sprite. `CreatureVisual` reuses its battle sprite in the overworld, so shipped creatures do not use placeholder visuals.
-- Town NPCs and the Area One Scout have character sprites.
+- Town and area NPCs have character sprites; several newer NPCs reuse existing ones.
 - Placeholder support remains available for future content with missing art.
 
 ## UI presentation status
