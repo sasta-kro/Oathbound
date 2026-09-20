@@ -163,9 +163,8 @@ barks = PackedStringArray()
 
 [node name="SpawnZones" type="Node2D" parent="." unique_id=759478234]
 
-[node name="Spawn_earth_03" type="Node2D" parent="SpawnZones" unique_id=1011653297 instance=ExtResource("6_w1kan")]
-position = Vector2(-972, -432)
-script = ExtResource("7_orgqd")
+[node name="Spawn_earth_03" parent="SpawnZones" unique_id=1011653297 instance=ExtResource("6_w1kan")]
+position = Vector2(-641, -271)
 species = ExtResource("8_ql1o2")
 radius_in_cells = 3.0
 max_alive = 2
@@ -173,17 +172,15 @@ level_min = 16
 level_max = 18
 disposition = 1
 
-[node name="Spawn_water_06" type="Node2D" parent="SpawnZones" unique_id=1066014929 instance=ExtResource("6_w1kan")]
-position = Vector2(-1068, 192)
-script = ExtResource("7_orgqd")
+[node name="Spawn_water_06" parent="SpawnZones" unique_id=1066014929 instance=ExtResource("6_w1kan")]
+position = Vector2(-1091, 511)
 species = ExtResource("9_3q6kj")
 radius_in_cells = 3.5
 level_min = 16
 level_max = 19
 
-[node name="Spawn_wind_05" type="Node2D" parent="SpawnZones" unique_id=732143842 instance=ExtResource("6_w1kan")]
-position = Vector2(-300, -672)
-script = ExtResource("7_orgqd")
+[node name="Spawn_wind_05" parent="SpawnZones" unique_id=732143842 instance=ExtResource("6_w1kan")]
+position = Vector2(146, -1164)
 species = ExtResource("10_delj3")
 radius_in_cells = 3.0
 max_alive = 2
@@ -191,18 +188,16 @@ level_min = 18
 level_max = 21
 disposition = 1
 
-[node name="Spawn_water_03" type="Node2D" parent="SpawnZones" unique_id=1553891155 instance=ExtResource("6_w1kan")]
+[node name="Spawn_water_03" parent="SpawnZones" unique_id=1553891155 instance=ExtResource("6_w1kan")]
 position = Vector2(84, 0)
-script = ExtResource("7_orgqd")
 species = ExtResource("11_sp4t7")
 radius_in_cells = 3.5
 max_alive = 2
 level_min = 19
 level_max = 22
 
-[node name="Spawn_earth_04" type="Node2D" parent="SpawnZones" unique_id=1088233170 instance=ExtResource("6_w1kan")]
+[node name="Spawn_earth_04" parent="SpawnZones" unique_id=1088233170 instance=ExtResource("6_w1kan")]
 position = Vector2(516, -528)
-script = ExtResource("7_orgqd")
 species = ExtResource("12_6beyt")
 radius_in_cells = 2.5
 max_alive = 2
@@ -210,9 +205,8 @@ level_min = 21
 level_max = 24
 disposition = 1
 
-[node name="Spawn_fire_04" type="Node2D" parent="SpawnZones" unique_id=1161707196 instance=ExtResource("6_w1kan")]
-position = Vector2(708, 288)
-script = ExtResource("7_orgqd")
+[node name="Spawn_fire_04" parent="SpawnZones" unique_id=1161707196 instance=ExtResource("6_w1kan")]
+position = Vector2(263, 1154)
 species = ExtResource("13_6wj0o")
 radius_in_cells = 3.0
 max_alive = 2
@@ -220,18 +214,15 @@ level_min = 22
 level_max = 25
 disposition = 1
 
-[node name="Spawn_water_04" type="Node2D" parent="SpawnZones" unique_id=168415696 instance=ExtResource("6_w1kan")]
-position = Vector2(1044, 528)
-script = ExtResource("7_orgqd")
+[node name="Spawn_water_04" parent="SpawnZones" unique_id=168415696 instance=ExtResource("6_w1kan")]
+position = Vector2(1263, 211)
 species = ExtResource("14_aqf68")
-radius_in_cells = 3.0
 max_alive = 2
 level_min = 23
 level_max = 26
 
-[node name="Spawn_wind_06" type="Node2D" parent="SpawnZones" unique_id=1059506360 instance=ExtResource("6_w1kan")]
+[node name="Spawn_wind_06" parent="SpawnZones" unique_id=1059506360 instance=ExtResource("6_w1kan")]
 position = Vector2(996, -528)
-script = ExtResource("7_orgqd")
 species = ExtResource("15_ffk3y")
 radius_in_cells = 2.5
 max_alive = 2
@@ -239,9 +230,8 @@ level_min = 24
 level_max = 27
 disposition = 1
 
-[node name="Spawn_earth_06" type="Node2D" parent="SpawnZones" unique_id=725893025 instance=ExtResource("6_w1kan")]
+[node name="Spawn_earth_06" parent="SpawnZones" unique_id=725893025 instance=ExtResource("6_w1kan")]
 position = Vector2(1284, -672)
-script = ExtResource("7_orgqd")
 species = ExtResource("16_tq63f")
 radius_in_cells = 2.5
 max_alive = 1
