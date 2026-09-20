@@ -1,0 +1,61 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_0"]
+script = ExtResource("2_objective")
+kind = 0
+target = &"creature_earth_07"
+count = 1
+description = "Break the likeness of the Kingsworn in the west glade"
+
+[sub_resource type="Resource" id="Objective_1"]
+script = ExtResource("2_objective")
+kind = 0
+target = &"creature_earth_05"
+count = 1
+description = "Break the likeness of the Oathbreaker in the east glade"
+
+[sub_resource type="Resource" id="Objective_2"]
+script = ExtResource("2_objective")
+kind = 4
+target = &"opened_chest_three_west_glade"
+count = 1
+description = "Take what the king laid out in the west glade"
+
+[sub_resource type="Resource" id="Objective_3"]
+script = ExtResource("2_objective")
+kind = 4
+target = &"opened_chest_three_east_glade"
+count = 1
+description = "Take what the king laid out in the east glade"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_main_11_the_two_he_trusted"
+title = "The Two He Trusted"
+kind = 0
+summary = "Two knights stand in the glades either side of the road, and the champion at the stair says you will think you know them. You do: you fought one at the altar and one in the stair, and both of them are still standing where you left them."
+giver = &"lastchampion"
+requires = &"quest_main_10_the_dead_wood"
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_0"), SubResource("Objective_1"), SubResource("Objective_2"), SubResource("Objective_3")])
+reward_currency = 220
+reward_binding_scrolls = 2
+reward_xp = 2200
+reward_item = &"item_ember_draught"
+reward_item_count = 1
+recommended_level = 34
+offer_line = "The Last Champion: Two glades, one either side of the road, and a knight standing in each. You will think you know them. Look properly before you decide you do. They do not patrol and they do not speak and they have not moved from those glades in four hundred years, and if you walk past them to the barrow they will come up the road behind you while you are busy, which is how I learned about them. Do them first. There is something laid out in both glades besides. Take it. It has been waiting long enough for somebody to."
+accept_option = "I'll clear the glades."
+refuse_option = "Not yet."
+accepted_line = "The Last Champion: They fight the way he remembers them fighting, which is to say well, and a little too slowly, and always the same. Nothing of him is inventive. That is the one mercy in this place."
+caution_line = "The Last Champion: You are not big enough yet. I say that without unkindness; I was not either. Level %d before the glades, and even then take it slowly."
+refused_line = "The Last Champion: Then walk past them and find out. I did."
+reoffer_line = "The Last Champion: The glades are still his. Have you thought better of it?"
+progress_line = "The Last Champion: West and east, off the road, before the pillars."
+continue_option = "Still at it."
+abandon_option = "I need to stop."
+abandoned_line = "The Last Champion: Mm. Sit a while, then. There is no hurry down here. There is famously no hurry down here."
+complete_line = "The Last Champion: You saw it, then. They came apart. Men do not do that. Now think about who they were, because you have met both of them and both of them are still standing where you left them: one at the altar who let you past, one in the stair who stepped aside. He did not take those two. He could not. He made them. Four hundred years alone with what he had done, and what a mad head reached for was the two people in the world he could still trust, set one either side of his road so that he would not have to be the only thing down here. He laid places for them. He kept them fed. And he could not make them speak, not one word in four centuries, because he has never once been able to imagine what either of them would actually say to him. That is your enemy, champion. That is the whole of him. The road is yours as far as the pillars, and after the pillars it is his. There is a stone on that barrow the rite is laid on. Find it, and do not touch him until you have."
+done_line = "The Last Champion: Up the road, past the pillars. Find the stone before you find him."

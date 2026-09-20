@@ -25,6 +25,11 @@ const FT_BUILDINGS: int = 4
 const FT_NATURE: int = 5
 const FT_PROPS: int = 6
 const RUINS: int = 7
+## Dead earth for the wood under the altar, assembled into whole cells by
+## `tools/build_overworld_sheets.py`.
+const UNDEAD_GROUND: int = 8
+## The bigger Undead pieces: the crowned king, the ribcages, the cracks.
+const UNDEAD_OBJECTS: int = 9
 
 ## Atlas source ids in `meadow.tres`.
 const FT_GROUND: int = 0
@@ -40,6 +45,8 @@ const SHEETS: Dictionary = {
 	FT_NATURE: "ft_nature",
 	FT_PROPS: "ft_props",
 	RUINS: "ruins",
+	UNDEAD_GROUND: "undead_ground",
+	UNDEAD_OBJECTS: "undead_objects",
 }
 const MEADOW_SHEETS: Dictionary = {
 	FT_GROUND: "ft_ground",
@@ -55,6 +62,13 @@ const OBJECT_MANIFESTS: Dictionary = {
 	FT_NATURE: "res://assets/tilesets/ft_nature.json",
 	FT_PROPS: "res://assets/tilesets/ft_props.json",
 	RUINS: "res://assets/tilesets/ruins.json",
+	UNDEAD_OBJECTS: "res://assets/tilesets/undead_objects.json",
+}
+
+## Sheets that are plain ground variants rather than sprites or terrain: the
+## manifest lists the tiles to make and which of them carry detail.
+const GROUND_MANIFESTS: Dictionary = {
+	UNDEAD_GROUND: "res://assets/tilesets/undead_ground.json",
 }
 
 ## Sheets converted from Tiled terrain (wang) sets, in `meadow.tres`.

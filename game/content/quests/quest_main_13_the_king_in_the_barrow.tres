@@ -1,0 +1,38 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_0"]
+script = ExtResource("2_objective")
+kind = 0
+target = &"creature_rot_01"
+count = 1
+description = "Put the king back to sleep"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_main_13_the_king_in_the_barrow"
+title = "The King in the Barrow"
+kind = 0
+summary = "He cannot be killed. He was never meant to be. He can be put down hard enough and long enough for the rite to close over him, and then he sleeps, and that is the whole of the victory and always has been."
+giver = &"lastchampion"
+requires = &"quest_main_12_the_road_to_the_barrow"
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_0")])
+reward_currency = 400
+reward_binding_scrolls = 5
+reward_xp = 3000
+recommended_level = 38
+offer_line = "The Last Champion: Then here is the last of what I know, and mind it. You cannot kill him. Nobody can. That is not the Order failing and it is not you failing; it is the bargain, and the god of the dead does not take returns. What you can do is put him down hard enough and long enough that the rite closes over him, and then he sleeps. That is the whole victory. It has never been any bigger than that and it never will be. Forty-one of us have done it. Will you be the forty-second?"
+accept_option = "I'll put him under."
+refuse_option = "Not yet."
+accepted_line = "The Last Champion: Everything you have, all at once, and keep your mender on its feet above all else. He does not win by being faster than you. He wins by being longer, and he has four hundred years of longer. Go on, then. And champion, when it is done, the stair opens. It only opens for whoever finishes. See that you use it."
+caution_line = "The Last Champion: Below level %d I would not go up that barrow. I went up it at less, and you can see how that ended."
+refused_line = "The Last Champion: Sensible. He will be here. He is always here."
+reoffer_line = "The Last Champion: He is on the barrow. Are you going up?"
+progress_line = "The Last Champion: Up the barrow. I will not come and watch."
+continue_option = "I'm going back up."
+abandon_option = "I can't do it."
+abandoned_line = "The Last Champion: Mm. Go back down to the fire and let Aldric look pleased about it. He will be, you know. He will be glad you came back."
+complete_line = "The Last Champion: It has gone quiet. Look at the wood, champion. Look at it. I have sat under this tree for longer than your town has stood and I have never once seen it do that."
+done_line = "The Last Champion: Go up, champion. The stair is open, and it was opened for you."

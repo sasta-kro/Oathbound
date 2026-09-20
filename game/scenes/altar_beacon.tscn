@@ -4,6 +4,7 @@
 [ext_resource type="Shader" path="res://shaders/altar_glow.gdshader" id="2_glow"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_beacon"]
+resource_local_to_scene = true
 shader = ExtResource("2_glow")
 shader_parameter/core_color = Color(0.76, 0.9, 1, 1)
 shader_parameter/edge_color = Color(0.2, 0.42, 1, 1)

@@ -1,0 +1,154 @@
+[
+ {
+  "name": "blue_brazier",
+  "cell": [
+   0,
+   5
+  ],
+  "size": [
+   2,
+   3
+  ],
+  "pixels": [
+   48,
+   80
+  ],
+  "kind": "prop",
+  "animation": {
+   "frames": 6,
+   "seconds": 0.12,
+   "frame_pixels": [
+    48,
+    80
+   ]
+  }
+ },
+ {
+  "name": "bramble_tree",
+  "cell": [
+   0,
+   8
+  ],
+  "size": [
+   2,
+   3
+  ],
+  "pixels": [
+   59,
+   74
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "corpse_hang",
+  "cell": [
+   5,
+   8
+  ],
+  "size": [
+   2,
+   2
+  ],
+  "pixels": [
+   61,
+   62
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "fallen_log",
+  "cell": [
+   2,
+   8
+  ],
+  "size": [
+   3,
+   2
+  ],
+  "pixels": [
+   84,
+   39
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "ground_crack",
+  "cell": [
+   12,
+   5
+  ],
+  "size": [
+   4,
+   3
+  ],
+  "pixels": [
+   110,
+   80
+  ],
+  "kind": "walkable"
+ },
+ {
+  "name": "ground_crack_large",
+  "cell": [
+   0,
+   0
+  ],
+  "size": [
+   4,
+   5
+  ],
+  "pixels": [
+   110,
+   143
+  ],
+  "kind": "walkable"
+ },
+ {
+  "name": "king_relic",
+  "cell": [
+   4,
+   0
+  ],
+  "size": [
+   5,
+   4
+  ],
+  "pixels": [
+   150,
+   113
+  ],
+  "kind": "prop"
+ },
+ {
+  "name": "pale_spirit",
+  "cell": [
+   7,
+   8
+  ],
+  "size": [
+   2,
+   2
+  ],
+  "pixels": [
+   45,
+   57
+  ],
+  "kind": "walkable"
+ },
+ {
+  "name": "ribcage",
+  "cell": [
+   9,
+   0
+  ],
+  "size": [
+   3,
+   4
+  ],
+  "pixels": [
+   94,
+   110
+  ],
+  "kind": "prop"
+ }
+]

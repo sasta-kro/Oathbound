@@ -16,6 +16,35 @@ const SHORTCUTS: Array[Dictionary] = [
 		"level_cap": 40,
 		"bosses": [&"boss_area_01", &"boss_area_02"],
 	},
+	{
+		"label": "Dev: the ending",
+		"scene": "res://areas/area_three.tscn",
+		"level_cap": 40,
+		"bosses": [&"boss_area_01", &"boss_area_02"],
+		"party_level": 38,
+		# The whole chain behind the player, with the king still to fight.
+		"completed":
+		[
+			&"quest_main_01_beyond_the_walls",
+			&"quest_main_01a_a_second_oath",
+			&"quest_main_01b_field_mending",
+			&"quest_main_02_the_ruined_road",
+			&"quest_main_02a_scalded_shallows",
+			&"quest_main_02b_wings_in_the_wood",
+			&"quest_main_02c_the_hollow_watch",
+			&"quest_main_03_the_black_knight",
+			&"quest_main_04_the_stair_shut",
+			&"quest_main_05_the_record",
+			&"quest_main_06_what_the_dead_carry",
+			&"quest_main_07_the_inside_of_the_door",
+			&"quest_main_08_a_champions_kit",
+			&"quest_main_09_the_kingsworn",
+			&"quest_main_10_the_dead_wood",
+			&"quest_main_11_the_two_he_trusted",
+			&"quest_main_12_the_road_to_the_barrow",
+		],
+		"active": &"quest_main_13_the_king_in_the_barrow",
+	},
 ]
 var entrance: Tween
 var content: VBoxContainer
@@ -110,20 +139,52 @@ func _add_shortcuts(content: Control) -> void:
 			content.add_child(OathTheme.label("◇    DEV SHORTCUTS", 9, OathTheme.MUTED))
 			shown = true
 		var button := OathTheme.button(
-			shortcut["label"], func() -> void: _jump_to(path, int(shortcut["level_cap"]), shortcut["bosses"])
+			shortcut["label"], func() -> void: _jump_to(shortcut)
 		)
 		content.add_child(button)
 
 
-## Starts a throwaway journey standing in [param scene_path], with the bosses
+## Starts a throwaway journey standing in the shortcut's area, with the bosses
 ## that gate the way there already beaten and the cap they would have raised.
-func _jump_to(scene_path: String, level_cap: int, bosses: Array) -> void:
+## A shortcut may also hand over the quest standing and the party level the
+## player would have by then, so a beat late in the story can be reached
+## without playing the whole of it.
+func _jump_to(shortcut: Dictionary) -> void:
 	GameState.new_game()
-	for boss_id: Variant in bosses:
+	for boss_id: Variant in shortcut.get("bosses", []):
 		GameState.defeated_bosses[StringName(String(boss_id))] = true
-	GameState.level_cap = level_cap
-	GameState.jump_to_area(scene_path)
+	GameState.level_cap = int(shortcut.get("level_cap", GameState.INITIAL_LEVEL_CAP))
+	_set_quest_standing(shortcut)
+	_level_the_party(int(shortcut.get("party_level", 0)))
+	GameState.jump_to_area(String(shortcut["scene"]))
 	_enter_world()
+
+
+## Marks the shortcut's quests done and its next one accepted, through the
+## same path a save takes, so a shortcut can never write a standing the
+## quest log would refuse to load.
+func _set_quest_standing(shortcut: Dictionary) -> void:
+	var standing: Dictionary = {}
+	for id: Variant in shortcut.get("completed", []):
+		standing[String(id)] = {"status": QuestLog.Status.COMPLETED, "progress": []}
+	var active: Variant = shortcut.get("active", &"")
+	if StringName(String(active)) != &"":
+		standing[String(active)] = {"status": QuestLog.Status.ACTIVE, "progress": []}
+	if not standing.is_empty():
+		GameState.quests.from_dict(standing)
+
+
+## Replaces the starter with one grown to [param level], so a shortcut to a
+## late fight lands with a party that can take it. Zero leaves the party as
+## a new journey made it.
+func _level_the_party(level: int) -> void:
+	if level <= 0:
+		return
+	var lead: CreatureInstance = Content.spawn_creature(GameState.STARTER_SPECIES_ID, level)
+	if lead == null:
+		return
+	GameState.party.clear()
+	GameState.add_to_party(lead)
 
 
 func _open_loader() -> void:

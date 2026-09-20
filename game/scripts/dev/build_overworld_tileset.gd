@@ -128,6 +128,8 @@ func _build_overworld() -> int:
 	_configure_wall_source(sources[OverworldTiles.WALL])
 	for id: int in OverworldTiles.OBJECT_MANIFESTS:
 		_configure_object_source(sources[id], OverworldTiles.OBJECT_MANIFESTS[id])
+	for id: int in OverworldTiles.GROUND_MANIFESTS:
+		_configure_ground_source(sources[id], OverworldTiles.GROUND_MANIFESTS[id])
 	return _save(tile_set, OverworldTiles.TILESET_PATH)
 
 
@@ -176,6 +178,16 @@ func _build_meadow() -> int:
 	return _save(tile_set, OverworldTiles.MEADOW_TILESET_PATH)
 
 
+## A sheet of plain ground cells: every tile in the manifest exists, nothing
+## blocks, and the ones with detail on them are rarer so they read as detail.
+## The painter picks among them itself, so they carry no terrain bits.
+func _configure_ground_source(source: TileSetAtlasSource, manifest_path: String) -> void:
+	var manifest: Dictionary = OverworldTiles.load_json(manifest_path)
+	for key: String in ["ground", "accents"]:
+		for entry: Variant in manifest.get(key, []):
+			source.create_tile(Vector2i(int(entry[0]), int(entry[1])))
+
+
 func _add_physics_layer(tile_set: TileSet) -> void:
 	tile_set.add_physics_layer(PHYSICS_LAYER)
 	tile_set.set_physics_layer_collision_layer(PHYSICS_LAYER, 1)
@@ -192,12 +204,48 @@ func _add_sources(tile_set: TileSet, sheets: Dictionary, tile_size: int) -> Dict
 
 
 func _save(tile_set: TileSet, path: String) -> int:
+	# Saving a freshly built resource drops the uid the old file carried, and
+	# every scene painted with it refers to the tileset by that uid.
+	var uid: String = _resource_uid(path)
 	var error: int = ResourceSaver.save(tile_set, path)
 	if error != OK:
 		push_error("Failed to save %s (error %d)" % [path, error])
-	else:
-		print("Wrote ", path)
+		return error
+	_restore_uid(path, uid)
+	print("Wrote ", path)
 	return error
+
+
+## The `uid="..."` the file at [param path] already carries, or a fresh one
+## when it is being written for the first time.
+func _resource_uid(path: String) -> String:
+	var file: FileAccess = FileAccess.open(path, FileAccess.READ)
+	if file != null:
+		var header: String = file.get_line()
+		file.close()
+		if ' uid="' in header:
+			return header.split(' uid="')[1].split('"')[0]
+	return ResourceUID.id_to_text(ResourceUID.create_id())
+
+
+func _restore_uid(path: String, uid: String) -> void:
+	if uid.is_empty():
+		return
+	var file: FileAccess = FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		return
+	var text: String = file.get_as_text()
+	file.close()
+	var header: String = text.split("\n")[0]
+	if ' uid="' in header:
+		return
+	text = text.replace(header, header.trim_suffix("]") + ' uid="%s"]' % uid)
+	file = FileAccess.open(path, FileAccess.WRITE)
+	if file == null:
+		push_warning("Could not write the uid back into %s." % path)
+		return
+	file.store_string(text)
+	file.close()
 
 
 func _add_terrain_set(tile_set: TileSet, index: int, mode: TileSet.TerrainMode, terrains: Array) -> void:

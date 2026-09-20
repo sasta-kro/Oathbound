@@ -1,6 +1,6 @@
 # Implementation Status
 
-**Date:** 14 September 2026
+**Date:** 20 September 2026
 
 **Commit reviewed:** `ea9ffe8`
 
@@ -77,14 +77,29 @@ The current flat panels, thin borders, large typography, and web-like spacing do
 
 Escape opens the Field Companion menu. That menu provides Journey, Companions, Field Journal, Quest Log, Save Journey, Settings, and Title Screen actions. The Settings action opens display and audio controls.
 
+## Areas, chests and defeat (20 September 2026)
+
+- Four areas ship: Town, Area One, Area Two (the catacombs) and Area Three (the dead wood and the barrow). Area Two leads back to Area One and on to Area Three; the stair down is sealed until the Kingsworn falls.
+- Every doorway between areas carries a name plate, chevrons on the ground and an altar-beacon portal. A doorway waiting on a boss reads "(SEALED)" and its portal stays dark until that boss falls.
+- Area Two has a supply camp in the great hall: two vendors and the Lamplighter, who heals the party and keeps a bed.
+- Chests (`scenes/treasure_chest.tscn`) hold coins, Binding Scrolls and items. Opening one is remembered per journey, so a reload cannot empty it twice.
+- A routed party wakes at the last inn bed or healer it used, and in the town when it has used neither. The coin penalty of Specification 20.1 is unchanged.
+
+## The story, end to end (20 September 2026)
+
+- The main chain runs eighteen quests, Town to barrow, as one unbroken line of `requires`: eight through Town and Area One, six in Area Two, four in Area Three.
+- **Area Two** is a garrison of champions who came down the stair, could not finish the rite and could not climb back. They guide, they resupply, and they hold the inside of the altar door. The Archivist gives the lore (a grieving king bargained with the god of the dead and can only be put to sleep, never killed), the Gravewright recovers seal-iron, the Bellkeeper holds the door, the Nurse outfits the player, and Aldric sends them down past the Kingsworn.
+- **Area Three** is the king's own ground. The two knights in the glades are likenesses the king made of the Oathbreaker and the Kingsworn, the only two people he could still trust; they are mute because he cannot imagine what either would say to him. The real pair are still standing where the player left them.
+- The ending (`scripts/world/epilogue.gd`) plays in the wood rather than in a scene of its own: the spawn zones stop, everything the king had standing thins away without dying, the area's `Tint` warms from his cold grey to daylight, and a caption reads over it before the journey hands back to the title screen. `GameState.story_complete` is saved, so a reload never replays it.
+- `BOSS_LEVEL_CAPS` cannot raise anything past the ceiling by the time the king falls, so `GameState.FINAL_BOSS_TEXT` announces him instead.
+- The title screen carries a `Dev: the ending` shortcut: Area Three, a level-38 lead, the chain behind the player and the king still to fight.
+
 ## Main open gaps
 
-- Areas 2 and 3 do not exist.
-- Hostile Oathkeeper encounters do not exist.
-- Bosses 2 and 3 do not exist.
-- Selling items, key items, Creature Hotel, and Experience Vessel use do not exist. Buying, the satchel, battle and field item use, two town vendors and the inn do.
+- Hostile Oathkeeper encounters do not exist; the two Area Three elites are the king's own likenesses of the Oathbreaker and the Kingsworn, which is why both species are met twice.
+- Selling items, key items, Creature Hotel, and Experience Vessel use do not exist. Buying, the satchel, battle and field item use, two town vendors, the camp vendors and the inn do.
 - Move replacement and move relearning do not exist.
 - Permanent ever-bound journal state is not saved.
-- Revival locations and world reset after defeat do not exist.
+- World reset after defeat does not exist; the party wakes at its haven and the world is left as it was.
 - Control rebinding does not exist.
 - Custom pixel-art UI assets do not exist.

@@ -30,6 +30,14 @@ const WILD_CREATURE_SCENE: PackedScene = preload("res://scenes/wild_creature.tsc
 ## How long the tutorial's ambusher takes to burst out of the grass.
 const AMBUSHER_ENTRANCE_SECONDS: float = 0.35
 const INN_OPTIONS: PackedStringArray = ["Rest for the night", "Not now"]
+## Shown as the lid comes up, for a chest whose author wrote no line of its
+## own: one for a chest with something in it, one for a chest without.
+const CHEST_OPENED_TEXT := "The lid gives, and you empty the chest."
+const CHEST_EMPTY_HANDED_TEXT := "The chest holds nothing but dust."
+## How the player is told where they woke after a rout, with the keeper's
+## name and the coins the road took.
+const WOKEN_AT_HAVEN_TEXT := "You wake under %s's roof. Your Oathbound have been revived, but %d coins are gone."
+const WOKEN_BY_THE_ROAD_TEXT := "You wake by the road. Your Oathbound have been revived, but %d coins are gone."
 const INN_RESTED_TEXT := "You sleep soundly. Your companions wake fully rested."
 ## How long the screen stays dark while the player sleeps at the inn.
 const INN_NIGHT_SECONDS: float = 0.8
@@ -432,6 +440,10 @@ func _interact() -> void:
 	# Between the opening's lines there is nobody else to talk to.
 	if _in_opening or _staging_tutorial:
 		return
+	var chest: TreasureChest = nearest_chest_in_reach()
+	if chest != null:
+		_open_chest(chest)
+		return
 	var actor: WorldActor = nearest_actor_in_reach()
 	if actor == null:
 		return
@@ -445,6 +457,29 @@ func _interact() -> void:
 	_talk_to(actor)
 
 
+## A chest on the map (Specification 16.1). The lid comes up, what was inside
+## goes into the satchel as field notices, and the chest stays open for the
+## rest of the journey. A chest waiting on a boss says so instead.
+func _open_chest(chest: TreasureChest) -> void:
+	player.face(GameOpening.facing_toward(player.global_position, chest.global_position))
+	if chest.is_locked():
+		_open_dialogue(chest.locked_text())
+		return
+	if chest.is_open():
+		_open_dialogue(chest.empty_text())
+		return
+	var lines: PackedStringArray = chest.take()
+	for line: String in lines:
+		field_ui.show_notice(line)
+	var told: String = chest.opened_line
+	if told == "":
+		told = CHEST_OPENED_TEXT if not lines.is_empty() else CHEST_EMPTY_HANDED_TEXT
+	_open_dialogue(told)
+	# What is in the satchel changed, and the chest must stay open across a
+	# reload (Specification 21.2).
+	_autosave(false)
+
+
 ## Talking to an NPC: healing and small talk, or quest business when the
 ## actor has any (Specification 17, 18.4). Talking is itself something a
 ## quest can ask for, so it is reported before the actor's own quests are
@@ -455,6 +490,9 @@ func _talk_to(actor: WorldActor) -> void:
 	actor.face_toward(player.global_position)
 	if actor.heals_party:
 		GameState.heal_party()
+		# A healer's table is somewhere to wake after a rout (Specification
+		# 20.1), and the player is standing on a walkable spot beside it.
+		GameState.record_haven(area.scene_file_path, player.global_position, actor.display_name)
 		_autosave()
 	GameState.report_quest_event(QuestObjective.Kind.TALK, actor.actor_id())
 	var quest: QuestData = actor.current_quest(GameState.quests, Content)
@@ -467,6 +505,16 @@ func _talk_to(actor: WorldActor) -> void:
 	if GameState.quests.is_ready(quest):
 		_show_reward_lines(GameState.complete_quest(quest))
 		_autosave()
+		# Handing the king in is the end of the story, and the ending plays
+		# where the player is standing rather than in a scene of its own.
+		if quest.id == Epilogue.QUEST_ID and not GameState.story_complete:
+			await _say(quest.complete_text())
+			# The last quest pays enough XP to evolve something, and the
+			# ending takes the world away for good, so the evolution has to
+			# be seen through before the wood starts to turn.
+			await _evolve_ready_party()
+			await _play_epilogue()
+			return
 		var next: QuestData = actor.current_quest(GameState.quests, Content)
 		if next == null or not GameState.quests.can_offer(next):
 			_open_dialogue(quest.complete_text())
@@ -500,6 +548,22 @@ func _talk_to(actor: WorldActor) -> void:
 		if dialogue_panel.is_open():
 			await dialogue_panel.dismissed
 		_serve(actor, actor.idle_line(GameState.quests, Content))
+
+
+## The ending (see [Epilogue]): the world stops, the wood comes back, the
+## caption is read, and the journey is handed back to the title screen with
+## the finished save intact.
+func _play_epilogue() -> void:
+	if dialogue_panel.is_open():
+		await dialogue_panel.dismissed
+	_close_dialogue()
+	_travelling = true
+	_refresh_world_activity()
+	GameState.story_complete = true
+	_autosave(false)
+	await Epilogue.play(self, area)
+	await transition.cover(ScreenTransition.Style.WORLD)
+	get_tree().change_scene_to_file(TITLE_SCENE_PATH)
 
 
 func _serves(actor: WorldActor) -> bool:
@@ -536,8 +600,10 @@ func _offer_rest(actor: WorldActor, greeting: String) -> void:
 	_close_dialogue()
 	_travelling = true
 	_refresh_world_activity()
+	var bed: Vector2 = player.global_position
 	await transition.cover(ScreenTransition.Style.WORLD)
 	GameState.heal_party()
+	GameState.record_haven(area.scene_file_path, bed, actor.display_name)
 	GameState.report_quest_event(QuestObjective.Kind.EVENT, GameState.EVENT_RESTED_AT_INN)
 	await get_tree().create_timer(INN_NIGHT_SECONDS).timeout
 	await transition.reveal(ScreenTransition.Style.WORLD)
@@ -793,6 +859,21 @@ func _challenge_boss(creature: WildCreature) -> void:
 
 
 ## The closest interactable actor the player can touch, or null.
+## The chest within reach, nearest first. Chests block movement, so at most
+## one is ever close enough to matter.
+func nearest_chest_in_reach() -> TreasureChest:
+	var best: TreasureChest = null
+	var best_distance: float = INF
+	for chest: TreasureChest in get_tree().get_nodes_in_group(TreasureChest.GROUP):
+		if not _is_adjacent_to(chest):
+			continue
+		var distance: float = player.global_position.distance_to(chest.global_position)
+		if distance < best_distance:
+			best = chest
+			best_distance = distance
+	return best
+
+
 func nearest_actor_in_reach() -> WorldActor:
 	var best: WorldActor = null
 	var best_distance: float = INF
@@ -932,6 +1013,8 @@ func _on_battle_finished(engine: BattleEngine) -> void:
 	# effect played under it would come and go unseen.
 	var taken: WildCreature = null
 	var was_bound: bool = false
+	## Set when the party went down and has to be carried back to its haven.
+	var routed: bool = false
 	var boss_lines: PackedStringArray = []
 	match engine.outcome:
 		BattleEngine.Outcome.VICTORY:
@@ -957,17 +1040,18 @@ func _on_battle_finished(engine: BattleEngine) -> void:
 			if creature != null:
 				creature.mark_defeated()
 		BattleEngine.Outcome.DEFEAT:
-			# No revival location exists yet, so recovery happens in place
-			# (Specification 20.1 steps 2, 4 and 5).
+			# The party is carried back to the last bed or healer's table they
+			# used and patched up there (Specification 20.1 steps 2, 4 and 5).
 			GameState.apply_defeat_penalty()
 			GameState.heal_party()
 			# A boss recovers too, so the next attempt is a fair fight.
 			if creature != null and creature.is_boss():
 				creature.restore_encounter()
-			_open_dialogue(
-				"You wake by the road. Your Oathbound have been revived, but %d coins are gone."
-				% GameState.DEFEAT_CURRENCY_PENALTY
-			)
+			routed = true
+	# The screen is still covered by the battle's own wipe, so the way home is
+	# never seen being walked.
+	if routed:
+		_wake_at_haven()
 	# A battle can faint the creature that was walking with the player, and
 	# leaves the partner wherever it stood when the screen closed.
 	partner.refresh_lead()
@@ -990,10 +1074,40 @@ func _on_battle_finished(engine: BattleEngine) -> void:
 			# Shown directly: the reward filter would drop a line about levels.
 			for line: String in boss_lines:
 				field_ui.show_notice(line)
+	if routed:
+		_open_dialogue(_waking_text())
 	if not lesson.is_empty():
 		_open_dialogue(lesson.won_line if lesson_won else lesson.lost_line)
 	_refresh_world_activity()
 	_evolve_ready_party()
+
+
+## Carries the beaten party back to the last inn bed or healer's table they
+## used, or to the town when they have used neither (Specification 20.1).
+## Called while the battle's wipe still covers the screen.
+func _wake_at_haven() -> void:
+	var path: String = GameState.haven_area_path if GameState.has_haven() else GameState.DEFAULT_HAVEN_AREA
+	if path != area.scene_file_path:
+		var packed: PackedScene = load(path) as PackedScene
+		if packed == null:
+			push_warning("The haven at %s is not a scene; waking in place." % path)
+			return
+		_swap_area(packed)
+	player.global_position = (
+		GameState.haven_position if GameState.has_haven() else area.player_start_position()
+	)
+	player.velocity = Vector2.ZERO
+	partner.snap_to_player()
+	_fit_camera_to_area()
+	camera.reset_smoothing()
+	_wire_area()
+	_report_area_reached()
+
+
+func _waking_text() -> String:
+	if GameState.has_haven() and GameState.haven_name != "":
+		return WOKEN_AT_HAVEN_TEXT % [GameState.haven_name.capitalize(), GameState.DEFEAT_CURRENCY_PENALTY]
+	return WOKEN_BY_THE_ROAD_TEXT % GameState.DEFEAT_CURRENCY_PENALTY
 
 
 func _open_dialogue(line: String) -> void:

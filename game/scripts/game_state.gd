@@ -24,6 +24,9 @@ signal quest_objective_advanced(quest: QuestData, index: int, done: bool)
 ## Coins, Binding Scrolls or satchel items changed hands.
 signal inventory_changed
 
+## A chest was emptied. The field listens to keep the lid open.
+signal chest_opened(chest_id: StringName)
+
 const STARTER_SPECIES_ID := &"creature_fire_01"
 ## Provisional starter level: with the additive damage formula a level-7
 ## Emberling beats the level-3 Loambuck outside with HP to spare.
@@ -41,6 +44,12 @@ const BOSS_LEVEL_CAPS: Dictionary = {
 	&"boss_area_02": 40,
 }
 const LEVEL_CAP_RAISED_TEXT := "Your Oathbound can now grow to level %d."
+## The king on the barrow. His defeat raises no cap, because the cap is
+## already at [constant CreatureRules.GLOBAL_MAX_LEVEL] by then, so the story
+## says so itself rather than letting the last boss in the game pass without
+## a word.
+const FINAL_BOSS_ID := &"boss_area_03"
+const FINAL_BOSS_TEXT := "The rite closes over him. The king sleeps."
 ## Quest EVENT ids the field reports on its own (Specification 17.2): an item
 ## bought or used, by item id, and a night at the inn.
 const EVENT_BOUGHT_ITEM := "bought_%s"
@@ -48,6 +57,9 @@ const EVENT_USED_ITEM := "used_%s"
 const EVENT_RESTED_AT_INN := &"rested_at_inn"
 ## Provisional defeat penalty (Specification 20.1).
 const DEFEAT_CURRENCY_PENALTY := 50
+## Where a journey that has never rested anywhere wakes up after a rout: the
+## town, on its own PlayerStart.
+const DEFAULT_HAVEN_AREA := "res://areas/town.tscn"
 
 var seen_species: Dictionary = {}
 var party: Array[CreatureInstance] = []
@@ -58,9 +70,15 @@ var currency: int = 0
 ## [member binding_scrolls] instead.
 var items: Dictionary = {}
 var level_cap: int = INITIAL_LEVEL_CAP
+## Ids of every chest already emptied, as a set. A chest stays open for the
+## rest of the journey (Specification 16.1).
+var opened_chests: Dictionary = {}
 ## Ids of every boss beaten, as a set. Beaten bosses never return
 ## (Specification 19).
 var defeated_bosses: Dictionary = {}
+## Whether the ending has played. Saved, so loading a finished journey does
+## not run the epilogue again on the first talk.
+var story_complete: bool = false
 ## Standing with every quest (Specification 17). Built in [method _ready]
 ## because it reads content from the registry.
 var quests: QuestLog
@@ -70,6 +88,14 @@ var quests: QuestLog
 var area_path: String = ""
 var player_position: Vector2 = Vector2.ZERO
 var player_facing: Vector2i = Vector2i.DOWN
+## Scene path of the last roof the party slept or healed under, and the spot
+## in it to wake on. A rout carries the player back here instead of reviving
+## them where they fell (Specification 20.1). Empty until the first inn or
+## healer, which falls back to [constant DEFAULT_HAVEN_AREA].
+var haven_area_path: String = ""
+var haven_position: Vector2 = Vector2.ZERO
+## Name of the inn or healer the haven belongs to, for the waking line.
+var haven_name: String = ""
 ## Seconds spent in the field, across sessions. Only counts while
 ## [member play_time_running] is set by the overworld.
 var play_seconds: float = 0.0
@@ -120,9 +146,12 @@ func new_game(with_opening: bool = false) -> void:
 	currency = 0
 	items.clear()
 	level_cap = INITIAL_LEVEL_CAP
+	opened_chests.clear()
 	defeated_bosses.clear()
+	story_complete = false
 	quests.clear()
 	clear_location()
+	clear_haven()
 	_resume_pending = false
 	play_seconds = 0.0
 	last_saved_at = 0
@@ -172,6 +201,26 @@ func clear_location() -> void:
 	area_path = ""
 	player_position = Vector2.ZERO
 	player_facing = Vector2i.DOWN
+
+
+## Remembers the inn bed or healer's table the party was last put back
+## together at. A rout wakes the player here (Specification 20.1).
+func record_haven(at_area_path: String, at_position: Vector2, keeper_name: String) -> void:
+	if at_area_path == "":
+		return
+	haven_area_path = at_area_path
+	haven_position = at_position
+	haven_name = keeper_name
+
+
+func clear_haven() -> void:
+	haven_area_path = ""
+	haven_position = Vector2.ZERO
+	haven_name = ""
+
+
+func has_haven() -> bool:
+	return haven_area_path != "" and ResourceLoader.exists(haven_area_path)
 
 
 # --- Persistence -------------------------------------------------------------
@@ -234,6 +283,10 @@ func to_dict() -> Dictionary:
 	for id: StringName in defeated_bosses:
 		bosses.append(String(id))
 	bosses.sort()
+	var chests: Array = []
+	for id: StringName in opened_chests:
+		chests.append(String(id))
+	chests.sort()
 	return {
 		"saved_at": last_saved_at,
 		"play_seconds": int(play_seconds),
@@ -243,7 +296,9 @@ func to_dict() -> Dictionary:
 		"currency": currency,
 		"items": _item_save_data(),
 		"level_cap": level_cap,
+		"opened_chests": chests,
 		"defeated_bosses": bosses,
+		"story_complete": story_complete,
 		"quests": quests.to_dict(),
 		"location":
 		{
@@ -252,6 +307,13 @@ func to_dict() -> Dictionary:
 			"y": player_position.y,
 			"facing_x": player_facing.x,
 			"facing_y": player_facing.y,
+		},
+		"haven":
+		{
+			"area": haven_area_path,
+			"x": haven_position.x,
+			"y": haven_position.y,
+			"name": haven_name,
 		},
 	}
 
@@ -281,9 +343,13 @@ func from_dict(data: Dictionary) -> void:
 		if item != null and not item.is_binding_scroll():
 			add_item(item, int(saved_items[id]))
 	level_cap = clampi(int(data.get("level_cap", INITIAL_LEVEL_CAP)), 1, CreatureRules.GLOBAL_MAX_LEVEL)
+	opened_chests.clear()
+	for id: Variant in data.get("opened_chests", []):
+		opened_chests[StringName(String(id))] = true
 	defeated_bosses.clear()
 	for id: Variant in data.get("defeated_bosses", []):
 		defeated_bosses[StringName(String(id))] = true
+	story_complete = bool(data.get("story_complete", false))
 	quests.from_dict(data.get("quests", {}) if data.get("quests") is Dictionary else {})
 	play_seconds = float(data.get("play_seconds", 0))
 	last_saved_at = int(data.get("saved_at", 0))
@@ -297,6 +363,16 @@ func from_dict(data: Dictionary) -> void:
 		)
 	else:
 		clear_location()
+	var haven: Dictionary = data.get("haven", {}) if data.get("haven") is Dictionary else {}
+	var saved_haven: String = String(haven.get("area", ""))
+	if saved_haven != "" and ResourceLoader.exists(saved_haven):
+		record_haven(
+			saved_haven,
+			Vector2(float(haven.get("x", 0.0)), float(haven.get("y", 0.0))),
+			String(haven.get("name", "")),
+		)
+	else:
+		clear_haven()
 	ensure_starter()
 	party_changed.emit()
 
@@ -413,7 +489,44 @@ func record_boss_defeat(boss_id: StringName) -> PackedStringArray:
 	if new_cap > level_cap:
 		level_cap = mini(new_cap, CreatureRules.GLOBAL_MAX_LEVEL)
 		lines.append(LEVEL_CAP_RAISED_TEXT % level_cap)
+	if boss_id == FINAL_BOSS_ID:
+		lines.append(FINAL_BOSS_TEXT)
 	boss_defeated.emit(boss_id)
+	return lines
+
+
+## Whether the chest called [param chest_id] has already been emptied.
+func has_opened_chest(chest_id: StringName) -> bool:
+	return opened_chests.has(chest_id)
+
+
+## Empties a chest into the satchel and returns the player-facing lines for
+## what was in it. A chest already emptied gives nothing back, so a reloaded
+## save can never pay out twice.
+func open_chest(chest_id: StringName, contents: Dictionary) -> PackedStringArray:
+	var lines: PackedStringArray = []
+	if chest_id == &"" or has_opened_chest(chest_id):
+		return lines
+	opened_chests[chest_id] = true
+	var coins: int = maxi(0, int(contents.get("coins", 0)))
+	if coins > 0:
+		currency += coins
+		lines.append("+%d coins" % coins)
+	var scrolls: int = maxi(0, int(contents.get("binding_scrolls", 0)))
+	if scrolls > 0:
+		binding_scrolls += scrolls
+		lines.append("+%d Binding Scroll%s" % [scrolls, "" if scrolls == 1 else "s"])
+	var item_counts: Dictionary = contents.get("items", {}) if contents.get("items") is Dictionary else {}
+	for id: Variant in item_counts:
+		var item: ItemData = Content.get_item(StringName(String(id)))
+		var count: int = maxi(0, int(item_counts[id]))
+		if item == null or count <= 0:
+			continue
+		add_item(item, count)
+		lines.append("+%d %s" % [count, item.display_name])
+	if not lines.is_empty():
+		inventory_changed.emit()
+	chest_opened.emit(chest_id)
 	return lines
 
 

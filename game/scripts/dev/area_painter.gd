@@ -37,6 +37,10 @@ const SPAWN_ZONE_SCENE := "res://scenes/spawn_zone.tscn"
 const WILD_CREATURE_SCENE := "res://scenes/wild_creature.tscn"
 const AREA_EXIT_SCENE := "res://scenes/area_exit.tscn"
 const ALTAR_BEACON_SCENE := "res://scenes/altar_beacon.tscn"
+const TREASURE_CHEST_SCENE := "res://scenes/treasure_chest.tscn"
+## Node holding the map's named spots, for the passes that dress an area
+## after it is baked.
+const MARKERS_NODE := "MapMarkers"
 
 ## Cainos grass sheet: plain rows and the rarer accent columns.
 const GRASS_TILES: Array[Vector2i] = [
@@ -52,6 +56,8 @@ const GRASS_ACCENT_TILES: Array[Vector2i] = [
 	Vector2i(4, 3), Vector2i(5, 3), Vector2i(6, 3), Vector2i(7, 3),
 ]
 const GRASS_ACCENT_CHANCE: float = 0.13
+## How often a cell of dead earth carries a crack or a scatter of pebbles.
+const DEAD_ACCENT_CHANCE: float = 0.16
 
 ## Cainos stone paving, looked up by which of a tile's corners sit on stone.
 const CORNER_TOP_LEFT: int = 1
@@ -264,6 +270,45 @@ func fill_cainos_grass() -> void:
 		return
 	var layer: TileMapLayer = layers["Ground"]
 	for cell: Vector2i in all_cells():
+		var tile: Vector2i = GRASS_TILES[random.randi() % GRASS_TILES.size()]
+		if random.randf() < GRASS_ACCENT_CHANCE:
+			tile = GRASS_ACCENT_TILES[random.randi() % GRASS_ACCENT_TILES.size()]
+		layer.set_cell(cell, OverworldTiles.GRASS, tile)
+
+
+## The Undead pack's dead earth on every cell, cracked and bare, with the
+## occasional cell carrying a detail. For a map with nothing growing on it.
+func fill_dead_ground() -> void:
+	if meadow_ground:
+		push_error("%s: fill_dead_ground needs a painter without a meadow ground." % area_name)
+		return
+	var manifest: Dictionary = OverworldTiles.load_json(
+		OverworldTiles.GROUND_MANIFESTS[OverworldTiles.UNDEAD_GROUND]
+	)
+	var plain: Array = manifest.get("ground", [])
+	var accents: Array = manifest.get("accents", [])
+	if plain.is_empty():
+		push_error("%s: the dead earth sheet has no tiles." % area_name)
+		return
+	var layer: TileMapLayer = layers["Ground"]
+	for cell: Vector2i in all_cells():
+		var tiles: Array = plain
+		if not accents.is_empty() and random.randf() < DEAD_ACCENT_CHANCE:
+			tiles = accents
+		var tile: Array = tiles[random.randi() % tiles.size()]
+		layer.set_cell(cell, OverworldTiles.UNDEAD_GROUND, Vector2i(int(tile[0]), int(tile[1])))
+
+
+## Cainos grass over [param cells] only, for the patches still alive on a map
+## that is otherwise bare ground.
+func patch_grass(cells: Dictionary) -> void:
+	if meadow_ground:
+		push_error("%s: patch_grass needs a painter without a meadow ground." % area_name)
+		return
+	var layer: TileMapLayer = layers["Ground"]
+	for cell: Vector2i in cells:
+		if not in_bounds(cell):
+			continue
 		var tile: Vector2i = GRASS_TILES[random.randi() % GRASS_TILES.size()]
 		if random.randf() < GRASS_ACCENT_CHANCE:
 			tile = GRASS_ACCENT_TILES[random.randi() % GRASS_ACCENT_TILES.size()]
@@ -636,6 +681,42 @@ func add_altar_beacon(name: String, cell: Vector2, properties: Dictionary = {}) 
 	_adopt(beacon, area)
 
 
+## A named spot on the map, under `MapMarkers`. Nothing in the game reads
+## these; they are how a later pass finds the places the layout meant.
+func add_marker(name: String, cell: Vector2i) -> void:
+	var markers: Node2D = area.get_node_or_null(NodePath(MARKERS_NODE)) as Node2D
+	if markers == null:
+		markers = _container(MARKERS_NODE)
+	var marker := Marker2D.new()
+	marker.name = name
+	marker.position = cell_to_world(cell)
+	_adopt(marker, markers)
+
+
+## A wash of colour over the whole area, for a map that is not lit like the
+## daylight ones: the light of the place rather than a filter on it.
+func add_tint(color: Color) -> void:
+	var tint := CanvasModulate.new()
+	tint.name = "Tint"
+	tint.color = color
+	_adopt(tint, area)
+
+
+## A chest standing on [param cell] with whatever [param properties] say is
+## inside it (see [TreasureChest]).
+func add_chest(name: String, cell: Vector2i, properties: Dictionary) -> void:
+	var chests: Node2D = area.get_node_or_null(^"Chests") as Node2D
+	if chests == null:
+		chests = _container("Chests")
+	var chest: Node2D = (load(TREASURE_CHEST_SCENE) as PackedScene).instantiate()
+	chest.name = name
+	chest.position = cell_to_world(cell)
+	for property: String in properties:
+		chest.set(property, properties[property])
+	_adopt(chest, chests)
+	claim(rect(Rect2i(cell, Vector2i.ONE)), 0)
+
+
 func add_actor(name: String, cell: Vector2i, properties: Dictionary) -> void:
 	var actor: Node2D = (load(ACTOR_SCENE) as PackedScene).instantiate()
 	actor.name = name
@@ -663,6 +744,56 @@ func add_creature(name: String, cell: Vector2i, properties: Dictionary) -> void:
 		creature.set(property, properties[property])
 	_adopt(creature, _actors)
 	claim(rect(Rect2i(cell - Vector2i.ONE, Vector2i.ONE * 3)), 0)
+
+
+## An invisible wall over [param cells], merged into as few rectangles as it
+## takes, under a body called [param name].
+##
+## Painted props only block over the middle of their own footprint, so a wood
+## meant to be impassable needs something behind it. This is that something:
+## the trees are what the player sees, and this is what they walk into.
+func add_solid_cells(name: String, cells: Dictionary) -> int:
+	if cells.is_empty():
+		return 0
+	var body := StaticBody2D.new()
+	body.name = name
+	_adopt(body, area)
+	var rows: Dictionary = {}
+	for cell: Vector2i in cells:
+		if not rows.has(cell.y):
+			rows[cell.y] = []
+		rows[cell.y].append(cell.x)
+	var made: int = 0
+	var row_keys: Array = rows.keys()
+	row_keys.sort()
+	for row: int in row_keys:
+		var columns: Array = rows[row]
+		columns.sort()
+		var run_start: int = columns[0]
+		var previous: int = columns[0]
+		for index: int in range(1, columns.size() + 1):
+			var column: int = columns[index] if index < columns.size() else previous + 2
+			if column == previous + 1:
+				previous = column
+				continue
+			_add_solid_run(body, run_start, previous, row, made)
+			made += 1
+			run_start = column
+			previous = column
+	return made
+
+
+func _add_solid_run(body: StaticBody2D, from_column: int, to_column: int, row: int, index: int) -> void:
+	var shape := CollisionShape2D.new()
+	shape.name = "Run%d" % index
+	var width: float = float(to_column - from_column + 1) * float(GRID_SIZE)
+	var rectangle := RectangleShape2D.new()
+	rectangle.size = Vector2(width, float(GRID_SIZE))
+	shape.shape = rectangle
+	shape.position = origin + Vector2(
+		float(from_column) * GRID_SIZE + width / 2.0, (float(row) + 0.5) * GRID_SIZE
+	)
+	_adopt(shape, body)
 
 
 ## An invisible wall just outside the painted ground, so the map edge holds

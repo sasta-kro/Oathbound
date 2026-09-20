@@ -94,15 +94,27 @@ func test_the_way_to_area_two_is_sealed_until_the_black_knight_falls() -> void:
 	GameState.defeated_bosses.erase(&"boss_area_01")
 
 
-func test_area_two_leads_back_to_area_one() -> void:
+func test_area_two_leads_back_to_area_one_and_on_to_area_three() -> void:
 	var area_two: WorldArea = _load_area("res://areas/area_two.tscn")
-	var exits: Array = area_two.find_children("*", "AreaExit", true, false)
-	assert_eq(exits.size(), 1, "Area Two has one way out.")
-	if exits.is_empty():
-		return
-	assert_eq(exits[0].target_area_path, "res://areas/area_one.tscn")
-	assert_eq(exits[0].target_entrance, &"FromAreaTwo")
-	assert_false(exits[0].is_locked(), "The way back is never sealed.")
+	var back: AreaExit = area_two.get_node("Exits/ToAreaOne") as AreaExit
+	var down: AreaExit = area_two.get_node("Exits/ToAreaThree") as AreaExit
+	assert_eq(area_two.find_children("*", "AreaExit", true, false).size(), 2, "Area Two has two ways out.")
+	assert_eq(back.target_area_path, "res://areas/area_one.tscn")
+	assert_eq(back.target_entrance, &"FromAreaTwo")
+	assert_false(back.is_locked(), "The way back is never sealed.")
+	assert_eq(down.target_area_path, "res://areas/area_three.tscn")
+	assert_eq(down.target_entrance, &"FromAreaTwo")
+	assert_eq(down.required_boss, &"boss_area_02", "The stair down waits on the Kingsworn.")
+
+
+func test_the_stair_down_to_area_three_opens_once_the_kingsworn_falls() -> void:
+	var area_two: WorldArea = _load_area("res://areas/area_two.tscn")
+	var down: AreaExit = area_two.get_node("Exits/ToAreaThree") as AreaExit
+	GameState.defeated_bosses.erase(&"boss_area_02")
+	assert_true(down.is_locked(), "The stair holds while the Kingsworn stands.")
+	GameState.defeated_bosses[&"boss_area_02"] = true
+	assert_false(down.is_locked(), "The stair opens once he falls.")
+	GameState.defeated_bosses.erase(&"boss_area_02")
 
 
 func test_unknown_entrance_falls_back_to_the_player_start() -> void:

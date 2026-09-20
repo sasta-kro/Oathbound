@@ -17,6 +17,11 @@ What this writes into `game/assets/tilesets/`:
   ft_nature.png / .json   Trees (split the same way), bushes, rocks.
   ft_props.png / .json    Market and street dressing, campfire frames.
   ruins.png / .json       Ruined pillars, dead trees, graves, bones.
+  undead_objects.png/.json The bigger Undead pieces: the crowned king, the
+                          ribcages, the cracks in the ground, and the skull
+                          brazier, recoloured to burn blue.
+  undead_ground.png/.json Dead earth for the wood under the altar: plain
+                          variants and rarer ones with pebbles and cracks.
 
 Every object manifest is a JSON array of
   {"name", "cell": [x, y], "size": [w, h], "pixels": [w, h], "kind", ...}
@@ -132,6 +137,16 @@ class Sprite:
         self.kind = kind
         self.extra = extra
         self.size = (math.ceil(image.width / CELL), math.ceil(image.height / CELL))
+        animation = extra.get("animation")
+        if animation:
+            # An animated sprite keeps its frames side by side on the sheet,
+            # each one padded out to whole cells, so the block it needs is
+            # wider than the strip it was cut from.
+            frame_w, frame_h = animation["frame_pixels"]
+            self.size = (
+                math.ceil(frame_w / CELL) * animation["frames"],
+                math.ceil(frame_h / CELL),
+            )
         self.cell = (0, 0)
 
 
@@ -252,6 +267,75 @@ def props() -> list[Sprite]:
     return sprites
 
 
+# Dead earth for Area Three. The Undead pack draws its ground on a 16 px grid
+# like the Fan-tasy terrain, but the objects that stand on it are packed on the
+# 32 px Cainos grid, so the ground is assembled here into whole 32 px cells: a
+# 2x2 block of the pack's five earth tiles, in a different arrangement each
+# time, and a handful of rarer cells with a detail dropped on top.
+UNDEAD_GROUND_SOURCE = "Tiled_files/Ground_rocks.png"
+UNDEAD_DETAIL_SOURCE = "Tiled_files/details.png"
+UNDEAD_EARTH_TILES = [(16, 320), (48, 320), (80, 320), (112, 320), (144, 320)]
+UNDEAD_EARTH_SIZE = 16
+UNDEAD_GROUND_VARIANTS = 10
+UNDEAD_GROUND_ACCENTS = 8
+## Details small enough to sit inside one cell: pebbles, cracks, dead tufts.
+UNDEAD_DETAIL_BOXES = [
+    (130, 16, 12, 16),
+    (67, 18, 11, 11),
+    (147, 18, 10, 13),
+    (84, 20, 8, 8),
+    (164, 20, 8, 10),
+    (32, 35, 10, 10),
+    (566, 33, 10, 9),
+    (259, 18, 11, 11),
+]
+
+
+def undead_ground() -> None:
+    """Write the dead-earth sheet and the manifest naming its tiles."""
+    root = ROOT / "assets/tilesets/Free-Undead-Tileset-Top-Down-Pixel-Art"
+    earth_sheet = Image.open(root / UNDEAD_GROUND_SOURCE).convert("RGBA")
+    detail_sheet = Image.open(root / UNDEAD_DETAIL_SOURCE).convert("RGBA")
+    earth = [
+        earth_sheet.crop((x, y, x + UNDEAD_EARTH_SIZE, y + UNDEAD_EARTH_SIZE))
+        for x, y in UNDEAD_EARTH_TILES
+    ]
+    details = [detail_sheet.crop((x, y, x + w, y + h)) for x, y, w, h in UNDEAD_DETAIL_BOXES]
+
+    total = UNDEAD_GROUND_VARIANTS + UNDEAD_GROUND_ACCENTS
+    columns = min(SHEET_WIDTH_CELLS, total)
+    rows = math.ceil(total / columns)
+    sheet = Image.new("RGBA", (columns * CELL, rows * CELL), (0, 0, 0, 0))
+    plain: list[list[int]] = []
+    accents: list[list[int]] = []
+    for index in range(total):
+        cell_x, cell_y = index % columns, index // columns
+        for quarter in range(4):
+            piece = earth[(index * 7 + quarter * 3) % len(earth)]
+            offset = (
+                cell_x * CELL + (quarter % 2) * UNDEAD_EARTH_SIZE,
+                cell_y * CELL + (quarter // 2) * UNDEAD_EARTH_SIZE,
+            )
+            sheet.alpha_composite(piece, offset)
+        if index < UNDEAD_GROUND_VARIANTS:
+            plain.append([cell_x, cell_y])
+            continue
+        detail = details[(index - UNDEAD_GROUND_VARIANTS) % len(details)]
+        sheet.alpha_composite(
+            detail,
+            (
+                cell_x * CELL + (CELL - detail.width) // 2,
+                cell_y * CELL + (CELL - detail.height) // 2,
+            ),
+        )
+        accents.append([cell_x, cell_y])
+
+    sheet.save(OUTPUT / "undead_ground.png")
+    manifest = {"ground": plain, "accents": accents}
+    (OUTPUT / "undead_ground.json").write_text(json.dumps(manifest, indent=1) + "\n")
+    print(f"undead_ground: {len(plain)} earth tiles and {len(accents)} with detail")
+
+
 # Pixel boxes inside the Undead `Objects.png` sheet, chosen by eye from the
 # sprite boxes `pack_sprite_sheet.find_sprites` reports for it.
 UNDEAD_BOXES = {
@@ -282,10 +366,77 @@ UNDEAD_BOXES = {
     "graves_cluster": ((672, 662, 720, 683), "prop"),
 }
 
+# The bigger pieces of the same sheet, kept apart from `ruins.png` so that
+# adding one never repacks the sprites Area One and the town already stand on.
+UNDEAD_LANDMARK_BOXES = {
+    "king_relic": ((5, 3, 155, 116), "prop"),
+    "ribcage": ((481, 66, 575, 176), "prop"),
+    "fallen_log": ((491, 179, 575, 218), "prop"),
+    "bramble_tree": ((3, 229, 62, 303), "prop"),
+    "corpse_hang": ((1, 434, 62, 496), "prop"),
+    "pale_spirit": ((626, 309, 671, 366), "walkable"),
+    "ground_crack_large": ((416, 224, 526, 367), "walkable"),
+    "ground_crack": ((192, 224, 302, 304), "walkable"),
+}
+
 
 def ruins() -> list[Sprite]:
     sheet = Image.open(UNDEAD / "Objects.png").convert("RGBA")
     return [Sprite(name, sheet.crop(box), kind) for name, (box, kind) in UNDEAD_BOXES.items()]
+
+
+# The skull brazier from the Undead pack's animation sheet: six frames in a
+# row, 48x80 each. The pack burns it green; Area Three burns everything of the
+# king's in blue, so the flame is recoloured on the way in.
+UNDEAD_BRAZIER_SOURCE = "Animation6.png"
+UNDEAD_BRAZIER_FRAMES = 6
+UNDEAD_BRAZIER_FRAME = (48, 80)
+UNDEAD_BRAZIER_SECONDS = 0.12
+
+
+def blue_flame(image: Image.Image) -> Image.Image:
+    """Turn the pack's green fire blue by swapping the green and blue channels.
+
+    Only the pixels the green dominates are touched, so the bone and the iron
+    of the brazier keep their own colour.
+    """
+    out = image.copy()
+    pixels = out.load()
+    for y in range(out.height):
+        for x in range(out.width):
+            r, g, b, a = pixels[x, y]
+            if a == 0 or g <= r + 8 or g <= b + 8:
+                continue
+            pixels[x, y] = (r, (g + b) // 2, g, a)
+    return out
+
+
+def undead_braziers() -> list[Sprite]:
+    sheet = Image.open(UNDEAD / UNDEAD_BRAZIER_SOURCE).convert("RGBA")
+    width, height = UNDEAD_BRAZIER_FRAME
+    strip = Image.new("RGBA", (width * UNDEAD_BRAZIER_FRAMES, height), (0, 0, 0, 0))
+    for index in range(UNDEAD_BRAZIER_FRAMES):
+        frame = sheet.crop((index * width, 0, (index + 1) * width, height))
+        strip.alpha_composite(blue_flame(frame), (index * width, 0))
+    return [
+        Sprite(
+            "blue_brazier",
+            strip,
+            "prop",
+            animation={
+                "frames": UNDEAD_BRAZIER_FRAMES,
+                "seconds": UNDEAD_BRAZIER_SECONDS,
+                "frame_pixels": list(UNDEAD_BRAZIER_FRAME),
+            },
+        )
+    ]
+
+
+def undead_landmarks() -> list[Sprite]:
+    sheet = Image.open(UNDEAD / "Objects.png").convert("RGBA")
+    return [
+        Sprite(name, sheet.crop(box), kind) for name, (box, kind) in UNDEAD_LANDMARK_BOXES.items()
+    ]
 
 
 def pack(name: str, sprites: list[Sprite]) -> None:
@@ -360,6 +511,8 @@ def main() -> int:
     pack("ft_nature", nature())
     pack("ft_props", props())
     pack("ruins", ruins())
+    pack("undead_objects", undead_landmarks() + undead_braziers())
+    undead_ground()
     return 0
 
 

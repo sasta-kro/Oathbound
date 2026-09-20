@@ -1,0 +1,45 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_0"]
+script = ExtResource("2_objective")
+kind = 3
+target = &"res://areas/area_three.tscn"
+count = 1
+description = "Go down into the king's wood"
+
+[sub_resource type="Resource" id="Objective_1"]
+script = ExtResource("2_objective")
+kind = 2
+target = &"lastchampion"
+count = 1
+description = "Find the champion who keeps the stair"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_main_10_the_dead_wood"
+title = "The Dead Wood"
+kind = 0
+summary = "Below the halls is the king's own ground: a wood with nothing living in it and a road running up to a barrow. A champion of the Order sits at the foot of the stair and has sat there since long before Aldric's watch."
+giver = &"aldric"
+turn_in = &"lastchampion"
+requires = &"quest_main_09_the_kingsworn"
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_0"), SubResource("Objective_1")])
+reward_currency = 120
+reward_binding_scrolls = 1
+reward_xp = 1000
+recommended_level = 0
+offer_line = "Aldric: Last thing I can give you, and it is only words. Down there is his own ground. A wood with nothing living in it and a road running up to a barrow, and he is on the barrow. Between you and it are two more of his household and whatever the ground has made of everything else. There is a champion sitting at the bottom of the stair. She has been there since long before my watch and she does not get up. Go to her first. Every one of us who got that far did, and every one of us came back knowing something we did not know going in."
+accept_option = "I'll go down."
+refuse_option = "Give me a moment."
+accepted_line = "Aldric: Don't be unsettled by her. She is further along than the rest of us, that's all."
+refused_line = "Aldric: Then the stair waits. It is very good at that."
+reoffer_line = "Aldric: Down the stair when you are ready. Will you go?"
+progress_line = "Aldric: She is at the bottom, against a dead tree, to your left."
+continue_option = "I'm going."
+abandon_option = "Not yet."
+abandoned_line = "Aldric: Take the fire for a while. Nobody here will say a word."
+complete_line = "The Last Champion: You made it further than I did. She says it without much interest, and does not look up. He is up the road, past the pillars, on the barrow. Mind the two in the glades on your way. They wear a face each and neither face is theirs to wear, and you will want to stand and work out why, and that is exactly how long it takes them to reach you. Do them first, and do not be gentle with them on account of who they look like. Go on. I will keep the stair."
+done_line = "Aldric: She keeps that stair. She has kept it for every one of us."

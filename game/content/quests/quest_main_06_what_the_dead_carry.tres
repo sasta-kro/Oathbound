@@ -1,0 +1,52 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_0"]
+script = ExtResource("2_objective")
+kind = 4
+target = &"opened_chest_two_southwest"
+count = 1
+description = "Recover the seal-iron from the southwest flood"
+
+[sub_resource type="Resource" id="Objective_1"]
+script = ExtResource("2_objective")
+kind = 4
+target = &"opened_chest_two_camp"
+count = 1
+description = "Recover the seal-iron from the old camp"
+
+[sub_resource type="Resource" id="Objective_2"]
+script = ExtResource("2_objective")
+kind = 0
+target = &"creature_water_03"
+count = 2
+description = "Clear two Mirelashes off the flooded hall"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_main_06_what_the_dead_carry"
+title = "What the Dead Carry"
+kind = 0
+summary = "The Gravewright digs for the champions these halls take and lifts the seal-iron off them so the sigil can go home even when they cannot. Two lie where he cannot reach, with Mirelashes sitting over both."
+giver = &"gravewright"
+requires = &"quest_main_05_the_record"
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_0"), SubResource("Objective_1"), SubResource("Objective_2")])
+reward_currency = 110
+reward_binding_scrolls = 3
+reward_xp = 1000
+recommended_level = 21
+offer_line = "The Gravewright: Mind where you tread. They are all champions, every one of these. I dig for the ones the halls take, and I lift the seal-iron off them, because the iron can go home even when they can't. Two are out where I cannot reach, one under the southwest flood and one at the old camp, and there are Mirelashes sitting over both. Bring their sigils in. They should not be left lying in his halls."
+accept_option = "I'll bring them in."
+refuse_option = "Not now."
+accepted_line = "The Gravewright: Water and earth put a Mirelash down. Don't let one get its mouth on you; they hold."
+caution_line = "The Gravewright: Those Mirelashes are heavier than anything you met upstairs. Nearer level %d, if you want my advice, and you should, because I bury the ones who didn't take it."
+refused_line = "The Gravewright: They have lain there a long time. They will lie a while more."
+reoffer_line = "The Gravewright: Those two are still out there. Changed your mind?"
+progress_line = "The Gravewright: Southwest flood and the old camp. Any luck?"
+continue_option = "Still at it."
+abandon_option = "I can't face it."
+abandoned_line = "The Gravewright: I'll not press you. It is not pleasant work and it was never yours to do."
+complete_line = "The Gravewright: Both of them. Good. Half of this goes in the ground with their names on it and half goes to the Sealwright, and the Sealwright cuts it into scrolls, and the scrolls go to you. No coin, don't offer. That is how this place works: the last one leaves the next one better off than they were. Forty-one times we have done it, and every champion who walks up that road carries something one of us paid for. Take them. The Bellkeeper wants you next. She is in the bell-hall and she is shouting about it."
+done_line = "The Gravewright: Bell-hall, north end. She has not stopped shouting."

@@ -7,6 +7,11 @@ extends Node2D
 ## that keeps it dark. The beacon is unlit while that boss stands, and lights
 ## itself the moment the boss falls, so the player sees the way open from
 ## wherever they are standing rather than on the next visit.
+##
+## The same light stands in the doorways between areas, so a way on and a way
+## back read as a way through from across the room. A map can hold several,
+## which is why the glow material is local to the scene: shared, the last
+## beacon to wake would set every other one's intensity as well.
 
 ## Emitted when the altar takes the light, whether it was lit on arrival or
 ## woke up during the visit.

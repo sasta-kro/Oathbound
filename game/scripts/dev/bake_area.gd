@@ -8,11 +8,13 @@
 ## Run from `game/` with the layout name after `--`:
 ##   godot --headless --path . --script res://scripts/dev/bake_area.gd -- town
 ##   godot --headless --path . --script res://scripts/dev/bake_area.gd -- area_one
+##   godot --headless --path . --script res://scripts/dev/bake_area.gd -- area_three
 extends SceneTree
 
 const LAYOUTS: Dictionary = {
 	"town": "res://scripts/dev/layouts/town_layout.gd",
 	"area_one": "res://scripts/dev/layouts/area_one_layout.gd",
+	"area_three": "res://scripts/dev/layouts/area_three_layout.gd",
 }
 
 

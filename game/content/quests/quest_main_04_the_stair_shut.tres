@@ -1,0 +1,45 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_0"]
+script = ExtResource("2_objective")
+kind = 3
+target = &"res://areas/area_two.tscn"
+count = 1
+description = "Go down the stair beneath the altar"
+
+[sub_resource type="Resource" id="Objective_1"]
+script = ExtResource("2_objective")
+kind = 2
+target = &"aldric"
+count = 1
+description = "Find whoever keeps the halls below"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_main_04_the_stair_shut"
+title = "The Stair Shut"
+kind = 0
+summary = "The Oathbreaker has stood aside and the altar is open. No warden has ever seen what lies under it, but forty-one champions went down before and the seal held every time, so somebody below knows their business."
+giver = &"warden"
+turn_in = &"aldric"
+requires = &"quest_main_03_the_black_knight"
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_0"), SubResource("Objective_1")])
+reward_currency = 60
+reward_binding_scrolls = 1
+reward_xp = 400
+recommended_level = 0
+offer_line = "Warden: The knight has stood aside and the altar is open, and I will not pretend I know what is down there, because no warden does. Only champions go down, and champions do not come back up to be asked. What I can tell you is that the Order has sent forty-one before you and the seal has held forty-one times, so somebody down there knows their business. Find them. Do as they say. Will you go down?"
+accept_option = "I'll go down."
+refuse_option = "Give me the night."
+accepted_line = "Warden: Take the offerings with you and do not set them down for anything. I will be at the ruins when you come up. I have been at the ruins a long time."
+refused_line = "Warden: Then take the night. The seal has held this long and it will hold till morning."
+reoffer_line = "Warden: The altar is still open and the stair is still waiting. Have you decided?"
+progress_line = "Warden: Still up here? The stair is behind the altar. Mind the first step; it is a long one."
+continue_option = "I'm going down."
+abandon_option = "Not today."
+abandoned_line = "Warden: No shame in it. Every champion I have sent down stood where you are standing and needed a moment. Come back when you have had yours."
+complete_line = "Aldric: Another one. Put the scroll away, lad, I'm no wild thing. Aldric of the Order, champion of the ninth watch, and I heard that door open from three halls off. Come and sit by the fire. There are more of us down here than you are expecting, and we have been keeping things ready a long while."
+done_line = "Warden: They keep the halls below. Whoever they are, they have kept them well. Do as they tell you."

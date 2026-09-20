@@ -1,0 +1,54 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_0"]
+script = ExtResource("2_objective")
+kind = 0
+target = &"creature_fire_04"
+count = 2
+description = "Break two Cinderhulks off the paved road"
+
+[sub_resource type="Resource" id="Objective_1"]
+script = ExtResource("2_objective")
+kind = 0
+target = &"creature_wind_05"
+count = 3
+description = "Clear three Gloomgazes out of the pillars"
+
+[sub_resource type="Resource" id="Objective_2"]
+script = ExtResource("2_objective")
+kind = 4
+target = &"opened_chest_three_barrow"
+count = 1
+description = "Uncover the seal-stone on the barrow"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_main_12_the_road_to_the_barrow"
+title = "The Road to the Barrow"
+kind = 0
+summary = "The last stretch of road runs up through the pillars to the barrow, and the ground has made the king's own out of everything standing on it. The seal-stone waits at the top under four hundred years of nothing growing."
+giver = &"lastchampion"
+requires = &"quest_main_11_the_two_he_trusted"
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_0"), SubResource("Objective_1"), SubResource("Objective_2")])
+reward_currency = 180
+reward_binding_scrolls = 3
+reward_xp = 2400
+reward_item = &"item_hearty_tonic"
+reward_item_count = 2
+recommended_level = 36
+offer_line = "The Last Champion: The last stretch, then. Cinderhulks on the paving and gazers in the pillars, and they are no more wild things than the two in the glades were; everything down here is his, one way or another. Clear them, get up onto the barrow, and find the stone. It is under four hundred years of nothing growing and it will not look like much. Set your water and your wood and your iron on it. That is the rite. That is all the rite has ever been."
+accept_option = "I'll take the road."
+refuse_option = "Not yet."
+accepted_line = "The Last Champion: Take the hulks on the open paving, not in the pillars. You will want room, and you will not get any once you are up among the stones."
+caution_line = "The Last Champion: That road killed me at level %d, near enough. Do better than I did."
+refused_line = "The Last Champion: Then he sleeps thin a while longer and somebody else comes down in eleven years. Perhaps."
+reoffer_line = "The Last Champion: The road is still his. Are you going up it?"
+progress_line = "The Last Champion: Paving first, then the pillars, then the stone."
+continue_option = "I'm going up."
+abandon_option = "I've had enough."
+abandoned_line = "The Last Champion: Go back to the fire, then, and let them feed you. It is not the worst life. I would know; I watched thirty of them live it."
+complete_line = "The Last Champion: You found it. Then that is everything the Order has ever been able to give you, laid out on a rock in a dead wood, and it is enough, and it has always been enough, and it has never once been finished. Forty-one times we have pressed him under with that stone and forty-one times it has worn thin. It will wear thin again. That is not a failure. That is the shape of the thing. He asked the god of the dead for more than a man may have, and this is the sentence, and we are all of us only the hands that turn the key. He is on the barrow. He knows you are here. Go when you are ready, and not a moment before."
+done_line = "The Last Champion: The stone is set. He is on the barrow, waiting. Go when you are ready."

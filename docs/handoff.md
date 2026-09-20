@@ -21,6 +21,21 @@ Roughly 10 to 15 minutes of content against a 40 to 60 minute target.
 
 These are the most recent implementations. The next developer will most likely touch them first.
 
+### 2.00000000 Chests, havens, signed doorways, and Areas Two and Three (20 September 2026)
+
+**What:** the two deep areas became places rather than corridors, and two rules the spec had been waiting on landed with them.
+
+- **Chests.** `scenes/treasure_chest.tscn` / `scripts/world/treasure_chest.gd`. A chest blocks movement, glints while it is shut, and pays out coins, Binding Scrolls and items once. `GameState.opened_chests` is a set of ids saved with the journey, so a reload cannot empty the same chest twice; `main._open_chest` puts the rewards up as field notices and reports an `opened_<id>` quest event. Four chests in Area Two, three in Area Three.
+- **Havens.** `GameState.record_haven` remembers the last inn bed or healer's table used (`main._talk_to` for anyone with `heals_party`, `_offer_rest` for an inn). A party routed in battle is carried there behind the battle's own wipe (`main._wake_at_haven`), or to the town when it has rested nowhere. Saved under `"haven"`.
+- **Signed doorways.** `AreaExit` now signs itself in the game: a name plate, chevrons crawling towards the doorway, dull red and "(SEALED)" while a boss holds the way. Each doorway also carries an `AltarBeacon` portal; the beacon's glow material is now local to its scene, without which the last beacon to load set every other one's intensity.
+- **Area Two.** `scripts/dev/populate_area_two.gd` grew from a cast-placer into the area's whole finishing pass: it seals every floor edge the plan bake left open (4505 cells - the player could walk off the map almost anywhere), fills the pits the plan drew inside the great hall, dresses the halls with crypts, urns, candles and wall torches, pitches the supply camp in the great hall (Quartermaster, Sealwright, and the Lamplighter who heals and keeps a bed), places the chests, and opens the stair down to Area Three behind the Kingsworn, who was moved into its mouth.
+- **Area Three.** Rebuilt from the catacombs room it was into the dead wood of the swallowed kingdom, as a layout (`scripts/dev/layouts/area_three_layout.gd`) baked by `bake_area.gd`. It is deliberately small: one road from the stair to the barrow, a glade either side for the household knights, four spawn pockets, and the Skeleton Lord under the crowned relic at the top. The wood outside that hollow is planted solid and backed by merged collision runs (`AreaPainter.add_solid_cells`), with the king's blue braziers along the inside edge, so the map is a boss approach rather than a country to cross.
+- **Art.** `tools/build_overworld_sheets.py` now also writes `undead_ground` (the pack's cracked dead earth, assembled into whole 32 px cells) and `undead_objects` (the crowned king, ribcages, ground cracks, a fallen log, the hanging dead, pale spirits, and the skull brazier recoloured to burn blue). Both are sources in `overworld.tres`; `AreaPainter.fill_dead_ground` paints the first.
+
+**Watch out for:** `build_overworld_tileset.gd` used to drop the tileset uid on every run, which broke every scene that referred to `overworld.tres` by uid; it now writes the uid back. `ruins.png` is packed separately from the new landmarks on purpose - repacking it moves the atlas cells the town and Area One are painted with.
+
+**Files:** `scripts/world/treasure_chest.gd`, `scenes/treasure_chest.tscn`, `scripts/world/area_exit.gd`, `scripts/world/altar_beacon.gd`, `scenes/altar_beacon.tscn`, `scripts/game_state.gd`, `scripts/main.gd`, `scripts/dev/area_painter.gd`, `scripts/dev/populate_area_two.gd`, `scripts/dev/layouts/area_three_layout.gd`, `scripts/dev/bake_area.gd`, `scripts/dev/build_overworld_tileset.gd`, `scripts/dev/overworld_tiles.gd`, `scripts/dev/snapshot_tool.gd`, `scenes/dev_tool_snapshot.tscn`, `tools/build_overworld_sheets.py`, `tests/test_chests_and_haven.gd`, `tests/test_areas.gd`.
+
 ### 2.0000000 Shop and inn side quests (19 September 2026)
 
 - Four side quests in `content/quests/quest_side_{a_stocked_satchel,ink_and_oath,a_proper_rest,field_medicine}.tres` use EVENT objectives that `GameState` reports itself: `bought_<item id>` in `buy_item`, `used_<item id>` in `use_item_in_field` and after a battle from `BattleEngine.items_used`, and `rested_at_inn` from `main._offer_rest`.
@@ -151,7 +166,7 @@ Ordered so each step unlocks the next and keeps the game playable at every commi
 ### Later (content and the rest of the story)
 
 12. **Player name.** The opening exists (prologue plus the Elder at the well, Specification 4.5); name entry and a stored `player_name` do not. Small.
-13. **Areas 2 and 3, bosses 2 and 3, ending and credits.** Content-heavy; the map pipeline is ready. Species count needs to grow from 6 toward 15+, moves from 10 toward 25+.
+13. **Credits.** Areas 2 and 3, bosses 2 and 3, the full eighteen-quest main chain and the ending all ship (see `implementation_status.md`, "The story, end to end"). A credits roll after the epilogue's caption is the piece still missing. Small.
 14. **Audio.** Done for the current content: `MusicService` (four CC0 tracks, see `assets/music/SOURCE.md`) and `SfxService` (CC0 hit, bind and faint sounds, see `assets/sfx/SOURCE.md`), music and effects sliders in settings. Remaining: UI sounds (menu move/confirm), move-specific sounds per element, footsteps. Small each.
 15. **Control rebinding** in settings. Medium.
 16. **Interactables:** chests (once-per-game, saved), signs, doors, switches. Medium.

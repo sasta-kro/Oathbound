@@ -165,7 +165,7 @@ sprite_frames = ExtResource("npc_knight_frames")
 facing = &"up"
 dialogue_line = "Warden: Rest a moment. I'll see your Oathbound mended. Whatever you do next, don't face the altar tired. Nobody has ever beaten him tired."
 heals_party = true
-quest_ids = Array[StringName]([&"quest_main_02c_the_hollow_watch", &"quest_main_03_the_black_knight"])
+quest_ids = Array[StringName]([&"quest_main_02c_the_hollow_watch", &"quest_main_03_the_black_knight", &"quest_main_04_the_stair_shut"])
 
 [node name="Guardian" parent="Actors" unique_id=1692816607 instance=ExtResource("7_b42mx")]
 position = Vector2(504, -312)

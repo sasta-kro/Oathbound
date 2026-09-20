@@ -1,0 +1,52 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_0"]
+script = ExtResource("2_objective")
+kind = 4
+target = &"bought_item_binding_scroll"
+count = 2
+description = "Take two Binding Scrolls from the Sealwright"
+
+[sub_resource type="Resource" id="Objective_1"]
+script = ExtResource("2_objective")
+kind = 4
+target = &"used_item_herb_salve"
+count = 1
+description = "Put a salve on a hurt companion"
+
+[sub_resource type="Resource" id="Objective_2"]
+script = ExtResource("2_objective")
+kind = 4
+target = &"rested_at_inn"
+count = 1
+description = "Sleep a night at the Lamplighter's fire"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_main_08_a_champions_kit"
+title = "A Champion's Kit"
+kind = 0
+summary = "The Nurse will not watch another champion go up the road half-ready. Scrolls from the Sealwright, salve on whatever is limping, and a night at the Lamplighter's fire, and then she will talk about the stair."
+giver = &"nurse"
+requires = &"quest_main_07_the_inside_of_the_door"
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_0"), SubResource("Objective_1"), SubResource("Objective_2")])
+reward_currency = 80
+reward_xp = 1450
+reward_item = &"item_hearty_tonic"
+reward_item_count = 2
+recommended_level = 0
+offer_line = "The Nurse: Stop there. I have watched you cross this hall four times now and your Oathbound are held together with luck and good manners. You came a long way to be told this, so I will say it plainly: nobody here expects you to be clever and nobody here expects you to be lucky, but you will be ready before you go up that road, or I will hear about it from the Gravewright. Scrolls from the Sealwright. Salve on that one, yes, that one, it has been limping since the bell-hall. And a night at the Lamplighter's fire. Then we will talk about the stair."
+accept_option = "All right, all right."
+refuse_option = "I'm fine as I am."
+accepted_line = "The Nurse: Don't pay the Sealwright. He'll take it if you offer and then feel wretched about it for a week."
+refused_line = "The Nurse: Then go up the road half-ready, like the last forty did. I will keep a bed clear."
+reoffer_line = "The Nurse: Scrolls, salve, and a night's sleep. Have you come to your senses?"
+progress_line = "The Nurse: Scrolls, salve, sleep. It is not a difficult list."
+continue_option = "I'm getting to it."
+abandon_option = "I don't need fussing."
+abandoned_line = "The Nurse: Fine. It is your road. I have never once enjoyed being right about this."
+complete_line = "The Nurse: Better. You look like something that intends to come back. Now hear why we fuss. Forty of us could not finish it, and that is forty people's worth of learning what not to do, sitting down here going to waste, so we do not let it. Every champion who goes up that road goes up carrying what the last one paid for. That is the whole of this place. That is why we stayed. Go and find Aldric at the stair down. He has been standing in the mouth of it since the bells rang and he will not say why."
+done_line = "The Nurse: Aldric is at the stair down. Go gently with him about it."

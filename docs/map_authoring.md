@@ -45,7 +45,10 @@ The camera limits and the valid spawn area come from whatever is painted on
 One cell is 48 px in the world (the 32 px art is drawn at 1.5x). Snap
 settings: `Editor > Snap` with a 48 px grid keeps markers and zones on cells.
 
-### Two tilesets
+### Three tilesets
+
+`assets/tilesets/catacombs.tres` is Area Two's: 48 px art drawn at 0.5, so
+the catacombs run on a 24 px cell, half the size of the overworld one.
 
 `assets/tilesets/overworld.tres` holds everything drawn on the 48 px cell:
 the Cainos grass, stone and walls, and the Fan-tasy houses, trees and props
@@ -110,6 +113,41 @@ An exit is where the player leaves for another area:
    a couple of cells inside from its own exit back, so arriving does not
    bounce the player straight back.
 
+In the game an exit signs itself: a name plate floats over it and chevrons
+crawl along the ground towards the doorway, so a way on and a way back are
+both visible from across the room. Put `scenes/altar_beacon.tscn` on the exit
+as well and the doorway carries the light the altar in Area One does: a rune
+ring on the ground and a column standing out of it. Give the beacon the same
+`Required Boss` as the exit and it stays dark until that boss falls, so a
+sealed way reads as sealed. Every doorway between the shipped areas has one.
+
+| Property | Meaning |
+|---|---|
+| Signpost | Off for an exit the map already announces on its own, such as Area One's altar. |
+| Signpost Text | What the plate reads. Empty falls back to the target scene's file name, so write one: "UP TO THE MEADOW" beats "AREA ONE". |
+| Signpost Direction | Which way the chevrons crawl. Leave it at zero and they point away from the middle of the map, which is the way out of it. |
+| Required Boss | While that boss stands, the exit turns the player back with `Locked Line`, and the plate reads dull red with "(SEALED)" after it. |
+
+## Chests
+
+A chest is something to find (Specification 16.1). Drag
+`scenes/treasure_chest.tscn` into the area, put it where the reward should
+be, and fill in what is inside:
+
+| Property | Meaning |
+|---|---|
+| Chest Id | How the save remembers it. Unique across the whole game; the convention is `chest_<area>_<place>`. Never change one after a journey could have opened it. |
+| Coins / Binding Scrolls | Paid straight into the purse and the scroll pile. |
+| Item Ids / Item Counts | Items from `content/items/`, one count per id. |
+| Opened Line | What the player reads as the lid comes up. The rewards themselves are shown as field notices, so this is flavour. |
+| Empty Line | What they read coming back to an emptied chest. |
+| Required Boss / Locked Line | A chest that waits on a boss, like a sealed exit. |
+
+Chests block movement, so they are never hidden behind an NPC, and the shut
+one glints so it reads as worth crossing the room for. A chest is emptied
+once per journey: [GameState] keeps the ids, so reloading a save cannot pay
+the same chest out twice.
+
 The main scene swaps areas behind a screen wipe and puts the player on the
 marker. Areas point at each other by path, so two areas can lead into each
 other.
@@ -160,13 +198,23 @@ the party.
 
 Press F5 (or the play button) to run the game from `main.tscn`, which loads
 `areas/town.tscn`. To start the game in a different area, change the `Area`
-node in `main.tscn` to instance your scene.
+node in `main.tscn` to instance your scene, or use the title screen's dev
+shortcuts, which drop the player into Area Two or Area Three with the bosses
+behind them already beaten.
 
-To see a whole map at once, add a `Node` with `scripts/dev/snapshot_area.gd`
-to any open scene and call
-`snapshot("res://areas/town.tscn", "/tmp/town.png", 0.5)` on it (from the
-MCP bridge or the script editor); it renders the scene, spawn circles and
-exit rectangles included, to a PNG. Remove the node afterwards.
+To see a whole map at once, run the snapshot tool. It has to run windowed,
+because rendering needs a real display, and it has no editor cache to show
+you yesterday's map:
+
+```bash
+godot --path game res://scenes/dev_tool_snapshot.tscn -- area_three
+```
+
+Each PNG lands in `user://snapshots/<area>.png` and the path is printed. With
+no area named it shoots all four. The same rendering lives in
+`scripts/dev/snapshot_area.gd`, which can be dropped on an open scene as a
+`Node` and called from the editor when the editor-only gizmos (spawn circles,
+exit rectangles) are what you want to look at.
 
 Automated checks from `game/`:
 
@@ -177,14 +225,38 @@ godot --headless -d --path . -s addons/gut/gut_cmdln.gd
 
 ## Regenerating a map
 
-The town and Area One were first written by `scripts/dev/bake_area.gd` from
-the layouts in `scripts/dev/layouts/`, which describe each map in cells:
-terrain regions, named sprites, dressing to scatter, and the actors, zones
-and exits. `scripts/dev/bake_test_01.gd` did the same for the test room.
+The town, Area One and Area Three are written by `scripts/dev/bake_area.gd`
+from the layouts in `scripts/dev/layouts/`, which describe each map in cells:
+terrain regions, named sprites, dressing to scatter, and the actors, zones,
+chests and exits. `scripts/dev/bake_test_01.gd` did the same for the test
+room.
 
 ```bash
-godot --headless --path game --script res://scripts/dev/bake_area.gd -- town area_one
+godot --headless --path game --script res://scripts/dev/bake_area.gd -- town area_one area_three
 ```
+
+Area Three is the one that is still generated rather than hand-edited: it is
+a boss approach, one road from the stair to the barrow with the wood closed
+in on both sides, so it is easier to re-shape in
+`scripts/dev/layouts/area_three_layout.gd` than by hand. The layout plants
+the wood outside the walkable hollow and then makes those cells solid
+(`AreaPainter.add_solid_cells`), because painted trees only block over the
+middle of their own footprint; the blue braziers stand on the inside edge of
+that wall so the player can see where the map ends.
+
+Area Two came from a drawn plan (`scripts/dev/build_area_two_map.gd`) and is
+finished by `scripts/dev/populate_area_two.gd`, which is run as a scene
+because it reads autoloads:
+
+```bash
+godot --headless --path game res://scenes/dev_tool.tscn
+```
+
+That pass rebuilds the cast, the spawn zones, the boss, the supply camp in
+the great hall, the chests and the two doorways, and it also finishes the
+map itself: every floor cell on the edge of a room gets the wall tile facing
+it, the pits the plan left are filled, and the halls are dressed. It reads
+the Ground layer, so it is safe to run again.
 
 Running a bake again overwrites hand edits, so treat the layouts as a
 record of how the first version was built (and a quick way to start a new

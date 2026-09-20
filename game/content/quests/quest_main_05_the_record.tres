@@ -1,0 +1,45 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_0"]
+script = ExtResource("2_objective")
+kind = 0
+target = &"creature_earth_03"
+count = 3
+description = "Put three Hollow Squires back to rest in the halls"
+
+[sub_resource type="Resource" id="Objective_1"]
+script = ExtResource("2_objective")
+kind = 4
+target = &"opened_chest_two_northwest"
+count = 1
+description = "Recover the unfinished roll from the northwest hall"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_main_05_the_record"
+title = "The Record"
+kind = 0
+summary = "The Archivist keeps the book of every champion who came down the stair and everything they learned about the king before the wood took them. One roll is still out in the northwest hall with the woman who was writing it."
+giver = &"archivist"
+requires = &"quest_main_04_the_stair_shut"
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_0"), SubResource("Objective_1")])
+reward_currency = 90
+reward_binding_scrolls = 1
+reward_xp = 800
+recommended_level = 18
+offer_line = "The Archivist: You will want to know what you are walking into, and I am the one who writes it down. Every champion who came down that stair is in my book, and so is everything they learned about him before the wood had them. One roll is still out in the northwest hall with the woman who was writing it. She got as far as the pillars. Bring her roll home and I will read you the whole of it, from the bargain forward."
+accept_option = "I'll bring it back."
+refuse_option = "Later."
+accepted_line = "The Archivist: The squires between you and it were champions once, same as her. They have forgotten what they were told to do and they are still doing it. Be quick, and be kind."
+caution_line = "The Archivist: A word. Those squires were champions, and this ground has not made them gentler. Come back when your lead is nearer level %d and it will be a shorter afternoon."
+refused_line = "The Archivist: Then it stays out there, and so does she. Come back when you would rather know than not."
+reoffer_line = "The Archivist: The roll is still in the northwest hall. Would you fetch it now?"
+progress_line = "The Archivist: Northwest hall, past the crypts. She is sitting down, and the roll is under her hand."
+continue_option = "Still looking."
+abandon_option = "I'd rather not."
+abandoned_line = "The Archivist: As you like. I have waited four hundred years to finish that entry; I can wait a little longer."
+complete_line = "The Archivist: Thank you. Now sit, because this is the oldest thing in the book and I have had a long while to get the wording right. The king loved something and lost it, and grief took his reason, and when a man with a crown loses his reason he does not weep, he acts. He went to the god of the dead and asked for what no living man may ask, and he was answered. That is the whole of it. He does not live and he does not die; he sleeps, and the sleep wears thin, and every few decades somebody has to press him back into it. His knights went with him because they were sworn and the oath dragged them along behind him. They are being punished for his crime. So are we. So is the wood. Go and see the Gravewright down the east passage when you are ready; he will show you what these halls cost."
+done_line = "The Archivist: The Gravewright is down the east passage. He has been waiting on a pair of hands."
