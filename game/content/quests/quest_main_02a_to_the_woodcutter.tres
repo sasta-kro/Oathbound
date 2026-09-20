@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_find"]
+script = ExtResource("2_objective")
+kind = 2
+target = &"woodcutter"
+count = 1
+description = "Find the Woodcutter in the west wood"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_main_02a_to_the_woodcutter"
+title = "Word in the West Wood"
+kind = 0
+summary = "Water is drawn and wood is next, cut green and never burned. The Woodcutter works the west wood, and he has not put an axe to anything for a week."
+giver = &"ranger"
+turn_in = &"woodcutter"
+requires = &"quest_main_02a_scalded_shallows"
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_find")])
+reward_currency = 10
+reward_xp = 10
+offer_line = "Ranger: So go and see him. West of here, past the meadow and into the trees; you will hear him before you see him, because he has been shouting about bats since Tuesday. Tell him the water is drawn. It may cheer him up, though I doubt it."
+accept_option = "West it is."
+refuse_option = "Give me a moment."
+accepted_line = "Ranger: Straight west. Follow the sound of a man arguing with the sky."
+refused_line = "Ranger: The wood is not going anywhere, and neither are his bats."
+reoffer_line = "Ranger: Ready to go west and see the Woodcutter?"
+progress_line = "Ranger: West, into the trees. Listen for the shouting."
+complete_line = "Woodcutter: Ranger sent you? Bless her. Then you are here about the heartwood, and I am here about the bats, and you are going to hear about the bats first."
+done_line = "Woodcutter: Mind the stacks. They go up quicker than you would think."

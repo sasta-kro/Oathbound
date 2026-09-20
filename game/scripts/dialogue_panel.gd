@@ -16,9 +16,21 @@ signal dismissed
 
 const OPTION_PREFIX := "▸  "
 const OPTION_IDLE_PREFIX := "    "
+## Content writes a spoken line as "Elder: Good morning." The panel shows the
+## name in the caption and the words on their own, so the speaker is never
+## read twice.
+const SPEAKER_SEPARATOR := ": "
+## The longest a caption may be. Past this the colon belongs to the sentence
+## rather than to a speaker ("One thing: the road is long").
+const SPEAKER_MAX_LENGTH := 28
+## Punctuation a name never contains, so a sentence that happens to hold a
+## colon is left alone.
+const SPEAKER_FORBIDDEN := ".!?,;\"\n"
 
 @onready var panel: PanelContainer = $Panel
 @onready var dialogue_text: Label = $Panel/Margin/DialogueText
+## Who is talking, over the line. Hidden for narration.
+var speaker_label: Label
 var _entrance: Tween
 var _prompt: Label
 var _choices: VBoxContainer
@@ -35,7 +47,8 @@ func _ready() -> void:
 	margin.add_child(content)
 	var caption := HBoxContainer.new()
 	content.add_child(caption)
-	caption.add_child(OathTheme.label("BY THE ROADSIDE", 9, OathTheme.GOLD))
+	speaker_label = OathTheme.label("", 9, OathTheme.GOLD)
+	caption.add_child(speaker_label)
 	caption.add_child(OathTheme.spacer(false))
 	_prompt = OathTheme.label("E  /  CONTINUE", 9, OathTheme.MUTED)
 	caption.add_child(_prompt)
@@ -48,9 +61,35 @@ func _ready() -> void:
 
 func show_line(line: String) -> void:
 	_clear_choices()
-	dialogue_text.text = line
+	_set_line(line)
 	_prompt.text = "E  /  CONTINUE"
 	_reveal()
+
+
+## Splits "Elder: Good morning." into the speaker and what they said. A line
+## with no name in front of it comes back with an empty speaker, and is shown
+## as narration.
+static func split_speaker(line: String) -> PackedStringArray:
+	var at: int = line.find(SPEAKER_SEPARATOR)
+	if at <= 0 or at > SPEAKER_MAX_LENGTH:
+		return ["", line]
+	var name: String = line.substr(0, at)
+	for character: String in SPEAKER_FORBIDDEN:
+		if character in name:
+			return ["", line]
+	return [name, line.substr(at + SPEAKER_SEPARATOR.length())]
+
+
+## The words alone, without the speaker's name.
+static func body_of(line: String) -> String:
+	return split_speaker(line)[1]
+
+
+func _set_line(line: String) -> void:
+	var parts: PackedStringArray = split_speaker(line)
+	speaker_label.text = parts[0].to_upper()
+	speaker_label.visible = not parts[0].is_empty()
+	dialogue_text.text = parts[1]
 
 ## Shows [param line] and waits until it is closed, for scripted scenes that
 ## play several lines in a row.
@@ -65,7 +104,7 @@ func ask(line: String, options: PackedStringArray) -> int:
 		show_line(line)
 		return -1
 	_clear_choices()
-	dialogue_text.text = line
+	_set_line(line)
 	_prompt.text = "W / S  CHOOSE   ·   E  REPLY"
 	for index: int in options.size():
 		var button := Button.new()

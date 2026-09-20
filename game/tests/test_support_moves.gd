@@ -288,9 +288,9 @@ func test_winning_the_lesson_readies_its_quest() -> void:
 	log.accept(lesson)
 	GameState.report_quest_event(QuestObjective.Kind.EVENT, FieldMending.EVENT_ID)
 	assert_true(log.is_ready(lesson))
-	assert_true(log.can_offer(Content.get_quest(&"quest_main_02_the_ruined_road")) == false)
+	assert_true(log.can_offer(Content.get_quest(FieldStrike.QUEST_ID)) == false)
 	log.complete(lesson)
-	assert_true(log.can_offer(Content.get_quest(&"quest_main_02_the_ruined_road")))
+	assert_true(log.can_offer(Content.get_quest(FieldStrike.QUEST_ID)))
 
 
 # --- The binding lesson ------------------------------------------------------
@@ -385,7 +385,14 @@ func test_the_scout_points_to_the_ranger_once_the_road_is_clear() -> void:
 		&"quest_main_01_beyond_the_walls",
 		&"quest_main_01a_a_second_oath",
 		&"quest_main_01b_field_mending",
+		&"quest_main_01c_strike_first",
+		&"quest_main_01d_caught_in_the_open",
+		&"quest_main_01e_no_battle_at_all",
+		&"quest_main_01f_a_bed_at_the_hearthside",
+		&"quest_main_01g_a_stocked_satchel",
+		&"quest_main_01h_the_road_is_waiting",
 		&"quest_main_02_the_ruined_road",
+		&"quest_main_02_to_the_ranger",
 	]:
 		var quest: QuestData = Content.get_quest(id)
 		log.accept(quest)

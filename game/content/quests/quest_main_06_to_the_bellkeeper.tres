@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_find"]
+script = ExtResource("2_objective")
+kind = 2
+target = &"bellkeeper"
+count = 1
+description = "Find the Bellkeeper in the bell-hall"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_main_06_to_the_bellkeeper"
+title = "The Bell-Hall"
+kind = 0
+summary = "Somebody has been ringing the bells by hand since before the town had a name, and she is losing both of her posts at once. The Gravewright will not let the player go past the bell-hall without stopping in it."
+giver = &"gravewright"
+turn_in = &"bellkeeper"
+requires = &"quest_main_06_what_the_dead_carry"
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_find")])
+reward_currency = 10
+reward_xp = 15
+offer_line = "The Gravewright: The Bellkeeper wants you next, and she is not a woman who asks twice. Through the far arch and down, where the rope hangs. Whatever she tells you in there, believe the unpleasant half of it."
+accept_option = "Through the arch, then."
+refuse_option = "Give me a moment."
+accepted_line = "The Gravewright: Far arch, then down. You will hear the rope before you see her."
+refused_line = "The Gravewright: She has waited on champions before. She will wait on you."
+reoffer_line = "The Gravewright: Ready to go down to the bell-hall?"
+progress_line = "The Gravewright: The bell-hall. Far arch and down, where the rope hangs."
+complete_line = "The Bellkeeper: You are the one from upstairs. Good, then you can be useful, because I have two posts and I am losing both of them."
+done_line = "The Bellkeeper: When the bells ring, somebody is pulling. Remember that."

@@ -78,9 +78,12 @@ func refuse(quest: QuestData) -> bool:
 	return true
 
 
-## Drops an active quest. Its progress is thrown away with it.
+## Drops an active quest. Its progress is thrown away with it. The main
+## story cannot be dropped (Specification 17.5 is about side quests): it is
+## the one thread the player is always on, so a giver repeats themselves
+## rather than taking it back.
 func abandon(quest: QuestData) -> bool:
-	if quest == null or not is_active(quest.id):
+	if quest == null or quest.is_main() or not is_active(quest.id):
 		return false
 	_entries[quest.id] = _entry(quest, Status.ABANDONED)
 	return true

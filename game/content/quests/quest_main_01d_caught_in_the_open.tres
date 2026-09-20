@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_ambushed"]
+script = ExtResource("2_objective")
+kind = 4
+target = &"ambush_taken"
+count = 1
+description = "Stand your ground and let the hostile creature land its charge"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_main_01d_caught_in_the_open"
+title = "Caught in the Open"
+kind = 0
+summary = "Everything the Scout taught about swinging first works just as well on you. A hostile creature that reaches you lands a real blow and takes the first turn of the fight, and it is better to learn that at his fire than on the ruined road."
+giver = &"scout"
+requires = &"quest_main_01c_strike_first"
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_ambushed")])
+reward_currency = 20
+reward_xp = 15
+offer_line = "Scout: Now the same lesson from the other end, and you will not enjoy it. Some things out here hunt. They see you, they come, they wind up, and if you are still standing there when they finish winding up, they open the fight with a free blow and the first turn besides. I would rather you felt that once, here, where I can pick you up afterwards."
+accept_option = "Let it come."
+refuse_option = "I'd rather not."
+accepted_line = "Scout: Stand still. Watch the way it gathers itself before it strikes: that pause is the whole of your warning, and it is long enough to swing or to step back. This once, don't. Take it."
+refused_line = "Scout: No, nobody wants to. It happens anyway."
+reoffer_line = "Scout: Ready to be knocked about for your own good?"
+progress_line = "Scout: It's coming. Stand and take it, then finish the fight."
+continue_option = "Send it at me."
+abandon_option = "Not now."
+abandoned_line = "Scout: Another time, then. It is a cheap lesson here and a dear one up the road."
+complete_line = "Scout: Feel that? It hit before you had a screen to look at, and it moved first on top of it. That is exactly what you did to the last one. Stay there, we are not done with that key yet. There is one more thing a good swing does, and it is my favourite thing about it."
+done_line = "Scout: Watch for the wind-up. It is the only warning you get."

@@ -1,0 +1,38 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_rest"]
+script = ExtResource("2_objective")
+kind = 4
+target = &"rested_at_inn"
+count = 1
+description = "Sleep a night at the Hearthside Inn, down in the town"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_main_01f_a_bed_at_the_hearthside"
+title = "A Bed at the Hearthside"
+kind = 0
+summary = "The Scout will not send anyone up the ruined road on a tired party. A night at the Hearthside Inn, down through the gate, mends every Oathbound to full and costs nothing, and the bed you slept in is where you wake if the road puts you down."
+giver = &"scout"
+turn_in = &"innkeeper"
+requires = &"quest_main_01e_no_battle_at_all"
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_rest")])
+reward_currency = 20
+reward_xp = 10
+reward_item = &"item_herb_salve"
+reward_item_count = 1
+offer_line = "Scout: Look at the pair of them. Scorched, footsore and half asleep on their feet. Go back down through the gate and take a bed at the Hearthside; the Innkeeper keeps one for the Order's own and asks nothing for it. A night there mends your Oathbound to the last scratch, and better than that, it is somewhere to wake up. Go down, sleep, and tell her I sent you."
+accept_option = "A bed sounds good."
+refuse_option = "We're fine."
+accepted_line = "Scout: Straight back down the road and into the town. The Innkeeper is up by the pond, east side. Talk to her and she'll put you to bed."
+refused_line = "Scout: You are not fine. You will be less fine tomorrow."
+reoffer_line = "Scout: Changed your mind about that bed?"
+progress_line = "Scout: The Hearthside. Down through the gate, east side of the town, by the pond."
+continue_option = "I'm going."
+abandon_option = "I'd rather push on."
+abandoned_line = "Scout: Stubborn. The offer stands."
+complete_line = "Innkeeper: There. Fed, watered and mended, and not a coin between us. Any night you want it, the bed is here, and if something out there puts your Oathbound down, this is where you will wake up, so remember the way. Take this salve as well. And stay where you are a moment, I am not finished with you."
+done_line = "Innkeeper: Bed's always made. Sleep costs you nothing but the night."

@@ -64,7 +64,7 @@ func test_the_field_plays_the_opening_with_the_elder_by_the_well() -> void:
 	assert_eq(main.player.facing_direction, GameOpening.facing_toward(main.player.global_position, elder.global_position))
 	assert_true(main.is_in_opening())
 	assert_false(main.player.movement_enabled, "The world holds still for the scene.")
-	assert_eq(main.dialogue_panel.dialogue_text.text, GameOpening.WELCOME[0])
+	assert_eq(main.dialogue_panel.dialogue_text.text, DialoguePanel.body_of(GameOpening.WELCOME[0]))
 	assert_false(SaveService.has_save(SaveService.AUTOSAVE_SLOT), "Nothing is saved before the starter is in hand.")
 
 	for _line: String in GameOpening.WELCOME:
@@ -72,17 +72,17 @@ func test_the_field_plays_the_opening_with_the_elder_by_the_well() -> void:
 	assert_eq(GameState.party.size(), 1, "The Elder hands over the starter.")
 	assert_eq(GameState.party[0].species_id(), GameState.STARTER_SPECIES_ID)
 	await get_tree().create_timer(STARTER_ENTRANCE_WAIT).timeout
-	assert_eq(main.dialogue_panel.dialogue_text.text, GameOpening.STARTER_EXPLAINED[0])
+	assert_eq(main.dialogue_panel.dialogue_text.text, DialoguePanel.body_of(GameOpening.STARTER_EXPLAINED[0]))
 
 	for _index: int in GameOpening.STARTER_EXPLAINED.size() + GameOpening.THREAT.size():
 		_read_on(main)
 	assert_true(main.dialogue_panel.is_asking(), "The Elder asks the player to go.")
-	assert_eq(main.dialogue_panel.dialogue_text.text, GameOpening.ASK)
+	assert_eq(main.dialogue_panel.dialogue_text.text, DialoguePanel.body_of(GameOpening.ASK))
 
 	main.dialogue_panel._confirm(1)
 	await get_tree().process_frame
 	assert_true(GameState.quests.is_active(MAIN_QUEST_ID), "Either reply sends the player to the scout.")
-	assert_eq(main.dialogue_panel.dialogue_text.text, GameOpening.SEND_OFF[1])
+	assert_eq(main.dialogue_panel.dialogue_text.text, DialoguePanel.body_of(GameOpening.SEND_OFF[1]))
 
 	_read_on(main)
 	assert_false(main.is_in_opening())
@@ -101,7 +101,7 @@ func test_the_opening_cannot_be_talked_over() -> void:
 	main._interact()
 	assert_false(main.dialogue_panel.is_open(), "The Elder is not talked to over the scene.")
 	await get_tree().create_timer(STARTER_ENTRANCE_WAIT).timeout
-	assert_eq(main.dialogue_panel.dialogue_text.text, GameOpening.STARTER_EXPLAINED[0])
+	assert_eq(main.dialogue_panel.dialogue_text.text, DialoguePanel.body_of(GameOpening.STARTER_EXPLAINED[0]))
 	main.dialogue_panel.close()
 
 

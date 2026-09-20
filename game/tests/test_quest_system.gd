@@ -8,6 +8,22 @@ const MAIN_QUEST_ID := &"quest_main_01_beyond_the_walls"
 const BIND_MAIN_QUEST_ID := &"quest_main_01a_a_second_oath"
 const LESSON_MAIN_QUEST_ID := &"quest_main_01b_field_mending"
 const SECOND_MAIN_QUEST_ID := &"quest_main_02_the_ruined_road"
+## The four lessons the Scout gives between the mend and the road: swinging
+## first, being swung at, cutting something down outright, and a bed in the
+## town to go and sleep in.
+const SCOUT_LESSON_IDS: Array[StringName] = [
+	&"quest_main_01c_strike_first",
+	&"quest_main_01d_caught_in_the_open",
+	&"quest_main_01e_no_battle_at_all",
+	&"quest_main_01f_a_bed_at_the_hearthside",
+]
+## The town's own half of the chain: the Innkeeper sends the player across to
+## the Apothecary's counter, and the Apothecary sends them back up the road,
+## so nobody walks to the Scout's fire to report an errand in the town.
+const TOWN_ERRAND_IDS: Array[StringName] = [
+	&"quest_main_01g_a_stocked_satchel",
+	&"quest_main_01h_the_road_is_waiting",
+]
 const CHILD_QUEST_ID := &"quest_side_leaf_hat"
 const MERCHANT_QUEST_ID := &"quest_side_the_crossing"
 const SHALLOWS_MAIN_QUEST_ID := &"quest_main_02a_scalded_shallows"
@@ -72,7 +88,11 @@ func test_shipped_quests_load_and_validate() -> void:
 	assert_false(_content(CHILD_QUEST_ID).is_main())
 	assert_eq(_content(BIND_MAIN_QUEST_ID).requires, MAIN_QUEST_ID, "The main story is a chain.")
 	assert_eq(_content(LESSON_MAIN_QUEST_ID).requires, BIND_MAIN_QUEST_ID)
-	assert_eq(_content(SECOND_MAIN_QUEST_ID).requires, LESSON_MAIN_QUEST_ID)
+	var behind: StringName = LESSON_MAIN_QUEST_ID
+	for id: StringName in SCOUT_LESSON_IDS + TOWN_ERRAND_IDS:
+		assert_eq(_content(id).requires, behind, "%s follows %s." % [id, behind])
+		behind = id
+	assert_eq(_content(SECOND_MAIN_QUEST_ID).requires, behind)
 
 
 func test_the_game_stays_playable_with_no_quests_at_all() -> void:
@@ -319,11 +339,22 @@ func test_the_town_npcs_carry_their_quests() -> void:
 	assert_eq(elder.quest_ids, [MAIN_QUEST_ID] as Array[StringName])
 	assert_eq((town.get_node("Actors/Child") as WorldActor).quest_ids, [CHILD_QUEST_ID] as Array[StringName])
 	assert_eq((town.get_node("Actors/Merchant") as WorldActor).quest_ids, [MERCHANT_QUEST_ID] as Array[StringName])
-	var meadow: Node = autofree((load(AREA_ONE) as PackedScene).instantiate())
+	# The town hands the player on from one counter to the next.
 	assert_eq(
-		(meadow.get_node("Actors/Scout") as WorldActor).quest_ids,
-		[BIND_MAIN_QUEST_ID, LESSON_MAIN_QUEST_ID, SECOND_MAIN_QUEST_ID] as Array[StringName]
+		(town.get_node("Actors/Innkeeper") as WorldActor).quest_ids,
+		[TOWN_ERRAND_IDS[0]] as Array[StringName],
 	)
+	assert_eq(
+		(town.get_node("Actors/Apothecary") as WorldActor).quest_ids,
+		[TOWN_ERRAND_IDS[1]] as Array[StringName],
+	)
+	var meadow: Node = autofree((load(AREA_ONE) as PackedScene).instantiate())
+	var scout_quests: Array[StringName] = [BIND_MAIN_QUEST_ID, LESSON_MAIN_QUEST_ID]
+	scout_quests.append_array(SCOUT_LESSON_IDS)
+	scout_quests.append(SECOND_MAIN_QUEST_ID)
+	# And the errand that walks the player on to the Ranger afterwards.
+	scout_quests.append(&"quest_main_02_to_the_ranger")
+	assert_eq((meadow.get_node("Actors/Scout") as WorldActor).quest_ids, scout_quests)
 
 
 func _load_main() -> Node2D:
@@ -346,7 +377,7 @@ func test_a_quest_is_accepted_through_the_givers_dialogue() -> void:
 	assert_eq(_log.status(MAIN_QUEST_ID), QuestLog.Status.ACTIVE)
 	assert_true(main.dialogue_panel.is_open(), "The Elder answers the acceptance.")
 	assert_false(main.dialogue_panel.is_asking())
-	assert_eq(main.dialogue_panel.dialogue_text.text, _content(MAIN_QUEST_ID).accepted_line)
+	assert_eq(main.dialogue_panel.dialogue_text.text, DialoguePanel.body_of(_content(MAIN_QUEST_ID).accepted_line))
 	assert_true(_log.is_objective_done(_content(MAIN_QUEST_ID), 0) == false, "The town is not the meadow.")
 
 
@@ -357,32 +388,55 @@ func test_refusing_then_asking_again_uses_the_reoffer_line() -> void:
 	main.dialogue_panel._confirm(1)
 	await get_tree().process_frame
 	assert_eq(_log.status(MAIN_QUEST_ID), QuestLog.Status.REFUSED)
-	assert_eq(main.dialogue_panel.dialogue_text.text, _content(MAIN_QUEST_ID).refused_line)
+	assert_eq(main.dialogue_panel.dialogue_text.text, DialoguePanel.body_of(_content(MAIN_QUEST_ID).refused_line))
 
 	main.dialogue_panel.close()
 	main._talk_to(elder)
 	assert_true(main.dialogue_panel.is_asking())
-	assert_eq(main.dialogue_panel.dialogue_text.text, _content(MAIN_QUEST_ID).reoffer_line)
+	assert_eq(main.dialogue_panel.dialogue_text.text, DialoguePanel.body_of(_content(MAIN_QUEST_ID).reoffer_line))
 	main.dialogue_panel.close()
 	await get_tree().process_frame
 	assert_eq(_log.status(MAIN_QUEST_ID), QuestLog.Status.REFUSED, "Walking away from the question changes nothing.")
 	assert_true(main.player.movement_enabled)
 
 
-func test_an_active_quest_can_be_dropped_and_turned_in_at_the_giver() -> void:
+## The story is the one thread the player is always on, so its giver repeats
+## the step instead of offering to take it back.
+func test_the_main_story_cannot_be_handed_back() -> void:
 	var main: Node2D = _load_main()
 	var elder: WorldActor = main.area.get_node("Actors/Elder")
 	var quest := _content(MAIN_QUEST_ID)
 	GameState.accept_quest(quest)
 
 	main._talk_to(elder)
-	assert_eq(main.dialogue_panel.dialogue_text.text, quest.progress_line)
+	await get_tree().process_frame
+
+	assert_eq(main.dialogue_panel.dialogue_text.text, DialoguePanel.body_of(quest.progress_line))
+	assert_false(main.dialogue_panel.is_asking(), "There is nothing to answer: it cannot be dropped.")
+	assert_eq(_log.status(MAIN_QUEST_ID), QuestLog.Status.ACTIVE)
+	assert_false(_log.abandon(quest), "Not even the log will take the story back.")
+
+
+func test_a_side_quest_can_still_be_dropped_at_its_giver() -> void:
+	var main: Node2D = _load_main()
+	var child: WorldActor = main.area.get_node("Actors/Child")
+	var quest := _content(CHILD_QUEST_ID)
+	GameState.accept_quest(quest)
+
+	main._talk_to(child)
+	assert_eq(main.dialogue_panel.dialogue_text.text, DialoguePanel.body_of(quest.progress_text()))
 	main.dialogue_panel._confirm(1)
 	await get_tree().process_frame
-	assert_eq(_log.status(MAIN_QUEST_ID), QuestLog.Status.ABANDONED)
-	assert_eq(main.dialogue_panel.dialogue_text.text, quest.abandoned_line)
+
+	assert_eq(_log.status(CHILD_QUEST_ID), QuestLog.Status.ABANDONED)
+	assert_eq(main.dialogue_panel.dialogue_text.text, DialoguePanel.body_of(quest.abandoned_text()))
 	main.dialogue_panel.close()
 
+
+func test_a_finished_quest_is_turned_in_at_the_giver() -> void:
+	var main: Node2D = _load_main()
+	var elder: WorldActor = main.area.get_node("Actors/Elder")
+	var quest := _content(MAIN_QUEST_ID)
 	GameState.accept_quest(quest)
 	GameState.report_quest_event(QuestObjective.Kind.REACH, StringName(AREA_ONE))
 	GameState.report_quest_event(QuestObjective.Kind.TALK, &"scout")
@@ -390,7 +444,7 @@ func test_an_active_quest_can_be_dropped_and_turned_in_at_the_giver() -> void:
 	main._talk_to(elder)
 	await get_tree().process_frame
 	assert_false(main.dialogue_panel.is_asking(), "A finished quest is turned in without a question.")
-	assert_eq(main.dialogue_panel.dialogue_text.text, quest.complete_line)
+	assert_eq(main.dialogue_panel.dialogue_text.text, DialoguePanel.body_of(quest.complete_line))
 	assert_true(_log.is_completed(MAIN_QUEST_ID))
 	assert_eq(GameState.currency, coins_before + quest.reward_currency)
 

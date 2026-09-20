@@ -186,7 +186,12 @@ func _camp(p: AreaPainter) -> void:
 			"quest_ids": Array[StringName]([
 				&"quest_main_01a_a_second_oath",
 				&"quest_main_01b_field_mending",
+				&"quest_main_01c_strike_first",
+				&"quest_main_01d_caught_in_the_open",
+				&"quest_main_01e_no_battle_at_all",
+				&"quest_main_01f_a_bed_at_the_hearthside",
 				&"quest_main_02_the_ruined_road",
+				&"quest_main_02_to_the_ranger",
 			]),
 		}
 	)
@@ -205,7 +210,7 @@ func _helpers(p: AreaPainter) -> void:
 			"sprite_frames": load(SCOUT_SPRITE_FRAMES),
 			"facing": &"right",
 			"dialogue_line": "Ranger: The pond feeds half the meadow, and the altar's stillwater comes out of it. When something troubles this water, everything out here feels it.",
-			"quest_ids": Array[StringName]([&"quest_main_02a_scalded_shallows", &"quest_side_leech_shallows"]),
+			"quest_ids": Array[StringName]([&"quest_main_02a_scalded_shallows", &"quest_main_02a_to_the_woodcutter", &"quest_side_leech_shallows"]),
 		}
 	)
 	p.add_actor(
@@ -217,7 +222,7 @@ func _helpers(p: AreaPainter) -> void:
 			"sprite_frames": load(MERCHANT_SPRITE_FRAMES),
 			"facing": &"up",
 			"dialogue_line": "Woodcutter: The deeper you go into these woods, the meaner the things that live there. Always worse when the seal thins, and it is thinning. Same goes for the road north.",
-			"quest_ids": Array[StringName]([&"quest_main_02b_wings_in_the_wood"]),
+			"quest_ids": Array[StringName]([&"quest_main_02b_wings_in_the_wood", &"quest_main_02b_to_the_warden"]),
 		}
 	)
 	p.add_actor(

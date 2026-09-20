@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_report"]
+script = ExtResource("2_objective")
+kind = 2
+target = &"scout"
+count = 1
+description = "Go back up the road and tell the Scout you are ready"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_main_01h_the_road_is_waiting"
+title = "The Road Is Waiting"
+kind = 0
+summary = "Bed slept in, satchel stocked, and nothing left in the town that can teach anything. The Apothecary sends the player back up the road to the Scout's fire, where the rite starts in earnest."
+giver = &"apothecary"
+turn_in = &"scout"
+requires = &"quest_main_01g_a_stocked_satchel"
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_report")])
+reward_currency = 15
+reward_xp = 10
+offer_line = "Apothecary: Now then. You have slept, you have eaten, and you are carrying something for the first wound. That is everything this town has for you, and I have watched enough champions go out that gate to know the rest of it is not bought over a counter. Go on. Back up the road, to that Scout of yours by the fire, and tell him you are ready."
+accept_option = "I'm ready."
+refuse_option = "A moment yet."
+accepted_line = "Apothecary: Straight out the north gate and up the road. He is sitting at his fire exactly where you left him; he always is."
+refused_line = "Apothecary: Take your moment. The seal will not, but take it."
+reoffer_line = "Apothecary: Ready to go up to him now?"
+progress_line = "Apothecary: Out the north gate and up the road. He is at his fire."
+continue_option = "On my way."
+abandon_option = "Not yet."
+abandoned_line = "Apothecary: When you are ready, then."
+complete_line = "Scout: There you are, and look at you: fed, rested, and carrying something for the first wound. That is the whole of what I can hand you at a fire. The rest of it is up that road, and the road is where it starts in earnest."
+done_line = "Scout: You came back up. Good. Now the rite."

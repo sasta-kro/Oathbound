@@ -198,13 +198,30 @@ func _accept(id: StringName) -> QuestData:
 	return quest
 
 
-func test_buying_salves_stocks_the_satchel_quest_and_pays_an_item() -> void:
-	var quest := _accept(&"quest_side_a_stocked_satchel")
+## Puts everything [param id] is built on behind the player, so a quest from
+## the middle of the main chain can be taken the way they would have taken it.
+func _reach(id: StringName) -> QuestData:
+	var earlier: Array[QuestData] = []
+	var walker: QuestData = Content.get_quest(id)
+	while walker != null and walker.requires != &"":
+		walker = Content.get_quest(walker.requires)
+		if walker != null:
+			earlier.push_front(walker)
+	for quest: QuestData in earlier:
+		GameState.quests.accept(quest)
+		for objective: QuestObjective in quest.objectives:
+			for _step: int in objective.required():
+				GameState.quests.report(objective.kind, objective.target)
+		assert_true(GameState.quests.complete(quest), "%s can be finished." % quest.id)
+	return _accept(id)
+
+
+func test_buying_a_salve_stocks_the_satchel_quest_and_pays_an_item() -> void:
+	var quest := _reach(&"quest_main_01g_a_stocked_satchel")
 	GameState.currency = 100
-	GameState.buy_item(_item(SALVE))
 	assert_false(GameState.quests.is_ready(quest))
 	GameState.buy_item(_item(SALVE))
-	assert_true(GameState.quests.is_ready(quest))
+	assert_true(GameState.quests.is_ready(quest), "The Apothecary's counter is the lesson.")
 	var lines: PackedStringArray = GameState.complete_quest(quest)
 	assert_eq(GameState.item_count(CLEARWATER), 1)
 	assert_true("+1 Clearwater Vial" in lines)
@@ -231,9 +248,10 @@ func test_a_salve_used_in_the_field_or_a_battle_counts_for_field_medicine() -> v
 	assert_eq(engine.items_used, [SALVE] as Array[StringName], "The battle keeps a record for the quest log.")
 
 
-func test_a_night_at_the_inn_counts_for_the_old_man() -> void:
-	var quest := _accept(&"quest_side_a_proper_rest")
+func test_a_night_at_the_inn_counts_for_the_scouts_errand() -> void:
+	var quest := _reach(&"quest_main_01f_a_bed_at_the_hearthside")
 	GameState.report_quest_event(QuestObjective.Kind.EVENT, GameState.EVENT_RESTED_AT_INN)
 	assert_true(GameState.quests.is_ready(quest))
+	assert_eq(quest.turn_in_actor(), &"innkeeper", "The Innkeeper takes it in where the bed is.")
 	GameState.complete_quest(quest)
-	assert_eq(GameState.item_count(SALVE), 2)
+	assert_eq(GameState.item_count(SALVE), 1)

@@ -128,7 +128,7 @@ body_color = Color(0.35, 0.6, 0.85, 1)
 sprite_frames = ExtResource("npc_scout_frames")
 facing = &"left"
 dialogue_line = "Scout: Follow the road and you will not get lost. It bends past the pond and climbs to the ruins. The altar is at the very end, and the knight is in front of it, same as he always is."
-quest_ids = Array[StringName]([&"quest_main_01a_a_second_oath", &"quest_main_01b_field_mending", &"quest_main_02_the_ruined_road"])
+quest_ids = Array[StringName]([&"quest_main_01a_a_second_oath", &"quest_main_01b_field_mending", &"quest_main_01c_strike_first", &"quest_main_01d_caught_in_the_open", &"quest_main_01e_no_battle_at_all", &"quest_main_01f_a_bed_at_the_hearthside", &"quest_main_02_the_ruined_road", &"quest_main_02_to_the_ranger"])
 
 [node name="Ranger" parent="Actors" instance=ExtResource("5_10dds")]
 position = Vector2(600, 168)
@@ -137,7 +137,7 @@ body_color = Color(0.3, 0.55, 0.35, 1)
 sprite_frames = ExtResource("npc_scout_frames")
 facing = &"right"
 dialogue_line = "Ranger: The pond feeds half the meadow, and the altar's stillwater comes out of it. When something troubles this water, everything out here feels it."
-quest_ids = Array[StringName]([&"quest_main_02a_scalded_shallows", &"quest_side_leech_shallows"])
+quest_ids = Array[StringName]([&"quest_main_02a_scalded_shallows", &"quest_main_02a_to_the_woodcutter", &"quest_side_leech_shallows"])
 
 [node name="Woodcutter" parent="Actors" instance=ExtResource("5_10dds")]
 position = Vector2(-696, 168)
@@ -146,7 +146,7 @@ body_color = Color(0.6, 0.45, 0.3, 1)
 sprite_frames = ExtResource("npc_merchant_frames")
 facing = &"up"
 dialogue_line = "Woodcutter: The deeper you go into these woods, the meaner the things that live there. Always worse when the seal thins, and it is thinning. Same goes for the road north."
-quest_ids = Array[StringName]([&"quest_main_02b_wings_in_the_wood"])
+quest_ids = Array[StringName]([&"quest_main_02b_wings_in_the_wood", &"quest_main_02b_to_the_warden"])
 
 [node name="Hermit" parent="Actors" instance=ExtResource("5_10dds")]
 position = Vector2(-408, -312)

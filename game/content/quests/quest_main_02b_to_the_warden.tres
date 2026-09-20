@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_find"]
+script = ExtResource("2_objective")
+kind = 2
+target = &"warden"
+count = 1
+description = "Find the Warden camped at the edge of the ruins"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_main_02b_to_the_warden"
+title = "Word with the Warden"
+kind = 0
+summary = "The last offering comes out of the Order's own graves, and only a warden may ask for it. Serah is camped at the edge of the ruins, north-east, and she came down the road the night the bells rang."
+giver = &"woodcutter"
+turn_in = &"warden"
+requires = &"quest_main_02b_wings_in_the_wood"
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_find")])
+reward_currency = 10
+reward_xp = 10
+offer_line = "Woodcutter: The last one is not mine to give, so go and stand in front of somebody it is. North-east, up where the road climbs into the ruins. Serah is camped at the edge of them. She is a warden of the Order, she is not warm, and she will be worth every cold word of it."
+accept_option = "I'll go up."
+refuse_option = "Give me a moment."
+accepted_line = "Woodcutter: Follow the road up past the pond and keep climbing. You will see her fire before you see her."
+refused_line = "Woodcutter: Take your time. She has waited on the Order before."
+reoffer_line = "Woodcutter: Ready to go up and see the Warden?"
+progress_line = "Woodcutter: North-east, up the road, at the edge of the ruins."
+complete_line = "Warden: Stand still. Water and wood, and now you come up here for the third, which means somebody has finally told you where the iron comes from. Sit down. This part is ours, and it is not pleasant."
+done_line = "Warden: Rest a moment. I'll see your Oathbound mended."

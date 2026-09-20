@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_find"]
+script = ExtResource("2_objective")
+kind = 2
+target = &"nurse"
+count = 1
+description = "Find the Nurse at the camp bench"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_main_07_to_the_nurse"
+title = "The Nurse's Bench"
+kind = 0
+summary = "Nobody goes up the last road on a party held together with luck and good manners. The Nurse keeps a bench at the camp and has been watching the player cross the hall once too often."
+giver = &"bellkeeper"
+turn_in = &"nurse"
+requires = &"quest_main_07_the_inside_of_the_door"
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_find")])
+reward_currency = 10
+reward_xp = 15
+offer_line = "The Bellkeeper: Go and find the Nurse at the camp before you go any further, and do not argue with her, because I have tried it. She has been watching you come and go and she does not like what she has seen. She is right, and I would rather she said it than the king did."
+accept_option = "I'll see her."
+refuse_option = "Give me a moment."
+accepted_line = "The Bellkeeper: Back up in the hall, at the bench by the fire. She will have a word ready."
+refused_line = "The Bellkeeper: She will still be there, and she will have had longer to think about it."
+reoffer_line = "The Bellkeeper: Ready to be looked over?"
+progress_line = "The Bellkeeper: The Nurse. At the bench by the fire, up in the hall."
+complete_line = "The Nurse: Stop there. I have watched you cross this hall four times now and your Oathbound are held together with luck and good manners."
+done_line = "The Nurse: Come to the bench whenever something needs mending. That is what it is for."

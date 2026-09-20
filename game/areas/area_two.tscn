@@ -113,7 +113,7 @@ position = Vector2(-948, -720)
 display_name = "ALDRIC"
 sprite_frames = ExtResource("6_6wj0o")
 dialogue_line = "Aldric: Another one. Put the scroll away, lad, I'm no wild thing. Aldric of the Order, champion of the ninth watch. I came down that same stair thirty years ago carrying the same rite you are carrying, and I got as far as the door at the bottom and found I did not have it in me. The stair only opens for whoever finishes, and the day you set the rite down is the day it stops knowing your name. So I stayed, and I made myself useful, and we have been keeping things ready for whoever came next. Come on."
-quest_ids = Array[StringName]([&"quest_main_09_the_kingsworn", &"quest_main_10_the_dead_wood"])
+quest_ids = Array[StringName]([&"quest_main_04_to_the_archivist", &"quest_main_09_the_kingsworn", &"quest_main_10_the_dead_wood"])
 
 [node name="Bellkeeper" parent="Actors" unique_id=1349997354 instance=ExtResource("4_6lfkq")]
 position = Vector2(-1428, 24)
@@ -122,21 +122,21 @@ sprite_frames = ExtResource("7_aqf68")
 facing = &"right"
 dialogue_line = "The Bellkeeper: Rest, and let me see to your Oathbound. You heard the bells, didn't you. I ring them, by hand, every time the sleep thins, and I have done since before your town had a name, because someone has to call you people down. And when I am not on the rope I am holding the inside of that door, because things come up these halls when he stirs, and not one of them has ever reached the Reach."
 heals_party = true
-quest_ids = Array[StringName]([&"quest_main_07_the_inside_of_the_door"])
+quest_ids = Array[StringName]([&"quest_main_07_the_inside_of_the_door", &"quest_main_07_to_the_nurse"])
 
 [node name="Archivist" parent="Actors" unique_id=1191189704 instance=ExtResource("4_6lfkq")]
 position = Vector2(300, -768)
 display_name = "THE ARCHIVIST"
 sprite_frames = ExtResource("8_ffk3y")
 dialogue_line = "The Archivist: Everyone who came down that stair is in this book, and everything they learned about him before the wood had them. It is not a monument, it is a manual. Forty-one champions have pressed him under, and every one of them wrote down what it cost, so that the forty-second would not have to find it out the same way."
-quest_ids = Array[StringName]([&"quest_main_05_the_record"])
+quest_ids = Array[StringName]([&"quest_main_05_the_record", &"quest_main_05_to_the_gravewright"])
 
 [node name="Gravewright" parent="Actors" unique_id=1916680945 instance=ExtResource("4_6lfkq")]
 position = Vector2(-84, 408)
 display_name = "THE GRAVEWRIGHT"
 sprite_frames = ExtResource("9_tq63f")
 dialogue_line = "The Gravewright: Mind where you tread. They are all champions, every one of these. I dig for the ones who make it this far and no further, and I take the seal-iron off them so it can go home even when they can't. Bring me any you find. They should not be left lying in his halls."
-quest_ids = Array[StringName]([&"quest_main_06_what_the_dead_carry"])
+quest_ids = Array[StringName]([&"quest_main_06_what_the_dead_carry", &"quest_main_06_to_the_bellkeeper"])
 
 [node name="Nurse" parent="Actors" unique_id=519508671 instance=ExtResource("4_6lfkq")]
 position = Vector2(1284, 720)
@@ -144,7 +144,7 @@ display_name = "THE NURSE"
 sprite_frames = ExtResource("10_rrgey")
 facing = &"up"
 dialogue_line = "The Nurse: Sit down, you're grey. There is no trick to what is down here and no secret anybody is keeping from you. A king asked the god of the dead for more than a man may have, and the world has been paying the bill ever since, and the bill comes due every few decades and somebody has to go and pay it. That is all of it. What I care about is that you go up that road fed, rested and carrying enough scrolls. Forty of us did not. I have opinions about that."
-quest_ids = Array[StringName]([&"quest_main_08_a_champions_kit"])
+quest_ids = Array[StringName]([&"quest_main_08_a_champions_kit", &"quest_main_08_to_aldric"])
 
 [node name="Kingsworn" parent="Actors" unique_id=1799946491 instance=ExtResource("5_pvqrj")]
 position = Vector2(1201, -828)

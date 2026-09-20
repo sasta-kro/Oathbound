@@ -74,6 +74,15 @@ var _lesson: Dictionary = {}
 ## Set while the tutorial's ambush plays out before its battle opens, so the
 ## player cannot walk off or swing at the ambusher between lines.
 var _staging_tutorial: bool = false
+## The overworld lesson waiting on the world (see [FieldStrike],
+## [FieldAmbush] and [FieldRout]): the creature it staged, the event it
+## reports when the lesson's one move happens, whether that move is the
+## player's own swing or the creature's, whether the swing has to put the
+## creature down outright, the instruction held on screen meanwhile, and the
+## battle the blow opens, if it opens one. Empty when no lesson is waiting.
+## Unlike [member _lesson] this outlives no battle: it is answered out in the
+## world, before any battle opens.
+var _field_lesson: Dictionary = {}
 
 
 func _ready() -> void:
@@ -357,6 +366,9 @@ func travel_to(area_path: String, entrance: StringName) -> void:
 		push_warning("Area exit points at %s, which is not a scene." % area_path)
 		return
 	_travelling = true
+	# A lesson creature belongs to the area it was staged in and does not
+	# follow; the Scout stages another when the player comes back to him.
+	_abandon_field_lesson()
 	_set_world_active(false)
 	await transition.cover(ScreenTransition.Style.WORLD)
 
@@ -530,6 +542,16 @@ func _talk_to(actor: WorldActor) -> void:
 		_serve(actor, quest.progress_text())
 		return
 	if GameState.quests.is_active(quest.id):
+		# The main story is not something the player can hand back, so its
+		# giver only says the step again. A lesson lost or cut short is
+		# simply staged once more.
+		if quest.is_main():
+			if _is_lesson(quest):
+				await _say(quest.progress_text())
+				_play_lesson(quest)
+			else:
+				_open_dialogue(quest.progress_text())
+			return
 		var reply: int = await _ask(quest.progress_text(), [quest.continue_option, quest.abandon_option])
 		if reply == 1:
 			GameState.abandon_quest(quest)
@@ -537,9 +559,6 @@ func _talk_to(actor: WorldActor) -> void:
 			_autosave()
 		elif reply == 0:
 			_close_dialogue()
-			# A lesson lost or cut short is picked up where it began.
-			if _is_lesson(quest):
-				_play_lesson(quest)
 		return
 	await _offer(quest)
 	# Whatever the answer, a vendor still opens the counter once the reply
@@ -639,15 +658,30 @@ func _offer(quest: QuestData) -> void:
 
 ## Whether [param quest] is taught by a scripted, guided battle.
 func _is_lesson(quest: QuestData) -> bool:
-	return quest.id in [FieldBinding.QUEST_ID, FieldMending.QUEST_ID]
+	return quest.id in [
+		FieldBinding.QUEST_ID,
+		FieldMending.QUEST_ID,
+		FieldStrike.QUEST_ID,
+		FieldAmbush.QUEST_ID,
+		FieldRout.QUEST_ID,
+	]
 
 
 func _play_lesson(quest: QuestData) -> void:
+	# Staging a lesson takes back whatever an unfinished one left standing,
+	# so the camp never fills up with practice creatures.
+	_abandon_field_lesson()
 	match quest.id:
 		FieldBinding.QUEST_ID:
 			_play_field_binding()
 		FieldMending.QUEST_ID:
 			_play_field_mending()
+		FieldStrike.QUEST_ID:
+			_play_field_strike()
+		FieldAmbush.QUEST_ID:
+			_play_field_ambush()
+		FieldRout.QUEST_ID:
+			_play_field_rout()
 
 
 ## The binding lesson (see [FieldBinding]): a wild Loambuck wanders up to the
@@ -700,19 +734,192 @@ func _play_field_mending() -> void:
 	_start_wild_battle(ambusher, BattleConfig.Opening.NEUTRAL, FieldMending.stage(cast))
 
 
+## The overworld-strike lesson (see [FieldStrike]): a Loambuck is put in the
+## grass a few paces off and then left entirely alone. Nothing else happens
+## until the player closes the distance and swings, which is the lesson.
+func _play_field_strike() -> void:
+	var species: CreatureSpecies = Content.get_species(FieldStrike.SPECIES_ID)
+	if species == null:
+		return
+	# The Scout sees the party rested before the lesson starts.
+	GameState.heal_party()
+	_staging_tutorial = true
+	await _say(FieldStrike.SIGHTING[0])
+	var quarry: WildCreature = _spawn_lesson_creature(
+		species, FieldStrike.LEVEL, FieldStrike.DISTANCE_CELLS
+	)
+	FieldStrike.wear_down(quarry.encounter_instance())
+	quarry.refresh_health()
+	await get_tree().create_timer(AMBUSHER_ENTRANCE_SECONDS).timeout
+	for index: int in range(1, FieldStrike.SIGHTING.size()):
+		await _say(FieldStrike.SIGHTING[index])
+	_staging_tutorial = false
+	_begin_field_lesson(
+		quarry,
+		FieldStrike.EVENT_ID,
+		true,
+		FieldStrike.PROMPT % species.display_name,
+		FieldStrike.stage(),
+	)
+
+
+## The ambush lesson (see [FieldAmbush]): a hostile Emberling is sent at the
+## player, who is asked to stand still and let it arrive. Its blow lands in
+## the overworld, and the battle opens with the lead already hurt and the
+## creature moving first.
+func _play_field_ambush() -> void:
+	var species: CreatureSpecies = Content.get_species(FieldAmbush.SPECIES_ID)
+	if species == null:
+		return
+	GameState.heal_party()
+	_staging_tutorial = true
+	await _say(FieldAmbush.CHARGE[0])
+	var hunter: WildCreature = _spawn_lesson_creature(
+		species,
+		FieldAmbush.LEVEL,
+		FieldAmbush.DISTANCE_CELLS,
+		WildCreature.Disposition.HOSTILE,
+		FieldAmbush.LEASH_RADIUS,
+		FieldAmbush.DETECTION_RADIUS,
+	)
+	await get_tree().create_timer(AMBUSHER_ENTRANCE_SECONDS).timeout
+	for index: int in range(1, FieldAmbush.CHARGE.size()):
+		await _say(FieldAmbush.CHARGE[index])
+	_staging_tutorial = false
+	_begin_field_lesson(hunter, FieldAmbush.EVENT_ID, false, FieldAmbush.PROMPT, FieldAmbush.stage())
+
+
+## The rout lesson (see [FieldRout]): a creature that has already lost a
+## fight wanders up with almost nothing left, so the swing that lands on it
+## finishes it in the grass and no battle screen ever opens.
+func _play_field_rout() -> void:
+	var species: CreatureSpecies = Content.get_species(FieldRout.SPECIES_ID)
+	if species == null:
+		return
+	GameState.heal_party()
+	_staging_tutorial = true
+	await _say(FieldRout.SIGHTING[0])
+	var spent: WildCreature = _spawn_lesson_creature(
+		species, FieldRout.LEVEL, FieldRout.DISTANCE_CELLS
+	)
+	FieldRout.wear_down(spent.encounter_instance())
+	spent.refresh_health()
+	await get_tree().create_timer(AMBUSHER_ENTRANCE_SECONDS).timeout
+	for index: int in range(1, FieldRout.SIGHTING.size()):
+		await _say(FieldRout.SIGHTING[index])
+	_staging_tutorial = false
+	# Only a swing that puts it down counts: one that leaves it standing has
+	# taught the player the opposite of the lesson.
+	_begin_field_lesson(
+		spent, FieldRout.EVENT_ID, true, FieldRout.PROMPT % species.display_name, {}, true
+	)
+
+
+## Hands the world an overworld lesson to watch for: [param quarry] is the
+## creature it was staged around, [param on_strike] tells it whether the
+## lesson is waiting on the player's swing or on the creature's own blow,
+## [param prompt] is the instruction that stands on screen until one lands,
+## [param battle] is what the blow's battle is staged with (empty when the
+## blow is not meant to open one), and [param needs_rout] holds the lesson
+## open until a swing puts the creature down where it stands.
+func _begin_field_lesson(
+	quarry: WildCreature,
+	event: StringName,
+	on_strike: bool,
+	prompt: String,
+	battle: Dictionary,
+	needs_rout: bool = false,
+) -> void:
+	_field_lesson = {
+		"creature": quarry,
+		"event": event,
+		"on_strike": on_strike,
+		"prompt": prompt,
+		"battle": battle,
+		"needs_rout": needs_rout,
+	}
+	field_ui.show_prompt(prompt)
+	# The staging held the world still through the Scout's lines. Unlike the
+	# battle lessons, this one hands it straight back: walking up to the
+	# quarry, or standing still while it comes, is the whole lesson.
+	_refresh_world_activity()
+
+
+## Whether the open lesson is waiting on this exact creature, and on a blow
+## thrown by the player ([param by_strike]) rather than at them.
+func _field_lesson_waits_on(creature: WildCreature, by_strike: bool) -> bool:
+	if _field_lesson.is_empty() or bool(_field_lesson.on_strike) != by_strike:
+		return false
+	var quarry: WildCreature = _field_lesson.creature
+	return is_instance_valid(quarry) and quarry == creature
+
+
+## The blow the lesson was waiting for has landed. The quest hears about it
+## and the instruction comes down; the battle it opens is an ordinary one.
+func _complete_field_lesson() -> void:
+	var event: StringName = _field_lesson.event
+	_clear_field_lesson()
+	GameState.report_quest_event(QuestObjective.Kind.EVENT, event)
+	_autosave(false)
+
+
+func _clear_field_lesson() -> void:
+	_field_lesson = {}
+	if field_ui != null:
+		field_ui.hide_prompt()
+
+
+## Takes back a staged creature that is still standing, for a lesson the
+## player walked away from or is about to be given again.
+func _abandon_field_lesson() -> void:
+	if _field_lesson.is_empty():
+		return
+	var quarry: WildCreature = _field_lesson.creature
+	if is_instance_valid(quarry):
+		quarry.queue_free()
+	_clear_field_lesson()
+
+
+## After a battle, the staged creature may be gone without the lesson's blow
+## ever being thrown: fought the ordinary way, bound, or routed by someone
+## else. The lesson is then over as far as the world goes, and the Scout
+## stages it again the next time the player talks to him. One still standing
+## gets its instruction back.
+func _settle_field_lesson() -> void:
+	if _field_lesson.is_empty():
+		return
+	var quarry: WildCreature = _field_lesson.creature
+	if is_instance_valid(quarry) and quarry.is_interactable():
+		field_ui.show_prompt(_field_lesson.prompt)
+		return
+	_clear_field_lesson()
+
+
 ## A one-off wild creature for a lesson, placed [param distance_cells] from
 ## the player on the side away from the Scout, and gone once the battle is
-## over, whatever its outcome.
-func _spawn_lesson_creature(species: CreatureSpecies, level: int, distance_cells: float) -> WildCreature:
+## over, whatever its outcome. A hostile one needs a [param leash_radius] and
+## a [param detection_radius] wide enough to carry it the whole way across.
+func _spawn_lesson_creature(
+	species: CreatureSpecies,
+	level: int,
+	distance_cells: float,
+	disposition: WildCreature.Disposition = WildCreature.Disposition.NEUTRAL,
+	leash_radius: float = 0.0,
+	detection_radius: float = 0.0,
+) -> WildCreature:
 	var away: Vector2 = Vector2.LEFT
 	var scout: WorldActor = _actor_with_id(FieldMending.SCOUT_ID)
 	if scout != null and not scout.global_position.is_equal_approx(player.global_position):
 		away = scout.global_position.direction_to(player.global_position)
 	var at: Vector2 = player.global_position + away * distance_cells * float(WorldArea.GRID_SIZE)
 	var creature: WildCreature = WILD_CREATURE_SCENE.instantiate()
-	creature.configure(species, level, at, 0.0, WildCreature.Disposition.NEUTRAL, 0.0)
+	creature.configure(species, level, at, leash_radius, disposition, detection_radius)
 	creature.ability_index = 0
 	creature.defeated.connect(func(_c: WildCreature) -> void: creature.queue_free())
+	# Staged after the area was wired, so it is hooked up by hand: a hostile
+	# one ([FieldAmbush]) reaches the player through this signal and nothing
+	# else.
+	creature.reached_player.connect(_on_creature_reached_player)
 	var host: Node = area.get_node_or_null(^"Actors")
 	(host if host != null else area).add_child(creature)
 	creature.global_position = at
@@ -737,6 +944,37 @@ func _show_reward_lines(lines: PackedStringArray) -> void:
 	for line: String in lines:
 		if not "XP" in line and not "level" in line:
 			field_ui.show_notice(line)
+
+
+## Where the field's quest arrow should point, for [FieldUI]: the world
+## position of whoever is waiting on the player, with their name, or an empty
+## dictionary when nobody is. Someone standing in this area is pointed at
+## directly; someone further off is pointed at through the doorway that leads
+## towards them (see [QuestCompass]), so the arrow is always something the
+## player can walk at.
+func quest_arrow_point() -> Dictionary:
+	var wanted: Dictionary = QuestCompass.destination(GameState.quests)
+	if wanted.is_empty():
+		return {}
+	var goal_area: String = ""
+	var caption: String = ""
+	if wanted.has("actor"):
+		var who: StringName = wanted.actor
+		var here: WorldActor = _actor_with_id(who)
+		caption = (here.display_name if here != null else String(who).capitalize()).to_upper()
+		if here != null:
+			return {"position": here.global_position, "label": caption}
+		goal_area = QuestCompass.area_of(who, area.scene_file_path)
+	else:
+		goal_area = wanted.area
+		caption = goal_area.get_file().get_basename().replace("_", " ").to_upper()
+	if goal_area == "" or goal_area == area.scene_file_path:
+		return {}
+	var door: String = QuestCompass.step_toward_area(goal_area, area.scene_file_path)
+	for exit: AreaExit in get_tree().get_nodes_in_group(AreaExit.GROUP):
+		if exit.target_area_path == door:
+			return {"position": exit.global_position, "label": caption}
+	return {}
 
 
 ## Tells the quest log the player has arrived in the current area.
@@ -795,10 +1033,17 @@ func _strike() -> void:
 		return
 
 	var routed: bool = target.take_overworld_hit(amount, player.global_position)
+	# The strike lesson counts the swing itself, whether or not it leaves
+	# anything to fight; the rout lesson counts only a swing that finishes the
+	# creature where it stands.
+	var lesson: Dictionary = {}
+	if _field_lesson_waits_on(target, true) and (routed or not bool(_field_lesson.needs_rout)):
+		lesson = _field_lesson.battle
+		_complete_field_lesson()
 	if routed:
 		await _rout(target, defender)
 		return
-	_start_wild_battle(target, BattleConfig.Opening.ADVANTAGE)
+	_start_wild_battle(target, BattleConfig.Opening.ADVANTAGE, lesson)
 
 
 ## Whether a strike that was already thrown should still resolve. The dash
@@ -921,7 +1166,12 @@ func _on_settings_closed() -> void:
 func _on_creature_reached_player(creature: WildCreature) -> void:
 	if _world_is_paused() or not creature.is_interactable():
 		return
-	_start_wild_battle(creature, BattleConfig.Opening.DISADVANTAGE)
+	# Standing still for the blow is what the ambush lesson asks for.
+	var lesson: Dictionary = {}
+	if _field_lesson_waits_on(creature, false):
+		lesson = _field_lesson.battle
+		_complete_field_lesson()
+	_start_wild_battle(creature, BattleConfig.Opening.DISADVANTAGE, lesson)
 
 
 ## [param lesson] is what a lesson's [code]stage()[/code] returns, for a
@@ -935,6 +1185,9 @@ func _start_wild_battle(
 		dialogue_panel.close()
 	_battling_creature = creature
 	_lesson = lesson
+	# An instruction left standing would hang over the battle screen; it comes
+	# back afterwards if the lesson is still waiting on this creature.
+	field_ui.hide_prompt()
 	if not GameState.has_usable_party_member():
 		GameState.heal_party()
 
@@ -953,9 +1206,10 @@ func _start_wild_battle(
 		else BattleConfig.wild(party, enemy, Content.type_chart, opening)
 	)
 	config.binding_scrolls = GameState.binding_scrolls
-	# A lesson is fought with the Scout's borrowed party, so the satchel stays
-	# shut for it.
-	if lesson.is_empty():
+	# A lesson fought with the Scout's borrowed party keeps the satchel shut;
+	# one fought with the player's own party ([FieldStrike], [FieldAmbush])
+	# asks for it back.
+	if lesson.is_empty() or bool(lesson.get("satchel", false)):
 		config.items = GameState.items.duplicate()
 		for item: ItemData in Content.all_items():
 			config.item_catalog[item.id] = item
@@ -1078,6 +1332,7 @@ func _on_battle_finished(engine: BattleEngine) -> void:
 		_open_dialogue(_waking_text())
 	if not lesson.is_empty():
 		_open_dialogue(lesson.won_line if lesson_won else lesson.lost_line)
+	_settle_field_lesson()
 	_refresh_world_activity()
 	_evolve_ready_party()
 

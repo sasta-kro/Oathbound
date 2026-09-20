@@ -228,6 +228,7 @@ func _services(p: AreaPainter) -> void:
 			]),
 			"barks": PackedStringArray(["Stew's on!", "Rooms free tonight!", "Wipe your boots, please."]),
 			"runs_inn": true,
+			"quest_ids": _ids([&"quest_main_01g_a_stocked_satchel"]),
 		}
 	)
 	p.add_actor(
@@ -260,7 +261,7 @@ func _services(p: AreaPainter) -> void:
 			]),
 			"barks": PackedStringArray(["Salves and tonics!", "Mind your wounds, traveller."]),
 			"shop_title": "Apothecary",
-			"quest_ids": _ids([&"quest_side_a_stocked_satchel"]),
+			"quest_ids": _ids([&"quest_main_01h_the_road_is_waiting"]),
 			"shop_stock": _ids([&"item_herb_salve", &"item_hearty_tonic", &"item_ember_draught", &"item_clearwater_vial"]),
 		}
 	)
@@ -290,7 +291,6 @@ func _townsfolk(p: AreaPainter) -> void:
 			"dialogue_line": "Old Man: The dead king has been put back under nine times since this town started keeping count, and the count was already old when we started it.",
 			"chatter": PackedStringArray(["Old Man: Sit a while. Well water tastes better when you're not rushing, and that altar has waited longer than you have."]),
 			"barks": PackedStringArray(["Hmph. Pigeons.", "Back in my day..."]),
-			"quest_ids": _ids([&"quest_side_a_proper_rest"]),
 		}
 	)
 	p.add_actor(

@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_find"]
+script = ExtResource("2_objective")
+kind = 2
+target = &"archivist"
+count = 1
+description = "Find the Archivist at her table in the camp"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_main_04_to_the_archivist"
+title = "The Archivist's Table"
+kind = 0
+summary = "Forty-one champions came down this stair before, and every one of them is written up in the Archivist's book. Aldric will not let anyone go deeper without hearing what is in it."
+giver = &"aldric"
+turn_in = &"archivist"
+requires = &"quest_main_04_the_stair_shut"
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_find")])
+reward_currency = 10
+reward_xp = 15
+offer_line = "Aldric: Before you go a step further into these halls, you are going to sit down with the book. The Archivist keeps it at her table, over by the lamps. Everything anyone has learned down here is in her hand, and most of it was paid for. Go and let her tell you what you are walking into."
+accept_option = "I'll hear it."
+refuse_option = "Give me a moment."
+accepted_line = "Aldric: Across the hall, under the lamps. She will have heard the door; she always does."
+refused_line = "Aldric: Sit with it a while, then. The book will keep."
+reoffer_line = "Aldric: Ready to hear what is in the book?"
+progress_line = "Aldric: The Archivist. Her table is across the hall, under the lamps."
+complete_line = "The Archivist: Aldric sent you to be frightened properly. Sit. You will want to know what you are walking into, and I am the one who writes it down."
+done_line = "The Archivist: Everything is in the book. Come and read it whenever you like."

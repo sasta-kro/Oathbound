@@ -168,6 +168,7 @@ display_name = "INNKEEPER"
 sprite_frames = ExtResource("11_ubjrp")
 dialogue_line = "Innkeeper: Welcome to the Hearthside. Beds are warm and the stew is hot. Stay the night? Oathkeepers sleep free. The Order has always paid for its own."
 runs_inn = true
+quest_ids = Array[StringName]([&"quest_main_01g_a_stocked_satchel"])
 chatter = PackedStringArray("Innkeeper: Back again? Your Oathbound look like they could use a proper bed.", "Innkeeper: The Fisher swears he caught tonight\'s stew. He didn\'t. Rest a while?")
 barks = PackedStringArray("Stew\'s on!", "Rooms free tonight!", "Wipe your boots, please.")
 
@@ -189,9 +190,9 @@ script = ExtResource("6_pahgs")
 display_name = "APOTHECARY"
 sprite_frames = ExtResource("13_114rs")
 dialogue_line = "Apothecary: Salves for scrapes, tonics for worse, and a draught for when the worst has already happened. I have stocked every champion since I was young. Most of them came back."
-quest_ids = Array[StringName]([&"quest_side_a_stocked_satchel"])
 shop_stock = Array[StringName]([&"item_herb_salve", &"item_hearty_tonic", &"item_ember_draught", &"item_clearwater_vial"])
 shop_title = "Apothecary"
+quest_ids = Array[StringName]([&"quest_main_01h_the_road_is_waiting"])
 chatter = PackedStringArray("Apothecary: Clearwater from the well, blessed twice. Burns and poisons don\'t stand a chance.", "Apothecary: Keep a salve in your satchel. The meadow bites harder than it looks.")
 barks = PackedStringArray("Salves and tonics!", "Mind your wounds, traveller.")
 
@@ -211,7 +212,6 @@ display_name = "OLD MAN"
 sprite_frames = ExtResource("15_5cvyu")
 facing = &"left"
 dialogue_line = "Old Man: The dead king has been put back under nine times since this town started keeping count, and the count was already old when we started it."
-quest_ids = Array[StringName]([&"quest_side_a_proper_rest"])
 chatter = PackedStringArray("Old Man: Sit a while. Well water tastes better when you\'re not rushing, and that altar has waited longer than you have.")
 barks = PackedStringArray("Hmph. Pigeons.", "Back in my day...")
 

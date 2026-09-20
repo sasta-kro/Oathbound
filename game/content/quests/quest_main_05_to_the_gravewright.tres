@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
+
+[sub_resource type="Resource" id="Objective_find"]
+script = ExtResource("2_objective")
+kind = 2
+target = &"gravewright"
+count = 1
+description = "Find the Gravewright out among the rows"
+
+[resource]
+script = ExtResource("1_quest")
+id = &"quest_main_05_to_the_gravewright"
+title = "The Gravewright's Rows"
+kind = 0
+summary = "Nothing goes up that road unpaid for. The Gravewright works the rows where the halls' dead are laid, and what he lifts out of them is what the next champion carries."
+giver = &"archivist"
+turn_in = &"gravewright"
+requires = &"quest_main_05_the_record"
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_find")])
+reward_currency = 10
+reward_xp = 15
+offer_line = "The Archivist: Now go and see the Gravewright, and go quietly; he is out among the rows. He lifts the seal-iron off the ones the halls take, so it can go home with somebody who is still walking. You will be carrying some of it before long, so you may as well know whose it was."
+accept_option = "I'll go to him."
+refuse_option = "Give me a moment."
+accepted_line = "The Archivist: Out past the crypts, where the ground is opened. Do not tread on the names."
+refused_line = "The Archivist: When you are ready. They are not in a hurry."
+reoffer_line = "The Archivist: Ready to go out to the rows?"
+progress_line = "The Archivist: The Gravewright is out among the rows, past the crypts."
+complete_line = "The Gravewright: Mind where you tread. They are all champions, every one of these, and you are standing on the ninth watch."
+done_line = "The Gravewright: Tread softly and take what the iron gives you."

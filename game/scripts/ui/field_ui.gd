@@ -16,6 +16,10 @@ var status_portrait: Control
 var quest_tracker: PanelContainer
 var _tracker_rows: VBoxContainer
 var shade: ColorRect
+## The standing instruction of a guided overworld lesson, or null.
+var _prompt: PanelContainer
+## Points at whoever the player owes a visit (see [QuestCompass]).
+var _arrow: QuestArrow
 var nav_buttons: Dictionary = {}
 var page := ""
 var journal_filter := ""
@@ -47,6 +51,9 @@ func _ready() -> void:
 	rewards.offset_right = -20
 	rewards.offset_top = 90
 	root.add_child(rewards)
+	_build_prompt()
+	_arrow = QuestArrow.new()
+	root.add_child(_arrow)
 	shade = ColorRect.new()
 	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	shade.color = Color(0.015, 0.035, 0.04, 0.78)
@@ -162,6 +169,7 @@ func _rebuild_status(creature: CreatureInstance) -> void:
 
 func _process(_delta: float) -> void:
 	hud.visible = not world.battle_scene.is_active() and not is_open() and not world.is_in_opening()
+	_aim_arrow()
 	status_panel.visible = hud.visible and not world.dialogue_panel.is_open()
 	quest_tracker.visible = status_panel.visible and _tracker_rows.get_child_count() > 0
 	var lead := GameState.lead_creature()
@@ -180,6 +188,20 @@ func _process(_delta: float) -> void:
 			_health_tween = create_tween()
 			_health_tween.tween_property(health_bar, "value", lead.hp_fraction() * 100, 0.35)
 		_last_hp = lead.current_hp
+
+## Points the quest arrow at whoever is waiting, in screen space, or takes it
+## off the screen when nobody is or when something else owns the screen.
+func _aim_arrow() -> void:
+	if _arrow == null: return
+	var point: Dictionary = world.quest_arrow_point() if hud.visible else {}
+	if point.is_empty():
+		_arrow.hide()
+		return
+	var canvas := get_viewport().get_canvas_transform()
+	var player_at: Vector2 = canvas * world.player.global_position
+	var target_at: Vector2 = canvas * (point.position as Vector2)
+	_arrow.point_along(player_at, target_at - player_at, point.label)
+
 
 func _input(event: InputEvent) -> void:
 	if world.settings_menu.is_open() or world.transition.is_busy(): return
@@ -959,6 +981,33 @@ func show_xp(creature: CreatureInstance, before_xp: int, before_level: int, appl
 	# Snapshot every value; later rewards may arrive while this one is queued.
 	_reward_queue.append({"species": creature.species, "name": creature.display_name(), "before_xp": before_xp, "before_level": before_level, "xp": creature.total_xp, "level": creature.level, "applied": applied})
 	_drain_rewards()
+
+## A guided lesson's standing instruction, held under the HUD until the step
+## it asks for is done (see [FieldStrike], [FieldAmbush]). Unlike a notice it
+## does not time out, because it is telling the player what to do next.
+func show_prompt(text: String) -> void:
+	if _prompt == null:
+		return
+	_clear(_prompt)
+	_prompt.add_child(OathTheme.label(text, 13, OathTheme.GOLD))
+	_prompt.show()
+
+func hide_prompt() -> void:
+	if _prompt != null:
+		_prompt.hide()
+
+func _build_prompt() -> void:
+	var row := CenterContainer.new()
+	row.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+	row.offset_top = 58
+	row.offset_bottom = 110
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(row)
+	_prompt = PanelContainer.new()
+	_prompt.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_prompt.add_theme_stylebox_override("panel", OathTheme.box(OathTheme.INK, OathTheme.GOLD.darkened(0.5), 7, 12))
+	row.add_child(_prompt)
+	_prompt.hide()
 
 func show_notice(text: String) -> void:
 	_reward_queue.append({"notice": text})
