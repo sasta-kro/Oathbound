@@ -20,8 +20,9 @@ func _plain_battler(species_path: String, side: int) -> Battler:
 func test_damage_follows_the_provisional_formula() -> void:
 	var attacker := _plain_battler(EMBERLING, BattleTeam.Side.PLAYER)
 	var defender := _plain_battler(LOAMBUCK, BattleTeam.Side.ENEMY)
-	# Base 20 + 48 - 58 = 10, level x1.0, STAB x1.5, Fire vs Earth x0.5 -> floor(7.5).
-	assert_eq(BattleRules.damage(load(EMBER), attacker, defender, Content.type_chart), 7)
+	# Base 20 + 48 - 58 = 10, under the floor of ceil(48 x 0.25) = 12, so 12
+	# stands: level x1.0, STAB x1.5, Fire vs Earth x0.5 -> floor(9.0).
+	assert_eq(BattleRules.damage(load(EMBER), attacker, defender, Content.type_chart), 9)
 
 
 func test_type_chart_and_stab_multiply_into_damage() -> void:
@@ -31,11 +32,21 @@ func test_type_chart_and_stab_multiply_into_damage() -> void:
 	assert_eq(BattleRules.damage(load(WATER_JET), attacker, defender, Content.type_chart), 84)
 
 
-func test_damage_never_goes_below_zero() -> void:
+func test_a_defence_that_outweighs_the_attack_still_lets_the_floor_through() -> void:
 	var attacker := _plain_battler(LOAMBUCK, BattleTeam.Side.PLAYER)
 	var defender := _plain_battler(LOAMBUCK, BattleTeam.Side.ENEMY)
-	# Base 10 + 46 - 58 < 0 clamps to 0 (Specification 11.8).
-	assert_eq(BattleRules.damage(load(VENOM_SPIT), attacker, defender, Content.type_chart), 0)
+	# Base 10 + 46 - 58 is below zero, so the floor of ceil(46 x 0.25) = 12
+	# stands: x1.0 level, x1.5 STAB, x1.0 Earth vs Earth -> floor(18.0).
+	# Without the floor a Defence-built creature reads as untouchable rather
+	# than as a hard target.
+	assert_eq(BattleRules.damage(load(VENOM_SPIT), attacker, defender, Content.type_chart), 18)
+
+
+func test_a_move_that_does_no_damage_at_all_does_none() -> void:
+	var attacker := _plain_battler(LOAMBUCK, BattleTeam.Side.PLAYER)
+	var defender := _plain_battler(LOAMBUCK, BattleTeam.Side.ENEMY)
+	var mend: MoveData = Content.get_move(&"move_mend_01")
+	assert_eq(BattleRules.damage(mend, attacker, defender, Content.type_chart), 0)
 
 
 func test_level_multiplier_scales_with_attacker_level() -> void:
@@ -52,9 +63,9 @@ func test_abilities_multiply_damage_dealt_and_taken() -> void:
 		CreatureInstance.create(load(EMBERLING) as CreatureSpecies, 1), BattleTeam.Side.PLAYER
 	)
 	var defender := _plain_battler(LOAMBUCK, BattleTeam.Side.ENEMY)
-	# Ember Body: Fire damage dealt x1.2 -> floor(7.5 x 1.2).
+	# Ember Body: Fire damage dealt x1.2 -> floor(9.0 x 1.2).
 	assert_eq(attacker.creature.ability.id, &"ability_ember_body")
-	assert_eq(BattleRules.damage(load(EMBER), attacker, defender, Content.type_chart), 9)
+	assert_eq(BattleRules.damage(load(EMBER), attacker, defender, Content.type_chart), 10)
 
 
 func test_effectiveness_text_matches_the_multiplier() -> void:

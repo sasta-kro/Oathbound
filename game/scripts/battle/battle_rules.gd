@@ -9,6 +9,18 @@ extends RefCounted
 ## `LevelMultiplier = 1 + (Level - 1) / 50` (Specification 11.8).
 const LEVEL_MULTIPLIER_DIVISOR := 50.0
 
+## Share of the attacker's Attack that lands however well the defender is
+## armoured. The bare subtraction of Specification 11.8 has no floor, and a
+## creature built around Defence outgrows the whole early move roster at once:
+## it reads as invulnerable rather than as a hard target. The floor follows the
+## attacker's Attack rather than the move's Power, so it still answers to
+## level, to Burn and to everything else that weakens an attacker. The formula
+## stays Provisional (Specification 11.8); this is the knob to turn when
+## retuning it.
+const MIN_DAMAGE_ATTACK_FRACTION := 0.25
+## Floor for a landed damaging move, so a hit is never free.
+const MINIMUM_HIT_DAMAGE := 1
+
 ## Binding chance placeholder (Specification 15.3). A healthy creature binds
 ## at its species rate (about 40 percent for most); every point of missing HP
 ## closes the gap toward [constant BIND_MAX_CHANCE].
@@ -63,9 +75,9 @@ static func same_type_bonus(
 static func damage(move: MoveData, attacker: Battler, defender: Battler, chart: TypeChart) -> int:
 	if move == null or not move.is_damaging():
 		return 0
-	var base_damage: int = maxi(
-		0, move.power + attacker.effective_attack() - defender.effective_defense()
-	)
+	var attack: int = attacker.effective_attack()
+	var floor_damage: int = int(ceil(float(attack) * MIN_DAMAGE_ATTACK_FRACTION))
+	var base_damage: int = maxi(floor_damage, move.power + attack - defender.effective_defense())
 	var level_multiplier: float = (
 		1.0 + float(attacker.creature.level - 1) / LEVEL_MULTIPLIER_DIVISOR
 	)
@@ -79,7 +91,11 @@ static func damage(move: MoveData, attacker: Battler, defender: Battler, chart: 
 		total *= attacker.creature.ability.outgoing_damage_multiplier(move.type)
 	if defender.creature.ability != null:
 		total *= defender.creature.ability.incoming_damage_multiplier(move.type)
-	return maxi(0, int(floor(total)))
+	# An ability that cancels damage outright still cancels it; anything that
+	# merely reduces it leaves at least a chip.
+	if is_zero_approx(total):
+		return 0
+	return maxi(MINIMUM_HIT_DAMAGE, int(floor(total)))
 
 
 ## Player-facing effectiveness hint (Specification 22.5). Empty when neutral.

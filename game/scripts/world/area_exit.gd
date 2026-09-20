@@ -16,12 +16,20 @@ signal player_entered(exit: AreaExit)
 const GROUP := &"area_exits"
 const EDITOR_COLOR := Color(0.95, 0.75, 0.2, 0.35)
 const EDITOR_LABEL_SIZE: int = 14
+const LOCKED_EDITOR_COLOR := Color(0.75, 0.25, 0.3, 0.35)
+const DEFAULT_LOCKED_LINE := "The way is sealed."
 
 ## Scene of the area this exit leads to. A path rather than a PackedScene so
 ## two areas can point at each other without a circular resource load.
 @export_file("*.tscn") var target_area_path: String = ""
 ## Name of the marker under the target area's `Entrances` node to appear at.
 @export var target_entrance: StringName = &""
+## Boss that must fall before this exit opens. Empty for a way that is open
+## from the start (Specification 19).
+@export var required_boss: StringName = &""
+## What the player is told when they walk into the exit while it is still
+## sealed. Empty falls back to [constant DEFAULT_LOCKED_LINE].
+@export_multiline var locked_line: String = ""
 ## Size of the trigger in map cells.
 @export var size_in_cells: Vector2 = Vector2(3, 2):
 	set(value):
@@ -43,6 +51,16 @@ func _on_body_entered(body: Node2D) -> void:
 		player_entered.emit(self)
 
 
+## True while the exit names a boss the player has not beaten yet. The
+## overworld turns the player back instead of travelling.
+func is_locked() -> bool:
+	return required_boss != &"" and not GameState.has_defeated_boss(required_boss)
+
+
+func locked_text() -> String:
+	return locked_line if locked_line != "" else DEFAULT_LOCKED_LINE
+
+
 func size_in_pixels() -> Vector2:
 	return size_in_cells * WorldArea.GRID_SIZE
 
@@ -62,9 +80,12 @@ func _draw() -> void:
 	if not Engine.is_editor_hint():
 		return
 	var size: Vector2 = size_in_pixels()
-	draw_rect(Rect2(-size / 2.0, size), EDITOR_COLOR, true)
-	draw_rect(Rect2(-size / 2.0, size), EDITOR_COLOR.lightened(0.3), false, 2.0)
+	var color: Color = LOCKED_EDITOR_COLOR if required_boss != &"" else EDITOR_COLOR
+	draw_rect(Rect2(-size / 2.0, size), color, true)
+	draw_rect(Rect2(-size / 2.0, size), color.lightened(0.3), false, 2.0)
 	var label: String = "-> %s" % target_area_path.get_file().get_basename()
+	if required_boss != &"":
+		label += " (needs %s)" % required_boss
 	draw_string(
 		ThemeDB.fallback_font,
 		Vector2(-size.x / 2.0 + 4.0, -size.y / 2.0 - 4.0),

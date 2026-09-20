@@ -103,7 +103,9 @@ func test_a_fainted_ally_cannot_be_targeted() -> void:
 
 func test_no_target_means_the_user_itself() -> void:
 	var engine := _loambuck_leading()
-	engine.player.active().creature.set_hp(3)
+	# Hurt, but not so close to fainting that the foe's turn could end it
+	# before the mend lands.
+	engine.player.active().creature.set_hp(30)
 	var events := engine.take_turn(BattleAction.use_move(_mend()))
 	var healed := _first(events, BattleEvent.Kind.HEALED)
 	assert_eq(int(healed.data["target_index"]), 0)

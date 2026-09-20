@@ -79,7 +79,10 @@ func _ready() -> void:
 	add_child(shop_menu)
 	shop_menu.closed.connect(_on_shop_closed)
 	var opening: bool = GameState.take_opening_request()
-	if GameState.take_resume_request() and _restore_saved_area():
+	var jump: String = GameState.take_jump_area()
+	if jump != "" and _open_area_path(jump):
+		player.global_position = area.player_start_position()
+	elif GameState.take_resume_request() and _restore_saved_area():
 		player.global_position = GameState.player_position
 		player.face(GameState.player_facing)
 	elif opening:
@@ -225,6 +228,24 @@ func _notification(what: int) -> void:
 ## the scene ships with. Runs before the area is wired, so nothing has to be
 ## unhooked. Returns false when the saved area cannot be loaded, in which
 ## case the shipped area and its start marker are used.
+## Swaps in the area at [param path], for a dev jump straight into it.
+## Returns false, leaving the default area up, when the path is not a scene.
+func _open_area_path(path: String) -> bool:
+	if path == area.scene_file_path:
+		return true
+	# Checked before loading, so a shortcut naming an area that has not been
+	# built yet turns into a warning rather than an engine error.
+	if not ResourceLoader.exists(path):
+		DevLog.info("Cannot jump to %s; there is no such scene." % path)
+		return false
+	var packed: PackedScene = load(path) as PackedScene
+	if packed == null:
+		DevLog.info("Cannot jump to %s; it is not a scene." % path)
+		return false
+	_swap_area(packed)
+	return true
+
+
 func _restore_saved_area() -> bool:
 	if not GameState.has_location():
 		return false
@@ -311,6 +332,10 @@ func _play_area_music() -> void:
 
 func _on_area_exit_entered(exit: AreaExit) -> void:
 	if _world_is_paused() or _travelling:
+		return
+	# A way sealed behind a boss turns the player back with a line instead.
+	if exit.is_locked():
+		_open_dialogue(exit.locked_text())
 		return
 	travel_to(exit.target_area_path, exit.target_entrance)
 

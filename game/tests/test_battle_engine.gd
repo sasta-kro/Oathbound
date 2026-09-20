@@ -259,6 +259,21 @@ func test_cooldowns_keep_counting_while_benched() -> void:
 	assert_true(emberling.is_move_ready(guard), "Benched cooldowns still progress.")
 
 
+func test_a_send_out_reports_the_arriving_creature_as_it_arrives() -> void:
+	var engine := _start(_wild([[EMBERLING, 6], [RILLFIN, 5]], LOAMBUCK, 5), ALWAYS)
+	var rillfin: CreatureInstance = engine.player.battlers[1].creature
+	var events := engine.take_turn(BattleAction.switch_to(1))
+	var arrival := _first_of(events, BattleEvent.Kind.SEND_OUT)
+	assert_not_null(arrival)
+	assert_eq(arrival.side, BattleTeam.Side.PLAYER)
+	assert_eq(int(arrival.data["hp"]), rillfin.max_hp(), "It arrives unhurt.")
+	assert_eq(int(arrival.data["max_hp"]), rillfin.max_hp())
+	# The foe then hits the newcomer, and the whole turn is resolved before any
+	# of it is played back. Without the snapshot the screen would open the bar
+	# on this lower number and have nothing left to animate.
+	assert_lt(rillfin.current_hp, rillfin.max_hp(), "The foe answered the switch.")
+
+
 # --- Statuses (Specification 12) ---------------------------------------------
 
 

@@ -171,7 +171,7 @@ func _people(p: AreaPainter) -> void:
 			"display_name": "KNIGHT",
 			"body_color": Color(0.247059, 0.72549, 0.34902, 1),
 			"sprite_frames": load(KNIGHT_SPRITE_FRAMES),
-			"dialogue_line": "Knight: Rest by the well, you look worn. The road through the north gate leads past the old ruins to the altar. Keep to it.",
+			"dialogue_line": "Knight: Rest by the well, you look worn. The road through the north gate leads past the old ruins to the altar. Keep to it, and mind your manners when you reach the knight at the end of it.",
 			"heals_party": true,
 		}
 	)
@@ -183,7 +183,7 @@ func _people(p: AreaPainter) -> void:
 			"body_color": Color(0.75, 0.62, 0.86, 1),
 			"sprite_frames": load(ELDER_SPRITE_FRAMES),
 			"facing": &"right",
-			"dialogue_line": "Elder: The board has work for anyone willing to leave the walls. Wild Oathbound roam the meadow, and worse things by the ruins.",
+			"dialogue_line": "Elder: The board has work for anyone willing to leave the walls. Wild Oathbound roam the meadow, and the seal is thinning again up by the ruins.",
 			"quest_ids": _ids([&"quest_main_01_beyond_the_walls"]),
 		}
 	)
@@ -194,7 +194,7 @@ func _people(p: AreaPainter) -> void:
 			"display_name": "MERCHANT",
 			"body_color": Color(0.9, 0.6, 0.3, 1),
 			"sprite_frames": load(MERCHANT_SPRITE_FRAMES),
-			"dialogue_line": "Merchant: Fresh bread, dried fish, and a crate I have not opened since the caravan came. Take a look.",
+			"dialogue_line": "Merchant: Fresh bread, dried fish, and a crate I still have not opened. The caravans come slower every year the bells start up.",
 			"quest_ids": _ids([&"quest_side_the_crossing"]),
 		}
 	)
@@ -221,7 +221,7 @@ func _services(p: AreaPainter) -> void:
 		{
 			"display_name": "INNKEEPER",
 			"sprite_frames": load(NPC_SPRITES_DIR % "innkeeper"),
-			"dialogue_line": "Innkeeper: Welcome to the Hearthside. Beds are warm and the stew is hot. Stay the night? Oathsworn sleep free.",
+			"dialogue_line": "Innkeeper: Welcome to the Hearthside. Beds are warm and the stew is hot. Stay the night? Oathkeepers sleep free. The Order has always paid for its own.",
 			"chatter": PackedStringArray([
 				"Innkeeper: Back again? Your Oathbound look like they could use a proper bed.",
 				"Innkeeper: The Fisher swears he caught tonight's stew. He didn't. Rest a while?",
@@ -236,7 +236,7 @@ func _services(p: AreaPainter) -> void:
 		{
 			"display_name": "SCRIBE",
 			"sprite_frames": load(NPC_SPRITES_DIR % "scribe"),
-			"dialogue_line": "Scribe: Binding Scrolls, inked by my own hand. Oath-script holds better than any rope.",
+			"dialogue_line": "Scribe: Binding Scrolls, inked by my own hand. Oath-script holds better than any rope. It is the same hand that copies out the rite, for whatever that is worth to you.",
 			"chatter": PackedStringArray([
 				"Scribe: A worn-down creature listens closer. Weaken it before you offer the scroll.",
 				"Scribe: Failed binding? The scroll crumbles, but the lesson stays. Buy another.",
@@ -253,7 +253,7 @@ func _services(p: AreaPainter) -> void:
 		{
 			"display_name": "APOTHECARY",
 			"sprite_frames": load(NPC_SPRITES_DIR % "apothecary"),
-			"dialogue_line": "Apothecary: Salves for scrapes, tonics for worse, and a draught for when the worst has already happened.",
+			"dialogue_line": "Apothecary: Salves for scrapes, tonics for worse, and a draught for when the worst has already happened. I have stocked every champion since I was young. Most of them came back.",
 			"chatter": PackedStringArray([
 				"Apothecary: Clearwater from the well, blessed twice. Burns and poisons don't stand a chance.",
 				"Apothecary: Keep a salve in your satchel. The meadow bites harder than it looks.",
@@ -275,8 +275,8 @@ func _townsfolk(p: AreaPainter) -> void:
 		{
 			"display_name": "GUARD",
 			"sprite_frames": load(NPC_SPRITES_DIR % "guard"),
-			"dialogue_line": "Guard: The gate stays open while the sun is up. After dark, knock twice and say your oath.",
-			"chatter": PackedStringArray(["Guard: Wild ones don't come past the wall. Mostly."]),
+			"dialogue_line": "Guard: The gate stays open while the sun is up. After dark, knock twice and say your oath. We have kept that rule since before the altar was raised.",
+			"chatter": PackedStringArray(["Guard: Wild ones don't come past the wall. Mostly. Nothing has ever come past the altar."]),
 			"barks": PackedStringArray(["Quiet day.", "Mind the ruins out there."]),
 		}
 	)
@@ -287,8 +287,8 @@ func _townsfolk(p: AreaPainter) -> void:
 			"display_name": "OLD MAN",
 			"sprite_frames": load(NPC_SPRITES_DIR % "old_man"),
 			"facing": &"left",
-			"dialogue_line": "Old Man: When I was your age, the Skeleton Lord was a story told to keep children inside the walls.",
-			"chatter": PackedStringArray(["Old Man: Sit a while. Well water tastes better when you're not rushing."]),
+			"dialogue_line": "Old Man: The dead king has been put back under nine times since this town started keeping count, and the count was already old when we started it.",
+			"chatter": PackedStringArray(["Old Man: Sit a while. Well water tastes better when you're not rushing, and that altar has waited longer than you have."]),
 			"barks": PackedStringArray(["Hmph. Pigeons.", "Back in my day..."]),
 			"quest_ids": _ids([&"quest_side_a_proper_rest"]),
 		}
@@ -311,8 +311,8 @@ func _townsfolk(p: AreaPainter) -> void:
 			"display_name": "BARD",
 			"sprite_frames": load(NPC_SPRITES_DIR % "bard"),
 			"facing": &"right",
-			"dialogue_line": "Bard: I'm writing a ballad about the Black Knight. I just need someone to go and beat him first.",
-			"chatter": PackedStringArray(["Bard: Every oath has a verse. Yours hasn't been written yet."]),
+			"dialogue_line": "Bard: I'm writing a ballad about the Oathbreaker. Hardest song in the Reach. Nobody can agree on whether it is meant to end sad.",
+			"chatter": PackedStringArray(["Bard: Every oath has a verse. Yours hasn't been written yet, and his has been sung wrong for a hundred years."]),
 			"barks": PackedStringArray(["♪ Oh, the meadow grass was green... ♪", "♪ ...and the scroll held true ♪"]),
 		}
 	)

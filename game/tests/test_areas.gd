@@ -4,6 +4,8 @@ extends GutTest
 const AREA_SCENES: Array[String] = [
 	"res://areas/town.tscn",
 	"res://areas/area_one.tscn",
+	"res://areas/area_two.tscn",
+	"res://areas/area_three.tscn",
 	"res://areas/test_01.tscn",
 ]
 const START_AREA: String = "res://areas/town.tscn"
@@ -65,9 +67,42 @@ func test_town_and_area_one_are_linked_both_ways() -> void:
 	var town_exits: Array = town.find_children("*", "AreaExit", true, false)
 	var area_exits: Array = area_one.find_children("*", "AreaExit", true, false)
 	assert_eq(town_exits.size(), 1, "The town has one way out.")
-	assert_eq(area_exits.size(), 1, "Area One has one way out.")
+	assert_eq(area_exits.size(), 2, "Area One leads back to town and on to Area Two.")
 	assert_eq(town_exits[0].target_area_path, "res://areas/area_one.tscn")
-	assert_eq(area_exits[0].target_area_path, "res://areas/town.tscn")
+	var targets: Array[String] = []
+	for exit: AreaExit in area_exits:
+		targets.append(exit.target_area_path)
+	assert_has(targets, "res://areas/town.tscn")
+	assert_has(targets, "res://areas/area_two.tscn")
+
+
+func test_the_way_to_area_two_is_sealed_until_the_black_knight_falls() -> void:
+	var area_one: WorldArea = _load_area("res://areas/area_one.tscn")
+	var onward: AreaExit = null
+	for exit: AreaExit in area_one.find_children("*", "AreaExit", true, false):
+		if exit.target_area_path == "res://areas/area_two.tscn":
+			onward = exit
+	assert_not_null(onward, "Area One has a way on to Area Two.")
+	if onward == null:
+		return
+	assert_eq(onward.required_boss, &"boss_area_01", "The stair waits on the Black Knight.")
+	GameState.defeated_bosses.erase(&"boss_area_01")
+	assert_true(onward.is_locked(), "The stair is sealed while the knight stands.")
+	assert_ne(onward.locked_text(), "", "A sealed way tells the player why.")
+	GameState.record_boss_defeat(&"boss_area_01")
+	assert_false(onward.is_locked(), "Beating the knight opens the stair.")
+	GameState.defeated_bosses.erase(&"boss_area_01")
+
+
+func test_area_two_leads_back_to_area_one() -> void:
+	var area_two: WorldArea = _load_area("res://areas/area_two.tscn")
+	var exits: Array = area_two.find_children("*", "AreaExit", true, false)
+	assert_eq(exits.size(), 1, "Area Two has one way out.")
+	if exits.is_empty():
+		return
+	assert_eq(exits[0].target_area_path, "res://areas/area_one.tscn")
+	assert_eq(exits[0].target_entrance, &"FromAreaTwo")
+	assert_false(exits[0].is_locked(), "The way back is never sealed.")
 
 
 func test_unknown_entrance_falls_back_to_the_player_start() -> void:

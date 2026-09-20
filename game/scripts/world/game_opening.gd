@@ -9,18 +9,25 @@ extends RefCounted
 ## the player standing with the Elder by the well in the town square, where
 ## the starter is handed over and the first main quest given. The overworld
 ## plays that half; see [code]main.gd[/code].
+##
+## Both halves tell the same story the rest of the main chain assumes: the
+## town is what is left of the Guardian Order, a dead king and his kingdom
+## are sealed inside the altar at the end of the ruined road, the seal thins,
+## and the town sends one of its own up to make it hold again. It has been
+## done many times and will be done many more.
 
 ## The prologue, one page per entry. [constant PROLOGUE_CREATURE_PAGE] is the
 ## page the starter's art first appears on.
 const PROLOGUE: PackedStringArray = [
-	"Ah, there you are. Sit a moment, and let an old man tell it the way it was told to him.",
+	"Ah, there you are. Sit a moment, and let an old man tell it the way it was told to him. Every child of this town hears it once. You are hearing it the day it becomes yours.",
 	"This is the Verdant Reach. Green hills, old roads, and more wild creatures than there are stars over the lake.",
-	"Some of those creatures choose to walk beside a person. The two swear an oath to one another, and from that day the creature is Oathbound.",
-	"Most oaths are quiet ones. Farmers plough with their Oathbound, healers mend with them, children grow up beside them.",
-	"But a few swear to carry their oath past the walls, where the wild is not so kind. We call them Oathbound too, for they are bound as surely as their partners.",
-	"It is not an easy road. The Knight Order is stretched thin, and the old dangers of the Reach do not stay buried for long.",
-	"And today, one more of our own is ready to walk it.",
-	"Come. I will be waiting for you by the well in the square.",
+	"Some of those creatures choose to walk beside a person. The two swear an oath to one another, and from that day the creature is Oathbound, and the one who walks with it an Oathkeeper.",
+	"Most oaths are quiet ones. Farmers plough with their Oathbound, healers mend with them, children grow up beside them. Ours has never been quiet.",
+	"We are not the village we look like. We are what is left of the Guardian Order, and we have kept one watch and no other since before the road had a name.",
+	"North of the gate, at the end of that road, there is an altar. A whole kingdom is sealed inside it. Its king, its knights, its walls, folded down into stone.",
+	"That king had a son, and the son died, and the king would not have it. He reached for a magic no crown was ever meant to touch. It brought the boy back wrong, and it took the kingdom with him, and every knight who had sworn to him besides.",
+	"Our Order sealed all of it away rather than let it walk. We have kept that seal ever since. It thins. It always thins, and the dead king stirs under it, and the town sends one of its own up the road to put him back down. It has been done more times than we have names for. It will be done again after you.",
+	"The bells beneath the altar rang last night. Come. I will be waiting for you by the well in the square.",
 ]
 const PROLOGUE_CREATURE_PAGE: int = 2
 const PROLOGUE_SPEAKER := "THE ELDER"
@@ -35,8 +42,8 @@ const FIRST_QUEST_ID: StringName = &"quest_main_01_beyond_the_walls"
 ## Before the starter is handed over.
 const WELCOME: PackedStringArray = [
 	"Elder: There you are. Look at you, standing by the old well. I remember when you could barely see over its rim.",
-	"Elder: You have come of age, and of everything you could have been, you chose the oath. I could not be prouder. The Reach has a new Oathbound today.",
-	"Elder: But an Oathbound needs a partner. This one hatched in my hearth three winters ago, and it has been waiting for someone worth following.",
+	"Elder: You have come of age, and of everything you could have been, you chose the watch your parents kept, and theirs before them. The Order has a new Oathkeeper today.",
+	"Elder: But an Oathkeeper needs a partner. This one hatched in my hearth three winters ago, and it has been waiting for someone worth following.",
 ]
 ## Shown as a notice when the starter joins, with its name.
 const STARTER_JOINED_TEXT := "%s joined you!"
@@ -48,10 +55,11 @@ const STARTER_EXPLAINED: PackedStringArray = [
 ]
 ## The threat, and the ask.
 const THREAT: PackedStringArray = [
-	"Elder: Now, the hard part. The Skeleton Lord is restless again. The bells in the old catacombs rang on their own last night, and the dead do not ring bells for nothing.",
-	"Elder: It must be put down before it gathers its host. But nobody walks into the catacombs blind, not even an Oathbound.",
+	"Elder: Now the part you have known since you were small. The bells beneath the altar rang on their own last night. The seal is thinning, and the dead king is turning over in it.",
+	"Elder: So we do what this town has always done. The rite is gathered, the road is cleared, and one of ours walks up to the altar and puts him back to sleep. This turn it falls to you.",
+	"Elder: You will not go straight up, mind. Nobody does. Our scout keeps the camp past the north gate, and he keeps the rite with it. Everything the altar needs, he will start you on.",
 ]
-const ASK := "Elder: Our scout is camped past the north gate and has sent no word in days. Find him and hear what he has seen. Will you go?"
+const ASK := "Elder: Find him, hear what he has seen, and do as he tells you, in the order he tells you. The altar will still be there at the end of it. Will you go?"
 const REPLIES: PackedStringArray = ["I'll find him.", "Do I have a choice?"]
 ## The Elder's answer to each of [constant REPLIES], by index.
 const SEND_OFF: PackedStringArray = [

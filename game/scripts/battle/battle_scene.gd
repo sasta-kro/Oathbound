@@ -186,6 +186,16 @@ var _level_labels: Dictionary = {}
 var _type_labels: Dictionary = {}
 var _status_rows: Dictionary = {}
 var _hp_tweens: Dictionary = {}
+## HP and max HP each bar is currently showing. The engine resolves a whole
+## turn before any of it is played back, so a creature's own HP is already the
+## end-of-turn value by then; the bars follow these instead and catch up one
+## event at a time.
+var _shown_hp: Dictionary = {}
+var _shown_max_hp: Dictionary = {}
+## Tweens currently moving, tinting or dissolving each side's creature. The
+## visual node is reused from one creature to the next, so a creature arriving
+## mid-turn has to cut short whatever was still playing on the one it replaced.
+var _visual_tweens: Dictionary = {}
 var _shake_tween: Tween
 var _idle_row_style: StyleBoxEmpty
 ## The spaced-out heading above the stage; follows the kind of battle.
@@ -765,12 +775,15 @@ func _play_events(events: Array[BattleEvent]) -> void:
 		await _present(event)
 		await _hold(MESSAGE_HOLD_SECONDS)
 	_playing = false
+	# Anything the playback deliberately held back, a level-up's larger HP bar
+	# among it, lands now that there is nothing left to animate.
+	_refresh_panels()
 
 
 func _present(event: BattleEvent) -> void:
 	match event.kind:
 		BattleEvent.Kind.SEND_OUT:
-			_show_creature(event.side)
+			_show_creature(event.side, event.data)
 			await _wait(SEND_OUT_SECONDS)
 		BattleEvent.Kind.MOVE_USED:
 			var used: MoveData = event.data.get("move") as MoveData
@@ -783,21 +796,21 @@ func _present(event: BattleEvent) -> void:
 		BattleEvent.Kind.HEALED:
 			# A benched ally is healed off stage; only its line says so.
 			if bool(event.data.get("on_field", false)):
-				_flash(_visual_for(event.side), HEAL_FLASH_COLOR)
+				_flash(event.side, HEAL_FLASH_COLOR)
 				_show_number(event.side, "+%d" % int(event.data.get("amount", 0)), HEAL_NUMBER_COLOR)
-				_tween_hp(event.side)
+				_tween_hp(event.side, event.data)
 				await _wait(HP_TWEEN_SECONDS)
 		BattleEvent.Kind.HIT, BattleEvent.Kind.STATUS_DAMAGE:
 			var target: CreatureVisual = _visual_for(event.side)
 			var multiplier: float = float(event.data.get("multiplier", 1.0))
 			target.play(CreatureVisual.STATE_HURT)
-			_flash(target, HIT_FLASH_COLOR)
+			_flash(event.side, HIT_FLASH_COLOR)
 			_play_hit_vfx(target, multiplier, event.kind == BattleEvent.Kind.HIT)
 			_play_sfx(_hit_sound(multiplier, event.kind == BattleEvent.Kind.HIT))
 			_show_damage(event.side, int(event.data.get("damage", 0)), multiplier)
 			if event.kind == BattleEvent.Kind.HIT:
 				_shake_stage(multiplier)
-			_tween_hp(event.side)
+			_tween_hp(event.side, event.data)
 			await _wait(HP_TWEEN_SECONDS)
 		BattleEvent.Kind.MISSED:
 			_dodge(event.side)
@@ -814,7 +827,7 @@ func _present(event: BattleEvent) -> void:
 			_play_sfx(&"bind_attempt")
 			await _wait(BIND_SECONDS)
 		BattleEvent.Kind.BIND_SUCCESS:
-			_flash(enemy_visual, BIND_SEALED_FLASH_COLOR)
+			_flash(BattleTeam.Side.ENEMY, BIND_SEALED_FLASH_COLOR)
 			_play_vfx(BIND_SUCCESS_VFX, enemy_visual)
 			_play_sfx(&"bind_success")
 			await _wait(BIND_SUCCESS_SECONDS)
@@ -831,9 +844,16 @@ func _present(event: BattleEvent) -> void:
 			_refresh_panels()
 
 
-func _show_creature(side: int) -> void:
+## Puts [param side]'s active creature on the stage. [param snapshot] is the
+## send-out event's data: the arriving creature's HP at that point in the turn,
+## which is not what its own HP says once the whole turn has been resolved.
+func _show_creature(side: int, snapshot: Dictionary = {}) -> void:
 	var battler: Battler = _team(side).active()
 	var visual: CreatureVisual = _visual_for(side)
+	# The node outlives the creature standing in it, so the one leaving takes
+	# its lunge, flash and fade with it rather than playing them over the
+	# newcomer.
+	_stop_visual_tweens(side)
 	visual.set_creature(battler.creature)
 	visual.position = _homes[side]
 	visual.modulate = Color.WHITE
@@ -843,11 +863,20 @@ func _show_creature(side: int) -> void:
 	visual.play(CreatureVisual.STATE_IDLE)
 	if not skip_presentation:
 		visual.scale = Vector2(0.6, 0.6)
-		create_tween().tween_property(visual, "scale", Vector2.ONE, SEND_OUT_SECONDS).set_trans(
-			Tween.TRANS_BACK
-		).set_ease(Tween.EASE_OUT)
+		(
+			_visual_tween(side)
+			. tween_property(visual, "scale", Vector2.ONE, SEND_OUT_SECONDS)
+			. set_trans(Tween.TRANS_BACK)
+			. set_ease(Tween.EASE_OUT)
+		)
 	else:
 		visual.scale = Vector2.ONE
+	var creature: CreatureInstance = battler.creature
+	_set_hp_snapshot(
+		side,
+		int(snapshot.get("hp", creature.current_hp)),
+		int(snapshot.get("max_hp", creature.max_hp())),
+	)
 	_refresh_panels()
 
 
@@ -859,7 +888,7 @@ func _lunge(side: int) -> void:
 	var visual: CreatureVisual = _visual_for(side)
 	var home: Vector2 = _homes[side]
 	var direction: float = 1.0 if side == BattleTeam.Side.PLAYER else -1.0
-	var tween := create_tween()
+	var tween := _visual_tween(side)
 	tween.tween_property(visual, "position", home + Vector2(LUNGE_DISTANCE * direction, 0), 0.12)
 	tween.tween_property(visual, "position", home, 0.16)
 
@@ -869,7 +898,7 @@ func _dodge(side: int) -> void:
 		return
 	var visual: CreatureVisual = _visual_for(side)
 	var home: Vector2 = _homes[side]
-	var tween := create_tween()
+	var tween := _visual_tween(side)
 	tween.tween_property(visual, "position", home + Vector2(0, -14), 0.08)
 	tween.tween_property(visual, "position", home, 0.12)
 
@@ -941,12 +970,33 @@ func _shake_stage(multiplier: float) -> void:
 	_shake_tween.tween_property(stage, "position", Vector2.ZERO, step)
 
 
-func _flash(visual: CreatureVisual, color: Color) -> void:
+func _flash(side: int, color: Color) -> void:
 	if skip_presentation:
 		return
-	var tween := create_tween()
+	var visual: CreatureVisual = _visual_for(side)
+	var tween := _visual_tween(side)
 	tween.tween_property(visual, "modulate", color, 0.08)
 	tween.tween_property(visual, "modulate", Color.WHITE, 0.2)
+
+
+## A tween on [param side]'s creature, tracked so [method _stop_visual_tweens]
+## can cut it short when that creature leaves the stage.
+func _visual_tween(side: int) -> Tween:
+	var running: Array = []
+	for tween: Tween in _visual_tweens.get(side, []):
+		if tween.is_valid():
+			running.append(tween)
+	var fresh := create_tween()
+	running.append(fresh)
+	_visual_tweens[side] = running
+	return fresh
+
+
+func _stop_visual_tweens(side: int) -> void:
+	for tween: Tween in _visual_tweens.get(side, []):
+		if tween.is_valid():
+			tween.kill()
+	_visual_tweens[side] = []
 
 
 ## Plays a move's spell effect between the two creatures. The effect itself is
@@ -989,7 +1039,7 @@ func _play_hit_vfx(target: CreatureVisual, multiplier: float, struck: bool) -> v
 func _play_bind_attempt_vfx() -> void:
 	if skip_presentation:
 		return
-	_flash(enemy_visual, BIND_FLASH_COLOR)
+	_flash(BattleTeam.Side.ENEMY, BIND_FLASH_COLOR)
 	_play_vfx(BIND_MOTES_VFX, enemy_visual)
 	_play_vfx(BIND_VFX, enemy_visual)
 	for index: int in BIND_CLOSE_DELAYS.size():
@@ -1021,9 +1071,9 @@ func _take_off_stage(side: int, vfx: VfxPreset = DEFEAT_VFX) -> void:
 		return
 	_play_vfx(vfx, visual)
 	if visual.prepare_dissolve():
-		create_tween().tween_property(visual, "dissolve", 1.0, DISSOLVE_SECONDS)
+		_visual_tween(side).tween_property(visual, "dissolve", 1.0, DISSOLVE_SECONDS)
 	else:
-		create_tween().tween_property(visual, "modulate:a", 0.0, 0.3)
+		_visual_tween(side).tween_property(visual, "modulate:a", 0.0, 0.3)
 
 
 ## The sound of a blow, matched to how well it landed. A status tick is the
@@ -1049,25 +1099,49 @@ func _play_vfx(preset: VfxPreset, on: CreatureVisual) -> void:
 	VfxPlayer.play_global(stage, preset, on.global_position)
 
 
-func _tween_hp(side: int) -> void:
+## Runs the bar down (or up) to the HP [param snapshot] an event reported.
+func _tween_hp(side: int, snapshot: Dictionary) -> void:
 	var creature: CreatureInstance = _team(side).active().creature
+	var target_hp: int = int(snapshot.get("hp", creature.current_hp))
 	var bar: ProgressBar = _hp_bars[side]
-	if _hp_tweens.has(side) and (_hp_tweens[side] as Tween).is_valid():
-		(_hp_tweens[side] as Tween).kill()
+	_kill_hp_tween(side)
+	_shown_hp[side] = target_hp
+	_shown_max_hp[side] = maxi(1, int(snapshot.get("max_hp", creature.max_hp())))
 	if skip_presentation:
-		_set_hp_display(float(creature.current_hp), side)
+		_set_hp_display(float(target_hp), side)
 		return
 	var tween := create_tween()
-	tween.tween_method(
-		_set_hp_display.bind(side), bar.value, float(creature.current_hp), HP_TWEEN_SECONDS
-	)
+	tween.tween_method(_set_hp_display.bind(side), bar.value, float(target_hp), HP_TWEEN_SECONDS)
 	_hp_tweens[side] = tween
 
 
+## Puts the bar straight onto [param hp] out of [param max_hp], animating
+## nothing. This is where the bar starts from, so a hit has somewhere to fall.
+func _set_hp_snapshot(side: int, hp: int, max_hp: int) -> void:
+	_kill_hp_tween(side)
+	_shown_hp[side] = hp
+	_shown_max_hp[side] = maxi(1, max_hp)
+	_set_hp_display(float(hp), side)
+
+
+## The active creature's own max HP, for the moment before any event has
+## reported one: the opening of a battle, where the second send-out has not
+## been played back yet.
+func _live_max_hp(side: int) -> int:
+	if engine == null:
+		return 1
+	var battler: Battler = _team(side).active()
+	return battler.creature.max_hp() if battler != null else 1
+
+
+func _kill_hp_tween(side: int) -> void:
+	if _hp_tweens.has(side) and (_hp_tweens[side] as Tween).is_valid():
+		(_hp_tweens[side] as Tween).kill()
+
+
 func _set_hp_display(value: float, side: int) -> void:
-	var creature: CreatureInstance = _team(side).active().creature
 	var bar: ProgressBar = _hp_bars[side]
-	var max_hp: int = creature.max_hp()
+	var max_hp: int = int(_shown_max_hp.get(side, _live_max_hp(side)))
 	bar.max_value = max_hp
 	bar.value = value
 	(_hp_labels[side] as Label).text = "%d / %d" % [int(round(value)), max_hp]
@@ -1099,7 +1173,12 @@ func _refresh_panel(side: int) -> void:
 	(_type_labels[side] as Label).text = creature.species.type_display_name().to_upper()
 	_refresh_status_badges(side, battler)
 	if not (_hp_tweens.has(side) and (_hp_tweens[side] as Tween).is_running()):
-		_set_hp_display(float(creature.current_hp), side)
+		# Mid-playback the creature's own HP is already the end-of-turn value,
+		# so only the events may move the bar; between turns the two agree.
+		if _playing:
+			_set_hp_display(float(_shown_hp.get(side, creature.current_hp)), side)
+		else:
+			_set_hp_snapshot(side, creature.current_hp, creature.max_hp())
 	if side == BattleTeam.Side.PLAYER:
 		var into_level: int = creature.xp_into_current_level()
 		var span: int = into_level + creature.xp_to_next_level()

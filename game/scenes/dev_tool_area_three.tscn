@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/dev/populate_area_three.gd" id="1_tool"]
+
+[node name="DevToolAreaThree" type="Node"]
+script = ExtResource("1_tool")

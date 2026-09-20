@@ -36,6 +36,7 @@ const ACTOR_SCENE := "res://scenes/world_actor.tscn"
 const SPAWN_ZONE_SCENE := "res://scenes/spawn_zone.tscn"
 const WILD_CREATURE_SCENE := "res://scenes/wild_creature.tscn"
 const AREA_EXIT_SCENE := "res://scenes/area_exit.tscn"
+const ALTAR_BEACON_SCENE := "res://scenes/altar_beacon.tscn"
 
 ## Cainos grass sheet: plain rows and the rarer accent columns.
 const GRASS_TILES: Array[Vector2i] = [
@@ -600,15 +601,39 @@ func add_entrance(name: String, cell: Vector2i) -> void:
 
 
 ## An exit covering [param cells], leading to the area at [param target_path]
-## and its entrance marker [param entrance].
-func add_exit(name: String, cells: Rect2i, target_path: String, entrance: String) -> void:
+## and its entrance marker [param entrance]. Naming a [param required_boss]
+## seals the way until that boss falls, and [param locked_line] is what the
+## player is told while it holds.
+func add_exit(
+	name: String,
+	cells: Rect2i,
+	target_path: String,
+	entrance: String,
+	required_boss: String = "",
+	locked_line: String = "",
+) -> void:
 	var exit: Node2D = (load(AREA_EXIT_SCENE) as PackedScene).instantiate()
 	exit.name = name
 	exit.position = cell_to_world_f(Vector2(cells.position) + Vector2(cells.size) / 2.0)
 	exit.set("target_area_path", target_path)
 	exit.set("target_entrance", StringName(entrance))
+	exit.set("required_boss", StringName(required_boss))
+	exit.set("locked_line", locked_line)
 	exit.set("size_in_cells", Vector2(cells.size))
 	_adopt(exit, _exits)
+
+
+## The light an altar takes on once its guardian falls. [param cell] is in
+## map cells and may be fractional, so the ring can be put on the altar's
+## base rather than on a cell corner. Sits at the area's root so it draws over the decor the altar
+## is painted on, and under the Overhead layer.
+func add_altar_beacon(name: String, cell: Vector2, properties: Dictionary = {}) -> void:
+	var beacon: Node2D = (load(ALTAR_BEACON_SCENE) as PackedScene).instantiate()
+	beacon.name = name
+	beacon.position = cell_to_world_f(cell)
+	for property: String in properties:
+		beacon.set(property, properties[property])
+	_adopt(beacon, area)
 
 
 func add_actor(name: String, cell: Vector2i, properties: Dictionary) -> void:

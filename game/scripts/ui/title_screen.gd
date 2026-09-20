@@ -1,5 +1,22 @@
 extends Control
 const TITLE_MUSIC_ID: StringName = &"title"
+## The dev shortcuts, in world order: where each one lands, the level cap the
+## player would have by then, and the bosses already beaten so the gates and
+## lit altars along the way read correctly.
+const SHORTCUTS: Array[Dictionary] = [
+	{
+		"label": "Dev: explore Area Two",
+		"scene": "res://areas/area_two.tscn",
+		"level_cap": 30,
+		"bosses": [&"boss_area_01"],
+	},
+	{
+		"label": "Dev: explore Area Three",
+		"scene": "res://areas/area_three.tscn",
+		"level_cap": 40,
+		"bosses": [&"boss_area_01", &"boss_area_02"],
+	},
+]
 var entrance: Tween
 var content: VBoxContainer
 var loader: VBoxContainer
@@ -65,6 +82,7 @@ func _build_menu(animate: bool) -> void:
 	var settings := OathTheme.button("Display settings", func(): $SettingsMenu.open())
 	settings.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	content.add_child(settings)
+	_add_shortcuts(content)
 	var quit := OathTheme.button("Leave the world", func(): get_tree().quit())
 	quit.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	content.add_child(quit)
@@ -75,6 +93,38 @@ func _build_menu(animate: bool) -> void:
 	entrance = create_tween().set_parallel(true)
 	entrance.tween_property(content, "modulate:a", 1.0, 0.7)
 	entrance.tween_property(content, "position:y", 44.0, 0.7).from(54.0).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+
+## The dev shortcuts: drop straight into a later area without playing the
+## quests that unlock it. Debug builds only, so an export never shows them,
+## and only for areas whose scene exists. Nothing is autosaved afterwards
+## (see [member GameState.dev_jump]), so a real journey survives the visit.
+func _add_shortcuts(content: Control) -> void:
+	if not OS.is_debug_build():
+		return
+	var shown: bool = false
+	for shortcut: Dictionary in SHORTCUTS:
+		var path: String = shortcut["scene"]
+		if not ResourceLoader.exists(path):
+			continue
+		if not shown:
+			content.add_child(OathTheme.label("◇    DEV SHORTCUTS", 9, OathTheme.MUTED))
+			shown = true
+		var button := OathTheme.button(
+			shortcut["label"], func() -> void: _jump_to(path, int(shortcut["level_cap"]), shortcut["bosses"])
+		)
+		content.add_child(button)
+
+
+## Starts a throwaway journey standing in [param scene_path], with the bosses
+## that gate the way there already beaten and the cap they would have raised.
+func _jump_to(scene_path: String, level_cap: int, bosses: Array) -> void:
+	GameState.new_game()
+	for boss_id: Variant in bosses:
+		GameState.defeated_bosses[StringName(String(boss_id))] = true
+	GameState.level_cap = level_cap
+	GameState.jump_to_area(scene_path)
+	_enter_world()
+
 
 func _open_loader() -> void:
 	content.hide()

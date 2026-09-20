@@ -38,6 +38,7 @@ const INITIAL_LEVEL_CAP := 20
 ## 9.4). Boss ids come from [member WildCreature.boss_id].
 const BOSS_LEVEL_CAPS: Dictionary = {
 	&"boss_area_01": 30,
+	&"boss_area_02": 40,
 }
 const LEVEL_CAP_RAISED_TEXT := "Your Oathbound can now grow to level %d."
 ## Quest EVENT ids the field reports on its own (Specification 17.2): an item
@@ -87,6 +88,12 @@ var _resume_pending: bool = false
 ## Set by [method new_game] when the journey begins with the opening at the
 ## well, and consumed by the overworld once (Specification 4.5).
 var _opening_pending: bool = false
+## Set by [method jump_to_area]: the field opens in this area at its own
+## PlayerStart instead of the town. Consumed once, like the other two.
+var _jump_area: String = ""
+## Set for the whole of a dev jump. Autosaving is off while it is true, so
+## poking around an unfinished area cannot overwrite a real journey.
+var dev_jump: bool = false
 
 
 func _ready() -> void:
@@ -120,9 +127,27 @@ func new_game(with_opening: bool = false) -> void:
 	play_seconds = 0.0
 	last_saved_at = 0
 	active_slot = SaveService.NO_SLOT
+	_jump_area = ""
+	dev_jump = false
 	_opening_pending = with_opening
 	if not with_opening:
 		ensure_starter()
+
+
+## Opens the field in [param area_scene_path] rather than the town, at that
+## area's own PlayerStart. For the title screen's dev shortcuts, so an area
+## can be walked before the quests that lead to it exist. Nothing is autosaved
+## for the rest of the session; a manual save from the pause menu still works.
+func jump_to_area(area_scene_path: String) -> void:
+	_jump_area = area_scene_path
+	dev_jump = true
+
+
+## The area a dev jump asked for, once. Empty when there is none.
+func take_jump_area() -> String:
+	var path: String = _jump_area
+	_jump_area = ""
+	return path
 
 
 ## Whether the overworld should play the opening. True once per
@@ -167,8 +192,11 @@ func save_game(slot: int) -> bool:
 	return true
 
 
-## The field's boundary save.
+## The field's boundary save. A dev jump never reaches the autosave slot, so
+## exploring an unfinished area leaves the player's own journey alone.
 func autosave() -> bool:
+	if dev_jump:
+		return false
 	return save_game(SaveService.AUTOSAVE_SLOT)
 
 

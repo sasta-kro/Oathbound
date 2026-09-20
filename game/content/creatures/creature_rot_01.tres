@@ -1,0 +1,48 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3]
+
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="1_species"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="2_entry"]
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="3_ability"]
+[ext_resource type="SpriteFrames" path="res://content/sprites/creature_rot_01_battle.tres" id="4_sprite"]
+[ext_resource type="Resource" path="res://content/growth/growth_bulky.tres" id="5_growth"]
+[ext_resource type="Resource" path="res://content/abilities/ability_hellborn.tres" id="ability_0"]
+[ext_resource type="Resource" path="res://content/moves/move_hex_bolt_01.tres" id="move_hex_bolt"]
+[ext_resource type="Resource" path="res://content/moves/move_dread_gaze_01.tres" id="move_dread_gaze"]
+[ext_resource type="Resource" path="res://content/moves/move_reaping_scythe_01.tres" id="move_reaping_scythe"]
+[ext_resource type="Resource" path="res://content/moves/move_hellfire_beam_01.tres" id="move_hellfire_beam"]
+
+[sub_resource type="Resource" id="Learn_hex_bolt_1"]
+script = ExtResource("2_entry")
+move = ExtResource("move_hex_bolt")
+
+[sub_resource type="Resource" id="Learn_dread_gaze_10"]
+script = ExtResource("2_entry")
+level = 10
+move = ExtResource("move_dread_gaze")
+
+[sub_resource type="Resource" id="Learn_reaping_scythe_20"]
+script = ExtResource("2_entry")
+level = 20
+move = ExtResource("move_reaping_scythe")
+
+[sub_resource type="Resource" id="Learn_hellfire_beam_28"]
+script = ExtResource("2_entry")
+level = 28
+move = ExtResource("move_hellfire_beam")
+
+[resource]
+script = ExtResource("1_species")
+id = &"creature_rot_01"
+display_name = "Skeleton Lord"
+primary_type = 5
+has_secondary_type = true
+secondary_type = 1
+base_hp = 120
+base_attack = 66
+base_defense = 58
+growth = ExtResource("5_growth")
+learnset = Array[ExtResource("2_entry")]([SubResource("Learn_hex_bolt_1"), SubResource("Learn_dread_gaze_10"), SubResource("Learn_reaping_scythe_20"), SubResource("Learn_hellfire_beam_28")])
+ability_pool = Array[ExtResource("3_ability")]([ExtResource("ability_0")])
+base_bind_chance = 0.0
+battle_sprite = ExtResource("4_sprite")
+sprite_scale = 2.2

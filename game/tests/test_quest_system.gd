@@ -10,6 +10,8 @@ const LESSON_MAIN_QUEST_ID := &"quest_main_01b_field_mending"
 const SECOND_MAIN_QUEST_ID := &"quest_main_02_the_ruined_road"
 const CHILD_QUEST_ID := &"quest_side_leaf_hat"
 const MERCHANT_QUEST_ID := &"quest_side_the_crossing"
+const SHALLOWS_MAIN_QUEST_ID := &"quest_main_02a_scalded_shallows"
+const REEDS_SIDE_QUEST_ID := &"quest_side_leech_shallows"
 const AREA_ONE := "res://areas/area_one.tscn"
 
 var _original_dir: String
@@ -284,6 +286,31 @@ func test_an_actor_talks_about_the_quest_that_matters_most() -> void:
 	GameState.complete_quest(_content(CHILD_QUEST_ID))
 	assert_null(actor.current_quest(_log, Content), "Everything done: small talk only.")
 	actor.free()
+
+
+func test_a_giver_signs_off_with_the_story_line_not_the_side_quest_one() -> void:
+	var actor := WorldActor.new()
+	actor.name = "Ranger"
+	actor.quest_ids = [SHALLOWS_MAIN_QUEST_ID, REEDS_SIDE_QUEST_ID]
+	var main_quest: QuestData = _content(SHALLOWS_MAIN_QUEST_ID)
+	var side_quest: QuestData = _content(REEDS_SIDE_QUEST_ID)
+
+	_log.from_dict({String(REEDS_SIDE_QUEST_ID): _completed()})
+	assert_eq(actor.idle_line(_log, Content), side_quest.done_line, "Only the side quest is done.")
+
+	_log.from_dict({
+		String(SHALLOWS_MAIN_QUEST_ID): _completed(), String(REEDS_SIDE_QUEST_ID): _completed()
+	})
+	assert_eq(
+		actor.idle_line(_log, Content),
+		main_quest.done_line,
+		"A finished side quest must not bury the line that says where to go next."
+	)
+	actor.free()
+
+
+func _completed() -> Dictionary:
+	return {QuestLog.STATUS_KEY: QuestLog.Status.COMPLETED, QuestLog.PROGRESS_KEY: []}
 
 
 func test_the_town_npcs_carry_their_quests() -> void:

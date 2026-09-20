@@ -301,12 +301,22 @@ func current_quest(log: QuestLog, registry: Node) -> QuestData:
 ## What this actor says once they have nothing to offer: the done line of the
 ## last of their quests the player has finished, so a giver keeps pointing the
 ## way onward, or their own small talk when none is finished.
+##
+## A finished main quest wins over a finished side quest whatever order they
+## are listed in. The story line is the one that names where to go next, and
+## an actor who also gave a side quest would otherwise sign off with the side
+## quest's line and leave the player with nowhere to go.
 func idle_line(log: QuestLog, registry: Node) -> String:
+	var side_line: String = ""
 	for index: int in range(quest_ids.size() - 1, -1, -1):
 		var quest: QuestData = registry.get_quest(quest_ids[index])
-		if quest != null and log.is_completed(quest.id) and not quest.done_line.is_empty():
+		if quest == null or not log.is_completed(quest.id) or quest.done_line.is_empty():
+			continue
+		if quest.is_main():
 			return quest.done_line
-	return next_small_talk()
+		if side_line.is_empty():
+			side_line = quest.done_line
+	return side_line if not side_line.is_empty() else next_small_talk()
 
 
 ## [member dialogue_line], then each line of [member chatter] in turn, round

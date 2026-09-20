@@ -79,15 +79,11 @@ func start() -> Array[BattleEvent]:
 		intro = BOSS_INTRO_TEXT % foe.display_name()
 	elif not config.is_wild:
 		intro = "%s sent out %s!" % [config.enemy_name, foe.display_name()]
-	events.append(BattleEvent.create(BattleEvent.Kind.SEND_OUT, BattleTeam.Side.ENEMY, intro))
+	events.append(_send_out(foe, intro))
 
 	var own: Battler = player.active()
 	own.participated = true
-	events.append(
-		BattleEvent.create(
-			BattleEvent.Kind.SEND_OUT, BattleTeam.Side.PLAYER, "Go, %s!" % own.display_name()
-		)
-	)
+	events.append(_send_out(own, "Go, %s!" % own.display_name()))
 	_announce_opening(foe, events)
 	return events
 
@@ -262,13 +258,7 @@ func replace_fainted(party_index: int) -> Array[BattleEvent]:
 		events.append(BattleEvent.message("That Oathbound can't fight right now."))
 		return events
 	player.set_active(party_index)
-	events.append(
-		BattleEvent.create(
-			BattleEvent.Kind.SEND_OUT,
-			BattleTeam.Side.PLAYER,
-			"Go, %s!" % player.active().display_name(),
-		)
-	)
+	events.append(_send_out(player.active(), "Go, %s!" % player.active().display_name()))
 	phase = Phase.CHOOSING
 	return events
 
@@ -634,6 +624,20 @@ func _award_xp(recipient: Battler, xp: int, events: Array[BattleEvent]) -> void:
 # --- Switching, binding, running ---------------------------------------------
 
 
+## A send-out carrying the arriving creature's HP as it stands at this point
+## in the turn. The battle screen plays a turn back only after the engine has
+## finished resolving all of it, so it cannot read the creature's HP live: by
+## then whatever the arrival went on to take has already been applied, and the
+## bar would open on the wrong number and then animate nowhere.
+func _send_out(arriving: Battler, text: String) -> BattleEvent:
+	return BattleEvent.create(
+		BattleEvent.Kind.SEND_OUT,
+		arriving.side,
+		text,
+		{"hp": arriving.creature.current_hp, "max_hp": arriving.creature.max_hp()},
+	)
+
+
 func _switch(side: int, party_index: int, events: Array[BattleEvent]) -> void:
 	var team: BattleTeam = _team(side)
 	var leaving: Battler = team.active()
@@ -646,7 +650,7 @@ func _switch(side: int, party_index: int, events: Array[BattleEvent]) -> void:
 			config.enemy_name, leaving.display_name(), arriving.display_name()
 		]
 	)
-	events.append(BattleEvent.create(BattleEvent.Kind.SEND_OUT, side, text))
+	events.append(_send_out(arriving, text))
 
 
 ## Spends [param item] on party slot [param index]. Healing reuses the HEALED
@@ -804,9 +808,8 @@ func _replace_fainted_after_turn(events: Array[BattleEvent]) -> void:
 		var next_index: int = enemy.first_usable_index()
 		enemy.set_active(next_index)
 		events.append(
-			BattleEvent.create(
-				BattleEvent.Kind.SEND_OUT,
-				BattleTeam.Side.ENEMY,
+			_send_out(
+				enemy.active(),
 				"%s sent out %s!" % [config.enemy_name, enemy.active().display_name()],
 			)
 		)

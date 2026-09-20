@@ -18,6 +18,15 @@ const SIZE := Vector2i(50, 36)
 const SEED: int = 0xA1EA
 
 const TOWN_SCENE := "res://areas/town.tscn"
+const AREA_TWO_SCENE := "res://areas/area_two.tscn"
+## The way past the altar opens only once the Area 1 boss falls.
+const ALTAR_BOSS := "boss_area_01"
+const ALTAR_GATE_LINE := "The altar is cold, dark stone, and the seal in it is holding. The stair beneath it opens for the rite and nothing else, and nothing is set on it while the Oathbreaker keeps the door."
+## The altar sprite is 4x3 cells from [constant ALTAR_CELL]. The way on is
+## the altar itself, and the light rests on its base.
+const ALTAR_SIZE := Vector2i(4, 3)
+## Where the light rests: the middle of the altar's bowl, in map cells.
+const ALTAR_LIGHT_CELL := Vector2(42.0, 6.3333)
 const SCOUT_SPRITE_FRAMES := "res://content/sprites/npc_scout.tres"
 const KNIGHT_SPRITE_FRAMES := "res://content/sprites/npc_knight.tres"
 const MERCHANT_SPRITE_FRAMES := "res://content/sprites/npc_merchant.tres"
@@ -92,7 +101,22 @@ func build() -> AreaPainter:
 
 	p.set_player_start(Vector2i(25, 32))
 	p.add_entrance("FromTown", Vector2i(25, 32))
+	p.add_entrance("FromAreaTwo", Vector2i(42, 9))
 	p.add_exit("ToTown", Rect2i(24, 34, 3, 2), TOWN_SCENE, "FromAreaOne")
+	# The altar itself is the way on, once its light is burning.
+	p.add_exit(
+		"ToAreaTwo",
+		Rect2i(ALTAR_CELL, ALTAR_SIZE),
+		AREA_TWO_SCENE,
+		"FromAreaOne",
+		ALTAR_BOSS,
+		ALTAR_GATE_LINE,
+	)
+	p.add_altar_beacon(
+		"AltarBeacon",
+		ALTAR_LIGHT_CELL,
+		{"required_boss": StringName(ALTAR_BOSS)},
+	)
 	p.add_bounds()
 	return p
 
@@ -158,7 +182,7 @@ func _camp(p: AreaPainter) -> void:
 			"body_color": Color(0.35, 0.6, 0.85, 1),
 			"sprite_frames": load(SCOUT_SPRITE_FRAMES),
 			"facing": &"left",
-			"dialogue_line": "Scout: Follow the road and you will not get lost. It bends past the pond and climbs to the ruins. The altar is at the very end. Nobody goes further.",
+			"dialogue_line": "Scout: Follow the road and you will not get lost. It bends past the pond and climbs to the ruins. The altar is at the very end, and the knight is in front of it, same as he always is.",
 			"quest_ids": Array[StringName]([
 				&"quest_main_01a_a_second_oath",
 				&"quest_main_01b_field_mending",
@@ -170,7 +194,7 @@ func _camp(p: AreaPainter) -> void:
 
 ## The people along the way to the altar. Each hands the player on to the
 ## next, and each one's quest sends them somewhere a little more dangerous,
-## so the party is around level 15 when the Warden offers the Black Knight.
+## so the party is around level 15 when the Warden sends them to the Oathbreaker.
 func _helpers(p: AreaPainter) -> void:
 	p.add_actor(
 		"Ranger",
@@ -180,7 +204,7 @@ func _helpers(p: AreaPainter) -> void:
 			"body_color": Color(0.3, 0.55, 0.35, 1),
 			"sprite_frames": load(SCOUT_SPRITE_FRAMES),
 			"facing": &"right",
-			"dialogue_line": "Ranger: The pond feeds half the meadow. When something troubles the water, everything out here feels it.",
+			"dialogue_line": "Ranger: The pond feeds half the meadow, and the altar's stillwater comes out of it. When something troubles this water, everything out here feels it.",
 			"quest_ids": Array[StringName]([&"quest_main_02a_scalded_shallows", &"quest_side_leech_shallows"]),
 		}
 	)
@@ -192,7 +216,7 @@ func _helpers(p: AreaPainter) -> void:
 			"body_color": Color(0.6, 0.45, 0.3, 1),
 			"sprite_frames": load(MERCHANT_SPRITE_FRAMES),
 			"facing": &"up",
-			"dialogue_line": "Woodcutter: The deeper you go into these woods, the meaner the things that live there. Same goes for the road north.",
+			"dialogue_line": "Woodcutter: The deeper you go into these woods, the meaner the things that live there. Always worse when the seal thins, and it is thinning. Same goes for the road north.",
 			"quest_ids": Array[StringName]([&"quest_main_02b_wings_in_the_wood"]),
 		}
 	)
@@ -204,7 +228,7 @@ func _helpers(p: AreaPainter) -> void:
 			"body_color": Color(0.55, 0.55, 0.5, 1),
 			"sprite_frames": load(ELDER_SPRITE_FRAMES),
 			"facing": &"right",
-			"dialogue_line": "Hermit: The ruins? Hah. I went up there once, young and proud. Came back down a good deal less of both.",
+			"dialogue_line": "Hermit: The ruins? Hah. I went up there once, young and proud, and the knight sent me back down a good deal less of both. Kindly, mind. He is always kind about it.",
 			"quest_ids": Array[StringName]([&"quest_side_feathers_on_the_rise"]),
 		}
 	)
@@ -216,7 +240,7 @@ func _helpers(p: AreaPainter) -> void:
 			"body_color": Color(0.25, 0.7, 0.35, 1),
 			"sprite_frames": load(KNIGHT_SPRITE_FRAMES),
 			"facing": &"up",
-			"dialogue_line": "Warden: Rest a moment. I'll see your Oathbound mended. Whatever you do next, don't face the altar tired.",
+			"dialogue_line": "Warden: Rest a moment. I'll see your Oathbound mended. Whatever you do next, don't face the altar tired. Nobody has ever beaten him tired.",
 			"heals_party": true,
 			"quest_ids": Array[StringName]([&"quest_main_02c_the_hollow_watch", &"quest_main_03_the_black_knight"]),
 		}
@@ -285,9 +309,9 @@ func _creatures(p: AreaPainter) -> void:
 			"ability_index": 0,
 			"boss_id": &"boss_area_01",
 			"required_quest": &"quest_main_03_the_black_knight",
-			"challenge_line": "The Black Knight: So. Another who would pass the altar. I swore an oath to guard this place, and I broke it, and still I stand. Come, then. Break yourself against me.",
-			"sealed_line": "A knight in black armour stands before the altar, still as stone. Its helm turns to follow you, but it does not move. Perhaps the warden camped at the edge of the ruins knows something about it.",
-			"victory_line": "The Black Knight: The oath... is finally... ended. The black armour cracks apart and scatters into light. The way past the altar is open.",
+			"challenge_line": "The Oathbreaker: So. She has the water, the wood and the iron, and she sends me another one. Good. Hear it the way every one of you hears it. They named me Oathbreaker. I did not break it. It was broken for me, in the hour my king reached past what a king may touch, and it went through his knights before it ever reached his son. What I keep now, I chose. I keep this door, and I do not open it for anyone who cannot take it from me. Come and show me you can carry him.",
+			"sealed_line": "The knight in black armour stands where he has always stood, between you and the altar. His helm tilts as you come up, almost a greeting. The Oathbreaker: Not yet. The rite is not whole, and I do not spend anyone who is not ready for me. Go back to the warden camped at the edge of the ruins. When she sends you, I will be here. I am always here.",
+			"victory_line": "The Oathbreaker: Good. That is the one I was waiting for. He grounds his sword and steps out of the way of the altar. Set them down. Water, wood and iron, the three things he has none of and the only three that will hold him. The stone drinks the offerings and wakes, and a stair opens beneath the altar. Go down and put him back to sleep. I will be standing here when you come up. And when your children come up. It does not end. It only holds.",
 			"leash_radius": 0.0,
 		}
 	)

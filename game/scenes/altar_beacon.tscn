@@ -1,0 +1,33 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/altar_beacon.gd" id="1_beacon"]
+[ext_resource type="Shader" path="res://shaders/altar_glow.gdshader" id="2_glow"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_beacon"]
+shader = ExtResource("2_glow")
+shader_parameter/core_color = Color(0.76, 0.9, 1, 1)
+shader_parameter/edge_color = Color(0.2, 0.42, 1, 1)
+shader_parameter/intensity = 0.0
+shader_parameter/pool_strength = 0.18
+shader_parameter/pulse_speed = 1.1
+shader_parameter/pulse_depth = 0.3
+shader_parameter/ground_y = 0.8333
+shader_parameter/ground_squash = 2.4
+shader_parameter/ring_radius = 0.22
+shader_parameter/ring_thickness = 0.035
+shader_parameter/column_width = 0.1
+shader_parameter/column_strength = 0.6
+shader_parameter/mote_count = 6
+shader_parameter/mote_speed = 0.28
+shader_parameter/mote_size = 0.012
+
+[node name="AltarBeacon" type="Node2D"]
+script = ExtResource("1_beacon")
+
+[node name="Glow" type="ColorRect" parent="."]
+offset_left = -120.0
+offset_top = -240.0
+offset_right = 120.0
+offset_bottom = 48.0
+mouse_filter = 2
+material = SubResource("ShaderMaterial_beacon")

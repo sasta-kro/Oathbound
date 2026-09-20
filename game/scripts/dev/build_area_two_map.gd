@@ -10,8 +10,12 @@ const MAP_SIZE := Vector2i(150, 125)
 const PLAN_PIXELS_PER_CELL := 8
 const MIN_PLAN_PIXELS := 8
 const TILE_SIZE := 48
-const MAP_SCALE := Vector2(1.5, 1.5)
-const MAP_POSITION := Vector2(-5400, -4500)
+## The catacombs art is already upscaled to one 48 px tile per cell (see
+## `build_catacombs_tileset.gd`), so the layers are drawn 1:1. Scaling them
+## again would put the area on a 72 px grid while the rest of the game runs
+## on `WorldArea.GRID_SIZE`.
+const MAP_SCALE := Vector2(1, 1)
+const MAP_POSITION := Vector2(-3600, -3000)
 
 const FLOOR_TILES: Array[Vector2i] = [
 	Vector2i(46, 13), Vector2i(47, 13), Vector2i(49, 13), Vector2i(50, 13),
@@ -30,7 +34,14 @@ const MARKERS := {
 	"Chest_Northwest": Vector2i(20, 9),
 	"Chest_Southwest": Vector2i(7, 113),
 }
-const SPAWN_CELL := Vector2i(22, 51)
+## Where the stair from Area One comes out, and the way back beside it. The
+## exit sits clear of the arrival marker, or the player would bounce back up.
+const SPAWN_CELL := Vector2i(24, 51)
+const EXIT_CELL := Vector2i(21, 51)
+## Where the stair down from Area Three comes back out: the cell the area's
+## boss holds, so returning lands where he fell.
+const FROM_AREA_THREE_CELL := Vector2i(124, 27)
+const EXIT_SIZE_IN_CELLS := Vector2(3, 4)
 
 
 func _initialize() -> void:
@@ -177,8 +188,18 @@ func _set_entry_and_bounds(area: Node2D, layer: TileMapLayer, floors: Dictionary
 	var entry_cell := _nearest_floor_cell(SPAWN_CELL, floors)
 	var entry_position := _cell_to_world(layer, entry_cell)
 	(area.get_node("PlayerStart") as Marker2D).position = entry_position
-	(area.get_node("Entrances/FromTown") as Marker2D).position = entry_position
-	(area.get_node("Exits/ToTown") as Node2D).position = entry_position
+	(area.get_node("Entrances/FromAreaOne") as Marker2D).position = entry_position
+	var from_three := area.get_node_or_null("Entrances/FromAreaThree") as Marker2D
+	if from_three == null:
+		from_three = Marker2D.new()
+		from_three.name = "FromAreaThree"
+		var entrances: Node = area.get_node("Entrances")
+		entrances.add_child(from_three)
+		from_three.owner = area
+	from_three.position = _cell_to_world(layer, _nearest_floor_cell(FROM_AREA_THREE_CELL, floors))
+	var exit := area.get_node("Exits/ToAreaOne") as Node2D
+	exit.position = _cell_to_world(layer, _nearest_floor_cell(EXIT_CELL, floors))
+	exit.set("size_in_cells", EXIT_SIZE_IN_CELLS)
 
 	var left := MAP_POSITION.x - 24.0
 	var right := MAP_POSITION.x + MAP_SIZE.x * TILE_SIZE * MAP_SCALE.x + 24.0
