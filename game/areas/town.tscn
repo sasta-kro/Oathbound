@@ -1,35 +1,33 @@
-[gd_scene format=4]
+[gd_scene format=4 uid="uid://5vodhskv105l"]
 
-[ext_resource type="Script" path="res://scripts/world/world_area.gd" id="1_waas7"]
-[ext_resource type="TileSet" path="res://assets/tilesets/meadow.tres" id="2_jisb7"]
-[ext_resource type="TileSet" path="res://assets/tilesets/overworld.tres" id="3_lv0g6"]
-[ext_resource type="Shader" path="res://shaders/foliage_sway.gdshader" id="4_3k77w"]
+[ext_resource type="Script" uid="uid://dlctfqjo0j883" path="res://scripts/world/world_area.gd" id="1_waas7"]
+[ext_resource type="TileSet" uid="uid://bk78dfe417ae7" path="res://assets/tilesets/meadow.tres" id="2_jisb7"]
+[ext_resource type="TileSet" uid="uid://daouif03i3wua" path="res://assets/tilesets/overworld.tres" id="3_lv0g6"]
+[ext_resource type="Shader" uid="uid://bg2hef1ijld4s" path="res://shaders/foliage_sway.gdshader" id="4_3k77w"]
 [ext_resource type="PackedScene" path="res://scenes/world_actor.tscn" id="5_tnaed"]
-[ext_resource type="Script" path="res://scripts/world_actor.gd" id="6_pahgs"]
-[ext_resource type="SpriteFrames" path="res://content/sprites/npc_knight.tres" id="7_aichj"]
-[ext_resource type="SpriteFrames" path="res://content/sprites/npc_elder.tres" id="8_7oj63"]
-[ext_resource type="SpriteFrames" path="res://content/sprites/npc_merchant.tres" id="9_cpsmu"]
-[ext_resource type="SpriteFrames" path="res://content/sprites/npc_child.tres" id="10_qd58a"]
-[ext_resource type="SpriteFrames" path="res://content/sprites/npc_innkeeper.tres" id="11_ubjrp"]
-[ext_resource type="SpriteFrames" path="res://content/sprites/npc_scribe.tres" id="12_msphj"]
-[ext_resource type="SpriteFrames" path="res://content/sprites/npc_apothecary.tres" id="13_114rs"]
-[ext_resource type="SpriteFrames" path="res://content/sprites/npc_guard.tres" id="14_ejftv"]
-[ext_resource type="SpriteFrames" path="res://content/sprites/npc_old_man.tres" id="15_5cvyu"]
-[ext_resource type="SpriteFrames" path="res://content/sprites/npc_fisher.tres" id="16_qlm4h"]
-[ext_resource type="SpriteFrames" path="res://content/sprites/npc_bard.tres" id="17_sn4k3"]
-[ext_resource type="SpriteFrames" path="res://content/sprites/npc_kid.tres" id="18_wqf6r"]
-[ext_resource type="SpriteFrames" path="res://content/sprites/npc_villager.tres" id="19_r8iu2"]
-[ext_resource type="SpriteFrames" path="res://content/sprites/npc_farmer.tres" id="20_sch8w"]
-[ext_resource type="PackedScene" path="res://scenes/area_exit.tscn" id="21_6hc3x"]
-[ext_resource type="Script" path="res://scripts/world/area_exit.gd" id="22_src2p"]
+[ext_resource type="SpriteFrames" uid="uid://dr750752ih5gn" path="res://content/sprites/npc_knight.tres" id="7_aichj"]
+[ext_resource type="SpriteFrames" uid="uid://cx5jb52tsl8gi" path="res://content/sprites/npc_elder.tres" id="8_7oj63"]
+[ext_resource type="SpriteFrames" uid="uid://c0o1roqjp54sk" path="res://content/sprites/npc_merchant.tres" id="9_cpsmu"]
+[ext_resource type="SpriteFrames" uid="uid://b4yqgm0m0g6db" path="res://content/sprites/npc_child.tres" id="10_qd58a"]
+[ext_resource type="SpriteFrames" uid="uid://ba8ly7wcaxl1i" path="res://content/sprites/npc_innkeeper.tres" id="11_ubjrp"]
+[ext_resource type="SpriteFrames" uid="uid://c52nc22531go6" path="res://content/sprites/npc_scribe.tres" id="12_msphj"]
+[ext_resource type="SpriteFrames" uid="uid://bl0vvyrf8fnh6" path="res://content/sprites/npc_apothecary.tres" id="13_114rs"]
+[ext_resource type="SpriteFrames" uid="uid://dkypyq0rrw8to" path="res://content/sprites/npc_guard.tres" id="14_ejftv"]
+[ext_resource type="SpriteFrames" uid="uid://d3lnswnv5uutg" path="res://content/sprites/npc_old_man.tres" id="15_5cvyu"]
+[ext_resource type="SpriteFrames" uid="uid://bi12ilhjth3op" path="res://content/sprites/npc_fisher.tres" id="16_qlm4h"]
+[ext_resource type="SpriteFrames" uid="uid://b8xkfqa27pj84" path="res://content/sprites/npc_bard.tres" id="17_sn4k3"]
+[ext_resource type="SpriteFrames" uid="uid://ck02h7oeklevd" path="res://content/sprites/npc_kid.tres" id="18_wqf6r"]
+[ext_resource type="SpriteFrames" uid="uid://cipmco7vk6opg" path="res://content/sprites/npc_villager.tres" id="19_r8iu2"]
+[ext_resource type="SpriteFrames" uid="uid://ch0ol1wqpswap" path="res://content/sprites/npc_farmer.tres" id="20_sch8w"]
+[ext_resource type="PackedScene" uid="uid://dyjfrxidyk5di" path="res://scenes/area_exit.tscn" id="21_6hc3x"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_i7x0h"]
 shader = ExtResource("4_3k77w")
-shader_parameter/sway_pixels = null
-shader_parameter/sway_speed = null
-shader_parameter/wave_length = null
-shader_parameter/gust_speed = null
-shader_parameter/gust_depth = null
+shader_parameter/sway_pixels = 1.8
+shader_parameter/sway_speed = 1.15
+shader_parameter/wave_length = 120.0
+shader_parameter/gust_speed = 0.23
+shader_parameter/gust_depth = 0.55
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0c53p"]
 size = Vector2(1824, 48)
@@ -87,7 +85,7 @@ tile_set = ExtResource("3_lv0g6")
 z_index = -1
 position = Vector2(-864, -648)
 scale = Vector2(1.5, 1.5)
-tile_map_data = PackedByteArray("AAARAAQABAALAAMAAAAEAAcABAAAAAAAAAALAAgABAAIAAMAAAAZAAgABAAAAAMAAAAFABQABAAGAAAAAAAWABQABAAGAAAAAAAbABUABAAIAAMAAAASAA0ABAAOAAMAAAAMAAoABgACAAAAAAAXAAoABgACAAAAAAAMABEABgACAAAAAAAXABEABgACAAAAAAAOAAsAAwAEAAAAAAAVAAwABgABAAIAAAAQABAABgABAAIAAAAPAA8ABgACAAIAAAAPAAUABgAGAAAAAAAVAAUABgAGAAAAAAAPAAgABgALAAIAAAAVAAgABgAAAAAAAAAYAAkABgAJAAIAAAAOAAkABgAGAAIAAAAYAAcAAwALAAUAAAAKAAkAAwAGAAcAAAAFAAsABgAEAAAAAAAJAAsABgAEAAAAAAAEABAABgAEAAIAAAAFABAABgAFAAIAAAAGABAABgAPAAAAAAAHABAABgAKAAIAAAAIABAABgAAAAIAAAAKABAABgAIAAIAAAALABAABgAIAAIAAAADAAoAAwAAAAMAAAAMABUABgAHAAAAAAAKABQABgADAAIAAAAOABYABgADAAIAAAAOABQABgABAAIAAAAKABYABgACAAIAAAAeABQAAwAAAAMAAAAeABYAAwAEAAMAAAAUABYABgAFAAIAAAAVABYABgAPAAAAAAAaABEAAwAMAAUAAAADABIABgAHAAIAAAADABEABQAGAAAAAAAeABEABQAKAAAAAAAfABUABQAOAAAAAAADABcABQAGAAAAAAAJABIABQAKAAAAAAAaABMABQAMAAIAAAAUABUABQAMAAIAAAAIABcABQANAAIAAAAGABEABQAMAAIAAAAMABcABQANAAIAAAAXAAcABQAMAAIAAAAgABAABQAMAAIAAAAKAAUABQANAAIAAAAaABYAAwAEAAcAAAAcABMAAwAEAAcAAAAdABcAAwAGAAcAAAAVAAcAAwAEAAcAAAAdABAAAwAGAAcAAAAAAAIABQAOAAAAAAACAAIABQAOAAAAAAAEAAIABQAMAAAAAAAGAAIABQAMAAAAAAAIAAIABQAOAAAAAAAKAAIABQAOAAAAAAAMAAIABQAMAAAAAAAOAAIABQAMAAAAAAAWAAIABQAOAAAAAAAYAAIABQAMAAAAAAAaAAIABQAKAAAAAAAcAAIABQAKAAAAAAAeAAIABQAKAAAAAAAgAAIABQAOAAAAAAAiAAIABQAKAAAAAAABAAMABQAKAAAAAAADAAMABQAMAAAAAAAFAAMABQAOAAAAAAAHAAMABQAOAAAAAAAJAAMABQAOAAAAAAALAAMABQAMAAAAAAANAAMABQAMAAAAAAAXAAMABQAOAAAAAAAZAAMABQAOAAAAAAAbAAMABQAOAAAAAAAdAAMABQAOAAAAAAAfAAMABQAMAAAAAAAhAAMABQAOAAAAAAAjAAMABQAMAAAAAAAAABkABQAKAAAAAAACABkABQAKAAAAAAAEABkABQAMAAAAAAAGABkABQAOAAAAAAAIABkABQAMAAAAAAAKABkABQAKAAAAAAAMABkABQAKAAAAAAAOABkABQAMAAAAAAAQABkABQAOAAAAAAASABkABQAOAAAAAAAUABkABQAOAAAAAAAWABkABQAMAAAAAAAYABkABQAKAAAAAAAaABkABQAKAAAAAAAcABkABQAKAAAAAAAeABkABQAMAAAAAAAgABkABQAKAAAAAAAiABkABQAMAAAAAAABABoABQAOAAAAAAADABoABQAMAAAAAAAFABoABQAOAAAAAAAHABoABQAKAAAAAAAJABoABQAMAAAAAAALABoABQAKAAAAAAANABoABQAOAAAAAAAPABoABQAKAAAAAAARABoABQAKAAAAAAATABoABQAKAAAAAAAVABoABQAKAAAAAAAXABoABQAOAAAAAAAZABoABQAKAAAAAAAbABoABQAKAAAAAAAdABoABQAOAAAAAAAfABoABQAOAAAAAAAhABoABQAKAAAAAAAjABoABQAKAAAAAAD//wQABQAMAAAAAAD//wYABQAOAAAAAAD//wgABQAOAAAAAAD//woABQAOAAAAAAD//wwABQAKAAAAAAD//w4ABQAKAAAAAAD//xAABQAMAAAAAAD//xIABQAMAAAAAAD//xQABQAKAAAAAAD//xYABQAKAAAAAAD//xgABQAOAAAAAAAAAAUABQAKAAAAAAAAAAcABQAOAAAAAAAAAAkABQAOAAAAAAAAAAsABQAOAAAAAAAAAA0ABQAMAAAAAAAAAA8ABQAMAAAAAAAAABEABQAOAAAAAAAAABMABQAOAAAAAAAAABUABQAMAAAAAAAAABcABQAMAAAAAAAiAAQABQAOAAAAAAAiAAYABQAMAAAAAAAiAAgABQAOAAAAAAAiAAoABQAKAAAAAAAiAAwABQAMAAAAAAAiAA4ABQAOAAAAAAAiABAABQAKAAAAAAAiABIABQAKAAAAAAAiABQABQAOAAAAAAAiABYABQAMAAAAAAAiABgABQAMAAAAAAAjAAUABQAMAAAAAAAjAAcABQAKAAAAAAAjAAkABQAOAAAAAAAjAAsABQAKAAAAAAAjAA0ABQAKAAAAAAAjAA8ABQAMAAAAAAAjABEABQAKAAAAAAAjABMABQAKAAAAAAAjABUABQAOAAAAAAAjABcABQAMAAAAAAA=")
+tile_map_data = PackedByteArray("AAARAAQABAALAAMAAAAEAAcABAAAAAAAAAALAAgABAAIAAMAAAAZAAgABAAAAAMAAAAFABQABAAGAAAAAAAWABQABAAGAAAAAAAbABUABAAIAAMAAAASAA0ABAAOAAMAAAAOAAsAAwAEAAAAAAAVAAwABgABAAIAAAAQABAABgABAAIAAAAPAA8ABgACAAIAAAAPAAgABgALAAIAAAAVAAgABgAAAAAAAAAYAAkABgAJAAIAAAAOAAkABgAGAAIAAAAYAAcAAwALAAUAAAAKAAkAAwAGAAcAAAAFAAsABgAEAAAAAAAJAAsABgAEAAAAAAAEABAABgAEAAIAAAAFABAABgAFAAIAAAAGABAABgAPAAAAAAAHABAABgAKAAIAAAAIABAABgAAAAIAAAAKABAABgAIAAIAAAALABAABgAIAAIAAAADAAoAAwAAAAMAAAAMABUABgAHAAAAAAAKABQABgADAAIAAAAOABYABgADAAIAAAAOABQABgABAAIAAAAKABYABgACAAIAAAAeABQAAwAAAAMAAAAeABYAAwAEAAMAAAAUABYABgAFAAIAAAAVABYABgAPAAAAAAAaABEAAwAMAAUAAAADABIABgAHAAIAAAADABEABQAGAAAAAAAeABEABQAKAAAAAAAfABUABQAOAAAAAAADABcABQAGAAAAAAAJABIABQAKAAAAAAAaABMABQAMAAIAAAAUABUABQAMAAIAAAAIABcABQANAAIAAAAGABEABQAMAAIAAAAMABcABQANAAIAAAAXAAcABQAMAAIAAAAgABAABQAMAAIAAAAKAAUABQANAAIAAAAaABYAAwAEAAcAAAAcABMAAwAEAAcAAAAdABcAAwAGAAcAAAAVAAcAAwAEAAcAAAAdABAAAwAGAAcAAAAAAAIABQAOAAAAAAACAAIABQAOAAAAAAAEAAIABQAMAAAAAAAGAAIABQAMAAAAAAAIAAIABQAOAAAAAAAKAAIABQAOAAAAAAAMAAIABQAMAAAAAAAOAAIABQAMAAAAAAAWAAIABQAOAAAAAAAYAAIABQAMAAAAAAAaAAIABQAKAAAAAAAcAAIABQAKAAAAAAAeAAIABQAKAAAAAAAgAAIABQAOAAAAAAAiAAIABQAKAAAAAAABAAMABQAKAAAAAAADAAMABQAMAAAAAAAFAAMABQAOAAAAAAAHAAMABQAOAAAAAAAJAAMABQAOAAAAAAALAAMABQAMAAAAAAANAAMABQAMAAAAAAAXAAMABQAOAAAAAAAZAAMABQAOAAAAAAAbAAMABQAOAAAAAAAdAAMABQAOAAAAAAAfAAMABQAMAAAAAAAhAAMABQAOAAAAAAAjAAMABQAMAAAAAAAAABkABQAKAAAAAAACABkABQAKAAAAAAAEABkABQAMAAAAAAAGABkABQAOAAAAAAAIABkABQAMAAAAAAAKABkABQAKAAAAAAAMABkABQAKAAAAAAAOABkABQAMAAAAAAAQABkABQAOAAAAAAASABkABQAOAAAAAAAUABkABQAOAAAAAAAWABkABQAMAAAAAAAYABkABQAKAAAAAAAaABkABQAKAAAAAAAcABkABQAKAAAAAAAeABkABQAMAAAAAAAgABkABQAKAAAAAAAiABkABQAMAAAAAAABABoABQAOAAAAAAADABoABQAMAAAAAAAFABoABQAOAAAAAAAHABoABQAKAAAAAAAJABoABQAMAAAAAAALABoABQAKAAAAAAANABoABQAOAAAAAAAPABoABQAKAAAAAAARABoABQAKAAAAAAATABoABQAKAAAAAAAVABoABQAKAAAAAAAXABoABQAOAAAAAAAZABoABQAKAAAAAAAbABoABQAKAAAAAAAdABoABQAOAAAAAAAfABoABQAOAAAAAAAhABoABQAKAAAAAAAjABoABQAKAAAAAAD//wQABQAMAAAAAAD//wYABQAOAAAAAAD//wgABQAOAAAAAAD//woABQAOAAAAAAD//wwABQAKAAAAAAD//w4ABQAKAAAAAAD//xAABQAMAAAAAAD//xIABQAMAAAAAAD//xQABQAKAAAAAAD//xYABQAKAAAAAAD//xgABQAOAAAAAAAAAAUABQAKAAAAAAAAAAcABQAOAAAAAAAAAAkABQAOAAAAAAAAAAsABQAOAAAAAAAAAA0ABQAMAAAAAAAAAA8ABQAMAAAAAAAAABEABQAOAAAAAAAAABMABQAOAAAAAAAAABUABQAMAAAAAAAAABcABQAMAAAAAAAiAAQABQAOAAAAAAAiAAYABQAMAAAAAAAiAAgABQAOAAAAAAAiAAoABQAKAAAAAAAiAAwABQAMAAAAAAAiAA4ABQAOAAAAAAAiABAABQAKAAAAAAAiABIABQAKAAAAAAAiABQABQAOAAAAAAAiABYABQAMAAAAAAAiABgABQAMAAAAAAAjAAUABQAMAAAAAAAjAAcABQAKAAAAAAAjAAkABQAOAAAAAAAjAAsABQAKAAAAAAAjAA0ABQAKAAAAAAAjAA8ABQAMAAAAAAAjABEABQAKAAAAAAAjABMABQAKAAAAAAAjABUABQAOAAAAAAAjABcABQAMAAAAAAAMABIABgACAAEAAAAXABIABgACAAEAAAAXAAsABgACAAEAAAAMAAsABgACAAEAAAAVAAYABgAGAAEAAAAPAAYABgAGAAEAAAA=")
 tile_set = ExtResource("3_lv0g6")
 
 [node name="Foliage" type="TileMapLayer" parent="." unique_id=583495443]
@@ -102,7 +100,7 @@ tile_set = ExtResource("3_lv0g6")
 z_index = 1
 position = Vector2(-864, -648)
 scale = Vector2(1.5, 1.5)
-tile_map_data = PackedByteArray("AAARAAMABAAKAAUAAAAEAAYABAAAAAUAAAALAAYABAAFAAMAAAAZAAYABAAKAAAAAAAFABMABAAGAAUAAAAWABMABAAGAAUAAAAbABMABAAFAAMAAAASAAwABAANAAUAAAADABAABQAEAAAAAAAeABAABQAIAAAAAAAfABMABQACAAAAAAADABYABQAEAAAAAAAJABEABQAIAAAAAAAAAAAABQACAAAAAAACAAAABQACAAAAAAAEAAAABQAAAAAAAAAGAAAABQAAAAAAAAAIAAAABQACAAAAAAAKAAAABQACAAAAAAAMAAAABQAAAAAAAAAOAAAABQAAAAAAAAAWAAAABQACAAAAAAAYAAAABQAAAAAAAAAaAAEABQAIAAAAAAAcAAEABQAIAAAAAAAeAAEABQAIAAAAAAAgAAAABQACAAAAAAAiAAEABQAIAAAAAAABAAIABQAIAAAAAAADAAEABQAAAAAAAAAFAAEABQACAAAAAAAHAAEABQACAAAAAAAJAAEABQACAAAAAAALAAEABQAAAAAAAAANAAEABQAAAAAAAAAXAAEABQACAAAAAAAZAAEABQACAAAAAAAbAAEABQACAAAAAAAdAAEABQACAAAAAAAfAAEABQAAAAAAAAAhAAEABQACAAAAAAAjAAEABQAAAAAAAAAAABgABQAIAAAAAAACABgABQAIAAAAAAAEABcABQAAAAAAAAAGABcABQACAAAAAAAIABcABQAAAAAAAAAKABgABQAIAAAAAAAMABgABQAIAAAAAAAOABcABQAAAAAAAAAQABcABQACAAAAAAASABcABQACAAAAAAAUABcABQACAAAAAAAWABcABQAAAAAAAAAYABgABQAIAAAAAAAaABgABQAIAAAAAAAcABgABQAIAAAAAAAeABcABQAAAAAAAAAgABgABQAIAAAAAAAiABcABQAAAAAAAAABABgABQACAAAAAAADABgABQAAAAAAAAAFABgABQACAAAAAAAHABkABQAIAAAAAAAJABgABQAAAAAAAAALABkABQAIAAAAAAANABgABQACAAAAAAAPABkABQAIAAAAAAARABkABQAIAAAAAAATABkABQAIAAAAAAAVABkABQAIAAAAAAAXABgABQACAAAAAAAZABkABQAIAAAAAAAbABkABQAIAAAAAAAdABgABQACAAAAAAAfABgABQACAAAAAAAhABkABQAIAAAAAAAjABkABQAIAAAAAAD//wIABQAAAAAAAAD//wQABQACAAAAAAD//wYABQACAAAAAAD//wgABQACAAAAAAD//wsABQAIAAAAAAD//w0ABQAIAAAAAAD//w4ABQAAAAAAAAD//xAABQAAAAAAAAD//xMABQAIAAAAAAD//xUABQAIAAAAAAD//xYABQACAAAAAAAAAAQABQAIAAAAAAAAAAUABQACAAAAAAAAAAcABQACAAAAAAAAAAkABQACAAAAAAAAAAsABQAAAAAAAAAAAA0ABQAAAAAAAAAAAA8ABQACAAAAAAAAABEABQACAAAAAAAAABMABQAAAAAAAAAAABUABQAAAAAAAAAiAAIABQACAAAAAAAiAAQABQAAAAAAAAAiAAYABQACAAAAAAAiAAkABQAIAAAAAAAiAAoABQAAAAAAAAAiAAwABQACAAAAAAAiAA8ABQAIAAAAAAAiABEABQAIAAAAAAAiABIABQACAAAAAAAiABQABQAAAAAAAAAiABYABQAAAAAAAAAjAAMABQAAAAAAAAAjAAYABQAIAAAAAAAjAAcABQACAAAAAAAjAAoABQAIAAAAAAAjAAwABQAIAAAAAAAjAA0ABQAAAAAAAAAjABAABQAIAAAAAAAjABIABQAIAAAAAAAjABMABQACAAAAAAAjABUABQAAAAAAAAA=")
+tile_map_data = PackedByteArray("AAARAAMABAAKAAUAAAAEAAYABAAAAAUAAAALAAYABAAFAAMAAAAZAAYABAAKAAAAAAAFABMABAAGAAUAAAAWABMABAAGAAUAAAAbABMABAAFAAMAAAASAAwABAANAAUAAAADABAABQAEAAAAAAAeABAABQAIAAAAAAAfABMABQACAAAAAAADABYABQAEAAAAAAAJABEABQAIAAAAAAAAAAAABQACAAAAAAACAAAABQACAAAAAAAEAAAABQAAAAAAAAAGAAAABQAAAAAAAAAIAAAABQACAAAAAAAKAAAABQACAAAAAAAMAAAABQAAAAAAAAAOAAAABQAAAAAAAAAWAAAABQACAAAAAAAYAAAABQAAAAAAAAAaAAEABQAIAAAAAAAcAAEABQAIAAAAAAAeAAEABQAIAAAAAAAgAAAABQACAAAAAAAiAAEABQAIAAAAAAABAAIABQAIAAAAAAADAAEABQAAAAAAAAAFAAEABQACAAAAAAAHAAEABQACAAAAAAAJAAEABQACAAAAAAALAAEABQAAAAAAAAANAAEABQAAAAAAAAAXAAEABQACAAAAAAAZAAEABQACAAAAAAAbAAEABQACAAAAAAAdAAEABQACAAAAAAAfAAEABQAAAAAAAAAhAAEABQACAAAAAAAjAAEABQAAAAAAAAAAABgABQAIAAAAAAACABgABQAIAAAAAAAEABcABQAAAAAAAAAGABcABQACAAAAAAAIABcABQAAAAAAAAAKABgABQAIAAAAAAAMABgABQAIAAAAAAAOABcABQAAAAAAAAAQABcABQACAAAAAAASABcABQACAAAAAAAUABcABQACAAAAAAAWABcABQAAAAAAAAAYABgABQAIAAAAAAAaABgABQAIAAAAAAAcABgABQAIAAAAAAAeABcABQAAAAAAAAAgABgABQAIAAAAAAAiABcABQAAAAAAAAABABgABQACAAAAAAADABgABQAAAAAAAAAFABgABQACAAAAAAAHABkABQAIAAAAAAAJABgABQAAAAAAAAALABkABQAIAAAAAAANABgABQACAAAAAAAPABkABQAIAAAAAAARABkABQAIAAAAAAATABkABQAIAAAAAAAVABkABQAIAAAAAAAXABgABQACAAAAAAAZABkABQAIAAAAAAAbABkABQAIAAAAAAAdABgABQACAAAAAAAfABgABQACAAAAAAAhABkABQAIAAAAAAAjABkABQAIAAAAAAD//wIABQAAAAAAAAD//wQABQACAAAAAAD//wYABQACAAAAAAD//wgABQACAAAAAAD//wsABQAIAAAAAAD//w0ABQAIAAAAAAD//w4ABQAAAAAAAAD//xAABQAAAAAAAAD//xMABQAIAAAAAAD//xUABQAIAAAAAAD//xYABQACAAAAAAAAAAQABQAIAAAAAAAAAAUABQACAAAAAAAAAAcABQACAAAAAAAAAAkABQACAAAAAAAAAAsABQAAAAAAAAAAAA0ABQAAAAAAAAAAAA8ABQACAAAAAAAAABEABQACAAAAAAAAABMABQAAAAAAAAAAABUABQAAAAAAAAAiAAIABQACAAAAAAAiAAQABQAAAAAAAAAiAAYABQACAAAAAAAiAAkABQAIAAAAAAAiAAoABQAAAAAAAAAiAAwABQACAAAAAAAiAA8ABQAIAAAAAAAiABEABQAIAAAAAAAiABIABQACAAAAAAAiABQABQAAAAAAAAAiABYABQAAAAAAAAAjAAMABQAAAAAAAAAjAAYABQAIAAAAAAAjAAcABQACAAAAAAAjAAoABQAIAAAAAAAjAAwABQAIAAAAAAAjAA0ABQAAAAAAAAAjABAABQAIAAAAAAAjABIABQAIAAAAAAAjABMABQACAAAAAAAjABUABQAAAAAAAAAMABEABgACAAAAAAAXABEABgACAAAAAAAXAAoABgACAAAAAAAMAAoABgACAAAAAAAPAAUABgAGAAAAAAAVAAUABgAGAAAAAAA=")
 tile_set = ExtResource("3_lv0g6")
 
 [node name="Entrances" type="Node2D" parent="." unique_id=429290930]
@@ -115,162 +113,119 @@ position = Vector2(24, 96)
 
 [node name="Actors" type="Node2D" parent="." unique_id=1972143096]
 
-[node name="Knight" type="CharacterBody2D" parent="Actors" unique_id=530481467 instance=ExtResource("5_tnaed")]
+[node name="Knight" parent="Actors" unique_id=530481467 instance=ExtResource("5_tnaed")]
 position = Vector2(168, 96)
-script = ExtResource("6_pahgs")
 display_name = "KNIGHT"
 body_color = Color(0.247059, 0.72549, 0.34902, 1)
 sprite_frames = ExtResource("7_aichj")
 dialogue_line = "Knight: Rest by the well, you look worn. The road through the north gate leads past the old ruins to the altar. Keep to it, and mind your manners when you reach the knight at the end of it."
 heals_party = true
-chatter = PackedStringArray()
-barks = PackedStringArray()
 
-[node name="Elder" type="CharacterBody2D" parent="Actors" unique_id=1448416974 instance=ExtResource("5_tnaed")]
+[node name="Elder" parent="Actors" unique_id=1448416974 instance=ExtResource("5_tnaed")]
 position = Vector2(-24, 96)
-script = ExtResource("6_pahgs")
 display_name = "ELDER"
 body_color = Color(0.75, 0.62, 0.86, 1)
 sprite_frames = ExtResource("8_7oj63")
 facing = &"right"
 dialogue_line = "Elder: The board has work for anyone willing to leave the walls. Wild Oathbound roam the meadow, and the seal is thinning again up by the ruins."
 quest_ids = Array[StringName]([&"quest_main_01_beyond_the_walls"])
-chatter = PackedStringArray()
-barks = PackedStringArray()
 
-[node name="Merchant" type="CharacterBody2D" parent="Actors" unique_id=1278396786 instance=ExtResource("5_tnaed")]
+[node name="Merchant" parent="Actors" unique_id=1278396786 instance=ExtResource("5_tnaed")]
 position = Vector2(-504, -48)
-script = ExtResource("6_pahgs")
 display_name = "MERCHANT"
 body_color = Color(0.9, 0.6, 0.3, 1)
 sprite_frames = ExtResource("9_cpsmu")
 dialogue_line = "Merchant: Fresh bread, dried fish, and a crate I still have not opened. The caravans come slower every year the bells start up."
 quest_ids = Array[StringName]([&"quest_side_the_crossing"])
-chatter = PackedStringArray()
-barks = PackedStringArray()
 
-[node name="Child" type="CharacterBody2D" parent="Actors" unique_id=1845064441 instance=ExtResource("5_tnaed")]
+[node name="Child" parent="Actors" unique_id=1845064441 instance=ExtResource("5_tnaed")]
 position = Vector2(-216, 432)
-script = ExtResource("6_pahgs")
 display_name = "CHILD"
 body_color = Color(0.95, 0.85, 0.4, 1)
 sprite_frames = ExtResource("10_qd58a")
 facing = &"up"
 dialogue_line = "Child: I saw a Loambuck from the wall! It had leaves on its back. Can I come with you? No? Fine."
 quest_ids = Array[StringName]([&"quest_side_leaf_hat"])
-chatter = PackedStringArray()
-barks = PackedStringArray()
 
-[node name="Innkeeper" type="CharacterBody2D" parent="Actors" unique_id=1620734297 instance=ExtResource("5_tnaed")]
+[node name="Innkeeper" parent="Actors" unique_id=1620734297 instance=ExtResource("5_tnaed")]
 position = Vector2(456, -144)
-script = ExtResource("6_pahgs")
 display_name = "INNKEEPER"
 sprite_frames = ExtResource("11_ubjrp")
 dialogue_line = "Innkeeper: Welcome to the Hearthside. Beds are warm and the stew is hot. Stay the night? Oathkeepers sleep free. The Order has always paid for its own."
-runs_inn = true
 quest_ids = Array[StringName]([&"quest_main_01g_a_stocked_satchel"])
-chatter = PackedStringArray("Innkeeper: Back again? Your Oathbound look like they could use a proper bed.", "Innkeeper: The Fisher swears he caught tonight\'s stew. He didn\'t. Rest a while?")
-barks = PackedStringArray("Stew\'s on!", "Rooms free tonight!", "Wipe your boots, please.")
+runs_inn = true
 
-[node name="Scribe" type="CharacterBody2D" parent="Actors" unique_id=378808644 instance=ExtResource("5_tnaed")]
+[node name="Scribe" parent="Actors" unique_id=378808644 instance=ExtResource("5_tnaed")]
 position = Vector2(-648, -48)
-script = ExtResource("6_pahgs")
 display_name = "SCRIBE"
 sprite_frames = ExtResource("12_msphj")
 dialogue_line = "Scribe: Binding Scrolls, inked by my own hand. Oath-script holds better than any rope. It is the same hand that copies out the rite, for whatever that is worth to you."
 quest_ids = Array[StringName]([&"quest_side_ink_and_oath"])
 shop_stock = Array[StringName]([&"item_binding_scroll"])
 shop_title = "Scribe's Stall"
-chatter = PackedStringArray("Scribe: A worn-down creature listens closer. Weaken it before you offer the scroll.", "Scribe: Failed binding? The scroll crumbles, but the lesson stays. Buy another.")
-barks = PackedStringArray("Scrolls! Fresh-inked scrolls!", "Bind your next friend!")
 
-[node name="Apothecary" type="CharacterBody2D" parent="Actors" unique_id=1670163261 instance=ExtResource("5_tnaed")]
+[node name="Apothecary" parent="Actors" unique_id=1670163261 instance=ExtResource("5_tnaed")]
 position = Vector2(-312, -48)
-script = ExtResource("6_pahgs")
 display_name = "APOTHECARY"
 sprite_frames = ExtResource("13_114rs")
 dialogue_line = "Apothecary: Salves for scrapes, tonics for worse, and a draught for when the worst has already happened. I have stocked every champion since I was young. Most of them came back."
+quest_ids = Array[StringName]([&"quest_main_01h_the_road_is_waiting"])
 shop_stock = Array[StringName]([&"item_herb_salve", &"item_hearty_tonic", &"item_ember_draught", &"item_clearwater_vial"])
 shop_title = "Apothecary"
-quest_ids = Array[StringName]([&"quest_main_01h_the_road_is_waiting"])
-chatter = PackedStringArray("Apothecary: Clearwater from the well, blessed twice. Burns and poisons don\'t stand a chance.", "Apothecary: Keep a salve in your satchel. The meadow bites harder than it looks.")
-barks = PackedStringArray("Salves and tonics!", "Mind your wounds, traveller.")
 
-[node name="Guard" type="CharacterBody2D" parent="Actors" unique_id=1463198793 instance=ExtResource("5_tnaed")]
+[node name="Guard" parent="Actors" unique_id=1463198793 instance=ExtResource("5_tnaed")]
 position = Vector2(-72, -384)
-script = ExtResource("6_pahgs")
 display_name = "GUARD"
 sprite_frames = ExtResource("14_ejftv")
 dialogue_line = "Guard: The gate stays open while the sun is up. After dark, knock twice and say your oath. We have kept that rule since before the altar was raised."
-chatter = PackedStringArray("Guard: Wild ones don\'t come past the wall. Mostly. Nothing has ever come past the altar.")
-barks = PackedStringArray("Quiet day.", "Mind the ruins out there.")
 
-[node name="OldMan" type="CharacterBody2D" parent="Actors" unique_id=1782004419 instance=ExtResource("5_tnaed")]
+[node name="OldMan" parent="Actors" unique_id=1782004419 instance=ExtResource("5_tnaed")]
 position = Vector2(216, -48)
-script = ExtResource("6_pahgs")
 display_name = "OLD MAN"
 sprite_frames = ExtResource("15_5cvyu")
 facing = &"left"
 dialogue_line = "Old Man: The dead king has been put back under nine times since this town started keeping count, and the count was already old when we started it."
-chatter = PackedStringArray("Old Man: Sit a while. Well water tastes better when you\'re not rushing, and that altar has waited longer than you have.")
-barks = PackedStringArray("Hmph. Pigeons.", "Back in my day...")
 
-[node name="Fisher" type="CharacterBody2D" parent="Actors" unique_id=265085660 instance=ExtResource("5_tnaed")]
+[node name="Fisher" parent="Actors" unique_id=265085660 instance=ExtResource("5_tnaed")]
 position = Vector2(600, 0)
-script = ExtResource("6_pahgs")
 display_name = "FISHER"
 sprite_frames = ExtResource("16_qlm4h")
 facing = &"up"
 dialogue_line = "Fisher: Nothing biting but leeches. Don't tell the Innkeeper, she thinks I catch the stew."
-chatter = PackedStringArray()
-barks = PackedStringArray("Come on, bite...", "Was that a ripple?")
 
-[node name="Bard" type="CharacterBody2D" parent="Actors" unique_id=1298564995 instance=ExtResource("5_tnaed")]
+[node name="Bard" parent="Actors" unique_id=1298564995 instance=ExtResource("5_tnaed")]
 position = Vector2(-312, 384)
-script = ExtResource("6_pahgs")
 display_name = "BARD"
 sprite_frames = ExtResource("17_sn4k3")
 facing = &"right"
 dialogue_line = "Bard: I'm writing a ballad about the Oathbreaker. Hardest song in the Reach. Nobody can agree on whether it is meant to end sad."
-chatter = PackedStringArray("Bard: Every oath has a verse. Yours hasn\'t been written yet, and his has been sung wrong for a hundred years.")
-barks = PackedStringArray("♪ Oh, the meadow grass was green... ♪", "♪ ...and the scroll held true ♪")
 
-[node name="Kid" type="CharacterBody2D" parent="Actors" unique_id=463300445 instance=ExtResource("5_tnaed")]
+[node name="Kid" parent="Actors" unique_id=463300445 instance=ExtResource("5_tnaed")]
 position = Vector2(-120, 384)
-script = ExtResource("6_pahgs")
 display_name = "KID"
 sprite_frames = ExtResource("18_wqf6r")
 dialogue_line = "Kid: I'm faster than an Emberling! Watch! ...Okay, not yet. Soon."
-chatter = PackedStringArray()
-barks = PackedStringArray("Can\'t catch me!", "Race you to the well!")
 wander_radius_cells = 2.0
 
-[node name="Villager" type="CharacterBody2D" parent="Actors" unique_id=2132140143 instance=ExtResource("5_tnaed")]
+[node name="Villager" parent="Actors" unique_id=2132140143 instance=ExtResource("5_tnaed")]
 position = Vector2(120, 192)
-script = ExtResource("6_pahgs")
 display_name = "VILLAGER"
 sprite_frames = ExtResource("19_r8iu2")
 dialogue_line = "Villager: The market's busier since the caravan came. Even the Scribe is selling scrolls again."
-chatter = PackedStringArray("Villager: If you\'re heading out, the Apothecary\'s salves are worth every coin.")
-barks = PackedStringArray("Fresh bread smells lovely today.", "Has anyone seen my cat?")
 wander_radius_cells = 3.0
 
-[node name="Farmer" type="CharacterBody2D" parent="Actors" unique_id=158575293 instance=ExtResource("5_tnaed")]
+[node name="Farmer" parent="Actors" unique_id=158575293 instance=ExtResource("5_tnaed")]
 position = Vector2(-456, 240)
-script = ExtResource("6_pahgs")
 display_name = "FARMER"
 sprite_frames = ExtResource("20_sch8w")
 dialogue_line = "Farmer: Loambucks keep nibbling the hay. Can't blame them, it's good hay."
 quest_ids = Array[StringName]([&"quest_side_field_medicine"])
-chatter = PackedStringArray()
-barks = PackedStringArray("Hay won\'t stack itself.", "Rain\'s coming, I can feel it.")
 wander_radius_cells = 2.0
 
 [node name="Exits" type="Node2D" parent="." unique_id=1341248177]
 
-[node name="ToAreaOne" type="Area2D" parent="Exits" unique_id=1249646048 instance=ExtResource("21_6hc3x")]
+[node name="ToAreaOne" parent="Exits" unique_id=1249646048 instance=ExtResource("21_6hc3x")]
 position = Vector2(24, -576)
-script = ExtResource("22_src2p")
 target_area_path = "res://areas/area_one.tscn"
 target_entrance = &"FromTown"
 size_in_cells = Vector2(3, 3)
