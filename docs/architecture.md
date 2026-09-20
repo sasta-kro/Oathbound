@@ -184,5 +184,5 @@ Conventions: test names are sentences (`test_a_failed_binding_consumes_the_scrol
 - New mechanics go in the rules layer first with a test, then get presentation.
 - Missing art must degrade to a labelled placeholder, never to an error.
 - Keep `addons/godot_mcp` a dev dependency: nothing under `scripts/` may reference it.
-- Run the import and GUT commands above before committing. `gdformat scripts tests` and `gdlint scripts tests` are the intended formatters (see `handoff.md` for the current state of that).
+- Run the import and GUT commands above before committing. `gdformat scripts tests` and `gdlint scripts tests` are the intended formatters (the debt tally lives in the newest file under `docs/audits/`).
 - Scene files are text; small scenes, one responsibility each. Areas are separate scenes precisely so map edits do not collide with code.

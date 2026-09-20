@@ -1,10 +1,10 @@
-# Handoff: codebase status audit
+# Codebase status audit, 2026-09-21 02:11
 
-**Snapshot: 2026-09-21 02:11, commit `17fb9f2` (local, ahead of origin by one), 346 of 346 GUT tests passing across 27 test scripts.**
+**Snapshot: commit `17fb9f2` plus the two local commits after `f4b5cf7`, 346 of 346 GUT tests passing across 27 test scripts.**
 
-Purpose: a durable record of implementation status, usable as a handoff for any new contributor session with no prior context. Historical per-change essays are in git history; this file is the current state. `Oathbound_Specification_v0.6.md` is the authority for intended gameplay, `architecture.md` for system structure, `implementation_status.md` for verified feature behavior, `commit_hygiene.md` for the serialization rules every commit must follow.
+A point-in-time record, not a living document. It can be outdated the moment anyone pushes; work was in flight while this was written. Verify against code before acting on any item. The living status document is `docs/implementation_status.md`. `Oathbound_Specification_v0.6.md` is the authority for intended gameplay, `architecture.md` for system structure, `commit_hygiene.md` for the serialization rules every commit must follow.
 
-## 1. What the game is now
+## 1. What the game is at this snapshot
 
 A complete, playable 2D creature-collecting RPG built with Godot 4.7.2 (Compatibility renderer, 960 by 540 logical viewport). The full main story ships end to end: a taught first hour in Town and Area One (binding, field mending, the overworld strike, the ambush, the rout, the inn, the satchel), a catacombs garrison in Area Two, the dead wood and the barrow in Area Three, and an epilogue after the king falls. A run spans four connected areas, 32 main quests plus 6 side quests, visible roaming encounters with overworld first strikes, 1v1 cooldown battles, binding capture, shops, an inn, chests, save slots, music, and an ending that stays ended.
 
@@ -46,7 +46,27 @@ gdlint scripts tests
 
 The import step is required after any pull: new `class_name` scripts otherwise fail with "Could not find type" errors from a stale class cache. Serialization rules before committing are in `commit_hygiene.md`: files written by generators must be re-saved in the editor first.
 
-## 5. Known debt
+## 5. Playtest findings, 2026-09-21 group chat, verified against code
+
+Statuses below were checked against the code at this snapshot, not taken from the chat.
+
+| Finding from playtesting | Status | Evidence |
+| --- | --- | --- |
+| Dialogue box showed a location caption everywhere and "Elder: " inside the text | Fixed | `dialogue_panel.gd` `split_speaker` / `body_of`; speaker name in the caption, narration lines uncaptioned |
+| Four missing tutorials: F strike, both ambush directions, resting at the inn, buying | Fixed | quests `01c` to `01e` with `field_strike.gd`, `field_ambush.gd`, `field_rout.gd`; `01f` inn, `01g` satchel |
+| Player lost after the Ranger, warden looped without offering the boss | Fixed as guidance | eight walking-errand quests chain every hand-off; `QuestCompass` + `QuestArrow` point at the next target |
+| Field menu and page headers carry "powerpoint" numberings (01 Journey, 02 Companions, ...) | Not fixed | `field_ui.gd` menu list and `_header` calls still numbered |
+| Elemental codex tab showing the type matchup chart | Not fixed | no codex page exists in `field_ui.gd` |
+| Controls tab in settings | Not fixed | absent |
+| Fold the Evolutions tab into the codex | Not fixed | "05 Evolutions" tab still present in `field_ui.gd` |
+| Release, unbind or sell a bound creature (party of 3 cannot drop one) | Not fixed | no such action in `field_ui.gd` or `game_state.gd` |
+| One chest could not be opened while others could | Unknown | placement-level issue, not confirmable from code at this snapshot |
+| Earth creatures read as fire (red secondaries, flame death VFX on Bulwark) | Not fixed, deferred | team decision: creature art and stats wait until the rest is good |
+| Only one Rot species exists, no Nature or Steel species | Not fixed, deferred | same decision |
+
+Dialogue rewrite for Town and Area One was announced as in progress at snapshot time. The agreed writing rule from that discussion: accessible grammar that keeps the tone, and no em-dashes, no semicolons, no colons inside dialogue lines.
+
+## 6. Known debt
 
 - `gdformat`: 68 files would be reformatted. `gdlint`: 372 problems, mostly line length and max-method counts. Fix as a dedicated pass, not mixed into feature work.
 - `areas/TestScene.tscn` references `res://assets/tilesets/area_one.tres`, which does not exist. Broken ref on open.
@@ -54,31 +74,31 @@ The import step is required after any pull: new `class_name` scripts otherwise f
 - 14 deprecated GUT calls reported in the run summary. Harmless until a GUT upgrade.
 - Asset licences: the golem, demon and blood-monster packs have no licence recorded in their `SOURCE.md` files ("fill in before release"). The male hero pack is unused and non-commercial.
 
-## 6. Open gaps against the specification
+## 7. Open gaps against the specification
 
 Roughly in roadmap order. None of these block the current playable arc.
 
 1. Hostile Oathkeeper encounters do not exist; Area Three's two elites are the king's likenesses rather than trainers. `BattleConfig.trainer()` exists unused.
-2. Selling items, key items, the Creature Hotel, and Experience Vessel spending do not exist. Buying, the satchel, field and battle item use, vendors and the inn do.
+2. Selling items, key items, the Creature Hotel, and Experience Vessel spending do not exist. Buying, the satchel, field and battle item use, vendors and the inn do. Releasing or unbinding a creature does not exist either (playtest finding above).
 3. Move replacement and move relearning do not exist. A fifth learned move would be lost with a message; every shipped species has exactly four, so it cannot trigger with current content.
 4. Ever-bound journal state is not saved; the journal reflects the current party only.
 5. World reset after defeat does not exist; the party wakes at its last haven and the world is left as it was.
-6. Control rebinding does not exist.
+6. Control rebinding does not exist. A controls reference page does not exist (playtest finding above).
 7. Custom pixel-art UI assets do not exist; the code-built shell is temporary by design.
 8. XP policy is split: battles pay participants, routs and quest rewards pay the whole party. Spec 9.5 flags this Provisional.
 9. No CI. No Git LFS (fine until large audio assets land).
 
-## 7. Small bugs worth knowing
+## 8. Small bugs worth knowing
 
 - Stun survives a switch-out and fires on the creature's next action.
 - The hand-placed Area One Guardian respawns on every re-entry; only boss defeats persist.
 - The field HUD location label is hard-coded to "THE VERDANT REACH".
 - The dialogue-panel and battle-caption copy is English-first and unreviewed.
 
-## 8. Suggested next steps
+## 9. Suggested next steps
 
-1. Push the pending local commit (commit hygiene doc plus importer serialization fix).
-2. A formatting and lint pass as its own commit (see section 5).
+1. Push the pending local commits (commit hygiene doc, importer serialization fix, this audit).
+2. A formatting and lint pass as its own commit (see section 6).
 3. Fix or delete `TestScene.tscn`; decide the fate of `test_01.tscn`.
-4. Pick from section 6 in order; items 2 and 3 (hotel, move relearning) unlock content the story is already positioned for.
-5. Before release: resolve asset licences (section 5), add CI running import plus GUT.
+4. Pick from section 5 and 7 in order; the release-or-unbind creature action and the elemental codex are the two playtest asks with no code behind them yet.
+5. Before release: resolve asset licences (section 6), add CI running import plus GUT.

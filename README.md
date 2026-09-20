@@ -16,10 +16,12 @@ tools/     External development tools, including the Godot MCP server.
 
 | Document | Read it for |
 |---|---|
-| `docs/handoff.md` | Current state, what was built last and how, known gaps, roadmap. Start here. |
+| `docs/implementation_status.md` | Current verified feature and content status. Start here. |
+| `docs/audits/` | Dated point-in-time codebase status audits. Read the newest for the last full picture. |
 | `docs/Oathbound_Specification_v0.6.md` | The gameplay rules, with an implementation status tag per section. |
 | `docs/architecture.md` | How the Godot project is organised: autoloads, layers, content, saving, tests, conventions for contributors and agents. |
 | `docs/map_authoring.md` | Painting areas, spawn zones, exits, NPCs and quests in the editor. |
+| `docs/commit_hygiene.md` | Required serialization steps before committing editor and generated files. |
 | `docs/Oathbound Dev Env Setup (Required).md` | Engine version, terminal `godot`, MCP server, formatters. |
 | `docs/spec_audit_2026-09-12.md` | The v0.4-to-v0.5 audit: every divergence between spec and code. |
 | `docs/archive/` | Superseded specification versions. |
@@ -52,7 +54,7 @@ The project targets Godot 4.7.2 Stable with the Compatibility renderer. The proj
 
 The MCP bridge is optional for command-line validation. Godot CLI, GUT, `gdformat`, and `gdlint` remain usable without an active MCP connection.
 
-The server is registered for this repository in `.mcp.json` and runs from a local build that is not committed. Build it once per checkout, from the repository root:
+The server is registered per machine in a local, gitignored `.mcp.json` and runs from a local build that is not committed. Build it once per checkout, from the repository root:
 
 ```bash
 npm --prefix tools/godot-mcp/server install
@@ -101,7 +103,7 @@ overworld defeats also pay rewards without a dialogue prompt.
 Saves live in `user://saves/`: three manual slots (`slot_1.json` to
 `slot_3.json`) and one autosave (`autosave.json`). Each file keeps its
 previous contents beside it as `.backup`, which is read when the file itself
-is damaged. **Save journey** in the field menu (Esc, entry 04) writes any slot;
+is damaged. **Save journey** in the field menu (Esc) writes any slot;
 overwriting, loading mid-journey and erasing all ask twice. The field also
 autosaves into its own slot on entering the field or an area, after every
 battle, rout and healing service, on the way back to the title screen, and
@@ -113,6 +115,6 @@ party, coins, scrolls, the journal, play time, and the player's position and
 facing in the area it was saved in. Roaming creatures are respawned by the
 area on load.
 
-Specification v0.5 section 21.1 describes this model; v0.4 asked for a single
+Specification v0.6 section 21.1 describes this model; v0.4 asked for a single
 autosave slot, and manual slots were added on request.
 
