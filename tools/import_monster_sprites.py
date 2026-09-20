@@ -451,7 +451,7 @@ def import_monster(pack: str, palette: str | None, species_id: str) -> None:
         animations.append(
             "{\n"
             f'"frames": [{", ".join(frames)}],\n'
-            f'"loop": {"true" if loops else "false"},\n'
+            f'"loop": {1 if loops else 0},\n'
             f'"name": &"{anim}",\n'
             f'"speed": {fps}\n'
             "}"
