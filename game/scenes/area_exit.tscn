@@ -1,12 +1,13 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://dyjfrxidyk5di"]
 
-[ext_resource type="Script" path="res://scripts/world/area_exit.gd" id="1_area_exit"]
+[ext_resource type="Script" uid="uid://bldr3nlhqoh6t" path="res://scripts/world/area_exit.gd" id="1_area_exit"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_exit"]
-size = Vector2(144, 96)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_h1ymn"]
+size = Vector2(101, 66)
 
-[node name="AreaExit" type="Area2D"]
+[node name="AreaExit" type="Area2D" unique_id=770919292]
 script = ExtResource("1_area_exit")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("RectangleShape2D_exit")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=899832578]
+position = Vector2(0.5, 0)
+shape = SubResource("RectangleShape2D_h1ymn")

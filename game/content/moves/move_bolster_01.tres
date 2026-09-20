@@ -1,8 +1,8 @@
-[gd_resource type="Resource" script_class="MoveData" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="MoveData" format=3 uid="uid://bdanwx6mpoco8"]
 
-[ext_resource type="Script" path="res://scripts/creatures/move_data.gd" id="1_move"]
+[ext_resource type="Script" uid="uid://bq5p2dxnovb0r" path="res://scripts/creatures/move_data.gd" id="1_move"]
 [ext_resource type="Resource" path="res://content/vfx/vfx_motes_guard.tres" id="2_vfx"]
-[ext_resource type="Script" path="res://scripts/creatures/stat_modifier.gd" id="3_modifier"]
+[ext_resource type="Script" uid="uid://c8yppijv6s6vv" path="res://scripts/creatures/stat_modifier.gd" id="3_modifier"]
 
 [sub_resource type="Resource" id="Modifier_bolster"]
 script = ExtResource("3_modifier")
