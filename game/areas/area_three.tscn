@@ -1,44 +1,38 @@
-[gd_scene format=4]
+[gd_scene format=4 uid="uid://7uycdxt2j40v"]
 
-[ext_resource type="Script" path="res://scripts/world/world_area.gd" id="1_n8g01"]
-[ext_resource type="TileSet" path="res://assets/tilesets/overworld.tres" id="2_ydsot"]
-[ext_resource type="TileSet" path="res://assets/tilesets/meadow.tres" id="3_2ehd2"]
-[ext_resource type="Shader" path="res://shaders/foliage_sway.gdshader" id="4_ydm5q"]
+[ext_resource type="Script" uid="uid://dlctfqjo0j883" path="res://scripts/world/world_area.gd" id="1_n8g01"]
+[ext_resource type="TileSet" uid="uid://daouif03i3wua" path="res://assets/tilesets/overworld.tres" id="2_ydsot"]
+[ext_resource type="TileSet" uid="uid://bk78dfe417ae7" path="res://assets/tilesets/meadow.tres" id="3_2ehd2"]
+[ext_resource type="Shader" uid="uid://bg2hef1ijld4s" path="res://shaders/foliage_sway.gdshader" id="4_ydm5q"]
 [ext_resource type="PackedScene" path="res://scenes/world_actor.tscn" id="5_0t36x"]
-[ext_resource type="Script" path="res://scripts/world_actor.gd" id="6_bovfl"]
-[ext_resource type="SpriteFrames" path="res://content/sprites/npc_knight.tres" id="7_5s5ja"]
+[ext_resource type="SpriteFrames" uid="uid://dr750752ih5gn" path="res://content/sprites/npc_knight.tres" id="7_5s5ja"]
 [ext_resource type="PackedScene" path="res://scenes/wild_creature.tscn" id="8_2egwx"]
-[ext_resource type="Script" path="res://scripts/wild_creature.gd" id="9_eyb1i"]
-[ext_resource type="Resource" path="res://content/creatures/creature_kingsworn.tres" id="10_0ergf"]
-[ext_resource type="Resource" path="res://content/creatures/creature_oathbreaker.tres" id="11_3p42j"]
-[ext_resource type="Resource" path="res://content/creatures/creature_skeleton_lord.tres" id="12_f641o"]
+[ext_resource type="Resource" uid="uid://bty354bybwmax" path="res://content/creatures/creature_kingsworn.tres" id="10_0ergf"]
+[ext_resource type="Resource" uid="uid://ci6uybwlmx8ne" path="res://content/creatures/creature_oathbreaker.tres" id="11_3p42j"]
+[ext_resource type="Resource" uid="uid://chcvc3pqjyom3" path="res://content/creatures/creature_skeleton_lord.tres" id="12_f641o"]
 [ext_resource type="PackedScene" path="res://scenes/spawn_zone.tscn" id="13_1wrjt"]
-[ext_resource type="Script" path="res://scripts/world/spawn_zone.gd" id="14_fttk7"]
-[ext_resource type="Resource" path="res://content/creatures/creature_hollow_squire.tres" id="15_7gcwa"]
-[ext_resource type="Resource" path="res://content/creatures/creature_gloomgaze.tres" id="16_3ukpy"]
-[ext_resource type="Resource" path="res://content/creatures/creature_bulwark.tres" id="17_y3va1"]
-[ext_resource type="Resource" path="res://content/creatures/creature_cinderhulk.tres" id="18_eioro"]
-[ext_resource type="PackedScene" path="res://scenes/area_exit.tscn" id="19_cw7vm"]
-[ext_resource type="Script" path="res://scripts/world/area_exit.gd" id="20_20wum"]
+[ext_resource type="Script" uid="uid://t6wailbr6pn0" path="res://scripts/world/spawn_zone.gd" id="14_fttk7"]
+[ext_resource type="Resource" uid="uid://ds8oic0q5u0f4" path="res://content/creatures/creature_gloomgaze.tres" id="16_3ukpy"]
+[ext_resource type="Resource" uid="uid://x7tfsati8sup" path="res://content/creatures/creature_bulwark.tres" id="17_y3va1"]
+[ext_resource type="Resource" uid="uid://dhm0uhinm4iss" path="res://content/creatures/creature_cinderhulk.tres" id="18_eioro"]
+[ext_resource type="PackedScene" uid="uid://dyjfrxidyk5di" path="res://scenes/area_exit.tscn" id="19_cw7vm"]
 [ext_resource type="PackedScene" path="res://scenes/treasure_chest.tscn" id="21_s1vsy"]
-[ext_resource type="Script" path="res://scripts/world/treasure_chest.gd" id="22_n3yr1"]
 [ext_resource type="PackedScene" path="res://scenes/altar_beacon.tscn" id="23_38esk"]
-[ext_resource type="Script" path="res://scripts/world/altar_beacon.gd" id="24_8qp8f"]
+[ext_resource type="Resource" uid="uid://cfgiek7mvtfxi" path="res://content/creatures/creature_hellmaw.tres" id="roster_fire_09"]
+[ext_resource type="Resource" uid="uid://ds104t571654e" path="res://content/creatures/creature_elderbough.tres" id="roster_nature_07"]
+[ext_resource type="Resource" uid="uid://6mfcdh40quhx" path="res://content/creatures/creature_barrow_knight.tres" id="roster_rot_07"]
 [ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="roster_species"]
-[ext_resource type="Resource" path="res://content/creatures/creature_barrow_knight.tres" id="roster_rot_07"]
-[ext_resource type="Resource" path="res://content/creatures/creature_elderbough.tres" id="roster_nature_07"]
-[ext_resource type="Resource" path="res://content/creatures/creature_stormeye.tres" id="roster_wind_09"]
-[ext_resource type="Resource" path="res://content/creatures/creature_bastion.tres" id="roster_steel_01"]
-[ext_resource type="Resource" path="res://content/creatures/creature_hellmaw.tres" id="roster_fire_09"]
-[ext_resource type="Resource" path="res://content/creatures/creature_forgehorn.tres" id="roster_steel_07"]
+[ext_resource type="Resource" uid="uid://c2nhjijjdfyyh" path="res://content/creatures/creature_bastion.tres" id="roster_steel_01"]
+[ext_resource type="Resource" uid="uid://bikt4bsow1hma" path="res://content/creatures/creature_forgehorn.tres" id="roster_steel_07"]
+[ext_resource type="Resource" uid="uid://clank2ryrfaia" path="res://content/creatures/creature_stormeye.tres" id="roster_wind_09"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_rrryp"]
 shader = ExtResource("4_ydm5q")
-shader_parameter/sway_pixels = null
-shader_parameter/sway_speed = null
-shader_parameter/wave_length = null
-shader_parameter/gust_speed = null
-shader_parameter/gust_depth = null
+shader_parameter/sway_pixels = 1.8
+shader_parameter/sway_speed = 1.15
+shader_parameter/wave_length = 120.0
+shader_parameter/gust_speed = 0.23
+shader_parameter/gust_depth = 0.55
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3y84i"]
 size = Vector2(1440, 48)
@@ -345,13 +339,6 @@ scale = Vector2(1.5, 1.5)
 tile_map_data = PackedByteArray("AAAcAFAAAQACAAgAAAAcAE8AAQAAAAkAAAAdAE8AAQAAAAgAAAAdAFAAAQACAAgAAAAdAFEAAQACAAgAAAAcAFEAAQACAAEAAAAbAFEAAQABAAMAAAAbAFAAAQABAAMAAAAbAE8AAQABAAMAAAAeAE8AAQAAAAgAAAAeAFAAAQACAAkAAAAeAFEAAQABAAkAAAAdAFIAAQACAAkAAAAcAFIAAQABAAgAAAAbAFIAAQABAAMAAAAeAFIAAQABAAgAAAAfAE8AAQACAAgAAAAfAFAAAQAAAAgAAAAfAFEAAQAAAAkAAAAgAE8AAQABAAkAAAAgAFAAAQAAAAgAAAAgAFEAAQACAAgAAAAfAFIAAQACAAkAAAAgAFIAAQAAAAgAAAAhAE8AAQAAAAkAAAAhAFAAAQAAAAgAAAAhAFEAAQACAAgAAAAiAE8AAQADAAMAAAAiAFAAAQADAAMAAAAiAFEAAQADAAMAAAAhAFIAAQAAAAgAAAAiAFIAAQADAAMAAAAdAFMAAQAAAAgAAAAcAFMAAQACAAgAAAAbAFMAAQABAAMAAAAeAFMAAQACAAEAAAAdAFQAAQACAAkAAAAcAFQAAQABAAgAAAAbAFQAAQABAAMAAAAeAFQAAQACAAkAAAAfAFMAAQAAAAkAAAAgAFMAAQACAAkAAAAfAFQAAQACAAkAAAAgAFQAAQAAAAkAAAAhAFMAAQABAAkAAAAiAFMAAQADAAMAAAAhAFQAAQACAAEAAAAiAFQAAQADAAMAAAAdAFUAAQAAAAkAAAAcAFUAAQABAAkAAAAbAFUAAQABAAMAAAAeAFUAAQAAAAgAAAAdAFYAAQAAAAIAAAAcAFYAAQAAAAIAAAAeAFYAAQAAAAIAAAAfAFUAAQACAAEAAAAgAFUAAQACAAgAAAAfAFYAAQAAAAIAAAAgAFYAAQAAAAIAAAAhAFUAAQAAAAkAAAAiAFUAAQADAAMAAAAhAFYAAQAAAAIAAAAcAE4AAQABAAkAAAAcAE0AAQACAAgAAAAdAE0AAQACAAkAAAAdAE4AAQABAAgAAAAbAE4AAQABAAMAAAAbAE0AAQABAAMAAAAeAE0AAQAAAAgAAAAeAE4AAQACAAkAAAAfAE0AAQAAAAgAAAAfAE4AAQAAAAgAAAAgAE0AAQACAAEAAAAgAE4AAQAAAAkAAAAhAE0AAQABAAkAAAAhAE4AAQACAAEAAAAiAE0AAQADAAMAAAAiAE4AAQADAAMAAAAcAEwAAQACAAkAAAAcAEsAAQABAAgAAAAdAEsAAQACAAkAAAAdAEwAAQACAAkAAAAbAEwAAQABAAMAAAAbAEsAAQABAAMAAAAeAEsAAQABAAgAAAAeAEwAAQACAAkAAAAfAEsAAQACAAkAAAAfAEwAAQABAAgAAAAgAEsAAQAAAAgAAAAgAEwAAQAAAAkAAAAhAEsAAQACAAkAAAAhAEwAAQAAAAgAAAAiAEsAAQADAAMAAAAiAEwAAQADAAMAAAAcAEoAAQAAAAgAAAAcAEkAAQABAAkAAAAdAEkAAQACAAEAAAAdAEoAAQAAAAkAAAAbAEoAAQABAAMAAAAbAEkAAQABAAMAAAAeAEkAAQABAAgAAAAeAEoAAQABAAgAAAAfAEkAAQAAAAkAAAAfAEoAAQAAAAkAAAAgAEkAAQACAAEAAAAgAEoAAQACAAgAAAAhAEkAAQABAAgAAAAhAEoAAQAAAAkAAAAiAEkAAQADAAMAAAAiAEoAAQADAAMAAAAcAEgAAQABAAgAAAAcAEcAAQABAAgAAAAdAEcAAQAAAAgAAAAdAEgAAQAAAAkAAAAbAEgAAQABAAMAAAAbAEcAAQABAAMAAAAeAEcAAQACAAEAAAAeAEgAAQABAAkAAAAfAEcAAQAAAAgAAAAfAEgAAQACAAEAAAAgAEcAAQACAAEAAAAgAEgAAQAAAAkAAAAhAEcAAQAAAAkAAAAhAEgAAQAAAAkAAAAiAEcAAQADAAMAAAAiAEgAAQADAAMAAAAcAEYAAQABAAgAAAAcAEUAAQACAAEAAAAdAEUAAQACAAEAAAAdAEYAAQACAAEAAAAbAEYAAQABAAMAAAAbAEUAAQABAAMAAAAeAEUAAQAAAAgAAAAeAEYAAQABAAkAAAAfAEUAAQABAAgAAAAfAEYAAQACAAEAAAAgAEUAAQACAAEAAAAgAEYAAQABAAgAAAAhAEUAAQABAAgAAAAhAEYAAQAAAAgAAAAiAEUAAQADAAMAAAAiAEYAAQADAAMAAAAcAEQAAQABAAgAAAAcAEMAAQACAAgAAAAdAEMAAQAAAAkAAAAdAEQAAQACAAkAAAAbAEQAAQABAAIAAAAbAEMAAQACAAkAAAAeAEMAAQABAAgAAAAeAEQAAQABAAgAAAAfAEMAAQACAAkAAAAfAEQAAQABAAkAAAAgAEMAAQABAAkAAAAgAEQAAQAAAAgAAAAhAEMAAQABAAkAAAAhAEQAAQACAAEAAAAiAEMAAQADAAMAAAAiAEQAAQADAAMAAAAcAEIAAQACAAEAAAAcAEEAAQACAAgAAAAdAEEAAQAAAAkAAAAdAEIAAQACAAkAAAAbAEIAAQACAAEAAAAbAEEAAQACAAgAAAAeAEEAAQABAAkAAAAeAEIAAQABAAkAAAAfAEEAAQABAAkAAAAfAEIAAQAAAAkAAAAgAEEAAQAAAAgAAAAgAEIAAQABAAgAAAAhAEEAAQACAAkAAAAhAEIAAQACAAgAAAAiAEEAAQADAAMAAAAiAEIAAQADAAMAAAAcAEAAAQAAAAkAAAAcAD8AAQABAAkAAAAdAD8AAQACAAkAAAAdAEAAAQACAAkAAAAbAEAAAQACAAgAAAAbAD8AAQABAAgAAAAeAD8AAQACAAkAAAAeAEAAAQABAAgAAAAfAD8AAQAAAAkAAAAfAEAAAQAAAAkAAAAgAD8AAQADAAAAAAAgAEAAAQABAAgAAAAhAD8AAQAAAAAAAAAhAEAAAQABAAgAAAAiAEAAAQADAAMAAAAaAD4AAQACAAkAAAAaAD0AAQACAAEAAAAbAD0AAQACAAgAAAAbAD4AAQACAAgAAAAaAD8AAQABAAkAAAAZAD8AAQAAAAgAAAAZAD4AAQACAAEAAAAZAD0AAQACAAkAAAAcAD0AAQACAAEAAAAcAD4AAQACAAkAAAAaAEAAAQABAAgAAAAZAEAAAQAAAAkAAAAdAD0AAQACAAkAAAAdAD4AAQACAAgAAAAeAD0AAQADAAAAAAAeAD4AAQACAAgAAAAfAD0AAQAAAAAAAAAfAD4AAQACAAEAAAAgAD4AAQADAAMAAAAaAEEAAQAAAAkAAAAZAEEAAQACAAkAAAAaAEIAAQACAAgAAAAZAEIAAQABAAIAAAAaAEMAAQAAAAgAAAAZAEMAAQABAAMAAAAaAEQAAQAAAAIAAAAYADwAAQAAAAkAAAAYADsAAQAAAAkAAAAZADsAAQACAAkAAAAZADwAAQAAAAgAAAAYAD0AAQACAAkAAAAXAD0AAQAAAAgAAAAXADwAAQABAAgAAAAXADsAAQACAAkAAAAaADsAAQACAAEAAAAaADwAAQACAAgAAAAYAD4AAQAAAAgAAAAXAD4AAQABAAIAAAAbADsAAQACAAgAAAAbADwAAQACAAgAAAAcADsAAQACAAEAAAAcADwAAQAAAAgAAAAdADsAAQAAAAkAAAAdADwAAQABAAkAAAAeADsAAQADAAMAAAAeADwAAQADAAMAAAAYAD8AAQAAAAgAAAAXAD8AAQABAAMAAAAYAEAAAQAAAAgAAAAXAEAAAQABAAMAAAAYAEEAAQAAAAgAAAAXAEEAAQABAAMAAAAYAEIAAQAAAAIAAAAYADoAAQAAAAkAAAAYADkAAQACAAEAAAAZADkAAQACAAEAAAAZADoAAQACAAkAAAAXADoAAQABAAgAAAAXADkAAQABAAgAAAAaADkAAQABAAgAAAAaADoAAQACAAgAAAAbADkAAQACAAgAAAAbADoAAQABAAkAAAAcADkAAQADAAAAAAAcADoAAQABAAkAAAAdADkAAQAAAAAAAAAdADoAAQACAAEAAAAeADoAAQADAAMAAAAWADgAAQACAAkAAAAWADcAAQAAAAgAAAAXADcAAQAAAAkAAAAXADgAAQAAAAgAAAAWADkAAQACAAEAAAAVADkAAQACAAgAAAAVADgAAQABAAkAAAAVADcAAQACAAEAAAAYADcAAQACAAgAAAAYADgAAQABAAgAAAAWADoAAQACAAkAAAAVADoAAQACAAgAAAAZADcAAQACAAEAAAAZADgAAQACAAEAAAAaADcAAQADAAAAAAAaADgAAQACAAgAAAAbADcAAQAAAAAAAAAbADgAAQABAAgAAAAcADgAAQADAAMAAAAWADsAAQAAAAgAAAAVADsAAQABAAgAAAAWADwAAQABAAkAAAAVADwAAQABAAIAAAAWAD0AAQACAAgAAAAVAD0AAQABAAMAAAAWAD4AAQAAAAIAAAAUADYAAQABAAkAAAAUADUAAQACAAEAAAAVADUAAQABAAkAAAAVADYAAQABAAkAAAAUADcAAQABAAgAAAATADcAAQAAAAgAAAATADYAAQACAAkAAAATADUAAQABAAgAAAAWADUAAQAAAAgAAAAWADYAAQACAAgAAAAUADgAAQACAAEAAAATADgAAQACAAkAAAAXADUAAQABAAgAAAAXADYAAQAAAAkAAAAYADUAAQAAAAgAAAAYADYAAQACAAkAAAAZADUAAQACAAkAAAAZADYAAQAAAAkAAAAaADUAAQACAAkAAAAaADYAAQADAAIAAAAUADkAAQACAAkAAAATADkAAQABAAkAAAAUADoAAQABAAkAAAATADoAAQABAAIAAAAUADsAAQACAAkAAAATADsAAQABAAMAAAAUADwAAQAAAAIAAAASADQAAQABAAkAAAASADMAAQAAAAAAAAATADMAAQABAAAAAAATADQAAQAAAAkAAAASADUAAQACAAgAAAARADUAAQABAAMAAAARADQAAQABAAMAAAAUADMAAQAAAAgAAAAUADQAAQABAAkAAAASADYAAQAAAAgAAAARADYAAQABAAMAAAAVADMAAQAAAAgAAAAVADQAAQACAAkAAAAWADMAAQABAAgAAAAWADQAAQAAAAgAAAAXADMAAQABAAgAAAAXADQAAQABAAgAAAAYADMAAQACAAEAAAAYADQAAQABAAkAAAASADcAAQABAAkAAAARADcAAQABAAMAAAASADgAAQABAAkAAAARADgAAQABAAMAAAASADkAAQACAAEAAAARADkAAQABAAMAAAASADoAAQAAAAIAAAAUADIAAQABAAgAAAAUADEAAQAAAAAAAAAVADEAAQABAAAAAAAVADIAAQACAAEAAAATADIAAQABAAMAAAAWADEAAQAAAAkAAAAWADIAAQACAAEAAAAXADEAAQABAAgAAAAXADIAAQABAAkAAAAYADEAAQAAAAgAAAAYADIAAQAAAAkAAAAZADEAAQACAAEAAAAZADIAAQAAAAgAAAAZADMAAQABAAkAAAAaADEAAQAAAAkAAAAaADIAAQAAAAgAAAAaADMAAQAAAAkAAAAZADQAAQACAAgAAAAaADQAAQACAAgAAAAWADAAAQABAAgAAAAWAC8AAQABAAkAAAAXAC8AAQABAAkAAAAXADAAAQACAAgAAAAVADAAAQABAAMAAAAVAC8AAQABAAMAAAAYAC8AAQACAAEAAAAYADAAAQAAAAkAAAAZAC8AAQAAAAkAAAAZADAAAQACAAEAAAAaAC8AAQACAAkAAAAaADAAAQABAAgAAAAbAC8AAQAAAAgAAAAbADAAAQACAAkAAAAbADEAAQACAAEAAAAcAC8AAQAAAAkAAAAcADAAAQAAAAgAAAAcADEAAQACAAkAAAAbADIAAQABAAkAAAAcADIAAQADAAIAAAAbADMAAQACAAkAAAAcADMAAQADAAMAAAAbADQAAQAAAAkAAAAcADQAAQADAAMAAAAbADUAAQABAAgAAAAcADUAAQADAAMAAAAbADYAAQAAAAIAAAAWAC4AAQABAAkAAAAWAC0AAQAAAAAAAAAXAC0AAQABAAAAAAAXAC4AAQAAAAkAAAAVAC4AAQABAAMAAAAYAC0AAQABAAkAAAAYAC4AAQABAAgAAAAZAC0AAQAAAAkAAAAZAC4AAQAAAAgAAAAaAC0AAQACAAEAAAAaAC4AAQACAAkAAAAbAC0AAQAAAAkAAAAbAC4AAQACAAkAAAAcAC0AAQAAAAgAAAAcAC4AAQACAAEAAAAYACwAAQACAAEAAAAYACsAAQAAAAAAAAAZACsAAQABAAAAAAAZACwAAQABAAkAAAAXACwAAQABAAMAAAAaACsAAQACAAgAAAAaACwAAQAAAAkAAAAbACsAAQAAAAkAAAAbACwAAQAAAAgAAAAcACsAAQABAAkAAAAcACwAAQAAAAkAAAAdACsAAQACAAkAAAAdACwAAQABAAkAAAAdAC0AAQABAAgAAAAeACsAAQAAAAkAAAAeACwAAQACAAgAAAAeAC0AAQABAAkAAAAdAC4AAQACAAEAAAAeAC4AAQACAAgAAAAdAC8AAQACAAkAAAAeAC8AAQABAAkAAAAdADAAAQAAAAgAAAAeADAAAQADAAIAAAAdADEAAQABAAgAAAAeADEAAQADAAMAAAAdADIAAQAAAAIAAAAaACoAAQAAAAkAAAAaACkAAQAAAAAAAAAbACkAAQABAAAAAAAbACoAAQAAAAgAAAAZACoAAQABAAMAAAAcACkAAQACAAEAAAAcACoAAQABAAkAAAAdACkAAQAAAAgAAAAdACoAAQABAAkAAAAeACkAAQAAAAgAAAAeACoAAQABAAkAAAAfACkAAQAAAAgAAAAfACoAAQACAAEAAAAfACsAAQACAAEAAAAgACkAAQACAAgAAAAgACoAAQAAAAkAAAAgACsAAQABAAgAAAAfACwAAQAAAAkAAAAgACwAAQABAAkAAAAfAC0AAQABAAgAAAAgAC0AAQACAAkAAAAfAC4AAQABAAgAAAAgAC4AAQADAAIAAAAfAC8AAQACAAgAAAAgAC8AAQADAAMAAAAfADAAAQAAAAIAAAAcACgAAQAAAAgAAAAcACcAAQABAAgAAAAdACcAAQAAAAkAAAAdACgAAQAAAAkAAAAbACgAAQABAAMAAAAbACcAAQABAAMAAAAeACcAAQACAAgAAAAeACgAAQAAAAgAAAAfACcAAQACAAEAAAAfACgAAQABAAgAAAAgACcAAQACAAEAAAAgACgAAQACAAEAAAAhACcAAQACAAEAAAAhACgAAQAAAAkAAAAhACkAAQAAAAgAAAAiACcAAQADAAMAAAAiACgAAQADAAMAAAAiACkAAQADAAMAAAAhACoAAQABAAgAAAAiACoAAQADAAMAAAAhACsAAQAAAAkAAAAiACsAAQADAAMAAAAhACwAAQACAAEAAAAiACwAAQADAAMAAAAhAC0AAQACAAEAAAAiAC0AAQADAAMAAAAhAC4AAQAAAAIAAAAcACYAAQABAAgAAAAcACUAAQACAAkAAAAdACUAAQABAAgAAAAdACYAAQABAAgAAAAbACYAAQABAAMAAAAbACUAAQABAAMAAAAeACUAAQAAAAgAAAAeACYAAQACAAkAAAAfACUAAQAAAAgAAAAfACYAAQAAAAgAAAAgACUAAQACAAEAAAAgACYAAQACAAgAAAAhACUAAQAAAAgAAAAhACYAAQAAAAkAAAAiACUAAQADAAMAAAAiACYAAQADAAMAAAAcACQAAQACAAEAAAAcACMAAQAAAAgAAAAdACMAAQACAAEAAAAdACQAAQAAAAkAAAAbACQAAQABAAMAAAAbACMAAQABAAMAAAAeACMAAQAAAAkAAAAeACQAAQAAAAgAAAAfACMAAQABAAkAAAAfACQAAQACAAEAAAAgACMAAQABAAgAAAAgACQAAQACAAkAAAAhACMAAQACAAEAAAAhACQAAQACAAkAAAAiACMAAQADAAMAAAAiACQAAQADAAMAAAAcACIAAQABAAkAAAAcACEAAQACAAgAAAAdACEAAQABAAgAAAAdACIAAQACAAkAAAAbACIAAQABAAMAAAAbACEAAQABAAMAAAAeACEAAQACAAkAAAAeACIAAQABAAkAAAAfACEAAQACAAgAAAAfACIAAQABAAkAAAAgACEAAQACAAEAAAAgACIAAQACAAkAAAAhACEAAQACAAkAAAAhACIAAQABAAgAAAAiACEAAQADAAMAAAAiACIAAQADAAMAAAAcACAAAQABAAgAAAAcAB8AAQAAAAkAAAAdAB8AAQAAAAgAAAAdACAAAQACAAkAAAAbACAAAQABAAMAAAAbAB8AAQABAAMAAAAeAB8AAQAAAAkAAAAeACAAAQAAAAkAAAAfAB8AAQACAAgAAAAfACAAAQACAAEAAAAgAB8AAQABAAgAAAAgACAAAQAAAAkAAAAhAB8AAQAAAAgAAAAhACAAAQACAAgAAAAiAB8AAQADAAMAAAAiACAAAQADAAMAAAAcAB4AAQACAAEAAAAcAB0AAQABAAgAAAAdAB0AAQAAAAkAAAAdAB4AAQAAAAkAAAAbAB4AAQABAAMAAAAbAB0AAQABAAMAAAAeAB0AAQABAAgAAAAeAB4AAQAAAAkAAAAfAB0AAQABAAkAAAAfAB4AAQACAAgAAAAgAB0AAQACAAkAAAAgAB4AAQAAAAkAAAAhAB0AAQABAAgAAAAhAB4AAQAAAAkAAAAiAB0AAQADAAMAAAAiAB4AAQADAAMAAAAcABwAAQABAAgAAAAcABsAAQABAAkAAAAdABsAAQABAAkAAAAdABwAAQAAAAkAAAAbABwAAQABAAMAAAAbABsAAQABAAMAAAAeABsAAQABAAgAAAAeABwAAQABAAkAAAAfABsAAQABAAkAAAAfABwAAQAAAAgAAAAgABsAAQACAAgAAAAgABwAAQABAAgAAAAhABsAAQACAAgAAAAhABwAAQABAAgAAAAiABsAAQADAAMAAAAiABwAAQADAAMAAAAcABoAAQACAAgAAAAcABkAAQACAAgAAAAdABkAAQAAAAkAAAAdABoAAQAAAAgAAAAbABoAAQABAAMAAAAbABkAAQABAAMAAAAeABkAAQAAAAgAAAAeABoAAQAAAAgAAAAfABkAAQABAAkAAAAfABoAAQACAAgAAAAgABkAAQACAAkAAAAgABoAAQAAAAkAAAAhABkAAQAAAAkAAAAhABoAAQABAAkAAAAiABkAAQADAAMAAAAiABoAAQADAAMAAAAcABgAAQACAAEAAAAcABcAAQACAAgAAAAdABcAAQAAAAkAAAAdABgAAQAAAAgAAAAbABgAAQABAAMAAAAbABcAAQABAAMAAAAeABcAAQABAAkAAAAeABgAAQAAAAgAAAAfABcAAQABAAkAAAAfABgAAQABAAkAAAAgABcAAQABAAkAAAAgABgAAQACAAgAAAAhABcAAQAAAAgAAAAhABgAAQACAAEAAAAiABcAAQADAAMAAAAiABgAAQADAAMAAAAcABYAAQABAAkAAAAcABUAAQABAAgAAAAdABUAAQACAAgAAAAdABYAAQACAAgAAAAbABYAAQABAAMAAAAbABUAAQABAAMAAAAeABUAAQAAAAkAAAAeABYAAQAAAAkAAAAfABUAAQACAAEAAAAfABYAAQACAAEAAAAgABUAAQAAAAgAAAAgABYAAQABAAgAAAAhABUAAQAAAAgAAAAhABYAAQACAAEAAAAiABUAAQADAAMAAAAiABYAAQADAAMAAAAcABQAAQABAAgAAAAcABMAAQAAAAgAAAAdABMAAQAAAAkAAAAdABQAAQAAAAgAAAAbABQAAQABAAMAAAAbABMAAQABAAMAAAAeABMAAQAAAAgAAAAeABQAAQABAAkAAAAfABMAAQACAAgAAAAfABQAAQAAAAkAAAAgABMAAQABAAgAAAAgABQAAQAAAAkAAAAhABMAAQABAAgAAAAhABQAAQACAAgAAAAiABMAAQADAAMAAAAiABQAAQADAAMAAAAcABIAAQABAAkAAAAcABEAAQABAAkAAAAdABEAAQACAAkAAAAdABIAAQACAAgAAAAbABIAAQABAAMAAAAbABEAAQABAAMAAAAeABEAAQAAAAkAAAAeABIAAQAAAAgAAAAfABEAAQABAAkAAAAfABIAAQACAAEAAAAgABEAAQACAAEAAAAgABIAAQAAAAkAAAAhABEAAQACAAEAAAAhABIAAQABAAgAAAAiABEAAQADAAMAAAAiABIAAQADAAMAAAAcABAAAQACAAkAAAAcAA8AAQABAAgAAAAdAA8AAQAAAAgAAAAdABAAAQACAAgAAAAbABAAAQABAAMAAAAbAA8AAQABAAMAAAAeAA8AAQAAAAkAAAAeABAAAQABAAkAAAAfAA8AAQACAAEAAAAfABAAAQACAAgAAAAgAA8AAQAAAAkAAAAgABAAAQABAAkAAAAhAA8AAQACAAEAAAAhABAAAQABAAkAAAAiAA8AAQADAAMAAAAiABAAAQADAAMAAAAcAA4AAQAAAAkAAAAcAA0AAQACAAEAAAAdAA0AAQAAAAkAAAAdAA4AAQACAAgAAAAbAA4AAQABAAMAAAAbAA0AAQABAAMAAAAeAA0AAQACAAEAAAAeAA4AAQABAAgAAAAfAA0AAQABAAkAAAAfAA4AAQABAAgAAAAgAA0AAQABAAkAAAAgAA4AAQACAAkAAAAhAA0AAQAAAAkAAAAhAA4AAQAAAAgAAAAiAA0AAQADAAMAAAAiAA4AAQADAAMAAAAcAAwAAQACAAgAAAAcAAsAAQAAAAAAAAAdAAsAAQAAAAAAAAAdAAwAAQAAAAkAAAAbAAwAAQABAAMAAAAeAAsAAQAAAAAAAAAeAAwAAQACAAgAAAAfAAsAAQAAAAAAAAAfAAwAAQACAAgAAAAgAAsAAQAAAAAAAAAgAAwAAQABAAgAAAAhAAsAAQAAAAAAAAAhAAwAAQAAAAgAAAAiAAwAAQADAAMAAAA=")
 tile_set = ExtResource("3_2ehd2")
 
-[node name="Path" type="TileMapLayer" parent="." unique_id=306302328]
-z_index = -1
-position = Vector2(-720, -1056)
-scale = Vector2(1.5, 1.5)
-tile_map_data = PackedByteArray("AAALAAMAAAAAAAUAAAAMAAMAAAAAAAQAAAANAAMAAAAAAAUAAAAOAAMAAAAAAAQAAAAPAAMAAAAAAAUAAAAQAAMAAAAAAAUAAAARAAMAAAAAAAQAAAASAAMAAAABAAQAAAAJAAQAAAABAAQAAAAKAAQAAAAAAAUAAAALAAQAAAAAAAUAAAAMAAQAAAAAAAQAAAANAAQAAAABAAQAAAAOAAQAAAAAAAQAAAAPAAQAAAABAAQAAAAQAAQAAAAAAAUAAAARAAQAAAABAAQAAAASAAQAAAABAAQAAAATAAQAAAABAAQAAAAUAAQAAAABAAQAAAAJAAUAAAAAAAUAAAAKAAUAAAAAAAUAAAALAAUAAAAAAAUAAAAMAAUAAAABAAQAAAANAAUAAAAAAAUAAAAOAAUAAAABAAQAAAAPAAUAAAAAAAQAAAAQAAUAAAAAAAUAAAARAAUAAAAAAAQAAAASAAUAAAAAAAUAAAATAAUAAAAAAAUAAAAUAAUAAAAAAAQAAAAJAAYAAAABAAQAAAAKAAYAAAAAAAUAAAALAAYAAAAAAAQAAAAMAAYAAAAAAAQAAAANAAYAAAAAAAUAAAAOAAYAAAAAAAUAAAAPAAYAAAAAAAUAAAAQAAYAAAABAAQAAAARAAYAAAAAAAQAAAASAAYAAAAAAAUAAAATAAYAAAAAAAUAAAAUAAYAAAAAAAUAAAAJAAcAAAABAAQAAAAKAAcAAAAAAAQAAAALAAcAAAAAAAQAAAAMAAcAAAAAAAUAAAANAAcAAAABAAQAAAAOAAcAAAABAAQAAAAPAAcAAAAAAAUAAAAQAAcAAAABAAQAAAARAAcAAAAAAAQAAAASAAcAAAABAAQAAAATAAcAAAABAAQAAAAUAAcAAAABAAQAAAALAAgAAAAAAAUAAAAMAAgAAAAAAAQAAAANAAgAAAAAAAUAAAAOAAgAAAAAAAUAAAAPAAgAAAAAAAQAAAAQAAgAAAAAAAQAAAARAAgAAAABAAQAAAASAAgAAAAAAAUAAAALACQAAAABAAQAAAAMACQAAAAAAAUAAAANACQAAAABAAQAAAAOACQAAAABAAQAAAAPACQAAAABAAQAAAAQACQAAAAAAAUAAAARACQAAAABAAQAAAASACQAAAAAAAUAAAALACUAAAAAAAUAAAAMACUAAAAAAAQAAAANACUAAAAAAAUAAAAOACUAAAAAAAQAAAAPACUAAAAAAAQAAAAQACUAAAAAAAUAAAARACUAAAAAAAQAAAASACUAAAAAAAUAAAALACYAAAAAAAQAAAAMACYAAAAAAAUAAAANACYAAAAAAAQAAAAOACYAAAABAAQAAAAPACYAAAAAAAQAAAAQACYAAAABAAQAAAARACYAAAAAAAQAAAASACYAAAAAAAUAAAALACcAAAAAAAUAAAAMACcAAAAAAAQAAAANACcAAAAAAAUAAAAOACcAAAAAAAUAAAAPACcAAAAAAAUAAAAQACcAAAAAAAUAAAARACcAAAAAAAUAAAASACcAAAABAAQAAAA=")
-tile_set = ExtResource("2_ydsot")
-
 [node name="Walls" type="TileMapLayer" parent="." unique_id=449153930]
 z_index = -1
 position = Vector2(-720, -1056)
@@ -386,21 +373,21 @@ position = Vector2(24, 792)
 
 [node name="Actors" type="Node2D" parent="." unique_id=1161152985]
 
-[node name="LastChampion" type="CharacterBody2D" parent="Actors" unique_id=979964173 instance=ExtResource("5_0t36x")]
+[node name="LastChampion" parent="Actors" unique_id=979964173 instance=ExtResource("5_0t36x")]
 position = Vector2(-168, 744)
-script = ExtResource("6_bovfl")
 display_name = "A DEAD CHAMPION"
 sprite_frames = ExtResource("7_5s5ja")
 facing = &"right"
-dialogue_line = "A dead champion of the Order sits with her back to a dead tree, seal-iron still on her chest, and does not get up.\n\nYou made it further than I did, she says, without much interest. He is up the road, past the pillars, on the barrow.\n\nMind the two in the glades. You will think you know them. You met the real ones on your way down and you left them both standing. Go on. I will keep the stair."
+dialogue_line = "A dead champion of the Order sits with her back to a dead tree, seal-iron still on her chest, and does not get up.
+
+You made it further than I did, she says, without much interest. He is up the road, past the pillars, on the barrow.
+
+Mind the two in the glades. You will think you know them. You met the real ones on your way down and you left them both standing. Go on. I will keep the stair."
 heals_party = true
-chatter = PackedStringArray()
-barks = PackedStringArray()
 quest_ids = Array[StringName]([&"quest_main_13_the_king_in_the_barrow"])
 
-[node name="HouseholdKnightWest" type="CharacterBody2D" parent="Actors" unique_id=1375537974 groups=["world_actors"] instance=ExtResource("8_2egwx")]
+[node name="HouseholdKnightWest" parent="Actors" unique_id=1375537974 instance=ExtResource("8_2egwx")]
 position = Vector2(-312, 24)
-script = ExtResource("9_eyb1i")
 species = ExtResource("10_0ergf")
 level = 34
 disposition = 1
@@ -408,9 +395,8 @@ leash_radius = 240.0
 chatter = PackedStringArray()
 barks = PackedStringArray()
 
-[node name="HouseholdKnightEast" type="CharacterBody2D" parent="Actors" unique_id=723405678 groups=["world_actors"] instance=ExtResource("8_2egwx")]
+[node name="HouseholdKnightEast" parent="Actors" unique_id=723405678 instance=ExtResource("8_2egwx")]
 position = Vector2(360, 216)
-script = ExtResource("9_eyb1i")
 species = ExtResource("11_3p42j")
 level = 34
 disposition = 1
@@ -418,25 +404,37 @@ leash_radius = 240.0
 chatter = PackedStringArray()
 barks = PackedStringArray()
 
-[node name="SkeletonLord" type="CharacterBody2D" parent="Actors" unique_id=553054319 groups=["world_actors"] instance=ExtResource("8_2egwx")]
+[node name="SkeletonLord" parent="Actors" unique_id=553054319 instance=ExtResource("8_2egwx")]
 position = Vector2(24, -792)
-script = ExtResource("9_eyb1i")
 species = ExtResource("12_f641o")
 level = 38
 ability_index = 0
 boss_id = &"boss_area_03"
-challenge_line = "The Skeleton Lord: Another of the little wardens.\n\nDo you know what you are interrupting? I am waiting. I have been waiting on this seat since the hour I reached past the door of the world and took my son back through it.\n\nHe is still coming. He has been coming for four hundred years. Put your oath down and wait with me, or put it to use. It makes very little difference which."
+challenge_line = "The Skeleton Lord: Another of the little wardens.
+
+Do you know what you are interrupting? I am waiting. I have been waiting on this seat since the hour I reached past the door of the world and took my son back through it.
+
+He is still coming. He has been coming for four hundred years. Put your oath down and wait with me, or put it to use. It makes very little difference which."
 sealed_line = "A crowned thing sits on the barrow at the end of the wood, wrapped in green fire, and does not look up. Whatever is left of the Kingsworn's faith is the only reason it has not already noticed you."
-victory_line = "The Skeleton Lord: Ah. There. The green fire goes out of him one thread at a time, and the crown slides off a skull that is only a skull.\n\nNot gone, he says, as the seat empties. Only set down again. Come back in a hundred years and I will still be waiting on him, and so will whoever they send.\n\nThe bells begin to ring somewhere far above, and for once nobody is pulling the rope."
+victory_line = "The Skeleton Lord: Ah. There. The green fire goes out of him one thread at a time, and the crown slides off a skull that is only a skull.
+
+Not gone, he says, as the seat empties. Only set down again. Come back in a hundred years and I will still be waiting on him, and so will whoever they send.
+
+The bells begin to ring somewhere far above, and for once nobody is pulling the rope."
 leash_radius = 0.0
 chatter = PackedStringArray()
 barks = PackedStringArray()
 
 [node name="SpawnZones" type="Node2D" parent="." unique_id=886196048]
 
-[node name="Spawn_barrow_knight" type="Node2D" parent="SpawnZones" unique_id=629181993 instance=ExtResource("13_1wrjt")]
-position = Vector2(24, 600)
+[node name="SpawnZone" type="Node2D" parent="SpawnZones" unique_id=29054489]
+position = Vector2(416, 438)
 script = ExtResource("14_fttk7")
+species = ExtResource("roster_rot_07")
+metadata/_custom_type_script = "uid://t6wailbr6pn0"
+
+[node name="Spawn_barrow_knight" parent="SpawnZones" unique_id=629181993 instance=ExtResource("13_1wrjt")]
+position = Vector2(-4, 517)
 species = ExtResource("roster_rot_07")
 also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_nature_07")])
 radius_in_cells = 3.0
@@ -444,10 +442,10 @@ max_alive = 2
 level_min = 30
 level_max = 32
 disposition = 1
+detection_radius_in_cells = 3.0
 
-[node name="Spawn_gloomgaze" type="Node2D" parent="SpawnZones" unique_id=834324370 instance=ExtResource("13_1wrjt")]
-position = Vector2(-120, 312)
-script = ExtResource("14_fttk7")
+[node name="Spawn_gloomgaze" parent="SpawnZones" unique_id=834324370 instance=ExtResource("13_1wrjt")]
+position = Vector2(-159, 248)
 species = ExtResource("16_3ukpy")
 also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_wind_09")])
 radius_in_cells = 3.0
@@ -456,9 +454,8 @@ level_min = 32
 level_max = 34
 disposition = 1
 
-[node name="Spawn_bulwark" type="Node2D" parent="SpawnZones" unique_id=869435333 instance=ExtResource("13_1wrjt")]
+[node name="Spawn_bulwark" parent="SpawnZones" unique_id=869435333 instance=ExtResource("13_1wrjt")]
 position = Vector2(24, -72)
-script = ExtResource("14_fttk7")
 species = ExtResource("17_y3va1")
 also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_steel_01")])
 radius_in_cells = 3.0
@@ -467,9 +464,8 @@ level_min = 34
 level_max = 36
 disposition = 1
 
-[node name="Spawn_cinderhulk" type="Node2D" parent="SpawnZones" unique_id=899032803 instance=ExtResource("13_1wrjt")]
+[node name="Spawn_cinderhulk" parent="SpawnZones" unique_id=899032803 instance=ExtResource("13_1wrjt")]
 position = Vector2(24, -360)
-script = ExtResource("14_fttk7")
 species = ExtResource("18_eioro")
 also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_fire_09"), ExtResource("roster_steel_07")])
 radius_in_cells = 2.5
@@ -480,9 +476,9 @@ disposition = 1
 
 [node name="Exits" type="Node2D" parent="." unique_id=1185065901]
 
-[node name="ToAreaTwo" type="Area2D" parent="Exits" unique_id=1000049981 instance=ExtResource("19_cw7vm")]
+[node name="ToAreaTwo" parent="Exits" unique_id=1000049981 instance=ExtResource("19_cw7vm")]
 position = Vector2(24, 960)
-script = ExtResource("20_20wum")
+scale = Vector2(0.5, 0.5)
 target_area_path = "res://areas/area_two.tscn"
 target_entrance = &"FromAreaThree"
 signpost_text = "DOWN TO THE CATACOMBS"
@@ -492,24 +488,21 @@ color = Color(0.68, 0.7, 0.78, 1)
 
 [node name="Chests" type="Node2D" parent="." unique_id=2097731419]
 
-[node name="ChestWestGlade" type="StaticBody2D" parent="Chests" unique_id=1132885798 instance=ExtResource("21_s1vsy")]
+[node name="ChestWestGlade" parent="Chests" unique_id=1132885798 instance=ExtResource("21_s1vsy")]
 position = Vector2(-456, -24)
-script = ExtResource("22_n3yr1")
 chest_id = &"chest_three_west_glade"
 item_ids = Array[StringName]([&"item_ember_draught"])
 item_counts = Array[int]([1])
 opened_line = "The household knight was standing over a champion's pack. Whoever carried it got this far and no further."
 
-[node name="ChestEastGlade" type="StaticBody2D" parent="Chests" unique_id=571476980 instance=ExtResource("21_s1vsy")]
+[node name="ChestEastGlade" parent="Chests" unique_id=571476980 instance=ExtResource("21_s1vsy")]
 position = Vector2(504, 264)
-script = ExtResource("22_n3yr1")
 chest_id = &"chest_three_east_glade"
 binding_scrolls = 3
 opened_line = "Scrolls, still dry after all this time, in a case cut from seal-iron."
 
-[node name="ChestBarrow" type="StaticBody2D" parent="Chests" unique_id=2003221556 instance=ExtResource("21_s1vsy")]
+[node name="ChestBarrow" parent="Chests" unique_id=2003221556 instance=ExtResource("21_s1vsy")]
 position = Vector2(312, -840)
-script = ExtResource("22_n3yr1")
 chest_id = &"chest_three_barrow"
 coins = 240
 item_ids = Array[StringName]([&"item_hearty_tonic"])
@@ -521,365 +514,453 @@ opened_line = "The king's own, heaped behind the seat and never once spent."
 [node name="Run0" type="CollisionShape2D" parent="Thicket" unique_id=1262436156]
 position = Vector2(0, -1032)
 shape = SubResource("RectangleShape2D_3y84i")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run1" type="CollisionShape2D" parent="Thicket" unique_id=1713969832]
 position = Vector2(-504, -984)
 shape = SubResource("RectangleShape2D_xprcl")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run2" type="CollisionShape2D" parent="Thicket" unique_id=1852773360]
 position = Vector2(552, -984)
 shape = SubResource("RectangleShape2D_p0my0")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run3" type="CollisionShape2D" parent="Thicket" unique_id=724347058]
 position = Vector2(-552, -936)
 shape = SubResource("RectangleShape2D_x2bum")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run4" type="CollisionShape2D" parent="Thicket" unique_id=1188142420]
 position = Vector2(576, -936)
 shape = SubResource("RectangleShape2D_f40vn")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run5" type="CollisionShape2D" parent="Thicket" unique_id=538949051]
 position = Vector2(-576, -888)
 shape = SubResource("RectangleShape2D_meerp")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run6" type="CollisionShape2D" parent="Thicket" unique_id=1597847597]
 position = Vector2(576, -888)
 shape = SubResource("RectangleShape2D_uccq5")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run7" type="CollisionShape2D" parent="Thicket" unique_id=679081995]
 position = Vector2(-576, -840)
 shape = SubResource("RectangleShape2D_5gu7y")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run8" type="CollisionShape2D" parent="Thicket" unique_id=1667226627]
 position = Vector2(576, -840)
 shape = SubResource("RectangleShape2D_4a736")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run9" type="CollisionShape2D" parent="Thicket" unique_id=2023847460]
 position = Vector2(-576, -792)
 shape = SubResource("RectangleShape2D_xdwpc")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run10" type="CollisionShape2D" parent="Thicket" unique_id=468529690]
 position = Vector2(576, -792)
 shape = SubResource("RectangleShape2D_lauuq")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run11" type="CollisionShape2D" parent="Thicket" unique_id=1251531048]
 position = Vector2(-576, -744)
 shape = SubResource("RectangleShape2D_brgue")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run12" type="CollisionShape2D" parent="Thicket" unique_id=870756221]
 position = Vector2(576, -744)
 shape = SubResource("RectangleShape2D_rm74b")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run13" type="CollisionShape2D" parent="Thicket" unique_id=17279094]
 position = Vector2(-576, -696)
 shape = SubResource("RectangleShape2D_t2ygm")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run14" type="CollisionShape2D" parent="Thicket" unique_id=101721704]
 position = Vector2(576, -696)
 shape = SubResource("RectangleShape2D_om1w0")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run15" type="CollisionShape2D" parent="Thicket" unique_id=561747587]
 position = Vector2(-576, -648)
 shape = SubResource("RectangleShape2D_vkcbd")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run16" type="CollisionShape2D" parent="Thicket" unique_id=146214838]
 position = Vector2(576, -648)
 shape = SubResource("RectangleShape2D_ijcfc")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run17" type="CollisionShape2D" parent="Thicket" unique_id=1108410794]
 position = Vector2(-552, -600)
 shape = SubResource("RectangleShape2D_d2nwa")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run18" type="CollisionShape2D" parent="Thicket" unique_id=1994972854]
 position = Vector2(552, -600)
 shape = SubResource("RectangleShape2D_cq11b")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run19" type="CollisionShape2D" parent="Thicket" unique_id=268297095]
 position = Vector2(-504, -552)
 shape = SubResource("RectangleShape2D_k8lop")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run20" type="CollisionShape2D" parent="Thicket" unique_id=62539729]
 position = Vector2(504, -552)
 shape = SubResource("RectangleShape2D_xjf3i")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run21" type="CollisionShape2D" parent="Thicket" unique_id=2023033331]
 position = Vector2(-456, -504)
 shape = SubResource("RectangleShape2D_v14mu")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run22" type="CollisionShape2D" parent="Thicket" unique_id=1655778675]
 position = Vector2(480, -504)
 shape = SubResource("RectangleShape2D_gvrqh")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run23" type="CollisionShape2D" parent="Thicket" unique_id=1389757784]
 position = Vector2(-480, -456)
 shape = SubResource("RectangleShape2D_57sid")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run24" type="CollisionShape2D" parent="Thicket" unique_id=1761805147]
 position = Vector2(480, -456)
 shape = SubResource("RectangleShape2D_okj0p")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run25" type="CollisionShape2D" parent="Thicket" unique_id=1309057114]
 position = Vector2(-480, -408)
 shape = SubResource("RectangleShape2D_0iajl")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run26" type="CollisionShape2D" parent="Thicket" unique_id=1673514296]
 position = Vector2(480, -408)
 shape = SubResource("RectangleShape2D_dm8dc")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run27" type="CollisionShape2D" parent="Thicket" unique_id=487781745]
 position = Vector2(-480, -360)
 shape = SubResource("RectangleShape2D_7ipqb")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run28" type="CollisionShape2D" parent="Thicket" unique_id=1751463936]
 position = Vector2(480, -360)
 shape = SubResource("RectangleShape2D_msy2l")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run29" type="CollisionShape2D" parent="Thicket" unique_id=491359636]
 position = Vector2(-480, -312)
 shape = SubResource("RectangleShape2D_j7vnk")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run30" type="CollisionShape2D" parent="Thicket" unique_id=251118712]
 position = Vector2(480, -312)
 shape = SubResource("RectangleShape2D_m0rqq")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run31" type="CollisionShape2D" parent="Thicket" unique_id=2060326195]
 position = Vector2(-456, -264)
 shape = SubResource("RectangleShape2D_aya31")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run32" type="CollisionShape2D" parent="Thicket" unique_id=2126730008]
 position = Vector2(456, -264)
 shape = SubResource("RectangleShape2D_d6m6u")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run33" type="CollisionShape2D" parent="Thicket" unique_id=968489117]
 position = Vector2(-456, -216)
 shape = SubResource("RectangleShape2D_4v3wr")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run34" type="CollisionShape2D" parent="Thicket" unique_id=1772783376]
 position = Vector2(456, -216)
 shape = SubResource("RectangleShape2D_20slu")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run35" type="CollisionShape2D" parent="Thicket" unique_id=753072863]
 position = Vector2(-648, -168)
 shape = SubResource("RectangleShape2D_oiwsi")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run36" type="CollisionShape2D" parent="Thicket" unique_id=788001498]
 position = Vector2(480, -168)
 shape = SubResource("RectangleShape2D_6v51c")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run37" type="CollisionShape2D" parent="Thicket" unique_id=958652178]
 position = Vector2(-672, -120)
 shape = SubResource("RectangleShape2D_i3cpa")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run38" type="CollisionShape2D" parent="Thicket" unique_id=2044068172]
 position = Vector2(480, -120)
 shape = SubResource("RectangleShape2D_lnxkg")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run39" type="CollisionShape2D" parent="Thicket" unique_id=393930549]
 position = Vector2(-672, -72)
 shape = SubResource("RectangleShape2D_age8q")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run40" type="CollisionShape2D" parent="Thicket" unique_id=486472582]
 position = Vector2(480, -72)
 shape = SubResource("RectangleShape2D_bwexp")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run41" type="CollisionShape2D" parent="Thicket" unique_id=349195403]
 position = Vector2(-672, -24)
 shape = SubResource("RectangleShape2D_4gcuc")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run42" type="CollisionShape2D" parent="Thicket" unique_id=1365636374]
 position = Vector2(480, -24)
 shape = SubResource("RectangleShape2D_5ya30")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run43" type="CollisionShape2D" parent="Thicket" unique_id=332863984]
 position = Vector2(-672, 24)
 shape = SubResource("RectangleShape2D_0c16b")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run44" type="CollisionShape2D" parent="Thicket" unique_id=1562280776]
 position = Vector2(624, 24)
 shape = SubResource("RectangleShape2D_dbhxr")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run45" type="CollisionShape2D" parent="Thicket" unique_id=266584898]
 position = Vector2(-648, 72)
 shape = SubResource("RectangleShape2D_ylasr")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run46" type="CollisionShape2D" parent="Thicket" unique_id=630309195]
 position = Vector2(648, 72)
 shape = SubResource("RectangleShape2D_3kv4r")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run47" type="CollisionShape2D" parent="Thicket" unique_id=1426788984]
 position = Vector2(-648, 120)
 shape = SubResource("RectangleShape2D_aht0u")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run48" type="CollisionShape2D" parent="Thicket" unique_id=180959086]
 position = Vector2(648, 120)
 shape = SubResource("RectangleShape2D_gpvu5")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run49" type="CollisionShape2D" parent="Thicket" unique_id=467820641]
 position = Vector2(-624, 168)
 shape = SubResource("RectangleShape2D_cppur")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run50" type="CollisionShape2D" parent="Thicket" unique_id=207559058]
 position = Vector2(72, 168)
 shape = SubResource("RectangleShape2D_2y08g")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run51" type="CollisionShape2D" parent="Thicket" unique_id=380763275]
 position = Vector2(672, 168)
 shape = SubResource("RectangleShape2D_bvygo")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run52" type="CollisionShape2D" parent="Thicket" unique_id=755388806]
 position = Vector2(-552, 216)
 shape = SubResource("RectangleShape2D_ujxtt")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run53" type="CollisionShape2D" parent="Thicket" unique_id=2077012440]
 position = Vector2(672, 216)
 shape = SubResource("RectangleShape2D_7fl8v")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run54" type="CollisionShape2D" parent="Thicket" unique_id=649765299]
 position = Vector2(-552, 264)
 shape = SubResource("RectangleShape2D_r1qhp")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run55" type="CollisionShape2D" parent="Thicket" unique_id=719001675]
 position = Vector2(672, 264)
 shape = SubResource("RectangleShape2D_a3mnm")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run56" type="CollisionShape2D" parent="Thicket" unique_id=1849650891]
 position = Vector2(-552, 312)
 shape = SubResource("RectangleShape2D_2utdb")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run57" type="CollisionShape2D" parent="Thicket" unique_id=1212287066]
 position = Vector2(672, 312)
 shape = SubResource("RectangleShape2D_uokhf")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run58" type="CollisionShape2D" parent="Thicket" unique_id=1006698995]
 position = Vector2(-552, 360)
 shape = SubResource("RectangleShape2D_0vrc2")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run59" type="CollisionShape2D" parent="Thicket" unique_id=460464859]
 position = Vector2(120, 360)
 shape = SubResource("RectangleShape2D_47ikl")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run60" type="CollisionShape2D" parent="Thicket" unique_id=1669930387]
 position = Vector2(648, 360)
 shape = SubResource("RectangleShape2D_rnvvm")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run61" type="CollisionShape2D" parent="Thicket" unique_id=918994983]
 position = Vector2(-528, 408)
 shape = SubResource("RectangleShape2D_l1ot3")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run62" type="CollisionShape2D" parent="Thicket" unique_id=1708340912]
 position = Vector2(648, 408)
 shape = SubResource("RectangleShape2D_6epcm")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run63" type="CollisionShape2D" parent="Thicket" unique_id=123120565]
 position = Vector2(-504, 456)
 shape = SubResource("RectangleShape2D_5lsyl")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run64" type="CollisionShape2D" parent="Thicket" unique_id=1556760356]
 position = Vector2(648, 456)
 shape = SubResource("RectangleShape2D_qmpg0")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run65" type="CollisionShape2D" parent="Thicket" unique_id=2086088341]
 position = Vector2(-480, 504)
 shape = SubResource("RectangleShape2D_7mcsn")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run66" type="CollisionShape2D" parent="Thicket" unique_id=1085398791]
 position = Vector2(648, 504)
 shape = SubResource("RectangleShape2D_3viao")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run67" type="CollisionShape2D" parent="Thicket" unique_id=1435430938]
 position = Vector2(-480, 552)
 shape = SubResource("RectangleShape2D_ycvl7")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run68" type="CollisionShape2D" parent="Thicket" unique_id=197612326]
 position = Vector2(648, 552)
 shape = SubResource("RectangleShape2D_tju64")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run69" type="CollisionShape2D" parent="Thicket" unique_id=847101965]
 position = Vector2(-504, 600)
 shape = SubResource("RectangleShape2D_e06io")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run70" type="CollisionShape2D" parent="Thicket" unique_id=67450131]
 position = Vector2(648, 600)
 shape = SubResource("RectangleShape2D_n465f")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run71" type="CollisionShape2D" parent="Thicket" unique_id=1650948372]
 position = Vector2(-528, 648)
 shape = SubResource("RectangleShape2D_etxr2")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run72" type="CollisionShape2D" parent="Thicket" unique_id=469139673]
 position = Vector2(648, 648)
 shape = SubResource("RectangleShape2D_shuq6")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run73" type="CollisionShape2D" parent="Thicket" unique_id=2104906275]
 position = Vector2(-528, 696)
 shape = SubResource("RectangleShape2D_5o60l")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run74" type="CollisionShape2D" parent="Thicket" unique_id=1031273263]
 position = Vector2(624, 696)
 shape = SubResource("RectangleShape2D_3hcih")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run75" type="CollisionShape2D" parent="Thicket" unique_id=877746248]
 position = Vector2(-528, 744)
 shape = SubResource("RectangleShape2D_58y46")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run76" type="CollisionShape2D" parent="Thicket" unique_id=497369197]
 position = Vector2(528, 744)
 shape = SubResource("RectangleShape2D_jifig")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run77" type="CollisionShape2D" parent="Thicket" unique_id=672685170]
 position = Vector2(-528, 792)
 shape = SubResource("RectangleShape2D_nye4c")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run78" type="CollisionShape2D" parent="Thicket" unique_id=1492001222]
 position = Vector2(528, 792)
 shape = SubResource("RectangleShape2D_jpoh7")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run79" type="CollisionShape2D" parent="Thicket" unique_id=1310370344]
 position = Vector2(-528, 840)
 shape = SubResource("RectangleShape2D_yyure")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run80" type="CollisionShape2D" parent="Thicket" unique_id=1780481782]
 position = Vector2(528, 840)
 shape = SubResource("RectangleShape2D_nplwm")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run81" type="CollisionShape2D" parent="Thicket" unique_id=1260049122]
 position = Vector2(-528, 888)
 shape = SubResource("RectangleShape2D_fgt85")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run82" type="CollisionShape2D" parent="Thicket" unique_id=879237000]
 position = Vector2(528, 888)
 shape = SubResource("RectangleShape2D_c3wx3")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run83" type="CollisionShape2D" parent="Thicket" unique_id=1602854269]
 position = Vector2(-504, 936)
 shape = SubResource("RectangleShape2D_baw8h")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run84" type="CollisionShape2D" parent="Thicket" unique_id=1422135189]
 position = Vector2(504, 936)
 shape = SubResource("RectangleShape2D_xp461")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run85" type="CollisionShape2D" parent="Thicket" unique_id=766852531]
 position = Vector2(-456, 984)
 shape = SubResource("RectangleShape2D_ecgpt")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run86" type="CollisionShape2D" parent="Thicket" unique_id=1140893125]
 position = Vector2(456, 984)
 shape = SubResource("RectangleShape2D_118w6")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run87" type="CollisionShape2D" parent="Thicket" unique_id=228358383]
 position = Vector2(-408, 1032)
 shape = SubResource("RectangleShape2D_m3vus")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="Run88" type="CollisionShape2D" parent="Thicket" unique_id=379123286]
 position = Vector2(432, 1032)
 shape = SubResource("RectangleShape2D_2lcmo")
+debug_color = Color(1, 1, 1, 0.41960785)
 
 [node name="PlayerStart" type="Marker2D" parent="." unique_id=2088411392]
 position = Vector2(24, 792)
 
-[node name="PortalToAreaTwo" type="Node2D" parent="." unique_id=279066734 instance=ExtResource("23_38esk")]
+[node name="PortalToAreaTwo" parent="." unique_id=279066734 instance=ExtResource("23_38esk")]
 position = Vector2(24, 960)
-script = ExtResource("24_8qp8f")
 size_in_cells = Vector2(4, 5)
 
 [node name="MapMarkers" type="Node2D" parent="." unique_id=1508465894]

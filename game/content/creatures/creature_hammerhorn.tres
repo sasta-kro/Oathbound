@@ -6,7 +6,7 @@
 [ext_resource type="Resource" path="res://content/growth/growth_bulky.tres" id="4_growth"]
 [ext_resource type="Resource" uid="uid://bikt4bsow1hma" path="res://content/creatures/creature_forgehorn.tres" id="5_263pg"]
 [ext_resource type="SpriteFrames" uid="uid://coy1qk13civ2a" path="res://content/sprites/creature_hammerhorn_battle.tres" id="5_sprite"]
-[ext_resource type="Resource" uid="uid://c7scajbgbopvj" path="res://content/abilities/ability_searing_touch.tres" id="ability_0"]
+[ext_resource type="Resource" path="res://content/abilities/ability_searing_touch.tres" id="ability_0"]
 [ext_resource type="Resource" path="res://content/abilities/ability_bloodthirst.tres" id="ability_1"]
 [ext_resource type="Resource" path="res://content/moves/move_ember_01.tres" id="move_ember"]
 [ext_resource type="Resource" path="res://content/moves/move_flame_burst_01.tres" id="move_flame_burst"]

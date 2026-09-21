@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_111bo"]
 [ext_resource type="Resource" path="res://content/abilities/ability_forged_core.tres" id="2_yupa2"]
-[ext_resource type="Resource" uid="uid://c7scajbgbopvj" path="res://content/abilities/ability_searing_touch.tres" id="3_uyl6a"]
+[ext_resource type="Resource" path="res://content/abilities/ability_searing_touch.tres" id="3_uyl6a"]
 [ext_resource type="SpriteFrames" uid="uid://bybt7ic1r05wd" path="res://content/sprites/creature_forgehorn_battle.tres" id="4_ck65n"]
 [ext_resource type="Resource" path="res://content/growth/growth_bulky.tres" id="5_bbrvh"]
 [ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_jy1qa"]
