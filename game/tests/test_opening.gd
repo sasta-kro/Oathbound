@@ -125,6 +125,16 @@ func test_the_prologue_reads_page_by_page() -> void:
 	assert_eq(prologue.current_page(), 1)
 
 
+func test_the_back_action_skips_the_prologue() -> void:
+	var prologue: Control = autofree((load(PROLOGUE_SCENE) as PackedScene).instantiate())
+	add_child(prologue)
+	var cancel := InputEventAction.new()
+	cancel.action = &"cancel"
+	cancel.pressed = true
+	prologue._unhandled_input(cancel)
+	assert_true(prologue._leaving)
+
+
 func test_a_blank_line_in_the_prologue_starts_a_new_box() -> void:
 	var prologue: Control = autofree((load(PROLOGUE_SCENE) as PackedScene).instantiate())
 	add_child(prologue)

@@ -25,7 +25,7 @@ const FORGET_HINT := "Forget %s to make room for %s."
 const REPLACED_TEXT := "%s forgot %s and learned %s!"
 const REFUSED_TEXT := "%s did not learn %s."
 const CONTINUE_HINT := "PRESS ANY KEY TO CONTINUE"
-const CONTROL_HINT := "W / S  CHOOSE     E  CONFIRM     ESC  KEEP"
+const CONTROL_HINT := "W/S OR ARROWS  CHOOSE     E/ENTER  CONFIRM     Q  KEEP"
 ## Input arriving sooner than this is ignored, so a key still being mashed
 ## from the battle that just ended cannot answer the offer by itself.
 const INPUT_GRACE_SECONDS := 0.8

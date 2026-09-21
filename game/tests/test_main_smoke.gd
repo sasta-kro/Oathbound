@@ -48,6 +48,8 @@ func test_required_input_actions_exist() -> void:
 		"move_right",
 		"interact",
 		"attack",
+		"open_menu",
+		"cancel",
 		"toggle_fullscreen",
 	]
 
@@ -55,6 +57,32 @@ func test_required_input_actions_exist() -> void:
 		assert_true(
 			InputMap.has_action(action_name), "Missing required input action: %s" % action_name
 		)
+
+
+func test_keyboard_actions_include_the_documented_alternatives() -> void:
+	var expected_keys: Dictionary = {
+		&"move_up": [KEY_W, KEY_UP],
+		&"move_down": [KEY_S, KEY_DOWN],
+		&"move_left": [KEY_A, KEY_LEFT],
+		&"move_right": [KEY_D, KEY_RIGHT],
+		&"interact": [KEY_E, KEY_ENTER],
+		&"open_menu": [KEY_ESCAPE],
+		&"cancel": [KEY_Q, KEY_ESCAPE],
+	}
+	for action: StringName in expected_keys:
+		for keycode: Key in expected_keys[action]:
+			assert_true(
+				_action_has_key(action, keycode),
+				"%s must include %s." % [action, OS.get_keycode_string(keycode)],
+			)
+	assert_false(InputMap.has_action(&"open_settings"), "Settings must open from the field menu.")
+
+
+func _action_has_key(action: StringName, keycode: Key) -> bool:
+	for event: InputEvent in InputMap.action_get_events(action):
+		if event is InputEventKey and event.keycode == keycode:
+			return true
+	return false
 
 
 func test_display_scales_from_the_configured_base_viewport() -> void:

@@ -18,6 +18,23 @@ func test_party_and_journal_pause_world_and_close_restores_movement() -> void:
 	main.field_ui.close()
 	assert_true(main.player.movement_enabled)
 
+
+func test_escape_opens_the_field_menu_and_cancel_backs_out() -> void:
+	var open_menu := InputEventAction.new()
+	open_menu.action = &"open_menu"
+	open_menu.pressed = true
+	main.field_ui._input(open_menu)
+	assert_true(main.field_ui.is_open())
+	assert_eq(main.field_ui.page, "menu")
+
+	main.field_ui.open_page("controls")
+	var cancel := InputEventAction.new()
+	cancel.action = &"cancel"
+	cancel.pressed = true
+	main.field_ui._input(cancel)
+	assert_false(main.field_ui.is_open())
+
+
 func test_details_and_field_guide_do_not_mutate_party() -> void:
 	var original := GameState.party.duplicate()
 	main.field_ui._details(GameState.party[0])
@@ -146,7 +163,7 @@ func test_the_controls_page_names_every_key_the_game_listens_to() -> void:
 	main.field_ui.open_page("controls")
 	await wait_frames(2)
 	var texts: Array = main.field_ui.body.find_children("*", "Label", true, false).map(func(l: Label): return l.text)
-	for key in ["W  A  S  D", "F", "E", "Tab  /  P", "I", "J", "L", "Esc"]:
+	for key in ["WASD  /  ARROWS", "F", "E  /  ENTER", "Tab  /  P", "I", "J", "L", "ESC", "Q"]:
 		assert_has(texts, key, "%s is documented." % key)
 
 func test_the_menu_has_no_numbers_and_no_evolutions_tab() -> void:

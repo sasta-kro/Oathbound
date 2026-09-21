@@ -449,13 +449,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		return
 
-	# The counter takes its own keys, Escape included.
+	# The counter takes its own navigation and back actions.
 	if shop_menu.is_open():
-		return
-
-	if event.is_action_pressed(&"open_settings"):
-		get_viewport().set_input_as_handled()
-		_toggle_settings()
 		return
 
 	if settings_menu.is_open() or battle_scene.is_active() or field_ui.is_open():
@@ -471,14 +466,6 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	get_viewport().set_input_as_handled()
 	_interact()
-
-
-func _toggle_settings() -> void:
-	if settings_menu.is_open():
-		settings_menu.close()
-	else:
-		settings_menu.open()
-
 
 ## The interact key in the overworld: it walks a passage that has more boxes
 ## to show, closes the line once it is read out, or else acts on the nearest

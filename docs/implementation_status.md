@@ -82,7 +82,7 @@ The current flat panels, thin borders, large typography, and web-like spacing do
 
 A passage with blank lines in it is shown one box at a time: the interact key walks the boxes, the speaker's caption stands over all of them, and a question's replies appear on the last box, so the ask is read through before it can be answered. `DialoguePanel.pages_of` does the splitting and `read_through` walks to the end. The strike key cannot cancel a question part-way through it.
 
-Escape opens the Field Companion menu. That menu provides Journey, Companions, Field Journal, Quest Log, Save Journey, Settings, and Title Screen actions. The Settings action opens display and audio controls.
+Escape opens the Field Companion menu. Q is the standard back action, with Escape retained as a secondary back binding. Arrow keys mirror WASD, and Enter mirrors E. The menu provides Journey, Companions, Field Journal, Quest Log, Save Journey, Settings, and Title Screen actions. The Settings action opens display and audio controls.
 
 ## Areas, chests and defeat (20 September 2026)
 

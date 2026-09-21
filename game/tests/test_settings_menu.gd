@@ -20,10 +20,9 @@ func _add_menu() -> SettingsMenu:
 	return menu
 
 
-func test_open_settings_action_exists() -> void:
-	assert_true(
-		InputMap.has_action(&"open_settings"), "The settings screen needs a way to be opened."
-	)
+func test_settings_open_from_the_field_menu_instead_of_a_dedicated_action() -> void:
+	assert_true(InputMap.has_action(&"open_menu"))
+	assert_false(InputMap.has_action(&"open_settings"))
 
 
 func test_main_scene_provides_a_settings_menu() -> void:
@@ -44,6 +43,16 @@ func test_menu_starts_closed_and_toggles() -> void:
 
 	menu.close()
 	assert_false(menu.is_open(), "Closing the settings menu must hide it.")
+
+
+func test_cancel_closes_the_settings_menu() -> void:
+	var menu: SettingsMenu = _add_menu()
+	menu.open()
+	var cancel := InputEventAction.new()
+	cancel.action = &"cancel"
+	cancel.pressed = true
+	menu._unhandled_input(cancel)
+	assert_false(menu.is_open())
 
 
 func test_window_size_options_list_every_scale_that_fits() -> void:

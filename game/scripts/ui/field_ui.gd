@@ -218,7 +218,9 @@ func _input(event: InputEvent) -> void:
 	if world.is_in_opening() or world.is_evolving(): return
 	# A lesson that holds the player to one key holds the menus too.
 	if world.is_lesson_locked(): return
-	if event.is_action_pressed("open_settings"):
+	var menu_pressed: bool = event.is_action_pressed("open_menu")
+	var back_pressed: bool = is_open() and event.is_action_pressed("cancel")
+	if menu_pressed or back_pressed:
 		if is_open(): _go_back()
 		else: open_page("menu")
 		get_viewport().set_input_as_handled()
@@ -265,7 +267,7 @@ func _build_sidebar(layout: HBoxContainer) -> void:
 	sidebar.add_child(OathTheme.label("THE VERDANT REACH", 9, OathTheme.MUTED))
 	sidebar.add_child(OathTheme.heading("Every oath matters.", 21))
 	sidebar.add_child(OathTheme.rule())
-	sidebar.add_child(OathTheme.button("Return to field   Esc", close))
+	sidebar.add_child(OathTheme.button("Return to field   Q", close))
 
 func _nav_style(color: Color, border: Color) -> StyleBoxFlat:
 	var style := OathTheme.box(color, border, 5, 10)
@@ -845,19 +847,20 @@ func _controls() -> void:
 	_header("CONTROLS", "How to play.", "The field first, then the battle screen. Nothing here is rebound in play.")
 	for section: Array in [
 		["IN THE FIELD", [
-			["W  A  S  D", "Walk"],
+			["WASD  /  ARROWS", "Walk"],
 			["F", "Strike whatever you are facing, before the fight starts"],
-			["E", "Talk, open a chest, read on"],
+			["E  /  ENTER", "Talk, open a chest, read on"],
 			["Tab  /  P", "Companions: who walks in front, and who waits at the Hearthside"],
 			["I", "Satchel"],
 			["J", "Field journal"],
 			["L", "Quest log"],
-			["Esc", "This menu, and back out of it"],
+			["ESC", "Open the Field Companion menu"],
+			["Q", "Back or close a menu. Esc also works"],
 		]],
 		["IN A BATTLE", [
-			["W  /  S", "Choose a command, a move or a companion"],
-			["E", "Confirm"],
-			["Esc", "Back out of a menu"],
+			["W / S  OR  UP / DOWN", "Choose a command, a move or a companion"],
+			["E  /  ENTER", "Confirm"],
+			["Q", "Back out of a menu. Esc also works"],
 		]],
 		["WORTH KNOWING", [
 			["Strike first", "A blow landed in the field opens the battle a turn ahead"],

@@ -247,7 +247,7 @@ func _enter_world() -> void:
 	get_tree().change_scene_to_file("res://main.tscn")
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not event.is_action_pressed("open_settings"): return
+	if not event.is_action_pressed("cancel"): return
 	if $SettingsMenu.is_open():
 		$SettingsMenu.close()
 		get_viewport().set_input_as_handled()

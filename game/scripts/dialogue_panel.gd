@@ -65,7 +65,7 @@ func _ready() -> void:
 	speaker_label = OathTheme.label("", 9, OathTheme.GOLD)
 	caption.add_child(speaker_label)
 	caption.add_child(OathTheme.spacer(false))
-	_prompt = OathTheme.label("E  /  CONTINUE", 9, OathTheme.MUTED)
+	_prompt = OathTheme.label("E / ENTER  CONTINUE", 9, OathTheme.MUTED)
 	caption.add_child(_prompt)
 	content.add_child(dialogue_text)
 	_choices = VBoxContainer.new()
@@ -138,7 +138,7 @@ func _render() -> void:
 	speaker_label.text = _speaker.to_upper()
 	dialogue_text.text = _pages[_page] if _page < _pages.size() else ""
 	if _pending_options.is_empty() or _page + 1 < _pages.size():
-		_prompt.text = "E  /  MORE" if _page + 1 < _pages.size() else "E  /  CONTINUE"
+		_prompt.text = "E / ENTER  MORE" if _page + 1 < _pages.size() else "E / ENTER  CONTINUE"
 		return
 	_build_options(_pending_options)
 
@@ -191,7 +191,7 @@ func ask(line: String, options: PackedStringArray) -> int:
 
 ## Puts the replies on screen under the last box of the passage.
 func _build_options(options: PackedStringArray) -> void:
-	_prompt.text = "W / S  CHOOSE   ·   E  REPLY"
+	_prompt.text = "W/S OR ARROWS  CHOOSE   ·   E/ENTER  REPLY"
 	for index: int in options.size():
 		var button := Button.new()
 		button.text = options[index]

@@ -4,9 +4,9 @@ extends Control
 ## Oathbound is before the world is shown.
 ##
 ## Interact or a click reads on, finishing a line that is still being written
-## first; Escape skips the rest. The last page fades to the same colour the
-## overworld's screen transition starts from, so the field can reveal itself
-## out of it and the two scenes read as one.
+## first; the back action skips the rest. The last page fades to the same
+## colour the overworld's screen transition starts from, so the field can
+## reveal itself out of it and the two scenes read as one.
 
 const FIELD_SCENE_PATH := "res://main.tscn"
 const ELDER_SPRITE_FRAMES := preload("res://content/sprites/npc_elder.tres")
@@ -97,7 +97,7 @@ func _build_text_box() -> PanelContainer:
 	content.add_child(caption)
 	caption.add_child(OathTheme.label(GameOpening.PROLOGUE_SPEAKER, 9, OathTheme.GOLD))
 	caption.add_child(OathTheme.spacer(false))
-	caption.add_child(OathTheme.label("E  /  CONTINUE    ·    ESC  /  SKIP", 9, OathTheme.MUTED))
+	caption.add_child(OathTheme.label("E / ENTER  CONTINUE    ·    Q  SKIP", 9, OathTheme.MUTED))
 	_text = OathTheme.label("", 16)
 	_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	content.add_child(_text)
@@ -127,7 +127,7 @@ func _build_glow() -> TextureRect:
 func _unhandled_input(event: InputEvent) -> void:
 	if _leaving:
 		return
-	if event.is_action_pressed(&"open_settings"):
+	if event.is_action_pressed(&"cancel"):
 		get_viewport().set_input_as_handled()
 		_leave()
 		return

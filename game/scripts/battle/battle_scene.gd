@@ -95,7 +95,7 @@ const MENU_HIGHLIGHT_BORDER_COLOR := Color("d9bb80")
 ## Every submenu ends in this row, so backing out is reachable with the mouse
 ## as well as with the cancel key.
 const BACK_LABEL := "BACK"
-const BACK_HINT := "Go back. (Esc)"
+const BACK_HINT := "Go back. (Q)"
 const CURSOR_PREFIX := "▶ "
 const IDLE_PREFIX := "  "
 const DISMISS_HINT := "  ▼"
@@ -344,9 +344,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed(&"interact"):
 		press_entry(_cursor)
 	elif event.is_action_pressed(&"cancel"):
-		# Escape is both this and the settings key. The command menu has
-		# nowhere to back out to, so there the key is left for the settings
-		# screen rather than swallowed.
+		# The command menu has nowhere to back out to, so the action remains
+		# unhandled there.
 		if not _cancel_menu():
 			return
 	else:

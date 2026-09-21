@@ -1307,10 +1307,10 @@ Current bindings (Provisional until rebinding exists):
 
 | Action | Keys |
 |---|---|
-| Move | W A S D (eight-way, analog-normalised) |
-| Interact / confirm | E |
+| Move | W A S D or arrow keys (eight-way, analog-normalised) |
+| Interact / confirm | E or Enter |
 | Overworld strike | F |
-| Cancel / back | Q, Esc |
+| Cancel / back | Q; Esc remains supported as a secondary binding |
 | Field menu | Esc |
 | Party | Tab, P |
 | Field journal | J |

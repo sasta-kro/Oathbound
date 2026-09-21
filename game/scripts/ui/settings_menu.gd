@@ -69,6 +69,13 @@ func is_open() -> bool:
 	return root.visible
 
 
+func _unhandled_input(event: InputEvent) -> void:
+	if not is_open() or not event.is_action_pressed(&"cancel"):
+		return
+	get_viewport().set_input_as_handled()
+	close()
+
+
 ## Window sizes are whole multiples of the logical viewport, so the game never
 ## scales by a fraction of a pixel (Specification 22.3).
 func _refresh_display_controls() -> void:

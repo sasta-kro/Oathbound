@@ -374,7 +374,7 @@ func test_the_command_menu_has_nowhere_to_back_out_to() -> void:
 
 	assert_false(
 		_scene._cancel_menu(),
-		"Unhandled, so the cancel key can still reach the settings screen.",
+		"The root command menu has nowhere to go back to.",
 	)
 	assert_eq(_scene.current_menu(), BattleScene.Menu.COMMAND)
 	assert_false(_scene.menu_labels().has(BattleScene.BACK_LABEL))

@@ -3,7 +3,7 @@ extends CanvasLayer
 ## A vendor's counter (Specification 16.5): what they sell, what it costs, and
 ## how many the player already carries. Stock is unlimited.
 ##
-## Move up and down to choose, interact to buy one, cancel or Escape to walk
+## Move up and down to choose, interact to buy one, or cancel to walk
 ## away. Rows can be clicked too. While it is open the panel takes those keys
 ## itself, so the overworld never sees them.
 
@@ -79,7 +79,9 @@ func _ready() -> void:
 	_status = OathTheme.label("", 12, OathTheme.JADE)
 	footer.add_child(_status)
 	footer.add_child(OathTheme.spacer(false))
-	footer.add_child(OathTheme.label("W / S  CHOOSE   ·   E  BUY   ·   ESC  LEAVE", 9, OathTheme.MUTED))
+	footer.add_child(
+		OathTheme.label("W/S OR ARROWS  CHOOSE   ·   E/ENTER  BUY   ·   Q  LEAVE", 9, OathTheme.MUTED)
+	)
 	_root.hide()
 
 
@@ -136,7 +138,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_select(_selected + 1)
 	elif event.is_action_pressed(&"interact"):
 		buy_selected()
-	elif event.is_action_pressed(&"cancel") or event.is_action_pressed(&"open_settings"):
+	elif event.is_action_pressed(&"cancel"):
 		close()
 	else:
 		return
