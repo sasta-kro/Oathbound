@@ -340,14 +340,12 @@ tile_map_data = PackedByteArray("AAAcAFAAAQABAAUAAAAcAE8AAQABAAEAAAAdAE8AAQAAAAg
 tile_set = ExtResource("3_2ehd2")
 
 [node name="Walls" type="TileMapLayer" parent="." unique_id=449153930]
-visible = false
 z_index = -1
 position = Vector2(-720, -1056)
 scale = Vector2(1.5, 1.5)
 tile_set = ExtResource("2_ydsot")
 
 [node name="Decor" type="TileMapLayer" parent="." unique_id=1746058319]
-visible = false
 z_index = -1
 position = Vector2(-720, -1056)
 scale = Vector2(1.5, 1.5)
@@ -355,7 +353,6 @@ tile_map_data = PackedByteArray("AAANAAEACQAEAAAAAAANAAgABwAJAAAAAAAIAAIABwAAAAA
 tile_set = ExtResource("2_ydsot")
 
 [node name="Foliage" type="TileMapLayer" parent="." unique_id=1092376589]
-visible = false
 z_index = -1
 material = SubResource("ShaderMaterial_rrryp")
 position = Vector2(-720, -1056)
@@ -364,7 +361,6 @@ tile_map_data = PackedByteArray("AAAcAAAABwAGAAMAAAACACoABwAIAAMAAAAcACgABwAIAAM
 tile_set = ExtResource("2_ydsot")
 
 [node name="Overhead" type="TileMapLayer" parent="." unique_id=121399637]
-visible = false
 z_index = 1
 position = Vector2(-720, -1056)
 scale = Vector2(1.5, 1.5)
@@ -429,7 +425,6 @@ chatter = PackedStringArray()
 barks = PackedStringArray()
 
 [node name="SpawnZones" type="Node2D" parent="." unique_id=886196048]
-visible = false
 
 [node name="SpawnZone" type="Node2D" parent="SpawnZones" unique_id=29054489]
 position = Vector2(416, 438)
