@@ -1,0 +1,60 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://w7nlmmm7orvr"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_broxt"]
+[ext_resource type="Resource" path="res://content/abilities/ability_bloodthirst.tres" id="2_loli5"]
+[ext_resource type="Resource" path="res://content/abilities/ability_toxic_ward.tres" id="3_ck7c8"]
+[ext_resource type="SpriteFrames" uid="uid://d0nevelardcry" path="res://content/sprites/creature_mawleech_battle.tres" id="4_l1yx2"]
+[ext_resource type="Resource" path="res://content/growth/growth_standard.tres" id="5_fkpdm"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_8syn2"]
+[ext_resource type="Resource" path="res://content/moves/move_water_jet_01.tres" id="7_e8y86"]
+[ext_resource type="Resource" uid="uid://dywchce8ppf42" path="res://content/moves/move_venom_spit_01.tres" id="8_3f1td"]
+[ext_resource type="Resource" path="res://content/moves/move_crimson_surge_01.tres" id="9_feod1"]
+[ext_resource type="Resource" uid="uid://c3rxxapydl0ab" path="res://content/moves/move_dread_gaze_01.tres" id="10_kjb61"]
+[ext_resource type="Resource" path="res://content/moves/move_blight_bite_01.tres" id="11_4pd75"]
+[ext_resource type="Resource" path="res://content/moves/move_tide_crash_01.tres" id="12_a5lfh"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="13_jr013"]
+
+[sub_resource type="Resource" id="Resource_p6xeb"]
+script = ExtResource("6_8syn2")
+move = ExtResource("7_e8y86")
+
+[sub_resource type="Resource" id="Resource_ax5mv"]
+script = ExtResource("6_8syn2")
+level = 5
+move = ExtResource("8_3f1td")
+
+[sub_resource type="Resource" id="Resource_xadhx"]
+script = ExtResource("6_8syn2")
+level = 11
+move = ExtResource("9_feod1")
+
+[sub_resource type="Resource" id="Resource_dh2q8"]
+script = ExtResource("6_8syn2")
+level = 16
+move = ExtResource("10_kjb61")
+
+[sub_resource type="Resource" id="Resource_c08wi"]
+script = ExtResource("6_8syn2")
+level = 22
+move = ExtResource("11_4pd75")
+
+[sub_resource type="Resource" id="Resource_u70by"]
+script = ExtResource("6_8syn2")
+level = 26
+move = ExtResource("12_a5lfh")
+
+[resource]
+script = ExtResource("13_jr013")
+id = &"creature_mawleech"
+display_name = "Mawleech"
+primary_type = 2
+base_hp = 66
+base_attack = 62
+base_defense = 50
+base_speed = 52
+growth = ExtResource("5_fkpdm")
+learnset = Array[ExtResource("6_8syn2")]([SubResource("Resource_p6xeb"), SubResource("Resource_ax5mv"), SubResource("Resource_xadhx"), SubResource("Resource_dh2q8"), SubResource("Resource_c08wi"), SubResource("Resource_u70by")])
+ability_pool = Array[ExtResource("1_broxt")]([ExtResource("2_loli5"), ExtResource("3_ck7c8")])
+base_bind_chance = 0.25
+battle_sprite = ExtResource("4_l1yx2")
+sprite_scale = 1.2

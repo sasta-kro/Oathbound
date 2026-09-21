@@ -1,0 +1,72 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://d0e4klgbfu1la"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_i0haw"]
+[ext_resource type="Resource" path="res://content/abilities/ability_barkskin.tres" id="2_2oqtg"]
+[ext_resource type="Resource" uid="uid://hy2bjnv2kuj3" path="res://content/abilities/ability_stonewall.tres" id="3_my1w4"]
+[ext_resource type="SpriteFrames" uid="uid://ti76i2brw4g2" path="res://content/sprites/creature_briarback_battle.tres" id="4_d544d"]
+[ext_resource type="Resource" path="res://content/growth/growth_bulky.tres" id="5_6rd6e"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_60uka"]
+[ext_resource type="Resource" path="res://content/moves/move_stone_toss_01.tres" id="7_h315l"]
+[ext_resource type="Resource" path="res://content/moves/move_mend_01.tres" id="8_iwswg"]
+[ext_resource type="Resource" uid="uid://bdanwx6mpoco8" path="res://content/moves/move_bolster_01.tres" id="9_attbe"]
+[ext_resource type="Resource" path="res://content/moves/move_vine_lash_01.tres" id="10_k0djm"]
+[ext_resource type="Resource" uid="uid://dywchce8ppf42" path="res://content/moves/move_venom_spit_01.tres" id="11_monnv"]
+[ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_quake_step_01.tres" id="12_r6b8f"]
+[ext_resource type="Resource" path="res://content/moves/move_thorn_volley_01.tres" id="13_f2b73"]
+[ext_resource type="Resource" path="res://content/moves/move_overgrowth_01.tres" id="14_8ugt4"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="15_3kwaf"]
+
+[sub_resource type="Resource" id="Resource_txxxb"]
+script = ExtResource("6_60uka")
+move = ExtResource("7_h315l")
+
+[sub_resource type="Resource" id="Resource_26r4m"]
+script = ExtResource("6_60uka")
+move = ExtResource("8_iwswg")
+
+[sub_resource type="Resource" id="Resource_y2a6w"]
+script = ExtResource("6_60uka")
+level = 5
+move = ExtResource("9_attbe")
+
+[sub_resource type="Resource" id="Resource_elhwy"]
+script = ExtResource("6_60uka")
+level = 8
+move = ExtResource("10_k0djm")
+
+[sub_resource type="Resource" id="Resource_hmdnj"]
+script = ExtResource("6_60uka")
+level = 11
+move = ExtResource("11_monnv")
+
+[sub_resource type="Resource" id="Resource_a1oxj"]
+script = ExtResource("6_60uka")
+level = 18
+move = ExtResource("12_r6b8f")
+
+[sub_resource type="Resource" id="Resource_hcov6"]
+script = ExtResource("6_60uka")
+level = 20
+move = ExtResource("13_f2b73")
+
+[sub_resource type="Resource" id="Resource_57l2q"]
+script = ExtResource("6_60uka")
+level = 28
+move = ExtResource("14_8ugt4")
+
+[resource]
+script = ExtResource("15_3kwaf")
+id = &"creature_briarback"
+display_name = "Briarback"
+primary_type = 4
+has_secondary_type = true
+base_hp = 76
+base_attack = 64
+base_defense = 78
+base_speed = 32
+growth = ExtResource("5_6rd6e")
+learnset = Array[ExtResource("6_60uka")]([SubResource("Resource_txxxb"), SubResource("Resource_26r4m"), SubResource("Resource_y2a6w"), SubResource("Resource_elhwy"), SubResource("Resource_hmdnj"), SubResource("Resource_a1oxj"), SubResource("Resource_hcov6"), SubResource("Resource_57l2q")])
+ability_pool = Array[ExtResource("1_i0haw")]([ExtResource("2_2oqtg"), ExtResource("3_my1w4")])
+base_bind_chance = 0.22
+battle_sprite = ExtResource("4_d544d")
+sprite_scale = 1.4

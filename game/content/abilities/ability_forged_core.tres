@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="AbilityData" format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/stat_modifier.gd" id="1_pidtg"]
+[ext_resource type="Script" path="res://scripts/creatures/ability_data.gd" id="2_7gn56"]
+
+[resource]
+script = ExtResource("2_7gn56")
+id = &"ability_forged_core"
+display_name = "Forged Core"
+description = "A heart of worked metal that lends weight to its Steel moves."
+damage_dealt_multiplier = 1.2
+has_dealt_type_filter = true
+dealt_type_filter = 6

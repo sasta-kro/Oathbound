@@ -19,4 +19,4 @@ silhouette, by the importer. The fire burns out over the death strip.
 | `idle.png` | 6 |
 | `walk.png` | 8 |
 
-Used by `res://content/sprites/creature_rot_01_battle.tres`.
+Used by `res://content/sprites/creature_skeleton_lord_battle.tres`.

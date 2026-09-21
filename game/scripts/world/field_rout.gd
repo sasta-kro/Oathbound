@@ -16,7 +16,7 @@ const QUEST_ID: StringName = &"quest_main_01g_no_battle_at_all"
 ## the overworld, with no battle screen in between.
 const EVENT_ID: StringName = &"routed_in_the_field"
 
-const SPECIES_ID: StringName = &"creature_fire_01"
+const SPECIES_ID: StringName = &"creature_emberling"
 ## Small, and worn down further below, because a lesson about the blow that
 ## finishes something must not depend on who the player is leading with.
 const LEVEL := 2

@@ -4,8 +4,8 @@ extends GutTest
 ## victory, and a boss that stays beaten across saves.
 
 const SCRATCH_DIR := "user://gut_scratch/test_boss_battle"
-const EMBERLING := &"creature_fire_01"
-const OATHBREAKER := &"creature_earth_05"
+const EMBERLING := &"creature_emberling"
+const OATHBREAKER := &"creature_oathbreaker"
 const BOSS_ID := &"boss_area_01"
 const BOSS_QUEST_ID := &"quest_main_03_the_black_knight"
 const AREA_ONE := "res://areas/area_one.tscn"

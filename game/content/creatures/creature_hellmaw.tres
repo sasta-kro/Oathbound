@@ -1,0 +1,53 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://cfgiek7mvtfxi"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_hwk1g"]
+[ext_resource type="Resource" path="res://content/abilities/ability_bloodthirst.tres" id="2_ttnao"]
+[ext_resource type="Resource" path="res://content/abilities/ability_ember_body.tres" id="3_q82lu"]
+[ext_resource type="SpriteFrames" uid="uid://cbn3c8h2th8n5" path="res://content/sprites/creature_hellmaw_battle.tres" id="4_x6x8w"]
+[ext_resource type="Resource" path="res://content/growth/growth_standard.tres" id="5_hxroi"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_ulr7m"]
+[ext_resource type="Resource" path="res://content/moves/move_ash_fang_01.tres" id="7_y1rxy"]
+[ext_resource type="Resource" uid="uid://dpb40bisa8tta" path="res://content/moves/move_war_cry_01.tres" id="8_fp6o0"]
+[ext_resource type="Resource" path="res://content/moves/move_flame_burst_01.tres" id="9_46sm3"]
+[ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_quake_step_01.tres" id="10_a22b4"]
+[ext_resource type="Resource" path="res://content/moves/move_hellfire_beam_01.tres" id="11_l4tk1"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="12_xe5bg"]
+
+[sub_resource type="Resource" id="Resource_2gt67"]
+script = ExtResource("6_ulr7m")
+move = ExtResource("7_y1rxy")
+
+[sub_resource type="Resource" id="Resource_tp3yl"]
+script = ExtResource("6_ulr7m")
+level = 6
+move = ExtResource("8_fp6o0")
+
+[sub_resource type="Resource" id="Resource_ta07x"]
+script = ExtResource("6_ulr7m")
+level = 12
+move = ExtResource("9_46sm3")
+
+[sub_resource type="Resource" id="Resource_hd0gj"]
+script = ExtResource("6_ulr7m")
+level = 18
+move = ExtResource("10_a22b4")
+
+[sub_resource type="Resource" id="Resource_2jmlw"]
+script = ExtResource("6_ulr7m")
+level = 34
+move = ExtResource("11_l4tk1")
+
+[resource]
+script = ExtResource("12_xe5bg")
+id = &"creature_hellmaw"
+display_name = "Hellmaw"
+base_hp = 62
+base_attack = 76
+base_defense = 48
+base_speed = 72
+growth = ExtResource("5_hxroi")
+learnset = Array[ExtResource("6_ulr7m")]([SubResource("Resource_2gt67"), SubResource("Resource_tp3yl"), SubResource("Resource_ta07x"), SubResource("Resource_hd0gj"), SubResource("Resource_2jmlw")])
+ability_pool = Array[ExtResource("1_hwk1g")]([ExtResource("2_ttnao"), ExtResource("3_q82lu")])
+base_bind_chance = 0.18
+battle_sprite = ExtResource("4_x6x8w")
+sprite_scale = 1.35

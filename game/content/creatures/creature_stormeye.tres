@@ -1,0 +1,60 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://clank2ryrfaia"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_sfblr"]
+[ext_resource type="Resource" path="res://content/abilities/ability_thick_hide.tres" id="2_mmslx"]
+[ext_resource type="Resource" path="res://content/abilities/ability_windrider.tres" id="3_1k8bm"]
+[ext_resource type="SpriteFrames" uid="uid://kiy1mltxbfbe" path="res://content/sprites/creature_stormeye_battle.tres" id="4_ry6gn"]
+[ext_resource type="Resource" path="res://content/growth/growth_standard.tres" id="5_y6pvf"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_lqijj"]
+[ext_resource type="Resource" path="res://content/moves/move_gust_01.tres" id="7_1ig7e"]
+[ext_resource type="Resource" uid="uid://c3rxxapydl0ab" path="res://content/moves/move_dread_gaze_01.tres" id="8_ewi8c"]
+[ext_resource type="Resource" path="res://content/moves/move_hex_bolt_01.tres" id="9_5wmos"]
+[ext_resource type="Resource" path="res://content/moves/move_water_jet_01.tres" id="10_xd7fu"]
+[ext_resource type="Resource" path="res://content/moves/move_gale_slash_01.tres" id="11_dd51g"]
+[ext_resource type="Resource" path="res://content/moves/move_reaping_scythe_01.tres" id="12_jhd4s"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="13_qldbu"]
+
+[sub_resource type="Resource" id="Resource_8g3js"]
+script = ExtResource("6_lqijj")
+move = ExtResource("7_1ig7e")
+
+[sub_resource type="Resource" id="Resource_4qt7s"]
+script = ExtResource("6_lqijj")
+level = 5
+move = ExtResource("8_ewi8c")
+
+[sub_resource type="Resource" id="Resource_r0vrg"]
+script = ExtResource("6_lqijj")
+level = 11
+move = ExtResource("9_5wmos")
+
+[sub_resource type="Resource" id="Resource_2k18b"]
+script = ExtResource("6_lqijj")
+level = 16
+move = ExtResource("10_xd7fu")
+
+[sub_resource type="Resource" id="Resource_mjl1t"]
+script = ExtResource("6_lqijj")
+level = 30
+move = ExtResource("11_dd51g")
+
+[sub_resource type="Resource" id="Resource_jms5u"]
+script = ExtResource("6_lqijj")
+level = 34
+move = ExtResource("12_jhd4s")
+
+[resource]
+script = ExtResource("13_qldbu")
+id = &"creature_stormeye"
+display_name = "Stormeye"
+primary_type = 3
+base_hp = 64
+base_attack = 64
+base_defense = 58
+base_speed = 56
+growth = ExtResource("5_y6pvf")
+learnset = Array[ExtResource("6_lqijj")]([SubResource("Resource_8g3js"), SubResource("Resource_4qt7s"), SubResource("Resource_r0vrg"), SubResource("Resource_2k18b"), SubResource("Resource_mjl1t"), SubResource("Resource_jms5u")])
+ability_pool = Array[ExtResource("1_sfblr")]([ExtResource("2_mmslx"), ExtResource("3_1k8bm")])
+base_bind_chance = 0.18
+battle_sprite = ExtResource("4_ry6gn")
+sprite_scale = 1.6

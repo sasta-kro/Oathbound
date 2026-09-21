@@ -1,0 +1,50 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://cskhsffu8ws1i"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_gttle"]
+[ext_resource type="Resource" path="res://content/abilities/ability_rustproof.tres" id="2_u8gfu"]
+[ext_resource type="Resource" uid="uid://hy2bjnv2kuj3" path="res://content/abilities/ability_stonewall.tres" id="3_1e3ib"]
+[ext_resource type="SpriteFrames" uid="uid://b2ox30hrk1kru" path="res://content/sprites/creature_sentinel_eye_battle.tres" id="4_gav4t"]
+[ext_resource type="Resource" path="res://content/growth/growth_standard.tres" id="5_iuq1n"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_q1rdn"]
+[ext_resource type="Resource" path="res://content/moves/move_iron_jab_01.tres" id="7_mphle"]
+[ext_resource type="Resource" uid="uid://c3rxxapydl0ab" path="res://content/moves/move_dread_gaze_01.tres" id="8_ty0op"]
+[ext_resource type="Resource" uid="uid://yy88er3s78cw" path="res://content/moves/move_guard_stance_01.tres" id="9_pkm10"]
+[ext_resource type="Resource" path="res://content/moves/move_rivet_shot_01.tres" id="10_eo3wl"]
+[ext_resource type="Resource" path="res://content/moves/move_steel_rend_01.tres" id="11_c5mfo"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="12_gg7q4"]
+
+[sub_resource type="Resource" id="Resource_w7067"]
+script = ExtResource("6_q1rdn")
+move = ExtResource("7_mphle")
+
+[sub_resource type="Resource" id="Resource_d8vu6"]
+script = ExtResource("6_q1rdn")
+move = ExtResource("8_ty0op")
+
+[sub_resource type="Resource" id="Resource_3o7qe"]
+script = ExtResource("6_q1rdn")
+level = 8
+move = ExtResource("9_pkm10")
+
+[sub_resource type="Resource" id="Resource_880pu"]
+script = ExtResource("6_q1rdn")
+level = 12
+move = ExtResource("10_eo3wl")
+
+[sub_resource type="Resource" id="Resource_nc1xj"]
+script = ExtResource("6_q1rdn")
+level = 18
+move = ExtResource("11_c5mfo")
+
+[resource]
+script = ExtResource("12_gg7q4")
+id = &"creature_sentinel_eye"
+display_name = "Sentinel Eye"
+primary_type = 6
+base_hp = 52
+base_attack = 44
+base_defense = 62
+growth = ExtResource("5_iuq1n")
+learnset = Array[ExtResource("6_q1rdn")]([SubResource("Resource_w7067"), SubResource("Resource_d8vu6"), SubResource("Resource_3o7qe"), SubResource("Resource_880pu"), SubResource("Resource_nc1xj")])
+ability_pool = Array[ExtResource("1_gttle")]([ExtResource("2_u8gfu"), ExtResource("3_1e3ib")])
+battle_sprite = ExtResource("4_gav4t")

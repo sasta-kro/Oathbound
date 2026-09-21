@@ -1,0 +1,60 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://c250x1tpld8xh"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_aelwx"]
+[ext_resource type="Resource" path="res://content/abilities/ability_barkskin.tres" id="2_y4cyl"]
+[ext_resource type="Resource" path="res://content/abilities/ability_overgrown.tres" id="3_ejfoy"]
+[ext_resource type="SpriteFrames" uid="uid://ba1gqavglgo7g" path="res://content/sprites/creature_grovehulk_battle.tres" id="4_5ak6j"]
+[ext_resource type="Resource" path="res://content/growth/growth_bulky.tres" id="5_8ac2n"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_elwcn"]
+[ext_resource type="Resource" path="res://content/moves/move_vine_lash_01.tres" id="7_a5j4k"]
+[ext_resource type="Resource" uid="uid://yy88er3s78cw" path="res://content/moves/move_guard_stance_01.tres" id="8_g0dpm"]
+[ext_resource type="Resource" path="res://content/moves/move_spore_cloud_01.tres" id="9_vdwdd"]
+[ext_resource type="Resource" path="res://content/moves/move_thorn_volley_01.tres" id="10_vpxkp"]
+[ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_quake_step_01.tres" id="11_16q12"]
+[ext_resource type="Resource" path="res://content/moves/move_overgrowth_01.tres" id="12_tu5i1"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="13_4vkxe"]
+
+[sub_resource type="Resource" id="Resource_sumrr"]
+script = ExtResource("6_elwcn")
+move = ExtResource("7_a5j4k")
+
+[sub_resource type="Resource" id="Resource_rnqw8"]
+script = ExtResource("6_elwcn")
+level = 5
+move = ExtResource("8_g0dpm")
+
+[sub_resource type="Resource" id="Resource_ofhca"]
+script = ExtResource("6_elwcn")
+level = 9
+move = ExtResource("9_vdwdd")
+
+[sub_resource type="Resource" id="Resource_jn3tp"]
+script = ExtResource("6_elwcn")
+level = 14
+move = ExtResource("10_vpxkp")
+
+[sub_resource type="Resource" id="Resource_u1pih"]
+script = ExtResource("6_elwcn")
+level = 20
+move = ExtResource("11_16q12")
+
+[sub_resource type="Resource" id="Resource_gis3j"]
+script = ExtResource("6_elwcn")
+level = 26
+move = ExtResource("12_tu5i1")
+
+[resource]
+script = ExtResource("13_4vkxe")
+id = &"creature_grovehulk"
+display_name = "Grovehulk"
+primary_type = 4
+has_secondary_type = true
+base_hp = 74
+base_attack = 64
+base_defense = 72
+base_speed = 26
+growth = ExtResource("5_8ac2n")
+learnset = Array[ExtResource("6_elwcn")]([SubResource("Resource_sumrr"), SubResource("Resource_rnqw8"), SubResource("Resource_ofhca"), SubResource("Resource_jn3tp"), SubResource("Resource_u1pih"), SubResource("Resource_gis3j")])
+ability_pool = Array[ExtResource("1_aelwx")]([ExtResource("2_y4cyl"), ExtResource("3_ejfoy")])
+base_bind_chance = 0.2
+battle_sprite = ExtResource("4_5ak6j")

@@ -27,7 +27,7 @@ signal inventory_changed
 ## A chest was emptied. The field listens to keep the lid open.
 signal chest_opened(chest_id: StringName)
 
-const STARTER_SPECIES_ID := &"creature_fire_01"
+const STARTER_SPECIES_ID := &"creature_emberling"
 ## Provisional starter level: with the additive damage formula a level-7
 ## Emberling beats the level-3 Loambuck outside with HP to spare.
 const STARTER_LEVEL := 7
@@ -360,7 +360,7 @@ func from_dict(data: Dictionary) -> void:
 			seen_species[kept_creature.species_id()] = true
 	seen_species.clear()
 	for id: Variant in data.get("seen_species", []):
-		seen_species[StringName(String(id))] = true
+		seen_species[ContentRegistry.canonical_species_id(StringName(String(id)))] = true
 	for creature: CreatureInstance in party:
 		seen_species[creature.species_id()] = true
 	binding_scrolls = maxi(0, int(data.get("binding_scrolls", STARTING_BINDING_SCROLLS)))

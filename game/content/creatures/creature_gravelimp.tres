@@ -1,0 +1,42 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://bcsapnuytpb4n"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_iri82"]
+[ext_resource type="Resource" path="res://content/abilities/ability_thick_hide.tres" id="2_wpfld"]
+[ext_resource type="Resource" uid="uid://clfgmuu7pwbi6" path="res://content/abilities/ability_swiftfoot.tres" id="3_l8j3e"]
+[ext_resource type="SpriteFrames" uid="uid://bmagyu4su1okr" path="res://content/sprites/creature_gravelimp_battle.tres" id="4_8gr5e"]
+[ext_resource type="Resource" path="res://content/growth/growth_standard.tres" id="5_7bcpw"]
+[ext_resource type="Resource" uid="uid://k4sbxefswlla" path="res://content/creatures/creature_quarrybrute.tres" id="5_wpfld"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_4mvwt"]
+[ext_resource type="Resource" path="res://content/moves/move_stone_toss_01.tres" id="7_miof3"]
+[ext_resource type="Resource" uid="uid://yy88er3s78cw" path="res://content/moves/move_guard_stance_01.tres" id="8_5ujpl"]
+[ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_quake_step_01.tres" id="9_dwll2"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="10_mtal7"]
+
+[sub_resource type="Resource" id="Resource_nt0w4"]
+script = ExtResource("6_4mvwt")
+move = ExtResource("7_miof3")
+
+[sub_resource type="Resource" id="Resource_58sxk"]
+script = ExtResource("6_4mvwt")
+level = 7
+move = ExtResource("8_5ujpl")
+
+[sub_resource type="Resource" id="Resource_6gcil"]
+script = ExtResource("6_4mvwt")
+level = 12
+move = ExtResource("9_dwll2")
+
+[resource]
+script = ExtResource("10_mtal7")
+id = &"creature_gravelimp"
+display_name = "Gravelimp"
+primary_type = 1
+base_attack = 48
+base_speed = 42
+growth = ExtResource("5_7bcpw")
+learnset = Array[ExtResource("6_4mvwt")]([SubResource("Resource_nt0w4"), SubResource("Resource_58sxk"), SubResource("Resource_6gcil")])
+evolves_into = ExtResource("5_wpfld")
+evolution_level = 18
+ability_pool = Array[ExtResource("1_iri82")]([ExtResource("2_wpfld"), ExtResource("3_l8j3e")])
+base_bind_chance = 0.5
+battle_sprite = ExtResource("4_8gr5e")

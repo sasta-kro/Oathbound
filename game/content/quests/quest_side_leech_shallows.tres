@@ -6,7 +6,7 @@
 [sub_resource type="Resource" id="Objective_0"]
 script = ExtResource("2_objective")
 kind = 0
-target = &"creature_water_02"
+target = &"creature_leechling"
 count = 2
 description = "Clear two Leechlings from the reeds east of the pond"
 

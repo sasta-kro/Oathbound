@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://fsjkpf8q4u2v"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_6q8my"]
+[ext_resource type="Resource" path="res://content/abilities/ability_overgrown.tres" id="2_occ3j"]
+[ext_resource type="Resource" uid="uid://clfgmuu7pwbi6" path="res://content/abilities/ability_swiftfoot.tres" id="3_7vhr2"]
+[ext_resource type="SpriteFrames" uid="uid://3e6n2cn82fre" path="res://content/sprites/creature_thornimp_battle.tres" id="4_brbg7"]
+[ext_resource type="Resource" path="res://content/growth/growth_standard.tres" id="5_dsjqn"]
+[ext_resource type="Resource" uid="uid://d1h6aoi7mxm5k" path="res://content/creatures/creature_bramblewing.tres" id="5_occ3j"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_yktv3"]
+[ext_resource type="Resource" path="res://content/moves/move_vine_lash_01.tres" id="7_te5gh"]
+[ext_resource type="Resource" path="res://content/moves/move_spore_cloud_01.tres" id="8_q6tgd"]
+[ext_resource type="Resource" path="res://content/moves/move_thorn_volley_01.tres" id="9_5wmtn"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="10_4ba0j"]
+
+[sub_resource type="Resource" id="Resource_xutcj"]
+script = ExtResource("6_yktv3")
+move = ExtResource("7_te5gh")
+
+[sub_resource type="Resource" id="Resource_kfj6s"]
+script = ExtResource("6_yktv3")
+level = 8
+move = ExtResource("8_q6tgd")
+
+[sub_resource type="Resource" id="Resource_yq7li"]
+script = ExtResource("6_yktv3")
+level = 12
+move = ExtResource("9_5wmtn")
+
+[resource]
+script = ExtResource("10_4ba0j")
+id = &"creature_thornimp"
+display_name = "Thornimp"
+primary_type = 4
+base_attack = 48
+base_defense = 36
+base_speed = 50
+growth = ExtResource("5_dsjqn")
+learnset = Array[ExtResource("6_yktv3")]([SubResource("Resource_xutcj"), SubResource("Resource_kfj6s"), SubResource("Resource_yq7li")])
+evolves_into = ExtResource("5_occ3j")
+evolution_level = 18
+ability_pool = Array[ExtResource("1_6q8my")]([ExtResource("2_occ3j"), ExtResource("3_7vhr2")])
+base_bind_chance = 0.5
+battle_sprite = ExtResource("4_brbg7")

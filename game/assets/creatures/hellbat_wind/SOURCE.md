@@ -16,4 +16,4 @@ Recoloured to the wind palette by the importer; the original pack is red.
 | `hurt.png` | 4 |
 | `flying.png` | 6 |
 
-Used by `res://content/sprites/creature_wind_01_battle.tres`.
+Used by `res://content/sprites/creature_gustpip_battle.tres`.

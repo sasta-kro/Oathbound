@@ -1,0 +1,63 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://x7tfsati8sup"]
+
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="1_species"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="2_entry"]
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="3_ability"]
+[ext_resource type="Resource" path="res://content/growth/growth_bulky.tres" id="4_growth"]
+[ext_resource type="Resource" uid="uid://c2nhjijjdfyyh" path="res://content/creatures/creature_bastion.tres" id="5_pyh6t"]
+[ext_resource type="SpriteFrames" uid="uid://dgd705e3orpbp" path="res://content/sprites/creature_bulwark_battle.tres" id="5_sprite"]
+[ext_resource type="Resource" path="res://content/moves/move_iron_jab_01.tres" id="10_q56nj"]
+[ext_resource type="Resource" path="res://content/moves/move_steel_rend_01.tres" id="12_pyh6t"]
+[ext_resource type="Resource" uid="uid://hy2bjnv2kuj3" path="res://content/abilities/ability_stonewall.tres" id="ability_0"]
+[ext_resource type="Resource" path="res://content/abilities/ability_thick_hide.tres" id="ability_1"]
+[ext_resource type="Resource" uid="uid://yy88er3s78cw" path="res://content/moves/move_guard_stance_01.tres" id="move_guard_stance"]
+[ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_quake_step_01.tres" id="move_quake_step"]
+[ext_resource type="Resource" path="res://content/moves/move_shield_bash_01.tres" id="move_shield_bash"]
+[ext_resource type="Resource" path="res://content/moves/move_stone_toss_01.tres" id="move_stone_toss"]
+
+[sub_resource type="Resource" id="Resource_1wgg5"]
+script = ExtResource("2_entry")
+move = ExtResource("move_stone_toss")
+
+[sub_resource type="Resource" id="Resource_gx2je"]
+script = ExtResource("2_entry")
+level = 5
+move = ExtResource("move_shield_bash")
+
+[sub_resource type="Resource" id="Resource_67kb4"]
+script = ExtResource("2_entry")
+level = 9
+move = ExtResource("move_guard_stance")
+
+[sub_resource type="Resource" id="Resource_dm8t3"]
+script = ExtResource("2_entry")
+level = 12
+move = ExtResource("10_q56nj")
+
+[sub_resource type="Resource" id="Resource_622u4"]
+script = ExtResource("2_entry")
+level = 17
+move = ExtResource("move_quake_step")
+
+[sub_resource type="Resource" id="Resource_uq2qo"]
+script = ExtResource("2_entry")
+level = 22
+move = ExtResource("12_pyh6t")
+
+[resource]
+script = ExtResource("1_species")
+id = &"creature_bulwark"
+display_name = "Bulwark"
+primary_type = 6
+has_secondary_type = true
+base_hp = 64
+base_attack = 52
+base_defense = 76
+base_speed = 26
+growth = ExtResource("4_growth")
+learnset = Array[ExtResource("2_entry")]([SubResource("Resource_1wgg5"), SubResource("Resource_gx2je"), SubResource("Resource_67kb4"), SubResource("Resource_dm8t3"), SubResource("Resource_622u4"), SubResource("Resource_uq2qo")])
+evolves_into = ExtResource("5_pyh6t")
+evolution_level = 34
+ability_pool = Array[ExtResource("3_ability")]([ExtResource("ability_0"), ExtResource("ability_1")])
+base_bind_chance = 0.25
+battle_sprite = ExtResource("5_sprite")

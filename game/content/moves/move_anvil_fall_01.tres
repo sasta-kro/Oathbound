@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="MoveData" format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/move_data.gd" id="1_pqtpo"]
+[ext_resource type="Script" path="res://scripts/creatures/stat_modifier.gd" id="2_ehp76"]
+
+[resource]
+script = ExtResource("1_pqtpo")
+id = &"move_anvil_fall_01"
+display_name = "Anvil Fall"
+description = "The user drops its full weight on the target, which may be left stunned."
+type = 6
+power = 45
+accuracy = 85
+cooldown_turns = 3
+status = 3
+status_chance = 20
+status_duration_turns = 1

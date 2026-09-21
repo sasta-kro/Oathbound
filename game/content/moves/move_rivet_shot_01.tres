@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="MoveData" format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/move_data.gd" id="1_ys310"]
+[ext_resource type="Script" path="res://scripts/creatures/stat_modifier.gd" id="2_k6e1u"]
+
+[resource]
+script = ExtResource("1_ys310")
+id = &"move_rivet_shot_01"
+display_name = "Rivet Shot"
+description = "A hot rivet flicked at the target before it can move."
+type = 6
+power = 20
+cooldown_turns = 3
+priority = 1

@@ -17,4 +17,4 @@ Recoloured to the wind palette by the importer; the original pack is red.
 | `idle.png` | 6 |
 | `walk.png` | 8 |
 
-Used by `res://content/sprites/creature_wind_06_battle.tres`.
+Used by `res://content/sprites/creature_hexcaller_battle.tres`.

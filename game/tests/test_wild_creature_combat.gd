@@ -5,7 +5,7 @@ extends GutTest
 
 const CREATURE_SCENE: PackedScene = preload("res://scenes/wild_creature.tscn")
 const PLAYER_SCENE: PackedScene = preload("res://scenes/player.tscn")
-const SPECIES_ID := &"creature_earth_01"
+const SPECIES_ID := &"creature_loambuck"
 
 ## Well clear of the sample map, so nothing else can wander into these tests.
 const TEST_ORIGIN := Vector2(4000, 4000)

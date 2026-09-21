@@ -3,8 +3,8 @@ extends GutTest
 ## everyone else is kept for them, so a full party is never a reason to walk
 ## past something worth binding.
 
-const EMBERLING := &"creature_fire_01"
-const LOAMBUCK := &"creature_earth_01"
+const EMBERLING := &"creature_emberling"
+const LOAMBUCK := &"creature_loambuck"
 const KEEPING_QUEST_ID := &"quest_main_01b_room_for_more"
 const LEAD_QUEST_ID := &"quest_main_01d_who_walks_in_front"
 

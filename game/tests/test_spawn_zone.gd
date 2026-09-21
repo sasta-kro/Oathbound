@@ -7,7 +7,7 @@ const MAIN_SCENE: PackedScene = preload("res://main.tscn")
 const TEST_AREA: PackedScene = preload("res://areas/test_01.tscn")
 const CREATURE_SCENE: PackedScene = preload("res://scenes/wild_creature.tscn")
 const SPAWN_ZONE_SCENE: PackedScene = preload("res://scenes/spawn_zone.tscn")
-const SPECIES: CreatureSpecies = preload("res://content/creatures/creature_fire_01.tres")
+const SPECIES: CreatureSpecies = preload("res://content/creatures/creature_emberling.tres")
 
 
 ## Tests that await physics_frame resume inside the physics step. Freeing
@@ -110,6 +110,46 @@ func test_zone_without_species_spawns_nothing() -> void:
 	for _frame: int in 3:
 		await get_tree().physics_frame
 	assert_eq(zone.alive_count(), 0)
+
+
+func test_a_mixed_zone_keeps_its_own_species_common_and_skips_empty_rows() -> void:
+	var zone: SpawnZone = autofree(SPAWN_ZONE_SCENE.instantiate())
+	var other: CreatureSpecies = load("res://content/creatures/creature_flicker.tres")
+	zone.species = SPECIES
+	var also: Array[CreatureSpecies] = [other, null]
+	zone.also_spawns = also
+	zone._rng.seed = 7
+	var own: int = 0
+	for _roll: int in 400:
+		var picked: CreatureSpecies = zone._pick_species()
+		assert_not_null(picked, "An empty also_spawns row is never picked.")
+		if picked == SPECIES:
+			own += 1
+		elif picked != other:
+			fail_test("Picked a species the zone does not list.")
+	assert_between(own, 160, 240, "The zone's own species is about half of every spawn.")
+
+
+func test_every_catchable_species_lives_somewhere_in_the_wild_or_evolves_from_one() -> void:
+	var wild: Dictionary = {}
+	for area: String in ["area_one", "area_two", "area_three"]:
+		var root: Node = (load("res://areas/%s.tscn" % area) as PackedScene).instantiate()
+		for zone: Node in root.find_children("*", "SpawnZone", true, false):
+			wild[(zone as SpawnZone).species] = true
+			for species: CreatureSpecies in (zone as SpawnZone).also_spawns:
+				assert_not_null(species, "%s/%s lists an empty species." % [area, zone.name])
+				wild[species] = true
+		root.free()
+	var reachable: Dictionary = wild.duplicate()
+	for species: CreatureSpecies in wild:
+		var next: CreatureSpecies = species.evolves_into
+		while next != null and not reachable.has(next):
+			reachable[next] = true
+			next = next.evolves_into
+	for species: CreatureSpecies in Content.all_species():
+		if species.base_bind_chance <= 0.05:
+			continue  # Bosses and elites are met, never caught.
+		assert_true(reachable.has(species), "%s can never be met or evolved into." % species.display_name)
 
 
 func test_neutral_creature_wanders_inside_its_leash() -> void:

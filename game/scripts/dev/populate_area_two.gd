@@ -303,21 +303,24 @@ const CAST := [
 ]
 
 ## Wild creatures of the deep, as (species id, anchor cell, radius, max alive,
-## level band, hostile). Levels run 16 to 28, so the walk from the stair to
-## the Kingsworn carries a party from the Black Knight up to him.
+## level band, hostile, species mixed in). Levels run 16 to 28, so the walk
+## from the stair to the Kingsworn carries a party from the Black Knight up to
+## him. The shipped scene has since gained hand-placed zones on top of these
+## (Quarrybrute, Deepcrag, Grovehulk, Ashhound and the two nested west zones);
+## re-running this script drops them.
 const SPAWNS := [
-	["earth_03", Vector2i(34, 44), 3.0, 2, 16, 18, true],
-	["water_06", Vector2i(30, 70), 3.5, 3, 16, 19, false],
-	["wind_05", Vector2i(62, 34), 3.0, 2, 18, 21, true],
-	["water_03", Vector2i(78, 62), 3.5, 2, 19, 22, false],
-	["earth_04", Vector2i(96, 40), 2.5, 2, 21, 24, true],
-	["fire_04", Vector2i(104, 74), 3.0, 2, 22, 25, true],
-	["water_04", Vector2i(118, 84), 3.0, 2, 23, 26, false],
-	["wind_06", Vector2i(116, 40), 2.5, 2, 24, 27, true],
-	["earth_06", Vector2i(128, 34), 2.5, 1, 25, 28, true],
+	["hollow_squire", Vector2i(34, 44), 3.0, 2, 16, 18, true, ["sentinel_eye"]],
+	["mistwisp", Vector2i(30, 70), 3.5, 3, 16, 19, false, ["brinehound"]],
+	["gloomgaze", Vector2i(62, 34), 3.0, 2, 18, 21, true, ["galewing"]],
+	["mirelash", Vector2i(78, 62), 3.5, 2, 19, 22, false, ["bramblewing"]],
+	["bulwark", Vector2i(96, 40), 2.5, 2, 21, 24, true, ["ironhulk"]],
+	["cinderhulk", Vector2i(104, 74), 3.0, 2, 22, 25, true, ["hammerhorn"]],
+	["dreadmere", Vector2i(118, 84), 3.0, 2, 23, 26, false, ["rotcrawler"]],
+	["hexcaller", Vector2i(116, 40), 2.5, 2, 24, 27, true, ["pyrewing", "razorfiend"]],
+	["ironhorn", Vector2i(128, 34), 2.5, 1, 25, 28, true, ["gravereaper"]],
 ]
 
-const BOSS_SPECIES := "earth_07"
+const BOSS_SPECIES := "kingsworn"
 const BOSS_LEVEL := 28
 const BOSS_ID: StringName = &"boss_area_02"
 ## The quest that should gate him once the Area Two chain exists. Left empty
@@ -384,6 +387,10 @@ func _ready() -> void:
 		zone.name = "Spawn_%s" % row[0]
 		zone.position = _cell_to_world(ground, _settled_cell(row[1], floors, blocked))
 		zone.set("species", load(SPECIES % row[0]))
+		var also_spawns: Array[CreatureSpecies] = []
+		for id: String in row[7]:
+			also_spawns.append(load(SPECIES % id))
+		zone.set("also_spawns", also_spawns)
 		zone.set("radius_in_cells", row[2])
 		zone.set("max_alive", row[3])
 		zone.set("level_min", row[4])

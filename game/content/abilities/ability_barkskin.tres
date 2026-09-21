@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="AbilityData" format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/stat_modifier.gd" id="1_c617j"]
+[ext_resource type="Script" path="res://scripts/creatures/ability_data.gd" id="2_olahq"]
+
+[resource]
+script = ExtResource("2_olahq")
+id = &"ability_barkskin"
+display_name = "Barkskin"
+description = "Thick, damp bark that turns aside part of every Fire move."
+damage_taken_multiplier = 0.75
+has_taken_type_filter = true

@@ -160,8 +160,8 @@ func test_a_night_at_the_inn_and_a_salve_finish_the_two_errands() -> void:
 
 
 func _config_for(lesson: Dictionary) -> BattleConfig:
-	var party: Array[CreatureInstance] = [Content.spawn_creature(&"creature_fire_01", 5)]
-	var foe: CreatureInstance = Content.spawn_creature(&"creature_earth_01", 4)
+	var party: Array[CreatureInstance] = [Content.spawn_creature(&"creature_emberling", 5)]
+	var foe: CreatureInstance = Content.spawn_creature(&"creature_loambuck", 4)
 	var config := BattleConfig.wild(party, foe, Content.type_chart)
 	(lesson.prepare as Callable).call(config, foe, party)
 	return config

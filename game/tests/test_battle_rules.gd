@@ -2,9 +2,9 @@ extends GutTest
 ## The provisional battle formulas (Specification 11.8, 15.3), checked with
 ## hand-computed numbers so a retune shows up as a deliberate test change.
 
-const EMBERLING := "res://content/creatures/creature_fire_01.tres"
-const LOAMBUCK := "res://content/creatures/creature_earth_01.tres"
-const RILLFIN := "res://content/creatures/creature_water_01.tres"
+const EMBERLING := "res://content/creatures/creature_emberling.tres"
+const LOAMBUCK := "res://content/creatures/creature_loambuck.tres"
+const RILLFIN := "res://content/creatures/creature_rillfin.tres"
 const EMBER := "res://content/moves/move_ember_01.tres"
 const VENOM_SPIT := "res://content/moves/move_venom_spit_01.tres"
 const WATER_JET := "res://content/moves/move_water_jet_01.tres"

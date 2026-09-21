@@ -1,0 +1,61 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://dnii45h2vidoo"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_j6mis"]
+[ext_resource type="Resource" path="res://content/abilities/ability_forged_core.tres" id="2_7tvht"]
+[ext_resource type="Resource" uid="uid://clfgmuu7pwbi6" path="res://content/abilities/ability_swiftfoot.tres" id="3_a0pyj"]
+[ext_resource type="SpriteFrames" uid="uid://butnd4ixqc4h" path="res://content/sprites/creature_razorfiend_battle.tres" id="4_3ipxf"]
+[ext_resource type="Resource" path="res://content/growth/growth_standard.tres" id="5_cwft7"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_4eok3"]
+[ext_resource type="Resource" path="res://content/moves/move_iron_jab_01.tres" id="7_tmlex"]
+[ext_resource type="Resource" path="res://content/moves/move_rivet_shot_01.tres" id="8_oyf17"]
+[ext_resource type="Resource" uid="uid://yy88er3s78cw" path="res://content/moves/move_guard_stance_01.tres" id="9_me22k"]
+[ext_resource type="Resource" path="res://content/moves/move_steel_rend_01.tres" id="10_c6ch0"]
+[ext_resource type="Resource" path="res://content/moves/move_gale_slash_01.tres" id="11_auu1b"]
+[ext_resource type="Resource" path="res://content/moves/move_anvil_fall_01.tres" id="12_l03rp"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="13_0yatt"]
+
+[sub_resource type="Resource" id="Resource_wc18v"]
+script = ExtResource("6_4eok3")
+move = ExtResource("7_tmlex")
+
+[sub_resource type="Resource" id="Resource_lbsec"]
+script = ExtResource("6_4eok3")
+level = 5
+move = ExtResource("8_oyf17")
+
+[sub_resource type="Resource" id="Resource_7vrc0"]
+script = ExtResource("6_4eok3")
+level = 9
+move = ExtResource("9_me22k")
+
+[sub_resource type="Resource" id="Resource_eupnb"]
+script = ExtResource("6_4eok3")
+level = 13
+move = ExtResource("10_c6ch0")
+
+[sub_resource type="Resource" id="Resource_slpir"]
+script = ExtResource("6_4eok3")
+level = 18
+move = ExtResource("11_auu1b")
+
+[sub_resource type="Resource" id="Resource_4bju5"]
+script = ExtResource("6_4eok3")
+level = 26
+move = ExtResource("12_l03rp")
+
+[resource]
+script = ExtResource("13_0yatt")
+id = &"creature_razorfiend"
+display_name = "Razorfiend"
+primary_type = 6
+has_secondary_type = true
+secondary_type = 3
+base_hp = 58
+base_attack = 74
+base_defense = 54
+base_speed = 60
+growth = ExtResource("5_cwft7")
+learnset = Array[ExtResource("6_4eok3")]([SubResource("Resource_wc18v"), SubResource("Resource_lbsec"), SubResource("Resource_7vrc0"), SubResource("Resource_eupnb"), SubResource("Resource_slpir"), SubResource("Resource_4bju5")])
+ability_pool = Array[ExtResource("1_j6mis")]([ExtResource("2_7tvht"), ExtResource("3_a0pyj")])
+base_bind_chance = 0.22
+battle_sprite = ExtResource("4_3ipxf")

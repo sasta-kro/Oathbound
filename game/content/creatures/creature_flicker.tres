@@ -1,0 +1,44 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://dv7dob8r0p3np"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_43pgb"]
+[ext_resource type="Resource" path="res://content/abilities/ability_ember_body.tres" id="2_0meay"]
+[ext_resource type="Resource" path="res://content/abilities/ability_hellborn.tres" id="3_anks1"]
+[ext_resource type="SpriteFrames" uid="uid://c6tmgn888a6v7" path="res://content/sprites/creature_flicker_battle.tres" id="4_4fxvq"]
+[ext_resource type="Resource" uid="uid://bx0hons5ecky7" path="res://content/creatures/creature_wispflame.tres" id="5_0meay"]
+[ext_resource type="Resource" path="res://content/growth/growth_standard.tres" id="5_kqmdc"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_a8die"]
+[ext_resource type="Resource" path="res://content/moves/move_ember_01.tres" id="7_elkc3"]
+[ext_resource type="Resource" uid="uid://c3rxxapydl0ab" path="res://content/moves/move_dread_gaze_01.tres" id="8_54mlr"]
+[ext_resource type="Resource" path="res://content/moves/move_flame_burst_01.tres" id="9_1y3wy"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="10_erdjw"]
+
+[sub_resource type="Resource" id="Resource_8he7y"]
+script = ExtResource("6_a8die")
+move = ExtResource("7_elkc3")
+
+[sub_resource type="Resource" id="Resource_dsvci"]
+script = ExtResource("6_a8die")
+level = 7
+move = ExtResource("8_54mlr")
+
+[sub_resource type="Resource" id="Resource_ayu0v"]
+script = ExtResource("6_a8die")
+level = 12
+move = ExtResource("9_1y3wy")
+
+[resource]
+script = ExtResource("10_erdjw")
+id = &"creature_flicker"
+display_name = "Flicker"
+base_hp = 34
+base_attack = 44
+base_defense = 28
+base_speed = 56
+growth = ExtResource("5_kqmdc")
+learnset = Array[ExtResource("6_a8die")]([SubResource("Resource_8he7y"), SubResource("Resource_dsvci"), SubResource("Resource_ayu0v")])
+evolves_into = ExtResource("5_0meay")
+evolution_level = 16
+ability_pool = Array[ExtResource("1_43pgb")]([ExtResource("2_0meay"), ExtResource("3_anks1")])
+base_bind_chance = 0.5
+battle_sprite = ExtResource("4_4fxvq")
+sprite_scale = 0.75

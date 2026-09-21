@@ -1,0 +1,51 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://cjlt5ncldh6kk"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_rf88o"]
+[ext_resource type="Resource" path="res://content/abilities/ability_windrider.tres" id="2_xg63x"]
+[ext_resource type="Resource" path="res://content/abilities/ability_toxic_ward.tres" id="3_i2uk2"]
+[ext_resource type="SpriteFrames" uid="uid://wa7d03e1o18a" path="res://content/sprites/creature_hexling_battle.tres" id="4_w8bbr"]
+[ext_resource type="Resource" path="res://content/growth/growth_standard.tres" id="5_p66u1"]
+[ext_resource type="Resource" uid="uid://cgxqk7aff4f28" path="res://content/creatures/creature_hexcaller.tres" id="5_xg63x"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_rcppd"]
+[ext_resource type="Resource" path="res://content/moves/move_gust_01.tres" id="7_phx3n"]
+[ext_resource type="Resource" path="res://content/moves/move_hex_bolt_01.tres" id="8_begwr"]
+[ext_resource type="Resource" uid="uid://c3rxxapydl0ab" path="res://content/moves/move_dread_gaze_01.tres" id="9_sols2"]
+[ext_resource type="Resource" path="res://content/moves/move_water_jet_01.tres" id="10_8k3ci"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="11_g7r5r"]
+
+[sub_resource type="Resource" id="Resource_nywxh"]
+script = ExtResource("6_rcppd")
+move = ExtResource("7_phx3n")
+
+[sub_resource type="Resource" id="Resource_tvb5x"]
+script = ExtResource("6_rcppd")
+level = 8
+move = ExtResource("8_begwr")
+
+[sub_resource type="Resource" id="Resource_v5k8q"]
+script = ExtResource("6_rcppd")
+level = 12
+move = ExtResource("9_sols2")
+
+[sub_resource type="Resource" id="Resource_8hr0n"]
+script = ExtResource("6_rcppd")
+level = 16
+move = ExtResource("10_8k3ci")
+
+[resource]
+script = ExtResource("11_g7r5r")
+id = &"creature_hexling"
+display_name = "Hexling"
+primary_type = 3
+base_hp = 38
+base_attack = 46
+base_defense = 34
+base_speed = 50
+growth = ExtResource("5_p66u1")
+learnset = Array[ExtResource("6_rcppd")]([SubResource("Resource_nywxh"), SubResource("Resource_tvb5x"), SubResource("Resource_v5k8q"), SubResource("Resource_8hr0n")])
+evolves_into = ExtResource("5_xg63x")
+evolution_level = 22
+ability_pool = Array[ExtResource("1_rf88o")]([ExtResource("2_xg63x"), ExtResource("3_i2uk2")])
+base_bind_chance = 0.5
+battle_sprite = ExtResource("4_w8bbr")
+sprite_scale = 0.9

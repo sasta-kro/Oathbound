@@ -1,0 +1,62 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://co0muf78v66o8"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_8eom7"]
+[ext_resource type="Resource" path="res://content/abilities/ability_gravebound.tres" id="2_45uq8"]
+[ext_resource type="Resource" path="res://content/abilities/ability_windrider.tres" id="3_yapu7"]
+[ext_resource type="SpriteFrames" uid="uid://d3cl3yvmy3ni3" path="res://content/sprites/creature_gravereaper_battle.tres" id="4_wp23f"]
+[ext_resource type="Resource" path="res://content/growth/growth_standard.tres" id="5_nvfvq"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_melr3"]
+[ext_resource type="Resource" path="res://content/moves/move_grave_touch_01.tres" id="7_wj4cd"]
+[ext_resource type="Resource" uid="uid://c3rxxapydl0ab" path="res://content/moves/move_dread_gaze_01.tres" id="8_6lis5"]
+[ext_resource type="Resource" path="res://content/moves/move_blight_bite_01.tres" id="9_bs3ad"]
+[ext_resource type="Resource" path="res://content/moves/move_hex_bolt_01.tres" id="10_tevfm"]
+[ext_resource type="Resource" path="res://content/moves/move_reaping_scythe_01.tres" id="11_diold"]
+[ext_resource type="Resource" path="res://content/moves/move_necrotic_wave_01.tres" id="12_opwy6"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="13_5oagk"]
+
+[sub_resource type="Resource" id="Resource_q4u5k"]
+script = ExtResource("6_melr3")
+move = ExtResource("7_wj4cd")
+
+[sub_resource type="Resource" id="Resource_af3mj"]
+script = ExtResource("6_melr3")
+level = 6
+move = ExtResource("8_6lis5")
+
+[sub_resource type="Resource" id="Resource_jwvey"]
+script = ExtResource("6_melr3")
+level = 10
+move = ExtResource("9_bs3ad")
+
+[sub_resource type="Resource" id="Resource_idqti"]
+script = ExtResource("6_melr3")
+level = 14
+move = ExtResource("10_tevfm")
+
+[sub_resource type="Resource" id="Resource_7gvy7"]
+script = ExtResource("6_melr3")
+level = 22
+move = ExtResource("11_diold")
+
+[sub_resource type="Resource" id="Resource_4pkji"]
+script = ExtResource("6_melr3")
+level = 28
+move = ExtResource("12_opwy6")
+
+[resource]
+script = ExtResource("13_5oagk")
+id = &"creature_gravereaper"
+display_name = "Gravereaper"
+primary_type = 5
+has_secondary_type = true
+secondary_type = 3
+base_hp = 58
+base_attack = 74
+base_defense = 46
+base_speed = 66
+growth = ExtResource("5_nvfvq")
+learnset = Array[ExtResource("6_melr3")]([SubResource("Resource_q4u5k"), SubResource("Resource_af3mj"), SubResource("Resource_jwvey"), SubResource("Resource_idqti"), SubResource("Resource_7gvy7"), SubResource("Resource_4pkji")])
+ability_pool = Array[ExtResource("1_8eom7")]([ExtResource("2_45uq8"), ExtResource("3_yapu7")])
+base_bind_chance = 0.2
+battle_sprite = ExtResource("4_wp23f")
+sprite_scale = 1.2

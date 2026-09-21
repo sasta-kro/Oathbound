@@ -1,0 +1,53 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://tke8ciopw07c"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_bcuyb"]
+[ext_resource type="Resource" uid="uid://clfgmuu7pwbi6" path="res://content/abilities/ability_swiftfoot.tres" id="2_3yxbt"]
+[ext_resource type="Resource" path="res://content/abilities/ability_windrider.tres" id="3_8m4xl"]
+[ext_resource type="SpriteFrames" uid="uid://bxn4xpfxywvcp" path="res://content/sprites/creature_skimwing_battle.tres" id="4_dokmt"]
+[ext_resource type="Resource" path="res://content/growth/growth_standard.tres" id="5_ka06v"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_7377x"]
+[ext_resource type="Resource" path="res://content/moves/move_water_jet_01.tres" id="7_sg8o8"]
+[ext_resource type="Resource" path="res://content/moves/move_gust_01.tres" id="8_bxhv2"]
+[ext_resource type="Resource" path="res://content/moves/move_brine_fang_01.tres" id="9_lwlul"]
+[ext_resource type="Resource" path="res://content/moves/move_gale_slash_01.tres" id="10_58h6k"]
+[ext_resource type="Resource" path="res://content/moves/move_tide_crash_01.tres" id="11_i1n0m"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="12_2y25e"]
+
+[sub_resource type="Resource" id="Resource_ijy2r"]
+script = ExtResource("6_7377x")
+move = ExtResource("7_sg8o8")
+
+[sub_resource type="Resource" id="Resource_oh2hb"]
+script = ExtResource("6_7377x")
+move = ExtResource("8_bxhv2")
+
+[sub_resource type="Resource" id="Resource_y03tb"]
+script = ExtResource("6_7377x")
+level = 10
+move = ExtResource("9_lwlul")
+
+[sub_resource type="Resource" id="Resource_7n42y"]
+script = ExtResource("6_7377x")
+level = 16
+move = ExtResource("10_58h6k")
+
+[sub_resource type="Resource" id="Resource_20vp6"]
+script = ExtResource("6_7377x")
+level = 24
+move = ExtResource("11_i1n0m")
+
+[resource]
+script = ExtResource("12_2y25e")
+id = &"creature_skimwing"
+display_name = "Skimwing"
+primary_type = 2
+has_secondary_type = true
+secondary_type = 3
+base_hp = 42
+base_attack = 50
+base_defense = 36
+base_speed = 70
+growth = ExtResource("5_ka06v")
+learnset = Array[ExtResource("6_7377x")]([SubResource("Resource_ijy2r"), SubResource("Resource_oh2hb"), SubResource("Resource_y03tb"), SubResource("Resource_7n42y"), SubResource("Resource_20vp6")])
+ability_pool = Array[ExtResource("1_bcuyb")]([ExtResource("2_3yxbt"), ExtResource("3_8m4xl")])
+battle_sprite = ExtResource("4_dokmt")

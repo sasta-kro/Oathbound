@@ -122,23 +122,23 @@ const KNIGHT_SPRITE_FRAMES := "res://content/sprites/npc_knight.tres"
 const NEUTRAL: int = 0
 const HOSTILE: int = 1
 
-## The wild dead, as (species id, cell, radius, max alive, level band). The
-## band runs 30 to 38, so the walk from the stair to the seat carries a party
-## on from the Kingsworn.
+## The wild dead, as (species id, cell, radius, max alive, level band, species
+## mixed in). The band runs 30 to 38, so the walk from the stair to the seat
+## carries a party on from the Kingsworn.
 const SPAWNS: Array = [
-	["earth_03", Vector2i(15, 34), 3.0, 2, 30, 32],
-	["wind_05", Vector2i(12, 28), 3.0, 2, 32, 34],
-	["earth_04", Vector2i(15, 20), 3.0, 2, 34, 36],
-	["fire_04", Vector2i(15, 14), 2.5, 2, 36, 38],
+	["barrow_knight", Vector2i(15, 34), 3.0, 2, 30, 32, ["elderbough"]],
+	["gloomgaze", Vector2i(12, 28), 3.0, 2, 32, 34, ["stormeye"]],
+	["bulwark", Vector2i(15, 20), 3.0, 2, 34, 36, ["bastion"]],
+	["cinderhulk", Vector2i(15, 14), 2.5, 2, 36, 38, ["hellmaw", "forgehorn"]],
 ]
 
 ## The two elites of Specification 5.3, each in a glade off the road.
 const ELITES: Array = [
-	{"name": "HouseholdKnightWest", "cell": Vector2i(8, 22), "species": "earth_07", "level": 34},
-	{"name": "HouseholdKnightEast", "cell": Vector2i(22, 26), "species": "earth_05", "level": 34},
+	{"name": "HouseholdKnightWest", "cell": Vector2i(8, 22), "species": "kingsworn", "level": 34},
+	{"name": "HouseholdKnightEast", "cell": Vector2i(22, 26), "species": "oathbreaker", "level": 34},
 ]
 
-const BOSS_SPECIES := "rot_01"
+const BOSS_SPECIES := "skeleton_lord"
 const BOSS_LEVEL: int = 38
 const BOSS_ID := "boss_area_03"
 const BOSS_CHALLENGE := "The Skeleton Lord: Another of the little wardens. Do you know what you are interrupting? I am waiting. I have been waiting on this seat since the hour I reached past the door of the world and took my son back through it. He is still coming. He has been coming for four hundred years. Put your oath down and wait with me, or put it to use. It makes very little difference which."
@@ -426,11 +426,15 @@ func _cast(p: AreaPainter) -> void:
 		properties["item_counts"] = counts
 		p.add_chest(entry["name"], entry["cell"], properties)
 	for row: Array in SPAWNS:
+		var also_spawns: Array[CreatureSpecies] = []
+		for id: String in row[6]:
+			also_spawns.append(load(SPECIES % id))
 		p.add_spawn_zone(
 			"Spawn_%s" % row[0],
 			row[1],
 			{
 				"species": load(SPECIES % row[0]),
+				"also_spawns": also_spawns,
 				"radius_in_cells": row[2],
 				"max_alive": row[3],
 				"level_min": row[4],

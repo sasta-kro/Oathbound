@@ -1,0 +1,44 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://c4qjjbg66kp2i"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_lh5av"]
+[ext_resource type="Resource" path="res://content/abilities/ability_thick_hide.tres" id="2_5t70f"]
+[ext_resource type="Resource" path="res://content/abilities/ability_bloodthirst.tres" id="3_ldxg6"]
+[ext_resource type="SpriteFrames" uid="uid://b78e8wwhx8lfb" path="res://content/sprites/creature_tuskcalf_battle.tres" id="4_cslc7"]
+[ext_resource type="Resource" uid="uid://bq78v00pvn2kp" path="res://content/creatures/creature_ironhorn.tres" id="5_5t70f"]
+[ext_resource type="Resource" path="res://content/growth/growth_bulky.tres" id="5_i60bq"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_bhwks"]
+[ext_resource type="Resource" path="res://content/moves/move_stone_toss_01.tres" id="7_nthsr"]
+[ext_resource type="Resource" uid="uid://dpb40bisa8tta" path="res://content/moves/move_war_cry_01.tres" id="8_nvjli"]
+[ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_quake_step_01.tres" id="9_vdvc4"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="10_yv4pj"]
+
+[sub_resource type="Resource" id="Resource_g2jpa"]
+script = ExtResource("6_bhwks")
+move = ExtResource("7_nthsr")
+
+[sub_resource type="Resource" id="Resource_wri62"]
+script = ExtResource("6_bhwks")
+level = 6
+move = ExtResource("8_nvjli")
+
+[sub_resource type="Resource" id="Resource_dhoph"]
+script = ExtResource("6_bhwks")
+level = 12
+move = ExtResource("9_vdvc4")
+
+[resource]
+script = ExtResource("10_yv4pj")
+id = &"creature_tuskcalf"
+display_name = "Tuskcalf"
+primary_type = 1
+base_hp = 50
+base_attack = 50
+base_speed = 28
+growth = ExtResource("5_i60bq")
+learnset = Array[ExtResource("6_bhwks")]([SubResource("Resource_g2jpa"), SubResource("Resource_wri62"), SubResource("Resource_dhoph")])
+evolves_into = ExtResource("5_5t70f")
+evolution_level = 18
+ability_pool = Array[ExtResource("1_lh5av")]([ExtResource("2_5t70f"), ExtResource("3_ldxg6")])
+base_bind_chance = 0.45
+battle_sprite = ExtResource("4_cslc7")
+sprite_scale = 0.75

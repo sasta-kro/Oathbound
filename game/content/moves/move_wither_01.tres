@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="MoveData" format=3 uid="uid://d1r0dnyshd3ul"]
+
+[ext_resource type="Script" uid="uid://bq5p2dxnovb0r" path="res://scripts/creatures/move_data.gd" id="1_17oa1"]
+[ext_resource type="Script" uid="uid://c8yppijv6s6vv" path="res://scripts/creatures/stat_modifier.gd" id="2_k6mhg"]
+
+[sub_resource type="Resource" id="Resource_5u4f3"]
+script = ExtResource("2_k6mhg")
+stat = 2
+target = 1
+percent = -25
+duration_turns = 3
+
+[resource]
+script = ExtResource("1_17oa1")
+id = &"move_wither_01"
+display_name = "Wither"
+description = "The user's rot seeps into the target, softening its Defense for a few turns."
+type = 5
+accuracy = 90
+cooldown_turns = 3
+stat_modifiers = Array[ExtResource("2_k6mhg")]([SubResource("Resource_5u4f3")])

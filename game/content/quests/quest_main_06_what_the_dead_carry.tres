@@ -20,7 +20,7 @@ description = "Recover the seal-iron from the old camp"
 [sub_resource type="Resource" id="Objective_2"]
 script = ExtResource("2_objective")
 kind = 0
-target = &"creature_water_03"
+target = &"creature_mirelash"
 count = 2
 description = "Clear two Mirelashes off the flooded hall"
 

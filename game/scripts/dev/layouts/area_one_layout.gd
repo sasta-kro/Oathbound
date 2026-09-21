@@ -48,17 +48,17 @@ const POND_CENTER := Vector2(37.0, 25.5)
 const POND_RADII := Vector2(5.0, 3.0)
 
 const SPECIES := {
-	"loambuck": "res://content/creatures/creature_earth_01.tres",
-	"rimeshard": "res://content/creatures/creature_earth_02.tres",
-	"emberling": "res://content/creatures/creature_fire_01.tres",
-	"cinderclaw": "res://content/creatures/creature_fire_02.tres",
-	"rillfin": "res://content/creatures/creature_water_01.tres",
-	"gustpip": "res://content/creatures/creature_wind_01.tres",
-	"slagling": "res://content/creatures/creature_fire_03.tres",
-	"leechling": "res://content/creatures/creature_water_02.tres",
-	"scorchbat": "res://content/creatures/creature_wind_02.tres",
-	"hollow_squire": "res://content/creatures/creature_earth_03.tres",
-	"oathbreaker": "res://content/creatures/creature_earth_05.tres",
+	"loambuck": "res://content/creatures/creature_loambuck.tres",
+	"rimeshard": "res://content/creatures/creature_rimeshard.tres",
+	"emberling": "res://content/creatures/creature_emberling.tres",
+	"cinderclaw": "res://content/creatures/creature_cinderclaw.tres",
+	"rillfin": "res://content/creatures/creature_rillfin.tres",
+	"gustpip": "res://content/creatures/creature_gustpip.tres",
+	"slagling": "res://content/creatures/creature_slagling.tres",
+	"leechling": "res://content/creatures/creature_leechling.tres",
+	"scorchbat": "res://content/creatures/creature_scorchbat.tres",
+	"hollow_squire": "res://content/creatures/creature_hollow_squire.tres",
+	"oathbreaker": "res://content/creatures/creature_oathbreaker.tres",
 }
 const NEUTRAL: int = 0
 const HOSTILE: int = 1
@@ -294,17 +294,17 @@ func _meadow(p: AreaPainter) -> void:
 
 
 func _creatures(p: AreaPainter) -> void:
-	p.add_spawn_zone("LoambuckMeadow", Vector2i(9, 31), _zone("loambuck", 3.0, 3, 2, 4, NEUTRAL))
+	p.add_spawn_zone("LoambuckMeadow", Vector2i(9, 31), _zone("loambuck", 3.0, 3, 2, 4, NEUTRAL, ["sproutling", "thornimp"]))
 	# Levels climb along the quest path: den, pit, wood, graves, then the knight.
-	p.add_spawn_zone("EmberlingDen", Vector2i(20, 19), _zone("emberling", 2.5, 2, 4, 6, HOSTILE))
-	p.add_spawn_zone("ShardHollow", Vector2i(28, 20), _zone("rimeshard", 2.5, 2, 3, 5, NEUTRAL))
-	p.add_spawn_zone("TidePool", Vector2i(30, 26), _zone("rillfin", 3.0, 2, 4, 6, NEUTRAL))
-	p.add_spawn_zone("GaleRise", Vector2i(21, 9), _zone("gustpip", 3.0, 2, 6, 8, HOSTILE))
-	p.add_spawn_zone("CinderRuins", Vector2i(33, 15), _zone("cinderclaw", 2.0, 1, 6, 7, HOSTILE))
-	p.add_spawn_zone("SlagPit", Vector2i(42, 19), _zone("slagling", 3.0, 2, 6, 8, NEUTRAL))
-	p.add_spawn_zone("LeechShallows", Vector2i(44, 26), _zone("leechling", 2.5, 2, 6, 8, NEUTRAL))
-	p.add_spawn_zone("BatWood", Vector2i(9, 17), _zone("scorchbat", 3.0, 2, 8, 9, HOSTILE))
-	p.add_spawn_zone("SquireGraves", Vector2i(31, 6), _zone("hollow_squire", 2.0, 2, 9, 11, HOSTILE))
+	p.add_spawn_zone("EmberlingDen", Vector2i(20, 19), _zone("emberling", 2.5, 2, 4, 6, HOSTILE, ["flicker"]))
+	p.add_spawn_zone("ShardHollow", Vector2i(28, 20), _zone("rimeshard", 2.5, 2, 3, 5, NEUTRAL, ["tuskcalf", "gravelimp"]))
+	p.add_spawn_zone("TidePool", Vector2i(30, 26), _zone("rillfin", 3.0, 2, 4, 6, NEUTRAL, ["skimwing"]))
+	p.add_spawn_zone("GaleRise", Vector2i(21, 9), _zone("gustpip", 3.0, 2, 6, 8, HOSTILE, ["hexling", "dustmote"]))
+	p.add_spawn_zone("CinderRuins", Vector2i(33, 15), _zone("cinderclaw", 2.0, 1, 6, 7, HOSTILE, ["rivetimp"]))
+	p.add_spawn_zone("SlagPit", Vector2i(42, 19), _zone("slagling", 3.0, 2, 6, 8, NEUTRAL, ["mercurite"]))
+	p.add_spawn_zone("LeechShallows", Vector2i(44, 26), _zone("leechling", 2.5, 2, 6, 8, NEUTRAL, ["blightmaw"]))
+	p.add_spawn_zone("BatWood", Vector2i(9, 17), _zone("scorchbat", 3.0, 2, 8, 9, HOSTILE, ["leafwing", "wraithling"]))
+	p.add_spawn_zone("SquireGraves", Vector2i(31, 6), _zone("hollow_squire", 2.0, 2, 9, 11, HOSTILE, ["gravehound"]))
 	# The Area 1 boss in front of the altar. It only accepts a challenge while
 	# the Warden's last quest is under way, and stays beaten once it falls.
 	p.add_creature(
@@ -335,9 +335,17 @@ func _creatures(p: AreaPainter) -> void:
 	)
 
 
-func _zone(species: String, radius: float, max_alive: int, level_min: int, level_max: int, disposition: int) -> Dictionary:
+## [param also] lists content ids ("sproutling") of the species mixed into the
+## zone next to its own.
+func _zone(
+	species: String, radius: float, max_alive: int, level_min: int, level_max: int, disposition: int, also: Array = []
+) -> Dictionary:
+	var also_spawns: Array[CreatureSpecies] = []
+	for id: String in also:
+		also_spawns.append(load("res://content/creatures/creature_%s.tres" % id))
 	return {
 		"species": load(SPECIES[species]),
+		"also_spawns": also_spawns,
 		"radius_in_cells": radius,
 		"max_alive": max_alive,
 		"level_min": level_min,

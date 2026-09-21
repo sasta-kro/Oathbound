@@ -1,0 +1,60 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://k4sbxefswlla"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_ad8co"]
+[ext_resource type="Resource" path="res://content/abilities/ability_thick_hide.tres" id="2_2es4o"]
+[ext_resource type="Resource" path="res://content/abilities/ability_bloodthirst.tres" id="3_oif5q"]
+[ext_resource type="SpriteFrames" uid="uid://cqabi2hwfyxau" path="res://content/sprites/creature_quarrybrute_battle.tres" id="4_uh6p3"]
+[ext_resource type="Resource" path="res://content/growth/growth_bulky.tres" id="5_cctnl"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_47hyb"]
+[ext_resource type="Resource" path="res://content/moves/move_stone_toss_01.tres" id="7_hyu7w"]
+[ext_resource type="Resource" uid="uid://yy88er3s78cw" path="res://content/moves/move_guard_stance_01.tres" id="8_trtyx"]
+[ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_quake_step_01.tres" id="9_tf1yw"]
+[ext_resource type="Resource" path="res://content/moves/move_shield_bash_01.tres" id="10_17mjl"]
+[ext_resource type="Resource" uid="uid://dpb40bisa8tta" path="res://content/moves/move_war_cry_01.tres" id="11_rest8"]
+[ext_resource type="Resource" path="res://content/moves/move_anvil_fall_01.tres" id="12_004eq"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="13_prnyg"]
+
+[sub_resource type="Resource" id="Resource_bj4w0"]
+script = ExtResource("6_47hyb")
+move = ExtResource("7_hyu7w")
+
+[sub_resource type="Resource" id="Resource_c2wim"]
+script = ExtResource("6_47hyb")
+level = 7
+move = ExtResource("8_trtyx")
+
+[sub_resource type="Resource" id="Resource_g8kl5"]
+script = ExtResource("6_47hyb")
+level = 12
+move = ExtResource("9_tf1yw")
+
+[sub_resource type="Resource" id="Resource_4f0cm"]
+script = ExtResource("6_47hyb")
+level = 20
+move = ExtResource("10_17mjl")
+
+[sub_resource type="Resource" id="Resource_x5udm"]
+script = ExtResource("6_47hyb")
+level = 24
+move = ExtResource("11_rest8")
+
+[sub_resource type="Resource" id="Resource_l1mfo"]
+script = ExtResource("6_47hyb")
+level = 30
+move = ExtResource("12_004eq")
+
+[resource]
+script = ExtResource("13_prnyg")
+id = &"creature_quarrybrute"
+display_name = "Quarrybrute"
+primary_type = 1
+base_hp = 62
+base_attack = 74
+base_defense = 60
+base_speed = 36
+growth = ExtResource("5_cctnl")
+learnset = Array[ExtResource("6_47hyb")]([SubResource("Resource_bj4w0"), SubResource("Resource_c2wim"), SubResource("Resource_g8kl5"), SubResource("Resource_4f0cm"), SubResource("Resource_x5udm"), SubResource("Resource_l1mfo")])
+ability_pool = Array[ExtResource("1_ad8co")]([ExtResource("2_2es4o"), ExtResource("3_oif5q")])
+base_bind_chance = 0.22
+battle_sprite = ExtResource("4_uh6p3")
+sprite_scale = 1.1

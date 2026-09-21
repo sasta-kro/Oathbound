@@ -1,0 +1,53 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://sum5cfamdjkj"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_loukp"]
+[ext_resource type="Resource" path="res://content/abilities/ability_windrider.tres" id="2_fyo7l"]
+[ext_resource type="Resource" uid="uid://clfgmuu7pwbi6" path="res://content/abilities/ability_swiftfoot.tres" id="3_s4ooj"]
+[ext_resource type="SpriteFrames" uid="uid://bdepw6qwbn6yd" path="res://content/sprites/creature_dustmote_battle.tres" id="4_1iq4e"]
+[ext_resource type="Resource" path="res://content/growth/growth_standard.tres" id="5_vtftn"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_33slh"]
+[ext_resource type="Resource" path="res://content/moves/move_stone_toss_01.tres" id="7_mfmax"]
+[ext_resource type="Resource" path="res://content/moves/move_gust_01.tres" id="8_cm4lk"]
+[ext_resource type="Resource" uid="uid://c3rxxapydl0ab" path="res://content/moves/move_dread_gaze_01.tres" id="9_pv72q"]
+[ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_quake_step_01.tres" id="10_5qyhf"]
+[ext_resource type="Resource" path="res://content/moves/move_gale_slash_01.tres" id="11_up170"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="12_mate5"]
+
+[sub_resource type="Resource" id="Resource_h66mi"]
+script = ExtResource("6_33slh")
+move = ExtResource("7_mfmax")
+
+[sub_resource type="Resource" id="Resource_qsij0"]
+script = ExtResource("6_33slh")
+move = ExtResource("8_cm4lk")
+
+[sub_resource type="Resource" id="Resource_famfy"]
+script = ExtResource("6_33slh")
+level = 9
+move = ExtResource("9_pv72q")
+
+[sub_resource type="Resource" id="Resource_ic4pq"]
+script = ExtResource("6_33slh")
+level = 14
+move = ExtResource("10_5qyhf")
+
+[sub_resource type="Resource" id="Resource_jxux3"]
+script = ExtResource("6_33slh")
+level = 20
+move = ExtResource("11_up170")
+
+[resource]
+script = ExtResource("12_mate5")
+id = &"creature_dustmote"
+display_name = "Dustmote"
+primary_type = 1
+has_secondary_type = true
+secondary_type = 3
+base_hp = 44
+base_attack = 46
+base_speed = 60
+growth = ExtResource("5_vtftn")
+learnset = Array[ExtResource("6_33slh")]([SubResource("Resource_h66mi"), SubResource("Resource_qsij0"), SubResource("Resource_famfy"), SubResource("Resource_ic4pq"), SubResource("Resource_jxux3")])
+ability_pool = Array[ExtResource("1_loukp")]([ExtResource("2_fyo7l"), ExtResource("3_s4ooj")])
+base_bind_chance = 0.45
+battle_sprite = ExtResource("4_1iq4e")

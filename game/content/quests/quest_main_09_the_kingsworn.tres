@@ -6,7 +6,7 @@
 [sub_resource type="Resource" id="Objective_0"]
 script = ExtResource("2_objective")
 kind = 0
-target = &"creature_earth_07"
+target = &"creature_kingsworn"
 count = 1
 description = "Bring down the Kingsworn in the mouth of the stair"
 

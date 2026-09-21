@@ -9,21 +9,28 @@
 [ext_resource type="SpriteFrames" path="res://content/sprites/npc_knight.tres" id="7_5s5ja"]
 [ext_resource type="PackedScene" path="res://scenes/wild_creature.tscn" id="8_2egwx"]
 [ext_resource type="Script" path="res://scripts/wild_creature.gd" id="9_eyb1i"]
-[ext_resource type="Resource" path="res://content/creatures/creature_earth_07.tres" id="10_0ergf"]
-[ext_resource type="Resource" path="res://content/creatures/creature_earth_05.tres" id="11_3p42j"]
-[ext_resource type="Resource" path="res://content/creatures/creature_rot_01.tres" id="12_f641o"]
+[ext_resource type="Resource" path="res://content/creatures/creature_kingsworn.tres" id="10_0ergf"]
+[ext_resource type="Resource" path="res://content/creatures/creature_oathbreaker.tres" id="11_3p42j"]
+[ext_resource type="Resource" path="res://content/creatures/creature_skeleton_lord.tres" id="12_f641o"]
 [ext_resource type="PackedScene" path="res://scenes/spawn_zone.tscn" id="13_1wrjt"]
 [ext_resource type="Script" path="res://scripts/world/spawn_zone.gd" id="14_fttk7"]
-[ext_resource type="Resource" path="res://content/creatures/creature_earth_03.tres" id="15_7gcwa"]
-[ext_resource type="Resource" path="res://content/creatures/creature_wind_05.tres" id="16_3ukpy"]
-[ext_resource type="Resource" path="res://content/creatures/creature_earth_04.tres" id="17_y3va1"]
-[ext_resource type="Resource" path="res://content/creatures/creature_fire_04.tres" id="18_eioro"]
+[ext_resource type="Resource" path="res://content/creatures/creature_hollow_squire.tres" id="15_7gcwa"]
+[ext_resource type="Resource" path="res://content/creatures/creature_gloomgaze.tres" id="16_3ukpy"]
+[ext_resource type="Resource" path="res://content/creatures/creature_bulwark.tres" id="17_y3va1"]
+[ext_resource type="Resource" path="res://content/creatures/creature_cinderhulk.tres" id="18_eioro"]
 [ext_resource type="PackedScene" path="res://scenes/area_exit.tscn" id="19_cw7vm"]
 [ext_resource type="Script" path="res://scripts/world/area_exit.gd" id="20_20wum"]
 [ext_resource type="PackedScene" path="res://scenes/treasure_chest.tscn" id="21_s1vsy"]
 [ext_resource type="Script" path="res://scripts/world/treasure_chest.gd" id="22_n3yr1"]
 [ext_resource type="PackedScene" path="res://scenes/altar_beacon.tscn" id="23_38esk"]
 [ext_resource type="Script" path="res://scripts/world/altar_beacon.gd" id="24_8qp8f"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="roster_species"]
+[ext_resource type="Resource" path="res://content/creatures/creature_barrow_knight.tres" id="roster_rot_07"]
+[ext_resource type="Resource" path="res://content/creatures/creature_elderbough.tres" id="roster_nature_07"]
+[ext_resource type="Resource" path="res://content/creatures/creature_stormeye.tres" id="roster_wind_09"]
+[ext_resource type="Resource" path="res://content/creatures/creature_bastion.tres" id="roster_steel_01"]
+[ext_resource type="Resource" path="res://content/creatures/creature_hellmaw.tres" id="roster_fire_09"]
+[ext_resource type="Resource" path="res://content/creatures/creature_forgehorn.tres" id="roster_steel_07"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_rrryp"]
 shader = ExtResource("4_ydm5q")
@@ -427,40 +434,44 @@ barks = PackedStringArray()
 
 [node name="SpawnZones" type="Node2D" parent="." unique_id=886196048]
 
-[node name="Spawn_earth_03" type="Node2D" parent="SpawnZones" unique_id=629181993 instance=ExtResource("13_1wrjt")]
+[node name="Spawn_barrow_knight" type="Node2D" parent="SpawnZones" unique_id=629181993 instance=ExtResource("13_1wrjt")]
 position = Vector2(24, 600)
 script = ExtResource("14_fttk7")
-species = ExtResource("15_7gcwa")
+species = ExtResource("roster_rot_07")
+also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_nature_07")])
 radius_in_cells = 3.0
 max_alive = 2
 level_min = 30
 level_max = 32
 disposition = 1
 
-[node name="Spawn_wind_05" type="Node2D" parent="SpawnZones" unique_id=834324370 instance=ExtResource("13_1wrjt")]
+[node name="Spawn_gloomgaze" type="Node2D" parent="SpawnZones" unique_id=834324370 instance=ExtResource("13_1wrjt")]
 position = Vector2(-120, 312)
 script = ExtResource("14_fttk7")
 species = ExtResource("16_3ukpy")
+also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_wind_09")])
 radius_in_cells = 3.0
 max_alive = 2
 level_min = 32
 level_max = 34
 disposition = 1
 
-[node name="Spawn_earth_04" type="Node2D" parent="SpawnZones" unique_id=869435333 instance=ExtResource("13_1wrjt")]
+[node name="Spawn_bulwark" type="Node2D" parent="SpawnZones" unique_id=869435333 instance=ExtResource("13_1wrjt")]
 position = Vector2(24, -72)
 script = ExtResource("14_fttk7")
 species = ExtResource("17_y3va1")
+also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_steel_01")])
 radius_in_cells = 3.0
 max_alive = 2
 level_min = 34
 level_max = 36
 disposition = 1
 
-[node name="Spawn_fire_04" type="Node2D" parent="SpawnZones" unique_id=899032803 instance=ExtResource("13_1wrjt")]
+[node name="Spawn_cinderhulk" type="Node2D" parent="SpawnZones" unique_id=899032803 instance=ExtResource("13_1wrjt")]
 position = Vector2(24, -360)
 script = ExtResource("14_fttk7")
 species = ExtResource("18_eioro")
+also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_fire_09"), ExtResource("roster_steel_07")])
 radius_in_cells = 2.5
 max_alive = 2
 level_min = 36

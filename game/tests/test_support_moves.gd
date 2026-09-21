@@ -3,8 +3,8 @@ extends GutTest
 ## the guided "Field Mending" battle that teaches them.
 
 const SCENE: PackedScene = preload("res://scenes/battle_scene.tscn")
-const EMBERLING := &"creature_fire_01"
-const LOAMBUCK := &"creature_earth_01"
+const EMBERLING := &"creature_emberling"
+const LOAMBUCK := &"creature_loambuck"
 const MEND := &"move_mend_01"
 const BOLSTER := &"move_bolster_01"
 const ALWAYS := 0.0

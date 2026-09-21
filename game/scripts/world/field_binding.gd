@@ -11,7 +11,7 @@ extends RefCounted
 ## story event is needed.
 
 const QUEST_ID: StringName = &"quest_main_01a_a_second_oath"
-const SPECIES_ID: StringName = &"creature_earth_01"
+const SPECIES_ID: StringName = &"creature_loambuck"
 ## A young Loambuck, like the ones in the meadow. Earth shrugs off fire, so
 ## even a well-trained Emberling needs a few blows to wear it down and cannot
 ## knock it out in one.

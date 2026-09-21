@@ -14,4 +14,4 @@ Sheets are horizontal strips of 100x100 frames, no shadow variant.
 | `hurt.png` | 4 |
 | `death.png` | 4 |
 
-Used by `res://content/sprites/creature_fire_01_battle.tres`.
+Used by `res://content/sprites/creature_emberling_battle.tres`.

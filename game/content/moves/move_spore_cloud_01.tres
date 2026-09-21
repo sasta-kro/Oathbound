@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="MoveData" format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/move_data.gd" id="1_re4bk"]
+[ext_resource type="Script" path="res://scripts/creatures/stat_modifier.gd" id="2_yr4lr"]
+
+[resource]
+script = ExtResource("1_re4bk")
+id = &"move_spore_cloud_01"
+display_name = "Spore Cloud"
+description = "A puff of choking spores that poisons far more often than it hurts."
+type = 4
+power = 10
+accuracy = 90
+cooldown_turns = 3
+status = 1
+status_chance = 60

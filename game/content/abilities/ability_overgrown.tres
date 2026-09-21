@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="AbilityData" format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/stat_modifier.gd" id="1_fanov"]
+[ext_resource type="Script" path="res://scripts/creatures/ability_data.gd" id="2_y86ma"]
+
+[resource]
+script = ExtResource("2_y86ma")
+id = &"ability_overgrown"
+display_name = "Overgrown"
+description = "Leaves and roots answer the creature's call, strengthening its Nature moves."
+damage_dealt_multiplier = 1.2
+has_dealt_type_filter = true
+dealt_type_filter = 4

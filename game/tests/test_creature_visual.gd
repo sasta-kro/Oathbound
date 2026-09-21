@@ -1,7 +1,7 @@
 extends GutTest
 
-const EMBERLING_PATH := "res://content/creatures/creature_fire_01.tres"
-const RIMESHARD_PATH := "res://content/creatures/creature_earth_02.tres"
+const EMBERLING_PATH := "res://content/creatures/creature_emberling.tres"
+const RIMESHARD_PATH := "res://content/creatures/creature_rimeshard.tres"
 
 var _visual: CreatureVisual
 

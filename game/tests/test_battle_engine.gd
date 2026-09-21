@@ -2,12 +2,12 @@ extends GutTest
 ## Turn resolution, statuses, cooldowns, fainting, binding and running
 ## (Specification 11 to 15), driven through the engine's event log.
 
-const EMBERLING := &"creature_fire_01"
-const CINDERCLAW := &"creature_fire_02"
-const LOAMBUCK := &"creature_earth_01"
-const RILLFIN := &"creature_water_01"
-const GUSTPIP := &"creature_wind_01"
-const HEXCALLER := &"creature_wind_06"
+const EMBERLING := &"creature_emberling"
+const CINDERCLAW := &"creature_cinderclaw"
+const LOAMBUCK := &"creature_loambuck"
+const RILLFIN := &"creature_rillfin"
+const GUSTPIP := &"creature_gustpip"
+const HEXCALLER := &"creature_hexcaller"
 
 ## Forced rolls: 0.0 makes every chance succeed, 0.99 makes only sure things
 ## succeed (see [member BattleEngine.forced_roll]).

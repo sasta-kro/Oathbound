@@ -1,0 +1,60 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://c6h28qqwfoofq"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_jrofs"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="1_species"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="2_entry"]
+[ext_resource type="Resource" path="res://content/growth/growth_bulky.tres" id="3_growth"]
+[ext_resource type="Resource" uid="uid://c7scajbgbopvj" path="res://content/abilities/ability_searing_touch.tres" id="3_w5hh5"]
+[ext_resource type="Resource" path="res://content/moves/move_stone_toss_01.tres" id="4_stone_toss"]
+[ext_resource type="Resource" uid="uid://d0e4klgbfu1la" path="res://content/creatures/creature_briarback.tres" id="5_7pdwu"]
+[ext_resource type="Resource" uid="uid://bdanwx6mpoco8" path="res://content/moves/move_bolster_01.tres" id="5_bolster"]
+[ext_resource type="Resource" path="res://content/moves/move_mend_01.tres" id="5_mend"]
+[ext_resource type="Resource" uid="uid://dywchce8ppf42" path="res://content/moves/move_venom_spit_01.tres" id="6_venom_spit"]
+[ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_quake_step_01.tres" id="7_quake_step"]
+[ext_resource type="Resource" uid="uid://hy2bjnv2kuj3" path="res://content/abilities/ability_stonewall.tres" id="8_stonewall"]
+[ext_resource type="SpriteFrames" uid="uid://ds0ypdsyhxct" path="res://content/sprites/creature_loambuck_battle.tres" id="10_battle_sprite"]
+[ext_resource type="Resource" path="res://content/moves/move_vine_lash_01.tres" id="10_ev0q4"]
+
+[sub_resource type="Resource" id="Resource_7pdwu"]
+script = ExtResource("2_entry")
+move = ExtResource("4_stone_toss")
+
+[sub_resource type="Resource" id="Resource_r6feb"]
+script = ExtResource("2_entry")
+move = ExtResource("5_mend")
+
+[sub_resource type="Resource" id="Resource_cxgu5"]
+script = ExtResource("2_entry")
+level = 5
+move = ExtResource("5_bolster")
+
+[sub_resource type="Resource" id="Resource_5175t"]
+script = ExtResource("2_entry")
+level = 8
+move = ExtResource("10_ev0q4")
+
+[sub_resource type="Resource" id="Resource_g2qh3"]
+script = ExtResource("2_entry")
+level = 11
+move = ExtResource("6_venom_spit")
+
+[sub_resource type="Resource" id="Resource_82pk3"]
+script = ExtResource("2_entry")
+level = 18
+move = ExtResource("7_quake_step")
+
+[resource]
+script = ExtResource("1_species")
+id = &"creature_loambuck"
+display_name = "Loambuck"
+primary_type = 1
+base_hp = 56
+base_attack = 46
+base_defense = 58
+base_speed = 30
+growth = ExtResource("3_growth")
+learnset = Array[ExtResource("2_entry")]([SubResource("Resource_7pdwu"), SubResource("Resource_r6feb"), SubResource("Resource_cxgu5"), SubResource("Resource_5175t"), SubResource("Resource_g2qh3"), SubResource("Resource_82pk3")])
+evolves_into = ExtResource("5_7pdwu")
+evolution_level = 16
+ability_pool = Array[ExtResource("1_jrofs")]([ExtResource("8_stonewall"), ExtResource("3_w5hh5")])
+battle_sprite = ExtResource("10_battle_sprite")

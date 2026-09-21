@@ -6,7 +6,7 @@
 [sub_resource type="Resource" id="Objective_defeat_oathbreaker"]
 script = ExtResource("2_objective")
 kind = 0
-target = &"creature_earth_05"
+target = &"creature_oathbreaker"
 count = 1
 description = "Defeat the Oathbreaker at the altar"
 

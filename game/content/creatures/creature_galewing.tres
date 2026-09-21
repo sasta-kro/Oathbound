@@ -1,0 +1,54 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://02m72303u1c0"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_w87bw"]
+[ext_resource type="Resource" uid="uid://clfgmuu7pwbi6" path="res://content/abilities/ability_swiftfoot.tres" id="2_x4lip"]
+[ext_resource type="Resource" path="res://content/abilities/ability_windrider.tres" id="3_ye275"]
+[ext_resource type="SpriteFrames" uid="uid://ccwpx7vo2vekp" path="res://content/sprites/creature_galewing_battle.tres" id="4_3xp3p"]
+[ext_resource type="Resource" path="res://content/growth/growth_standard.tres" id="5_i7d5x"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_o8yx4"]
+[ext_resource type="Resource" path="res://content/moves/move_gust_01.tres" id="7_f1f6a"]
+[ext_resource type="Resource" path="res://content/moves/move_stone_toss_01.tres" id="8_xor1c"]
+[ext_resource type="Resource" path="res://content/moves/move_gale_slash_01.tres" id="9_fok1g"]
+[ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_quake_step_01.tres" id="10_p8gbg"]
+[ext_resource type="Resource" path="res://content/moves/move_reaping_scythe_01.tres" id="11_3deey"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="12_ikwqy"]
+
+[sub_resource type="Resource" id="Resource_rkm2y"]
+script = ExtResource("6_o8yx4")
+move = ExtResource("7_f1f6a")
+
+[sub_resource type="Resource" id="Resource_dbn1j"]
+script = ExtResource("6_o8yx4")
+level = 7
+move = ExtResource("8_xor1c")
+
+[sub_resource type="Resource" id="Resource_vmgow"]
+script = ExtResource("6_o8yx4")
+level = 13
+move = ExtResource("9_fok1g")
+
+[sub_resource type="Resource" id="Resource_pdv66"]
+script = ExtResource("6_o8yx4")
+level = 19
+move = ExtResource("10_p8gbg")
+
+[sub_resource type="Resource" id="Resource_u82c2"]
+script = ExtResource("6_o8yx4")
+level = 26
+move = ExtResource("11_3deey")
+
+[resource]
+script = ExtResource("12_ikwqy")
+id = &"creature_galewing"
+display_name = "Galewing"
+primary_type = 3
+base_hp = 56
+base_attack = 62
+base_defense = 44
+base_speed = 80
+growth = ExtResource("5_i7d5x")
+learnset = Array[ExtResource("6_o8yx4")]([SubResource("Resource_rkm2y"), SubResource("Resource_dbn1j"), SubResource("Resource_vmgow"), SubResource("Resource_pdv66"), SubResource("Resource_u82c2")])
+ability_pool = Array[ExtResource("1_w87bw")]([ExtResource("2_x4lip"), ExtResource("3_ye275")])
+base_bind_chance = 0.22
+battle_sprite = ExtResource("4_3xp3p")
+sprite_scale = 1.5

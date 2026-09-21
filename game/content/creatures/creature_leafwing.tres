@@ -1,0 +1,53 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://cn1of0ruynpqo"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_pexaw"]
+[ext_resource type="Resource" path="res://content/abilities/ability_windrider.tres" id="2_d1yjq"]
+[ext_resource type="Resource" path="res://content/abilities/ability_overgrown.tres" id="3_muq0k"]
+[ext_resource type="SpriteFrames" uid="uid://cy8b3jal4560c" path="res://content/sprites/creature_leafwing_battle.tres" id="4_57ajw"]
+[ext_resource type="Resource" path="res://content/growth/growth_standard.tres" id="5_i1b2n"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_td6s8"]
+[ext_resource type="Resource" path="res://content/moves/move_vine_lash_01.tres" id="7_j7gwf"]
+[ext_resource type="Resource" path="res://content/moves/move_gust_01.tres" id="8_thk0i"]
+[ext_resource type="Resource" path="res://content/moves/move_spore_cloud_01.tres" id="9_6r1aq"]
+[ext_resource type="Resource" path="res://content/moves/move_gale_slash_01.tres" id="10_5ivyr"]
+[ext_resource type="Resource" path="res://content/moves/move_thorn_volley_01.tres" id="11_erf3u"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="12_7pjfl"]
+
+[sub_resource type="Resource" id="Resource_8ldbb"]
+script = ExtResource("6_td6s8")
+move = ExtResource("7_j7gwf")
+
+[sub_resource type="Resource" id="Resource_iif4c"]
+script = ExtResource("6_td6s8")
+move = ExtResource("8_thk0i")
+
+[sub_resource type="Resource" id="Resource_o8x2x"]
+script = ExtResource("6_td6s8")
+level = 8
+move = ExtResource("9_6r1aq")
+
+[sub_resource type="Resource" id="Resource_s562l"]
+script = ExtResource("6_td6s8")
+level = 14
+move = ExtResource("10_5ivyr")
+
+[sub_resource type="Resource" id="Resource_w347a"]
+script = ExtResource("6_td6s8")
+level = 20
+move = ExtResource("11_erf3u")
+
+[resource]
+script = ExtResource("12_7pjfl")
+id = &"creature_leafwing"
+display_name = "Leafwing"
+primary_type = 4
+has_secondary_type = true
+secondary_type = 3
+base_attack = 46
+base_defense = 36
+base_speed = 68
+growth = ExtResource("5_i1b2n")
+learnset = Array[ExtResource("6_td6s8")]([SubResource("Resource_8ldbb"), SubResource("Resource_iif4c"), SubResource("Resource_o8x2x"), SubResource("Resource_s562l"), SubResource("Resource_w347a")])
+ability_pool = Array[ExtResource("1_pexaw")]([ExtResource("2_d1yjq"), ExtResource("3_muq0k")])
+base_bind_chance = 0.45
+battle_sprite = ExtResource("4_57ajw")

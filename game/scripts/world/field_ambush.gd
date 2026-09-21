@@ -15,7 +15,7 @@ const QUEST_ID: StringName = &"quest_main_01f_caught_in_the_open"
 ## overworld strike landing on the player.
 const EVENT_ID: StringName = &"ambush_taken"
 
-const SPECIES_ID: StringName = &"creature_fire_01"
+const SPECIES_ID: StringName = &"creature_emberling"
 const LEVEL := 3
 ## Its blow stings rather than bites, in the overworld and in the fight after
 ## it. The player is being asked to stand still for this one, so it must not

@@ -14,5 +14,5 @@ Sheets are horizontal strips of 100x100 frames, no shadow variant. The art faces
 | `hurt.png` | 4 |
 | `death.png` | 4 |
 
-Not used: Loambuck (`creature_earth_01`) now uses the druid recolour in
+Not used: Loambuck (`creature_loambuck`) now uses the druid recolour in
 `assets/creatures/blood_monster_a_druid/`.

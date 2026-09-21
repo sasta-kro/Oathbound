@@ -1,0 +1,48 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://kedprvy0c1sa"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_miit0"]
+[ext_resource type="Resource" path="res://content/abilities/ability_toxic_ward.tres" id="2_pn5xl"]
+[ext_resource type="Resource" path="res://content/abilities/ability_gravebound.tres" id="3_lsf3n"]
+[ext_resource type="SpriteFrames" uid="uid://bnf47ri7wmokb" path="res://content/sprites/creature_rotcrawler_battle.tres" id="4_oqasq"]
+[ext_resource type="Resource" path="res://content/growth/growth_standard.tres" id="5_6ikd0"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_ewekk"]
+[ext_resource type="Resource" path="res://content/moves/move_grave_touch_01.tres" id="7_68fwd"]
+[ext_resource type="Resource" path="res://content/moves/move_blight_bite_01.tres" id="8_17exv"]
+[ext_resource type="Resource" uid="uid://d1r0dnyshd3ul" path="res://content/moves/move_wither_01.tres" id="9_gbeil"]
+[ext_resource type="Resource" path="res://content/moves/move_necrotic_wave_01.tres" id="10_34bq0"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="11_vjb1y"]
+
+[sub_resource type="Resource" id="Resource_e6oot"]
+script = ExtResource("6_ewekk")
+move = ExtResource("7_68fwd")
+
+[sub_resource type="Resource" id="Resource_kuqmk"]
+script = ExtResource("6_ewekk")
+level = 7
+move = ExtResource("8_17exv")
+
+[sub_resource type="Resource" id="Resource_rdwc6"]
+script = ExtResource("6_ewekk")
+level = 11
+move = ExtResource("9_gbeil")
+
+[sub_resource type="Resource" id="Resource_i8hiq"]
+script = ExtResource("6_ewekk")
+level = 24
+move = ExtResource("10_34bq0")
+
+[resource]
+script = ExtResource("11_vjb1y")
+id = &"creature_rotcrawler"
+display_name = "Rotcrawler"
+primary_type = 5
+base_hp = 64
+base_attack = 68
+base_defense = 54
+base_speed = 46
+growth = ExtResource("5_6ikd0")
+learnset = Array[ExtResource("6_ewekk")]([SubResource("Resource_e6oot"), SubResource("Resource_kuqmk"), SubResource("Resource_rdwc6"), SubResource("Resource_i8hiq")])
+ability_pool = Array[ExtResource("1_miit0")]([ExtResource("2_pn5xl"), ExtResource("3_lsf3n")])
+base_bind_chance = 0.22
+battle_sprite = ExtResource("4_oqasq")
+sprite_scale = 1.3

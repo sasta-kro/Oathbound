@@ -6,25 +6,40 @@
 [ext_resource type="Shader" uid="uid://bg2hef1ijld4s" path="res://shaders/foliage_sway.gdshader" id="4_4p6n8"]
 [ext_resource type="PackedScene" path="res://scenes/world_actor.tscn" id="5_10dds"]
 [ext_resource type="PackedScene" path="res://scenes/wild_creature.tscn" id="7_b42mx"]
-[ext_resource type="Resource" uid="uid://ce02g38a68kfl" path="res://content/creatures/creature_fire_02.tres" id="9_fq0iv"]
+[ext_resource type="Resource" uid="uid://ce02g38a68kfl" path="res://content/creatures/creature_cinderclaw.tres" id="9_fq0iv"]
 [ext_resource type="PackedScene" path="res://scenes/spawn_zone.tscn" id="10_uyjoe"]
-[ext_resource type="Resource" uid="uid://c6h28qqwfoofq" path="res://content/creatures/creature_earth_01.tres" id="12_4dj51"]
-[ext_resource type="Resource" uid="uid://d2gd7n0v6nkw5" path="res://content/creatures/creature_fire_01.tres" id="13_vysno"]
-[ext_resource type="Resource" uid="uid://uaj22yo1wc33" path="res://content/creatures/creature_earth_02.tres" id="14_35qre"]
-[ext_resource type="Resource" uid="uid://cgo7inop3dh6w" path="res://content/creatures/creature_water_01.tres" id="15_auc5g"]
-[ext_resource type="Resource" uid="uid://cucyqn6yr7nwd" path="res://content/creatures/creature_wind_01.tres" id="16_dupcp"]
+[ext_resource type="Resource" uid="uid://c6h28qqwfoofq" path="res://content/creatures/creature_loambuck.tres" id="12_4dj51"]
+[ext_resource type="Resource" uid="uid://d2gd7n0v6nkw5" path="res://content/creatures/creature_emberling.tres" id="13_vysno"]
+[ext_resource type="Resource" uid="uid://uaj22yo1wc33" path="res://content/creatures/creature_rimeshard.tres" id="14_35qre"]
+[ext_resource type="Resource" uid="uid://cgo7inop3dh6w" path="res://content/creatures/creature_rillfin.tres" id="15_auc5g"]
+[ext_resource type="Resource" uid="uid://cucyqn6yr7nwd" path="res://content/creatures/creature_gustpip.tres" id="16_dupcp"]
 [ext_resource type="PackedScene" uid="uid://dyjfrxidyk5di" path="res://scenes/area_exit.tscn" id="17_mvasf"]
-[ext_resource type="Resource" uid="uid://ci6uybwlmx8ne" path="res://content/creatures/creature_earth_05.tres" id="19_boss"]
-[ext_resource type="Resource" uid="uid://crf2qy0nepiqw" path="res://content/creatures/creature_fire_03.tres" id="20_slagling"]
-[ext_resource type="Resource" uid="uid://bgknek3jyuwco" path="res://content/creatures/creature_water_02.tres" id="21_leechling"]
-[ext_resource type="Resource" uid="uid://dbpylwmsm22kj" path="res://content/creatures/creature_wind_02.tres" id="22_scorchbat"]
+[ext_resource type="Resource" uid="uid://ci6uybwlmx8ne" path="res://content/creatures/creature_oathbreaker.tres" id="19_boss"]
+[ext_resource type="Resource" uid="uid://crf2qy0nepiqw" path="res://content/creatures/creature_slagling.tres" id="20_slagling"]
+[ext_resource type="Resource" uid="uid://bgknek3jyuwco" path="res://content/creatures/creature_leechling.tres" id="21_leechling"]
+[ext_resource type="Resource" uid="uid://dbpylwmsm22kj" path="res://content/creatures/creature_scorchbat.tres" id="22_scorchbat"]
 [ext_resource type="PackedScene" path="res://scenes/altar_beacon.tscn" id="23_beacon"]
-[ext_resource type="Resource" uid="uid://cyj6n08tfamws" path="res://content/creatures/creature_earth_03.tres" id="23_squire"]
+[ext_resource type="Resource" uid="uid://cyj6n08tfamws" path="res://content/creatures/creature_hollow_squire.tres" id="23_squire"]
 [ext_resource type="PackedScene" path="res://scenes/treasure_chest.tscn" id="25_o8h4y"]
 [ext_resource type="SpriteFrames" uid="uid://cx5jb52tsl8gi" path="res://content/sprites/npc_elder.tres" id="npc_elder_frames"]
 [ext_resource type="SpriteFrames" uid="uid://dr750752ih5gn" path="res://content/sprites/npc_knight.tres" id="npc_knight_frames"]
 [ext_resource type="SpriteFrames" uid="uid://c0o1roqjp54sk" path="res://content/sprites/npc_merchant.tres" id="npc_merchant_frames"]
 [ext_resource type="SpriteFrames" uid="uid://b3t747povd6s" path="res://content/sprites/npc_scout.tres" id="npc_scout_frames"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="roster_species"]
+[ext_resource type="Resource" path="res://content/creatures/creature_sproutling.tres" id="roster_nature_02"]
+[ext_resource type="Resource" path="res://content/creatures/creature_thornimp.tres" id="roster_nature_04"]
+[ext_resource type="Resource" path="res://content/creatures/creature_flicker.tres" id="roster_fire_08"]
+[ext_resource type="Resource" path="res://content/creatures/creature_tuskcalf.tres" id="roster_earth_08"]
+[ext_resource type="Resource" path="res://content/creatures/creature_gravelimp.tres" id="roster_earth_10"]
+[ext_resource type="Resource" path="res://content/creatures/creature_skimwing.tres" id="roster_water_09"]
+[ext_resource type="Resource" path="res://content/creatures/creature_hexling.tres" id="roster_wind_08"]
+[ext_resource type="Resource" path="res://content/creatures/creature_dustmote.tres" id="roster_earth_12"]
+[ext_resource type="Resource" path="res://content/creatures/creature_rivetimp.tres" id="roster_steel_04"]
+[ext_resource type="Resource" path="res://content/creatures/creature_mercurite.tres" id="roster_steel_02"]
+[ext_resource type="Resource" path="res://content/creatures/creature_blightmaw.tres" id="roster_rot_02"]
+[ext_resource type="Resource" path="res://content/creatures/creature_leafwing.tres" id="roster_nature_06"]
+[ext_resource type="Resource" path="res://content/creatures/creature_wraithling.tres" id="roster_rot_04"]
+[ext_resource type="Resource" path="res://content/creatures/creature_gravehound.tres" id="roster_rot_08"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_vwtsa"]
 shader = ExtResource("4_4p6n8")
@@ -196,6 +211,7 @@ barks = PackedStringArray()
 [node name="LoambuckMeadow" parent="SpawnZones" unique_id=1184172636 instance=ExtResource("10_uyjoe")]
 position = Vector2(-744, 648)
 species = ExtResource("12_4dj51")
+also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_nature_02"), ExtResource("roster_nature_04")])
 radius_in_cells = 3.0
 level_min = 2
 level_max = 4
@@ -203,6 +219,7 @@ level_max = 4
 [node name="EmberlingDen" parent="SpawnZones" unique_id=499736332 instance=ExtResource("10_uyjoe")]
 position = Vector2(-325, 45)
 species = ExtResource("13_vysno")
+also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_fire_08")])
 radius_in_cells = 2.5
 max_alive = 2
 level_min = 4
@@ -213,12 +230,14 @@ detection_radius_in_cells = 2.5
 [node name="ShardHollow" parent="SpawnZones" unique_id=1621558350 instance=ExtResource("10_uyjoe")]
 position = Vector2(168, 120)
 species = ExtResource("14_35qre")
+also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_earth_08"), ExtResource("roster_earth_10")])
 radius_in_cells = 2.5
 max_alive = 2
 
 [node name="TidePool" parent="SpawnZones" unique_id=738828910 instance=ExtResource("10_uyjoe")]
 position = Vector2(282, 430)
 species = ExtResource("15_auc5g")
+also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_water_09")])
 radius_in_cells = 2.5
 max_alive = 2
 level_min = 4
@@ -227,6 +246,7 @@ level_max = 6
 [node name="GaleRise" parent="SpawnZones" unique_id=1898788742 instance=ExtResource("10_uyjoe")]
 position = Vector2(-466, -658)
 species = ExtResource("16_dupcp")
+also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_wind_08"), ExtResource("roster_earth_12")])
 radius_in_cells = 3.0
 max_alive = 2
 level_min = 6
@@ -237,6 +257,7 @@ detection_radius_in_cells = 2.0
 [node name="CinderRuins" parent="SpawnZones" unique_id=1590475738 instance=ExtResource("10_uyjoe")]
 position = Vector2(408, -120)
 species = ExtResource("9_fq0iv")
+also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_steel_04")])
 radius_in_cells = 2.0
 max_alive = 1
 level_min = 6
@@ -246,6 +267,7 @@ disposition = 1
 [node name="SlagPit" parent="SpawnZones" unique_id=11616764 instance=ExtResource("10_uyjoe")]
 position = Vector2(945, 116)
 species = ExtResource("20_slagling")
+also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_steel_02")])
 radius_in_cells = 3.0
 max_alive = 2
 level_min = 6
@@ -254,6 +276,7 @@ level_max = 8
 [node name="LeechShallows" parent="SpawnZones" unique_id=1476864210 instance=ExtResource("10_uyjoe")]
 position = Vector2(805, 532)
 species = ExtResource("21_leechling")
+also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_rot_02")])
 radius_in_cells = 2.0
 max_alive = 2
 level_min = 6
@@ -262,6 +285,7 @@ level_max = 8
 [node name="BatWood" parent="SpawnZones" unique_id=2049975087 instance=ExtResource("10_uyjoe")]
 position = Vector2(-722, -182)
 species = ExtResource("22_scorchbat")
+also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_nature_06"), ExtResource("roster_rot_04")])
 radius_in_cells = 3.5
 max_alive = 2
 level_min = 8
@@ -272,6 +296,7 @@ detection_radius_in_cells = 3.0
 [node name="SquireGraves" parent="SpawnZones" unique_id=297527182 instance=ExtResource("10_uyjoe")]
 position = Vector2(312, -552)
 species = ExtResource("23_squire")
+also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_rot_08")])
 radius_in_cells = 2.0
 max_alive = 2
 level_min = 9

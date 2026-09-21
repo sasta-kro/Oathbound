@@ -63,9 +63,9 @@ Boss battles disable binding and running. Trainer battles disable binding. The I
 
 ## Content and art status
 
-- Creature species: 28.
-- Moves: 23.
-- Abilities: 10.
+- Creature species: 61 (7 to 10 per primary type; 23 evolution lines).
+- Moves: 36.
+- Abilities: 15.
 - Quests: 38 (32 main, 6 side).
 - Items: 5.
 - Types: 7 (fire, earth, water, wind, nature, rot, steel).

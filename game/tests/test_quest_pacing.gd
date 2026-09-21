@@ -128,7 +128,7 @@ func test_the_boss_warns_an_underleveled_party() -> void:
 func test_spawn_levels_climb_along_the_quest_path() -> void:
 	var levels: Dictionary = _zone_levels()
 	var path: Array[StringName] = [
-		&"creature_fire_01", &"creature_fire_03", &"creature_wind_02", &"creature_earth_03"
+		&"creature_emberling", &"creature_slagling", &"creature_scorchbat", &"creature_hollow_squire"
 	]
 	for index: int in range(1, path.size()):
 		assert_gt(levels[path[index]], levels[path[index - 1]], "%s is tougher than %s." % [path[index], path[index - 1]])

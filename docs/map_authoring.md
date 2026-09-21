@@ -163,6 +163,7 @@ A spawn zone is a circle that keeps one species populated.
 | Property | Meaning |
 |---|---|
 | Species | Pick any creature from `content/creatures/`. |
+| Also Spawns | Optional extra species. Each spawn is Species half the time and one of these otherwise, so a quest target stays common. |
 | Radius In Cells | Size of the circle. Creatures spawn and roam inside it. |
 | Max Alive | How many creatures the zone keeps alive at once. |
 | Level Min / Max | Each spawn rolls a level in this range. |

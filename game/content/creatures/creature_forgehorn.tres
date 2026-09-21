@@ -1,0 +1,62 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://bikt4bsow1hma"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_111bo"]
+[ext_resource type="Resource" path="res://content/abilities/ability_forged_core.tres" id="2_yupa2"]
+[ext_resource type="Resource" uid="uid://c7scajbgbopvj" path="res://content/abilities/ability_searing_touch.tres" id="3_uyl6a"]
+[ext_resource type="SpriteFrames" uid="uid://bybt7ic1r05wd" path="res://content/sprites/creature_forgehorn_battle.tres" id="4_ck65n"]
+[ext_resource type="Resource" path="res://content/growth/growth_bulky.tres" id="5_bbrvh"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_jy1qa"]
+[ext_resource type="Resource" path="res://content/moves/move_stone_toss_01.tres" id="7_4in0r"]
+[ext_resource type="Resource" path="res://content/moves/move_ember_01.tres" id="8_70cs6"]
+[ext_resource type="Resource" uid="uid://dpb40bisa8tta" path="res://content/moves/move_war_cry_01.tres" id="9_eh44s"]
+[ext_resource type="Resource" path="res://content/moves/move_flame_burst_01.tres" id="10_1onuu"]
+[ext_resource type="Resource" path="res://content/moves/move_steel_rend_01.tres" id="11_heo28"]
+[ext_resource type="Resource" path="res://content/moves/move_anvil_fall_01.tres" id="12_6jl4x"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="13_5rdgt"]
+
+[sub_resource type="Resource" id="Resource_big4o"]
+script = ExtResource("6_jy1qa")
+move = ExtResource("7_4in0r")
+
+[sub_resource type="Resource" id="Resource_bf346"]
+script = ExtResource("6_jy1qa")
+level = 4
+move = ExtResource("8_70cs6")
+
+[sub_resource type="Resource" id="Resource_hmxlq"]
+script = ExtResource("6_jy1qa")
+level = 10
+move = ExtResource("9_eh44s")
+
+[sub_resource type="Resource" id="Resource_xcelr"]
+script = ExtResource("6_jy1qa")
+level = 16
+move = ExtResource("10_1onuu")
+
+[sub_resource type="Resource" id="Resource_nbdnu"]
+script = ExtResource("6_jy1qa")
+level = 30
+move = ExtResource("11_heo28")
+
+[sub_resource type="Resource" id="Resource_jaruj"]
+script = ExtResource("6_jy1qa")
+level = 34
+move = ExtResource("12_6jl4x")
+
+[resource]
+script = ExtResource("13_5rdgt")
+id = &"creature_forgehorn"
+display_name = "Forgehorn"
+primary_type = 6
+has_secondary_type = true
+secondary_type = 0
+base_hp = 72
+base_attack = 80
+base_defense = 62
+base_speed = 38
+growth = ExtResource("5_bbrvh")
+learnset = Array[ExtResource("6_jy1qa")]([SubResource("Resource_big4o"), SubResource("Resource_bf346"), SubResource("Resource_hmxlq"), SubResource("Resource_xcelr"), SubResource("Resource_nbdnu"), SubResource("Resource_jaruj")])
+ability_pool = Array[ExtResource("1_111bo")]([ExtResource("2_yupa2"), ExtResource("3_uyl6a")])
+base_bind_chance = 0.18
+battle_sprite = ExtResource("4_ck65n")
+sprite_scale = 1.25

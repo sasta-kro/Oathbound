@@ -16,7 +16,7 @@ const QUEST_ID: StringName = &"quest_main_01e_strike_first"
 ## landed in the overworld rather than on the battle screen.
 const EVENT_ID: StringName = &"first_strike_landed"
 
-const SPECIES_ID: StringName = &"creature_earth_01"
+const SPECIES_ID: StringName = &"creature_loambuck"
 ## Earth shrugs off fire, so an Emberling's swing wounds this one instead of
 ## routing it where it stands, and the player gets to see the battle open
 ## with the advantage the blow bought them. Young, because earth answers fire

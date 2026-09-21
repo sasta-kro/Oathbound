@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://3pxege3jieen"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_dxps5"]
+[ext_resource type="Resource" path="res://content/abilities/ability_toxic_ward.tres" id="2_opnky"]
+[ext_resource type="Resource" path="res://content/abilities/ability_gravebound.tres" id="3_0ihx0"]
+[ext_resource type="SpriteFrames" uid="uid://bhchuhsxmyqbo" path="res://content/sprites/creature_blightmaw_battle.tres" id="4_gkyub"]
+[ext_resource type="Resource" path="res://content/growth/growth_standard.tres" id="5_4awv1"]
+[ext_resource type="Resource" uid="uid://kedprvy0c1sa" path="res://content/creatures/creature_rotcrawler.tres" id="5_opnky"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_2gcx4"]
+[ext_resource type="Resource" path="res://content/moves/move_grave_touch_01.tres" id="7_qa2kf"]
+[ext_resource type="Resource" path="res://content/moves/move_blight_bite_01.tres" id="8_ujky5"]
+[ext_resource type="Resource" uid="uid://d1r0dnyshd3ul" path="res://content/moves/move_wither_01.tres" id="9_l74yn"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="10_7ihdd"]
+
+[sub_resource type="Resource" id="Resource_wyomw"]
+script = ExtResource("6_2gcx4")
+move = ExtResource("7_qa2kf")
+
+[sub_resource type="Resource" id="Resource_jqgbk"]
+script = ExtResource("6_2gcx4")
+level = 7
+move = ExtResource("8_ujky5")
+
+[sub_resource type="Resource" id="Resource_qj16f"]
+script = ExtResource("6_2gcx4")
+level = 11
+move = ExtResource("9_l74yn")
+
+[resource]
+script = ExtResource("10_7ihdd")
+id = &"creature_blightmaw"
+display_name = "Blightmaw"
+primary_type = 5
+base_attack = 46
+base_defense = 36
+base_speed = 48
+growth = ExtResource("5_4awv1")
+learnset = Array[ExtResource("6_2gcx4")]([SubResource("Resource_wyomw"), SubResource("Resource_jqgbk"), SubResource("Resource_qj16f")])
+evolves_into = ExtResource("5_opnky")
+evolution_level = 18
+ability_pool = Array[ExtResource("1_dxps5")]([ExtResource("2_opnky"), ExtResource("3_0ihx0")])
+base_bind_chance = 0.5
+battle_sprite = ExtResource("4_gkyub")

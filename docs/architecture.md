@@ -179,7 +179,7 @@ Conventions: test names are sentences (`test_a_failed_binding_consumes_the_scrol
 ## 12. Conventions for contributors and agents
 
 - The spec in `docs/` is the rule. Code comments cite it as "Specification 11.9". If code and spec disagree, flag it; do not silently rewrite either.
-- Stable ids (`creature_fire_01`, `move_ember_01`, `quest_side_leaf_hat`, `ability_swiftfoot`, `vfx_burst_fire`) are content identity; display names are free to change.
+- Stable ids (`creature_emberling`, `move_ember_01`, `quest_side_leaf_hat`, `ability_swiftfoot`, `vfx_burst_fire`) are content identity; display names are free to change.
 - Balance numbers live in `BattleRules`, `OverworldStrike`, `GrowthCurve` resources and Inspector exports, never inline in flow code. Mark them Provisional in a comment.
 - New mechanics go in the rules layer first with a test, then get presentation.
 - Missing art must degrade to a labelled placeholder, never to an error.

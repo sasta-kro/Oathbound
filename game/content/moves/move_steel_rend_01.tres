@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="MoveData" format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/move_data.gd" id="1_ucg0g"]
+[ext_resource type="Script" path="res://scripts/creatures/stat_modifier.gd" id="2_lahg0"]
+
+[resource]
+script = ExtResource("1_ucg0g")
+id = &"move_steel_rend_01"
+display_name = "Steel Rend"
+description = "A tearing blow with an edge of hammered steel."
+type = 6
+power = 35
+accuracy = 90
+cooldown_turns = 2

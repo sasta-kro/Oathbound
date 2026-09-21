@@ -28,12 +28,12 @@ func after_each() -> void:
 
 
 func _hero(at_level: int = 7) -> CreatureInstance:
-	return Content.spawn_creature(&"creature_fire_01", at_level)
+	return Content.spawn_creature(&"creature_emberling", at_level)
 
 
 func _foe(at_level: int = 3) -> CreatureInstance:
 	# Thick Hide rather than Stonewall, so damage stays predictable.
-	return Content.spawn_creature(&"creature_earth_01", at_level, 1)
+	return Content.spawn_creature(&"creature_loambuck", at_level, 1)
 
 
 # --- Strike rules -------------------------------------------------------------
@@ -143,8 +143,8 @@ func test_a_downed_creature_cannot_be_routed_again() -> void:
 ## player moves first is a turn the opening handed over, and neither side hits
 ## hard enough to end the battle before turn two.
 func _engine(opening: BattleConfig.Opening) -> BattleEngine:
-	var slow_lead: Array[CreatureInstance] = [Content.spawn_creature(&"creature_water_07", 10, 0)]
-	var fast_foe: CreatureInstance = Content.spawn_creature(&"creature_wind_01", 10, 0)
+	var slow_lead: Array[CreatureInstance] = [Content.spawn_creature(&"creature_deepcrag", 10, 0)]
+	var fast_foe: CreatureInstance = Content.spawn_creature(&"creature_gustpip", 10, 0)
 	var config := BattleConfig.wild(slow_lead, fast_foe, Content.type_chart, opening)
 	config.rng_seed = 3
 	var engine := BattleEngine.new(config)
@@ -365,7 +365,7 @@ func test_a_party_that_cannot_fight_has_nobody_walking_with_it() -> void:
 func test_the_partner_changes_when_the_lead_does() -> void:
 	var first: CreatureInstance = _hero()
 	var main_scene: Node2D = _main_with_party([first])
-	var replacement: CreatureInstance = Content.spawn_creature(&"creature_water_01", 5)
+	var replacement: CreatureInstance = Content.spawn_creature(&"creature_rillfin", 5)
 
 	first.set_hp(0)
 	GameState.party = [first, replacement]
@@ -439,7 +439,7 @@ func test_a_strike_thrown_at_a_creature_that_is_already_gone_does_nothing() -> v
 	# Spawn zones only fill a couple of physics steps in, so this test brings
 	# its own creature rather than waiting for the map to populate.
 	var creature: WildCreature = autofree(preload("res://scenes/wild_creature.tscn").instantiate())
-	creature.species = Content.get_species(&"creature_earth_01")
+	creature.species = Content.get_species(&"creature_loambuck")
 	main_scene.add_child(creature)
 
 	assert_true(main_scene._strike_can_still_land(creature), "A live creature can be hit.")

@@ -6,7 +6,7 @@
 [sub_resource type="Resource" id="Objective_chase_rillfins"]
 script = ExtResource("2_objective")
 kind = 0
-target = &"creature_water_01"
+target = &"creature_rillfin"
 count = 2
 description = "Chase two Rillfins away from the pond crossing"
 

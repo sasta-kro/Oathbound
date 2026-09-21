@@ -1,0 +1,66 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://c2nhjijjdfyyh"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_qj0at"]
+[ext_resource type="Resource" uid="uid://hy2bjnv2kuj3" path="res://content/abilities/ability_stonewall.tres" id="2_8eiiu"]
+[ext_resource type="Resource" path="res://content/abilities/ability_forged_core.tres" id="3_c8rvs"]
+[ext_resource type="SpriteFrames" uid="uid://cy0ewqkhgsv6r" path="res://content/sprites/creature_bastion_battle.tres" id="4_cjlqr"]
+[ext_resource type="Resource" path="res://content/growth/growth_bulky.tres" id="5_4nl07"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_tqhwr"]
+[ext_resource type="Resource" path="res://content/moves/move_stone_toss_01.tres" id="7_ym2vt"]
+[ext_resource type="Resource" path="res://content/moves/move_shield_bash_01.tres" id="8_xtd63"]
+[ext_resource type="Resource" uid="uid://yy88er3s78cw" path="res://content/moves/move_guard_stance_01.tres" id="9_6jgfu"]
+[ext_resource type="Resource" path="res://content/moves/move_iron_jab_01.tres" id="10_6ekvl"]
+[ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_quake_step_01.tres" id="11_aa2js"]
+[ext_resource type="Resource" path="res://content/moves/move_steel_rend_01.tres" id="12_t033o"]
+[ext_resource type="Resource" path="res://content/moves/move_anvil_fall_01.tres" id="13_85flm"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="14_7a1uh"]
+
+[sub_resource type="Resource" id="Resource_s3gsa"]
+script = ExtResource("6_tqhwr")
+move = ExtResource("7_ym2vt")
+
+[sub_resource type="Resource" id="Resource_kmmli"]
+script = ExtResource("6_tqhwr")
+level = 5
+move = ExtResource("8_xtd63")
+
+[sub_resource type="Resource" id="Resource_i77lo"]
+script = ExtResource("6_tqhwr")
+level = 9
+move = ExtResource("9_6jgfu")
+
+[sub_resource type="Resource" id="Resource_s8005"]
+script = ExtResource("6_tqhwr")
+level = 12
+move = ExtResource("10_6ekvl")
+
+[sub_resource type="Resource" id="Resource_o0ht0"]
+script = ExtResource("6_tqhwr")
+level = 17
+move = ExtResource("11_aa2js")
+
+[sub_resource type="Resource" id="Resource_rukxj"]
+script = ExtResource("6_tqhwr")
+level = 22
+move = ExtResource("12_t033o")
+
+[sub_resource type="Resource" id="Resource_xmufu"]
+script = ExtResource("6_tqhwr")
+level = 36
+move = ExtResource("13_85flm")
+
+[resource]
+script = ExtResource("14_7a1uh")
+id = &"creature_bastion"
+display_name = "Bastion"
+primary_type = 6
+has_secondary_type = true
+base_hp = 80
+base_attack = 72
+base_defense = 88
+base_speed = 26
+growth = ExtResource("5_4nl07")
+learnset = Array[ExtResource("6_tqhwr")]([SubResource("Resource_s3gsa"), SubResource("Resource_kmmli"), SubResource("Resource_i77lo"), SubResource("Resource_s8005"), SubResource("Resource_o0ht0"), SubResource("Resource_rukxj"), SubResource("Resource_xmufu")])
+ability_pool = Array[ExtResource("1_qj0at")]([ExtResource("2_8eiiu"), ExtResource("3_c8rvs")])
+base_bind_chance = 0.15
+battle_sprite = ExtResource("4_cjlqr")

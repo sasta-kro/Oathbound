@@ -1,0 +1,49 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://bd7ar52vgjsg6"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_ijko0"]
+[ext_resource type="Resource" path="res://content/abilities/ability_rustproof.tres" id="2_4b77w"]
+[ext_resource type="Resource" path="res://content/abilities/ability_thick_hide.tres" id="3_v6xdu"]
+[ext_resource type="SpriteFrames" uid="uid://qntsaxrv1nat" path="res://content/sprites/creature_mercurite_battle.tres" id="4_2wttc"]
+[ext_resource type="Resource" path="res://content/growth/growth_bulky.tres" id="5_2wqb6"]
+[ext_resource type="Resource" uid="uid://5yydt3alpfq3" path="res://content/creatures/creature_ironhulk.tres" id="5_4b77w"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_fgeny"]
+[ext_resource type="Resource" path="res://content/moves/move_iron_jab_01.tres" id="7_dnpr4"]
+[ext_resource type="Resource" path="res://content/moves/move_rivet_shot_01.tres" id="8_qpp4r"]
+[ext_resource type="Resource" uid="uid://yy88er3s78cw" path="res://content/moves/move_guard_stance_01.tres" id="9_7co52"]
+[ext_resource type="Resource" path="res://content/moves/move_steel_rend_01.tres" id="10_dxdes"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="11_rxiwk"]
+
+[sub_resource type="Resource" id="Resource_fqst8"]
+script = ExtResource("6_fgeny")
+move = ExtResource("7_dnpr4")
+
+[sub_resource type="Resource" id="Resource_xslst"]
+script = ExtResource("6_fgeny")
+level = 6
+move = ExtResource("8_qpp4r")
+
+[sub_resource type="Resource" id="Resource_ijsnt"]
+script = ExtResource("6_fgeny")
+level = 10
+move = ExtResource("9_7co52")
+
+[sub_resource type="Resource" id="Resource_ru2uo"]
+script = ExtResource("6_fgeny")
+level = 14
+move = ExtResource("10_dxdes")
+
+[resource]
+script = ExtResource("11_rxiwk")
+id = &"creature_mercurite"
+display_name = "Mercurite"
+primary_type = 6
+base_hp = 46
+base_attack = 42
+base_defense = 46
+growth = ExtResource("5_2wqb6")
+learnset = Array[ExtResource("6_fgeny")]([SubResource("Resource_fqst8"), SubResource("Resource_xslst"), SubResource("Resource_ijsnt"), SubResource("Resource_ru2uo")])
+evolves_into = ExtResource("5_4b77w")
+evolution_level = 18
+ability_pool = Array[ExtResource("1_ijko0")]([ExtResource("2_4b77w"), ExtResource("3_v6xdu")])
+base_bind_chance = 0.5
+battle_sprite = ExtResource("4_2wttc")

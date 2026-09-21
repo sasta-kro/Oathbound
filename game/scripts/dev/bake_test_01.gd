@@ -28,7 +28,7 @@ const KNIGHT_CELL := Vector2i(5, 5)
 const SPAWN_ZONES: Array[Dictionary] = [
 	{
 		"name": "LoambuckMeadow",
-		"species": "res://content/creatures/creature_earth_01.tres",
+		"species": "res://content/creatures/creature_loambuck.tres",
 		"cell": Vector2i(17, 3),
 		"radius": 2.5,
 		"max_alive": 3,
@@ -37,7 +37,7 @@ const SPAWN_ZONES: Array[Dictionary] = [
 	},
 	{
 		"name": "EmberlingDen",
-		"species": "res://content/creatures/creature_fire_01.tres",
+		"species": "res://content/creatures/creature_emberling.tres",
 		"cell": Vector2i(8, 4),
 		"radius": 2.0,
 		"max_alive": 2,
@@ -46,7 +46,7 @@ const SPAWN_ZONES: Array[Dictionary] = [
 	},
 	{
 		"name": "ShardHollow",
-		"species": "res://content/creatures/creature_earth_02.tres",
+		"species": "res://content/creatures/creature_rimeshard.tres",
 		"cell": Vector2i(11, 11),
 		"radius": 2.0,
 		"max_alive": 2,

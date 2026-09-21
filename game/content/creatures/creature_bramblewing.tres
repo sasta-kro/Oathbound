@@ -1,0 +1,55 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://d1h6aoi7mxm5k"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_11tit"]
+[ext_resource type="Resource" path="res://content/abilities/ability_overgrown.tres" id="2_0k67b"]
+[ext_resource type="Resource" path="res://content/abilities/ability_windrider.tres" id="3_n7u35"]
+[ext_resource type="SpriteFrames" uid="uid://csqe3s2rek4h2" path="res://content/sprites/creature_bramblewing_battle.tres" id="4_cps1r"]
+[ext_resource type="Resource" path="res://content/growth/growth_standard.tres" id="5_n1ppv"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_g5ded"]
+[ext_resource type="Resource" path="res://content/moves/move_vine_lash_01.tres" id="7_l5qa2"]
+[ext_resource type="Resource" path="res://content/moves/move_spore_cloud_01.tres" id="8_ntmjm"]
+[ext_resource type="Resource" path="res://content/moves/move_thorn_volley_01.tres" id="9_e2s1r"]
+[ext_resource type="Resource" path="res://content/moves/move_gale_slash_01.tres" id="10_tid7w"]
+[ext_resource type="Resource" path="res://content/moves/move_overgrowth_01.tres" id="11_armmr"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="12_xy7bk"]
+
+[sub_resource type="Resource" id="Resource_4k2p8"]
+script = ExtResource("6_g5ded")
+move = ExtResource("7_l5qa2")
+
+[sub_resource type="Resource" id="Resource_5fh8g"]
+script = ExtResource("6_g5ded")
+level = 8
+move = ExtResource("8_ntmjm")
+
+[sub_resource type="Resource" id="Resource_jkfc4"]
+script = ExtResource("6_g5ded")
+level = 12
+move = ExtResource("9_e2s1r")
+
+[sub_resource type="Resource" id="Resource_amw8b"]
+script = ExtResource("6_g5ded")
+level = 20
+move = ExtResource("10_tid7w")
+
+[sub_resource type="Resource" id="Resource_rr2pv"]
+script = ExtResource("6_g5ded")
+level = 28
+move = ExtResource("11_armmr")
+
+[resource]
+script = ExtResource("12_xy7bk")
+id = &"creature_bramblewing"
+display_name = "Bramblewing"
+primary_type = 4
+has_secondary_type = true
+secondary_type = 3
+base_hp = 54
+base_attack = 66
+base_defense = 46
+base_speed = 64
+growth = ExtResource("5_n1ppv")
+learnset = Array[ExtResource("6_g5ded")]([SubResource("Resource_4k2p8"), SubResource("Resource_5fh8g"), SubResource("Resource_jkfc4"), SubResource("Resource_amw8b"), SubResource("Resource_rr2pv")])
+ability_pool = Array[ExtResource("1_11tit")]([ExtResource("2_0k67b"), ExtResource("3_n7u35")])
+base_bind_chance = 0.25
+battle_sprite = ExtResource("4_cps1r")

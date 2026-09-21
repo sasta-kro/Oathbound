@@ -16,4 +16,4 @@ Recoloured to the water palette by the importer; the original pack is red.
 | `hurt.png` | 4 |
 | `flying.png` | 6 |
 
-Used by `res://content/sprites/creature_water_02_battle.tres`.
+Used by `res://content/sprites/creature_leechling_battle.tres`.

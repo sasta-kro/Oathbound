@@ -17,4 +17,4 @@ Recoloured to the water palette by the importer; the original pack is red.
 | `idle.png` | 6 |
 | `walk.png` | 6 |
 
-Used by `res://content/sprites/creature_water_03_battle.tres`.
+Used by `res://content/sprites/creature_mirelash_battle.tres`.

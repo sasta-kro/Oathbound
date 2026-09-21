@@ -17,4 +17,4 @@ Recoloured to moss and bark, with a leaf tuft drawn on the head, by the importer
 | `idle.png` | 6 |
 | `walk.png` | 8 |
 
-Used by `res://content/sprites/creature_earth_01_battle.tres`.
+Used by `res://content/sprites/creature_loambuck_battle.tres`.

@@ -101,7 +101,7 @@ func test_the_game_stays_playable_with_no_quests_at_all() -> void:
 	var empty := QuestLog.new(Content)
 	assert_eq(empty.active_quests(), [] as Array[QuestData])
 	assert_eq(empty.completed_quests(), [] as Array[QuestData])
-	assert_eq(empty.report(QuestObjective.Kind.DEFEAT, &"creature_fire_01"), [] as Array[Dictionary])
+	assert_eq(empty.report(QuestObjective.Kind.DEFEAT, &"creature_emberling"), [] as Array[Dictionary])
 	assert_eq(empty.to_dict(), {})
 
 
@@ -116,11 +116,11 @@ func test_validation_catches_a_broken_quest() -> void:
 
 
 func test_a_quest_starts_new_and_only_counts_after_acceptance() -> void:
-	var quest := _quest(&"q", [_objective(QuestObjective.Kind.DEFEAT, &"creature_fire_01", 2)])
+	var quest := _quest(&"q", [_objective(QuestObjective.Kind.DEFEAT, &"creature_emberling", 2)])
 	assert_eq(_log.status(quest.id), QuestLog.Status.NEW)
 	assert_true(_log.can_offer(quest))
 
-	assert_eq(_log.report(QuestObjective.Kind.DEFEAT, &"creature_fire_01").size(), 0, "Nothing counts before acceptance.")
+	assert_eq(_log.report(QuestObjective.Kind.DEFEAT, &"creature_emberling").size(), 0, "Nothing counts before acceptance.")
 	assert_true(_log.accept(quest))
 	assert_eq(_log.status(quest.id), QuestLog.Status.ACTIVE)
 	assert_eq(_log.progress(quest, 0), 0)
@@ -129,20 +129,20 @@ func test_a_quest_starts_new_and_only_counts_after_acceptance() -> void:
 
 
 func test_events_advance_the_matching_objective_until_it_is_met() -> void:
-	var quest := _quest(&"q", [_objective(QuestObjective.Kind.DEFEAT, &"creature_fire_01", 2), _objective(QuestObjective.Kind.TALK, &"scout")])
+	var quest := _quest(&"q", [_objective(QuestObjective.Kind.DEFEAT, &"creature_emberling", 2), _objective(QuestObjective.Kind.TALK, &"scout")])
 	_log.accept(quest)
 
-	var steps: Array[Dictionary] = _log.report(QuestObjective.Kind.DEFEAT, &"creature_fire_01")
+	var steps: Array[Dictionary] = _log.report(QuestObjective.Kind.DEFEAT, &"creature_emberling")
 	assert_eq(steps.size(), 1)
 	assert_eq(steps[0].index, 0)
 	assert_false(steps[0].done)
-	assert_eq(_log.report(QuestObjective.Kind.DEFEAT, &"creature_earth_01").size(), 0, "The wrong species does not count.")
-	assert_eq(_log.report(QuestObjective.Kind.BIND, &"creature_fire_01").size(), 0, "Nor the wrong kind of event.")
-	steps = _log.report(QuestObjective.Kind.DEFEAT, &"creature_fire_01")
+	assert_eq(_log.report(QuestObjective.Kind.DEFEAT, &"creature_loambuck").size(), 0, "The wrong species does not count.")
+	assert_eq(_log.report(QuestObjective.Kind.BIND, &"creature_emberling").size(), 0, "Nor the wrong kind of event.")
+	steps = _log.report(QuestObjective.Kind.DEFEAT, &"creature_emberling")
 	assert_true(steps[0].done)
 	assert_eq(_log.progress(quest, 0), 2)
 	assert_false(_log.is_ready(quest), "The talk is still owed.")
-	assert_eq(_log.report(QuestObjective.Kind.DEFEAT, &"creature_fire_01").size(), 0, "A met objective stops counting.")
+	assert_eq(_log.report(QuestObjective.Kind.DEFEAT, &"creature_emberling").size(), 0, "A met objective stops counting.")
 	assert_eq(_log.progress(quest, 0), 2)
 
 	_log.report(QuestObjective.Kind.TALK, &"scout")
@@ -161,12 +161,12 @@ func test_a_quest_cannot_be_turned_in_early() -> void:
 
 
 func test_one_action_progresses_every_quest_that_asks_for_it() -> void:
-	var first := _quest(&"q1", [_objective(QuestObjective.Kind.DEFEAT, &"creature_fire_01")])
-	var second := _quest(&"q2", [_objective(QuestObjective.Kind.DEFEAT, &"creature_fire_01", 3)])
+	var first := _quest(&"q1", [_objective(QuestObjective.Kind.DEFEAT, &"creature_emberling")])
+	var second := _quest(&"q2", [_objective(QuestObjective.Kind.DEFEAT, &"creature_emberling", 3)])
 	_log.accept(first)
 	_log.accept(second)
 
-	var steps: Array[Dictionary] = _log.report(QuestObjective.Kind.DEFEAT, &"creature_fire_01")
+	var steps: Array[Dictionary] = _log.report(QuestObjective.Kind.DEFEAT, &"creature_emberling")
 	assert_eq(steps.size(), 2)
 	assert_true(_log.is_ready(first))
 	assert_eq(_log.progress(second, 0), 1)
@@ -184,11 +184,11 @@ func test_refusing_leaves_the_quest_offerable_and_remembered() -> void:
 
 
 func test_abandoning_resets_progress_and_allows_reacceptance() -> void:
-	var quest := _quest(&"q", [_objective(QuestObjective.Kind.DEFEAT, &"creature_fire_01", 3)])
+	var quest := _quest(&"q", [_objective(QuestObjective.Kind.DEFEAT, &"creature_emberling", 3)])
 	assert_false(_log.abandon(quest), "Only an active quest can be dropped.")
 	_log.accept(quest)
-	_log.report(QuestObjective.Kind.DEFEAT, &"creature_fire_01")
-	_log.report(QuestObjective.Kind.DEFEAT, &"creature_fire_01")
+	_log.report(QuestObjective.Kind.DEFEAT, &"creature_emberling")
+	_log.report(QuestObjective.Kind.DEFEAT, &"creature_emberling")
 	assert_eq(_log.progress(quest, 0), 2)
 
 	assert_true(_log.abandon(quest))
@@ -260,7 +260,7 @@ func test_quest_state_survives_a_save_and_load() -> void:
 	GameState.report_quest_event(QuestObjective.Kind.REACH, StringName(AREA_ONE))
 	GameState.refuse_quest(child_quest)
 	GameState.accept_quest(merchant_quest)
-	GameState.report_quest_event(QuestObjective.Kind.DEFEAT, &"creature_water_01")
+	GameState.report_quest_event(QuestObjective.Kind.DEFEAT, &"creature_rillfin")
 	assert_true(GameState.save_game(1))
 
 	GameState.new_game()
@@ -304,7 +304,7 @@ func test_an_actor_talks_about_the_quest_that_matters_most() -> void:
 	GameState.report_quest_event(QuestObjective.Kind.TALK, &"scout")
 	assert_eq(actor.current_quest(_log, Content).id, MAIN_QUEST_ID, "One ready to turn in comes first of all.")
 	GameState.complete_quest(_content(MAIN_QUEST_ID))
-	GameState.report_quest_event(QuestObjective.Kind.BIND, &"creature_earth_01")
+	GameState.report_quest_event(QuestObjective.Kind.BIND, &"creature_loambuck")
 	GameState.complete_quest(_content(CHILD_QUEST_ID))
 	assert_null(actor.current_quest(_log, Content), "Everything done: small talk only.")
 	actor.free()
@@ -514,9 +514,9 @@ func test_the_field_tracker_follows_active_quests() -> void:
 	assert_not_null(entry)
 	assert_string_contains(entry.get_child(1).text, "0 / 2")
 
-	GameState.report_quest_event(QuestObjective.Kind.DEFEAT, &"creature_water_01")
+	GameState.report_quest_event(QuestObjective.Kind.DEFEAT, &"creature_rillfin")
 	assert_string_contains(rows.find_child(String(MERCHANT_QUEST_ID), false, false).get_child(1).text, "1 / 2")
-	GameState.report_quest_event(QuestObjective.Kind.DEFEAT, &"creature_water_01")
+	GameState.report_quest_event(QuestObjective.Kind.DEFEAT, &"creature_rillfin")
 	assert_eq(rows.find_child(String(MERCHANT_QUEST_ID), false, false).get_child(1).text, "Return to the Merchant")
 
 	GameState.complete_quest(_content(MERCHANT_QUEST_ID))

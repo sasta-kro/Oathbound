@@ -14,7 +14,7 @@ const QUEST_ID: StringName = &"quest_main_01c_field_mending"
 ## The story event the quest's objective waits for.
 const EVENT_ID: StringName = &"field_mending_won"
 
-const ENEMY_SPECIES_ID: StringName = &"creature_fire_01"
+const ENEMY_SPECIES_ID: StringName = &"creature_emberling"
 const ENEMY_LEVEL := 3
 ## The ambusher has been scrapping in the grass and opens part-spent, so the
 ## striker's first blow after the mend can finish it.

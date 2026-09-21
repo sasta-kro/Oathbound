@@ -6,14 +6,14 @@
 [sub_resource type="Resource" id="Objective_0"]
 script = ExtResource("2_objective")
 kind = 0
-target = &"creature_earth_03"
+target = &"creature_hollow_squire"
 count = 2
 description = "Put two Hollow Squires back in their graves"
 
 [sub_resource type="Resource" id="Objective_1"]
 script = ExtResource("2_objective")
 kind = 0
-target = &"creature_fire_02"
+target = &"creature_cinderclaw"
 count = 1
 description = "Bring down the Cinderclaw guarding the road to the altar"
 

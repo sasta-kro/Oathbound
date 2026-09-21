@@ -17,7 +17,7 @@ middle of the frame, which is what `CreatureVisual` assumes.
 | `death.png` | 13 |
 
 The golem art is roughly twice the size of the other creature sheets, so
-`res://content/creatures/creature_earth_02.tres` sets `sprite_scale` to bring it
+`res://content/creatures/creature_rimeshard.tres` sets `sprite_scale` to bring it
 back in line.
 
-Used by `res://content/sprites/creature_earth_02_battle.tres`.
+Used by `res://content/sprites/creature_rimeshard_battle.tres`.

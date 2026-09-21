@@ -2,8 +2,8 @@ extends GutTest
 ## Items, the satchel, vendors and the inn (Specification 16), and using
 ## items in battle (Specification 11.2, 16.3).
 
-const EMBERLING := &"creature_fire_01"
-const LOAMBUCK := &"creature_earth_01"
+const EMBERLING := &"creature_emberling"
+const LOAMBUCK := &"creature_loambuck"
 const SALVE := &"item_herb_salve"
 const TONIC := &"item_hearty_tonic"
 const DRAUGHT := &"item_ember_draught"

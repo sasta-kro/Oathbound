@@ -2,8 +2,8 @@ extends GutTest
 ## Automatic evolution (Specification 9.7): the evolution screen, the field
 ## evolving every ready companion on its own, and the Evolutions page.
 
-const FIRST_FORM := &"creature_fire_01"
-const SECOND_FORM := &"creature_fire_02"
+const FIRST_FORM := &"creature_emberling"
+const SECOND_FORM := &"creature_cinderclaw"
 
 var main: Node
 var _original_party: Array[CreatureInstance] = []

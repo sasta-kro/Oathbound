@@ -1,0 +1,49 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://b6vj2dkhpf71e"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_8b7vh"]
+[ext_resource type="Resource" path="res://content/abilities/ability_barkskin.tres" id="2_e3sy2"]
+[ext_resource type="Resource" path="res://content/abilities/ability_overgrown.tres" id="3_nxf5j"]
+[ext_resource type="SpriteFrames" uid="uid://3uwvf3pkbpjj" path="res://content/sprites/creature_sproutling_battle.tres" id="4_34d4d"]
+[ext_resource type="Resource" uid="uid://c250x1tpld8xh" path="res://content/creatures/creature_grovehulk.tres" id="5_e3sy2"]
+[ext_resource type="Resource" path="res://content/growth/growth_bulky.tres" id="5_sfuh7"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_l1rem"]
+[ext_resource type="Resource" path="res://content/moves/move_vine_lash_01.tres" id="7_wjjyp"]
+[ext_resource type="Resource" uid="uid://yy88er3s78cw" path="res://content/moves/move_guard_stance_01.tres" id="8_rjdqm"]
+[ext_resource type="Resource" path="res://content/moves/move_spore_cloud_01.tres" id="9_fs2vu"]
+[ext_resource type="Resource" path="res://content/moves/move_thorn_volley_01.tres" id="10_v1tic"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="11_04fj4"]
+
+[sub_resource type="Resource" id="Resource_gypdl"]
+script = ExtResource("6_l1rem")
+move = ExtResource("7_wjjyp")
+
+[sub_resource type="Resource" id="Resource_fkdfu"]
+script = ExtResource("6_l1rem")
+level = 5
+move = ExtResource("8_rjdqm")
+
+[sub_resource type="Resource" id="Resource_2jdvq"]
+script = ExtResource("6_l1rem")
+level = 9
+move = ExtResource("9_fs2vu")
+
+[sub_resource type="Resource" id="Resource_hj0kk"]
+script = ExtResource("6_l1rem")
+level = 14
+move = ExtResource("10_v1tic")
+
+[resource]
+script = ExtResource("11_04fj4")
+id = &"creature_sproutling"
+display_name = "Sproutling"
+primary_type = 4
+base_hp = 46
+base_defense = 48
+base_speed = 34
+growth = ExtResource("5_sfuh7")
+learnset = Array[ExtResource("6_l1rem")]([SubResource("Resource_gypdl"), SubResource("Resource_fkdfu"), SubResource("Resource_2jdvq"), SubResource("Resource_hj0kk")])
+evolves_into = ExtResource("5_e3sy2")
+evolution_level = 18
+ability_pool = Array[ExtResource("1_8b7vh")]([ExtResource("2_e3sy2"), ExtResource("3_nxf5j")])
+base_bind_chance = 0.5
+battle_sprite = ExtResource("4_34d4d")

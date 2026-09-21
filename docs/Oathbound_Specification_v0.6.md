@@ -99,7 +99,7 @@ There is no required mentor character and no rival character in the MVP.
 
 ### 4.5 Opening Sequence
 
-**[Partial]** "Begin your journey" opens a prologue (`scenes/prologue.tscn`): the Elder, alone on a dark stage, explains the Verdant Reach and what an Oathbound is, with the Emberling shown on stage. Escape skips it. The field then opens on the player standing with the Elder by the well in the town square (`OpeningSpot` marker). The Elder says the player has come of age and chosen the oath, hands over the starter (a level-7 Emberling, `creature_fire_01`) and the 5 Binding Scrolls, explains fire's strengths and the F strike and binding, warns that the Skeleton Lord is restless again, and sends the player to the scout, which accepts the first main quest. The journey is first autosaved when the scene ends. All lines live in `scripts/world/game_opening.gd`. A field started any other way (editor, tests, a save whose party is empty) still gets the starter silently. The player does not start at home and there is no name entry yet. The starter level is Provisional; it was picked so the starter beats the level-3 Loambucks outside the gate.
+**[Partial]** "Begin your journey" opens a prologue (`scenes/prologue.tscn`): the Elder, alone on a dark stage, explains the Verdant Reach and what an Oathbound is, with the Emberling shown on stage. Escape skips it. The field then opens on the player standing with the Elder by the well in the town square (`OpeningSpot` marker). The Elder says the player has come of age and chosen the oath, hands over the starter (a level-7 Emberling, `creature_emberling`) and the 5 Binding Scrolls, explains fire's strengths and the F strike and binding, warns that the Skeleton Lord is restless again, and sends the player to the scout, which accepts the first main quest. The journey is first autosaved when the scene ends. All lines live in `scripts/world/game_opening.gd`. A field started any other way (editor, tests, a save whose party is empty) still gets the starter silently. The player does not start at home and there is no name entry yet. The starter level is Provisional; it was picked so the starter beats the level-3 Loambucks outside the gate.
 
 NPCs show a quest mark over their heads (`WorldActor.quest_marker`): "!" for a quest they can offer or when an active quest asks the player to talk to them, "?" when a quest is ready to hand in to them. Yellow for main quests, blue for side quests; a main quest wins over a side one on the same NPC.
 
@@ -217,6 +217,8 @@ Approximate distribution of distinct species introduced or primarily encountered
 
 Species may overlap between areas. Later areas should generally contain higher-level encounters even when species repeat.
 
+**[Departure]** The shipped roster is 61 species, well past the 15 to 25 target, by request: recolours and small drawn-on details let the 20 monster packs cover every type. Area 1 holds the base forms, Areas 2 and 3 mostly the evolved ones.
+
 ## 6. Overworld Movement and Interaction
 
 ### 6.1 Player Movement
@@ -283,7 +285,7 @@ There are **no random grass/terrain encounters** in the current MVP.
 
 All wild encounters originate from visible creatures in the overworld. Creature spawns may appear dynamically within valid spawn regions, including visible pop-ins.
 
-**[Implemented]** `SpawnZone` circles keep a species populated (radius, max alive, level range, disposition, detection radius, respawn delay); single `WildCreature`s can be placed by hand and do not respawn. See `docs/map_authoring.md`.
+**[Implemented]** `SpawnZone` circles keep a species populated (radius, max alive, level range, disposition, detection radius, respawn delay). A zone can also mix in other species through `also_spawns`; its own species stays half of every spawn, so kill objectives that count it are never starved; single `WildCreature`s can be placed by hand and do not respawn. See `docs/map_authoring.md`.
 
 ### 7.2 Spawn Rules
 
@@ -382,7 +384,7 @@ Each creature species defines its baseline identity, including:
 - Ability pool (Section 9.9).
 - Visual/audio references when assets exist.
 
-**[Implemented]** as `CreatureSpecies` resources under `content/creatures/`. 26 species exist, with three evolution lines besides Emberling to Cinderclaw (Slagling to Cinderhulk, Quillimp to Pyrewing, Mirelash to Dreadmere). Every species has battle art. Sprites for the monster packs are imported by `tools/import_monster_sprites.py`, which also recolours a pack into a Water, Wind or Earth palette so one sheet can serve several elements.
+**[Implemented]** as `CreatureSpecies` resources under `content/creatures/`. 61 species exist, 7 to 10 per primary type, three of them bosses. 23 evolution lines, one of them three stages (Hollow Squire to Bulwark to Bastion); 11 catchable species stand alone. Every species has battle art. Sprites for the monster packs are imported by `tools/import_monster_sprites.py`, which recolours a pack into an element palette (Water, Wind, Earth, Nature, Rot, Steel and a few variants) and can draw small details on top (a leaf tuft, rot motes, a steel sheen, a flame wreath), so one sheet serves several species. Evolved forms usually reuse their base form's pack at a larger `sprite_scale`. Species ids and files are named after the species (`creature_hollow_squire`); saves from before the rename still load, as `ContentRegistry.LEGACY_SPECIES_IDS` maps the old type-and-slot ids (`creature_earth_03`) to the new ones.
 
 Individual creatures of the same species do **not** have Pokemon-style IVs, natures, or hidden randomized stat variation in the MVP. Same-species individuals follow the same underlying species progression unless modified by level, moves, statuses, or temporary effects.
 
@@ -549,7 +551,7 @@ Creatures may have one or two types. Moves have their own type independently of 
 
 A creature's learnable move set is normally thematically compatible with its own type or types, but specific cross-type moves are allowed when explicitly defined by content.
 
-**[Partial]** All seven types exist in code and in the type chart. No shipped species or move uses Nature, Rot or Steel yet.
+**[Implemented]** All seven types exist in code, in the type chart and in shipped content. Nature, Rot and Steel each have four attacking moves (Verdant Bloom is a Nature heal as well) and a type-boosting ability (Overgrown, Gravebound, Forged Core), plus Barkskin and Rustproof as defensive abilities.
 
 ### 10.2 Type Effectiveness Table
 
@@ -1530,7 +1532,7 @@ Reusable gameplay content should have stable internal IDs independent of display
 
 Examples:
 
-- `creature_fire_01`
+- `creature_emberling`
 - `move_ember_01`
 - `item_binding_scroll_basic`
 - `trainer_area1_03`

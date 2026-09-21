@@ -1,0 +1,60 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://6mfcdh40quhx"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_8pdkq"]
+[ext_resource type="Resource" path="res://content/abilities/ability_gravebound.tres" id="2_d7i30"]
+[ext_resource type="Resource" uid="uid://hy2bjnv2kuj3" path="res://content/abilities/ability_stonewall.tres" id="3_jktka"]
+[ext_resource type="SpriteFrames" uid="uid://tfhvod6otc82" path="res://content/sprites/creature_barrow_knight_battle.tres" id="4_jromv"]
+[ext_resource type="Resource" path="res://content/growth/growth_bulky.tres" id="5_xd120"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_3trdg"]
+[ext_resource type="Resource" path="res://content/moves/move_iron_jab_01.tres" id="7_pmq0a"]
+[ext_resource type="Resource" path="res://content/moves/move_grave_touch_01.tres" id="8_x5bps"]
+[ext_resource type="Resource" path="res://content/moves/move_shield_bash_01.tres" id="9_qnkmq"]
+[ext_resource type="Resource" uid="uid://d1r0dnyshd3ul" path="res://content/moves/move_wither_01.tres" id="10_0mw27"]
+[ext_resource type="Resource" path="res://content/moves/move_necrotic_wave_01.tres" id="11_4g3ru"]
+[ext_resource type="Resource" path="res://content/moves/move_steel_rend_01.tres" id="12_6n3fn"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="13_rkyug"]
+
+[sub_resource type="Resource" id="Resource_6vyu8"]
+script = ExtResource("6_3trdg")
+move = ExtResource("7_pmq0a")
+
+[sub_resource type="Resource" id="Resource_37ws2"]
+script = ExtResource("6_3trdg")
+move = ExtResource("8_x5bps")
+
+[sub_resource type="Resource" id="Resource_fleey"]
+script = ExtResource("6_3trdg")
+level = 10
+move = ExtResource("9_qnkmq")
+
+[sub_resource type="Resource" id="Resource_lict1"]
+script = ExtResource("6_3trdg")
+level = 18
+move = ExtResource("10_0mw27")
+
+[sub_resource type="Resource" id="Resource_wbxpc"]
+script = ExtResource("6_3trdg")
+level = 26
+move = ExtResource("11_4g3ru")
+
+[sub_resource type="Resource" id="Resource_3iaad"]
+script = ExtResource("6_3trdg")
+level = 30
+move = ExtResource("12_6n3fn")
+
+[resource]
+script = ExtResource("13_rkyug")
+id = &"creature_barrow_knight"
+display_name = "Barrow Knight"
+primary_type = 5
+has_secondary_type = true
+secondary_type = 6
+base_hp = 58
+base_attack = 62
+base_defense = 60
+base_speed = 38
+growth = ExtResource("5_xd120")
+learnset = Array[ExtResource("6_3trdg")]([SubResource("Resource_6vyu8"), SubResource("Resource_37ws2"), SubResource("Resource_fleey"), SubResource("Resource_lict1"), SubResource("Resource_wbxpc"), SubResource("Resource_3iaad")])
+ability_pool = Array[ExtResource("1_8pdkq")]([ExtResource("2_d7i30"), ExtResource("3_jktka")])
+base_bind_chance = 0.3
+battle_sprite = ExtResource("4_jromv")

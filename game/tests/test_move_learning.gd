@@ -3,7 +3,7 @@ extends GutTest
 ## the queue a battle leaves behind, the screen that puts the choice, and the
 ## field draining both once the world is calm.
 
-const SPECIES := &"creature_fire_01"
+const SPECIES := &"creature_emberling"
 
 var main: Node
 var _original_party: Array[CreatureInstance] = []

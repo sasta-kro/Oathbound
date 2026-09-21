@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="AbilityData" format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/stat_modifier.gd" id="1_y38xs"]
+[ext_resource type="Script" path="res://scripts/creatures/ability_data.gd" id="2_61gaf"]
+
+[resource]
+script = ExtResource("2_61gaf")
+id = &"ability_rustproof"
+display_name = "Rustproof"
+description = "Oiled plating that sheds water, dulling Water moves against it."
+damage_taken_multiplier = 0.75
+has_taken_type_filter = true
+taken_type_filter = 2

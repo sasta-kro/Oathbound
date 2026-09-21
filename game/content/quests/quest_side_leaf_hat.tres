@@ -6,7 +6,7 @@
 [sub_resource type="Resource" id="Objective_bind_loambuck"]
 script = ExtResource("2_objective")
 kind = 1
-target = &"creature_earth_01"
+target = &"creature_loambuck"
 count = 1
 description = "Bind a Loambuck and bring it home"
 

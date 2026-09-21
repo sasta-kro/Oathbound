@@ -109,11 +109,11 @@ func test_the_journey_survives_a_save_and_load() -> void:
 	var lead: CreatureInstance = GameState.party[0]
 	lead.gain_xp(500, GameState.level_cap)
 	lead.set_hp(3)
-	var second: CreatureInstance = Content.spawn_creature(&"creature_fire_01", 4)
+	var second: CreatureInstance = Content.spawn_creature(&"creature_emberling", 4)
 	GameState.add_to_party(second)
 	GameState.currency = 230
 	GameState.binding_scrolls = 2
-	GameState.seen_species[&"creature_fire_01"] = true
+	GameState.seen_species[&"creature_emberling"] = true
 	GameState.record_location("res://areas/area_one.tscn", Vector2(96, -48), Vector2i.LEFT)
 	GameState.play_seconds = 125.0
 	var expected_level: int = lead.level
@@ -138,7 +138,7 @@ func test_the_journey_survives_a_save_and_load() -> void:
 	assert_eq(GameState.party[1].level, 4)
 	assert_eq(GameState.currency, 230)
 	assert_eq(GameState.binding_scrolls, 2)
-	assert_true(GameState.seen_species.has(&"creature_fire_01"))
+	assert_true(GameState.seen_species.has(&"creature_emberling"))
 	assert_eq(GameState.area_path, "res://areas/area_one.tscn")
 	assert_eq(GameState.player_position, Vector2(96, -48))
 	assert_eq(GameState.player_facing, Vector2i.LEFT)
@@ -266,3 +266,12 @@ func test_destructive_slot_actions_ask_twice() -> void:
 
 	overwrite.pressed.emit()
 	assert_signal_emitted_with_parameters(list, "save_requested", [1])
+
+
+func test_a_creature_saved_under_its_old_type_and_slot_id_still_loads() -> void:
+	var creature := CreatureInstance.from_dict(
+		{"species": "creature_earth_03", "level": 12, "total_xp": 0, "moves": []}, Content
+	)
+	assert_not_null(creature, "Saves from before the species rename keep their creatures.")
+	assert_eq(creature.species_id(), &"creature_hollow_squire")
+	assert_true(Content.has_species(&"creature_earth_03"))

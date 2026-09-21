@@ -14,10 +14,10 @@ func before_each() -> void:
 
 
 func _config() -> BattleConfig:
-	var party: Array[CreatureInstance] = [Content.spawn_creature(&"creature_fire_01", 5)]
+	var party: Array[CreatureInstance] = [Content.spawn_creature(&"creature_emberling", 5)]
 	# Fire against Fire is neutral both ways, so neither side is favoured by type.
 	var config := BattleConfig.wild(
-		party, Content.spawn_creature(&"creature_fire_03", 3, 1), Content.type_chart
+		party, Content.spawn_creature(&"creature_slagling", 3, 1), Content.type_chart
 	)
 	config.binding_scrolls = 5
 	config.rng_seed = 3
@@ -120,7 +120,7 @@ func test_unavailable_commands_explain_themselves() -> void:
 
 func test_finishing_the_battle_closes_the_screen_and_reports_the_engine() -> void:
 	var config := _config()
-	config.player_party = [Content.spawn_creature(&"creature_fire_01", 20)]
+	config.player_party = [Content.spawn_creature(&"creature_emberling", 20)]
 	_scene.start_battle(config)
 	await wait_frames(2)
 	watch_signals(_scene)
@@ -179,7 +179,7 @@ func test_a_battle_with_a_transition_covers_the_screen_before_it_closes() -> voi
 	_scene.transition = transition
 
 	var config := _config()
-	config.player_party = [Content.spawn_creature(&"creature_fire_01", 20)]
+	config.player_party = [Content.spawn_creature(&"creature_emberling", 20)]
 	_scene.start_battle(config)
 	await wait_frames(2)
 	watch_signals(_scene)
@@ -219,7 +219,7 @@ func test_a_neutral_battle_shows_goes_first_on_the_faster_creature_only() -> voi
 
 
 func test_equal_speed_shows_the_tie_label_and_no_side_badge() -> void:
-	_scene.start_battle(_versus([[&"creature_wind_01", 5]], [&"creature_wind_01", 5]))
+	_scene.start_battle(_versus([[&"creature_gustpip", 5]], [&"creature_gustpip", 5]))
 	await wait_frames(2)
 	assert_eq(
 		_scene.engine.player.active().effective_speed(),
@@ -234,7 +234,7 @@ func test_equal_speed_shows_the_tie_label_and_no_side_badge() -> void:
 
 
 func test_a_first_strike_opening_beats_the_speed_comparison() -> void:
-	var config := _versus([[&"creature_earth_01", 5]], [&"creature_wind_01", 5])
+	var config := _versus([[&"creature_loambuck", 5]], [&"creature_gustpip", 5])
 	config.opening = BattleConfig.Opening.ADVANTAGE
 	_scene.start_battle(config)
 	await wait_frames(2)
@@ -251,7 +251,7 @@ func test_a_first_strike_opening_beats_the_speed_comparison() -> void:
 
 
 func test_an_ambush_opening_beats_the_speed_comparison() -> void:
-	var config := _versus([[&"creature_wind_01", 5]], [&"creature_earth_01", 5])
+	var config := _versus([[&"creature_gustpip", 5]], [&"creature_loambuck", 5])
 	config.opening = BattleConfig.Opening.DISADVANTAGE
 	_scene.start_battle(config)
 	await wait_frames(2)
@@ -270,7 +270,7 @@ func test_an_ambush_opening_beats_the_speed_comparison() -> void:
 func test_after_the_forced_opening_the_indicator_falls_back_to_speed() -> void:
 	# Deepcrag (Water/Earth) and Gustpip (Wind/Earth) trade neutral or resisted
 	# hits, so the battle survives into turn two.
-	var config := _versus([[&"creature_water_07", 5]], [&"creature_wind_01", 5])
+	var config := _versus([[&"creature_deepcrag", 5]], [&"creature_gustpip", 5])
 	config.opening = BattleConfig.Opening.ADVANTAGE
 	_scene.start_battle(config)
 	await wait_frames(2)
@@ -291,7 +291,7 @@ func test_after_the_forced_opening_the_indicator_falls_back_to_speed() -> void:
 
 func test_switching_refreshes_the_indicator_for_the_new_active_creature() -> void:
 	var config := _versus(
-		[[&"creature_wind_01", 5], [&"creature_earth_01", 5]], [&"creature_wind_01", 5]
+		[[&"creature_gustpip", 5], [&"creature_loambuck", 5]], [&"creature_gustpip", 5]
 	)
 	_scene.start_battle(config)
 	await wait_frames(2)
@@ -303,7 +303,7 @@ func test_switching_refreshes_the_indicator_for_the_new_active_creature() -> voi
 	_scene.press_entry(1)
 	await wait_frames(2)
 
-	assert_eq(_scene.engine.player.active().creature.species_id(), &"creature_earth_01")
+	assert_eq(_scene.engine.player.active().creature.species_id(), &"creature_loambuck")
 	assert_true(_scene.enemy_initiative_badge.visible)
 	assert_eq(_scene.enemy_initiative_badge.text, "GOES FIRST")
 	assert_false(_scene.speed_tie_label.visible)
@@ -335,7 +335,7 @@ func test_priority_zero_move_hints_make_no_priority_claim() -> void:
 
 func test_closing_the_battle_hides_every_initiative_indicator() -> void:
 	var config := _config()
-	config.player_party = [Content.spawn_creature(&"creature_fire_01", 20)]
+	config.player_party = [Content.spawn_creature(&"creature_emberling", 20)]
 	_scene.start_battle(config)
 	await wait_frames(2)
 	assert_true(_scene.player_initiative_badge.visible, "Precondition: an indicator is on screen.")
@@ -353,7 +353,7 @@ func test_closing_the_battle_hides_every_initiative_indicator() -> void:
 
 func test_every_submenu_offers_a_way_back() -> void:
 	# Two companions, so SWITCH is a command the player can actually pick.
-	_scene.start_battle(_versus([[&"creature_fire_01", 5], [&"creature_earth_01", 5]], [&"creature_fire_03", 3]))
+	_scene.start_battle(_versus([[&"creature_emberling", 5], [&"creature_loambuck", 5]], [&"creature_slagling", 3]))
 	await wait_frames(2)
 
 	_scene.press_entry(0)
@@ -383,8 +383,8 @@ func test_the_command_menu_has_nowhere_to_back_out_to() -> void:
 func test_choosing_a_replacement_cannot_be_backed_out_of() -> void:
 	var config := _config()
 	config.player_party = [
-		Content.spawn_creature(&"creature_fire_01", 5),
-		Content.spawn_creature(&"creature_earth_01", 5),
+		Content.spawn_creature(&"creature_emberling", 5),
+		Content.spawn_creature(&"creature_loambuck", 5),
 	]
 	_scene.start_battle(config)
 	await wait_frames(2)

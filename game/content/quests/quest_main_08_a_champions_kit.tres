@@ -6,14 +6,14 @@
 [sub_resource type="Resource" id="Objective_0"]
 script = ExtResource("2_objective")
 kind = 0
-target = &"creature_wind_06"
+target = &"creature_hexcaller"
 count = 3
 description = "Put down three Hexcallers in the east hall"
 
 [sub_resource type="Resource" id="Objective_1"]
 script = ExtResource("2_objective")
 kind = 0
-target = &"creature_earth_06"
+target = &"creature_ironhorn"
 count = 2
 description = "Break the two Ironhorns off the crypt road"
 

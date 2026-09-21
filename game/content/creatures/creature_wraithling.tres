@@ -1,0 +1,51 @@
+[gd_resource type="Resource" script_class="CreatureSpecies" format=3 uid="uid://ua55y232svmj"]
+
+[ext_resource type="Script" uid="uid://bbqh34pj6hc1y" path="res://scripts/creatures/ability_data.gd" id="1_a65fv"]
+[ext_resource type="Resource" path="res://content/abilities/ability_gravebound.tres" id="2_wogqp"]
+[ext_resource type="Resource" path="res://content/abilities/ability_windrider.tres" id="3_ts40t"]
+[ext_resource type="SpriteFrames" uid="uid://5ybawhd63ybm" path="res://content/sprites/creature_wraithling_battle.tres" id="4_qgmmv"]
+[ext_resource type="Resource" uid="uid://co0muf78v66o8" path="res://content/creatures/creature_gravereaper.tres" id="5_wogqp"]
+[ext_resource type="Resource" path="res://content/growth/growth_standard.tres" id="5_y8gon"]
+[ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_t5emt"]
+[ext_resource type="Resource" path="res://content/moves/move_grave_touch_01.tres" id="7_yxbr0"]
+[ext_resource type="Resource" uid="uid://c3rxxapydl0ab" path="res://content/moves/move_dread_gaze_01.tres" id="8_bi27c"]
+[ext_resource type="Resource" path="res://content/moves/move_blight_bite_01.tres" id="9_2osfu"]
+[ext_resource type="Resource" path="res://content/moves/move_hex_bolt_01.tres" id="10_qgmv7"]
+[ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="11_1jyas"]
+
+[sub_resource type="Resource" id="Resource_e4k6c"]
+script = ExtResource("6_t5emt")
+move = ExtResource("7_yxbr0")
+
+[sub_resource type="Resource" id="Resource_7vgld"]
+script = ExtResource("6_t5emt")
+level = 6
+move = ExtResource("8_bi27c")
+
+[sub_resource type="Resource" id="Resource_wk5lp"]
+script = ExtResource("6_t5emt")
+level = 10
+move = ExtResource("9_2osfu")
+
+[sub_resource type="Resource" id="Resource_wvcvv"]
+script = ExtResource("6_t5emt")
+level = 14
+move = ExtResource("10_qgmv7")
+
+[resource]
+script = ExtResource("11_1jyas")
+id = &"creature_wraithling"
+display_name = "Wraithling"
+primary_type = 5
+has_secondary_type = true
+secondary_type = 3
+base_attack = 50
+base_defense = 34
+base_speed = 54
+growth = ExtResource("5_y8gon")
+learnset = Array[ExtResource("6_t5emt")]([SubResource("Resource_e4k6c"), SubResource("Resource_7vgld"), SubResource("Resource_wk5lp"), SubResource("Resource_wvcvv")])
+evolves_into = ExtResource("5_wogqp")
+evolution_level = 22
+ability_pool = Array[ExtResource("1_a65fv")]([ExtResource("2_wogqp"), ExtResource("3_ts40t")])
+base_bind_chance = 0.45
+battle_sprite = ExtResource("4_qgmmv")

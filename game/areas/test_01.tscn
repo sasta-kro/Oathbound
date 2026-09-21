@@ -5,9 +5,9 @@
 [ext_resource type="PackedScene" path="res://scenes/world_actor.tscn" id="3_krtgn"]
 [ext_resource type="SpriteFrames" uid="uid://dr750752ih5gn" path="res://content/sprites/npc_knight.tres" id="4_g3ds2"]
 [ext_resource type="PackedScene" path="res://scenes/spawn_zone.tscn" id="5_ff0yl"]
-[ext_resource type="Resource" uid="uid://c6h28qqwfoofq" path="res://content/creatures/creature_earth_01.tres" id="7_ad6m3"]
-[ext_resource type="Resource" uid="uid://d2gd7n0v6nkw5" path="res://content/creatures/creature_fire_01.tres" id="8_t787p"]
-[ext_resource type="Resource" uid="uid://uaj22yo1wc33" path="res://content/creatures/creature_earth_02.tres" id="9_mm4cp"]
+[ext_resource type="Resource" uid="uid://c6h28qqwfoofq" path="res://content/creatures/creature_loambuck.tres" id="7_ad6m3"]
+[ext_resource type="Resource" uid="uid://d2gd7n0v6nkw5" path="res://content/creatures/creature_emberling.tres" id="8_t787p"]
+[ext_resource type="Resource" uid="uid://uaj22yo1wc33" path="res://content/creatures/creature_rimeshard.tres" id="9_mm4cp"]
 [ext_resource type="Shader" path="res://shaders/foliage_sway.gdshader" id="11_sway"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_foliage"]
