@@ -7,3 +7,6 @@ __pycache__/
 *.py[cod]
 .mcp.json
 builds/
+
+# local web-build server helpers
+tools/serve_web.*
