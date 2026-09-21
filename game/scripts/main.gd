@@ -36,6 +36,13 @@ const LOCK_ATTACK := &"attack"
 ## A lesson that wants the player to do nothing at all, because the thing
 ## being taught is what happens to somebody standing still.
 const LOCK_STILL := &"still"
+## A party-page lesson (see [PartyLesson]): the player is held in place and
+## only the party key answers, until the page has been used the way the
+## Scout asked.
+const LOCK_PAGE := &"party_page"
+## The keys a lesson quest can teach (see [member QuestData.taught_key]).
+const TAUGHT_ATTACK := &"attack"
+const TAUGHT_PARTY := &"party"
 ## Shown as the lid comes up, for a chest whose author wrote no line of its
 ## own: one for a chest with something in it, one for a chest without.
 const CHEST_OPENED_TEXT := "The lid gives, and you empty the chest."
@@ -98,6 +105,15 @@ var _staging_tutorial: bool = false
 ## Empty when no lesson is waiting. Unlike [member _lesson] this outlives no
 ## battle: it is answered out in the world, before any battle opens.
 var _field_lesson: Dictionary = {}
+## The party-page lesson under way, by quest id, or empty.
+var _page_lesson: StringName = &""
+## The key the player pressed straight through a Scout's line that teaches
+## it, while whatever follows the line is being staged. The staging skips the
+## Scout's remaining lines, and a strike lesson swings as soon as its quarry
+## is standing. Empty the rest of the time.
+var _rush_key: StringName = &""
+## The NPC currently showing the talk prompt, or null.
+var _prompted_actor: WorldActor
 
 
 func _ready() -> void:
@@ -105,6 +121,7 @@ func _ready() -> void:
 	field_ui = FieldUI.new()
 	add_child(field_ui)
 	field_ui.changed.connect(_refresh_world_activity)
+	field_ui.changed.connect(_refresh_page_lesson)
 	evolution_screen = EvolutionScreen.new()
 	add_child(evolution_screen)
 	move_learn_screen = MoveLearnScreen.new()
@@ -189,9 +206,38 @@ func _play_opening() -> void:
 
 
 ## Shows a line and waits for the player to read past it.
-func _say(line: String) -> void:
-	_open_dialogue(line)
+func _say(line: String, lets_through: StringName = &"") -> void:
+	_open_dialogue(line, lets_through)
 	await dialogue_panel.dismissed
+
+
+## A line the Scout says on the way into a lesson, left unsaid once the
+## player has already pressed the key he is teaching (see [member _rush_key]).
+func _say_unless_rushed(line: String, lets_through: StringName = &"") -> void:
+	if _rush_key != &"":
+		return
+	await _say(line, lets_through)
+
+
+## The player pressed [param key] while a line teaching it was on screen. The
+## line goes, a question is taken as a yes, and the Scout's remaining lines
+## before the lesson are skipped. True when the key should now do its job
+## where the player stands; false when a staged lesson has taken it over, or
+## something else is still on screen.
+func press_through_dialogue(key: StringName) -> bool:
+	_rush_key = key
+	if dialogue_panel.has_question():
+		dialogue_panel.answer(0)
+	else:
+		_close_dialogue()
+	if _rush_key == &"":
+		# The lesson was staged on the spot and has already acted on it.
+		return false
+	if _staging_tutorial:
+		# The staging is waiting on its creature and acts on it after.
+		return false
+	_rush_key = &""
+	return not dialogue_panel.is_open()
 
 
 ## The actor in the current area with [param id], or null.
@@ -580,10 +626,10 @@ func _talk_to(actor: WorldActor) -> void:
 		# simply staged once more.
 		if quest.is_main():
 			if _is_lesson(quest):
-				await _say(quest.progress_text())
+				await _say(quest.progress_text(), quest.taught_key)
 				_play_lesson(quest)
 			else:
-				_open_dialogue(quest.progress_text())
+				_open_dialogue(quest.progress_text(), quest.taught_key)
 			return
 		var reply: int = await _ask(quest.progress_text(), [quest.continue_option, quest.abandon_option])
 		if reply == 1:
@@ -668,7 +714,7 @@ func _offer_rest(actor: WorldActor, greeting: String) -> void:
 ## Puts [param quest] to the player and plays out their answer.
 func _offer(quest: QuestData) -> void:
 	var line: String = quest.reoffer_text() if GameState.quests.was_declined(quest.id) else quest.offer_line
-	var choice: int = await _ask(line, [quest.accept_option, quest.refuse_option])
+	var choice: int = await _ask(line, [quest.accept_option, quest.refuse_option], quest.taught_key)
 	if choice == 0:
 		GameState.accept_quest(quest)
 		_autosave()
@@ -676,14 +722,14 @@ func _offer(quest: QuestData) -> void:
 		# stops the player going.
 		var lead: CreatureInstance = GameState.lead_creature()
 		if lead != null and quest.is_underleveled(lead.level):
-			await _say(quest.caution_text())
+			await _say_unless_rushed(quest.caution_text())
 		# A lesson whose goal is already met (a Loambuck bound early) is
 		# simply handed in next time.
 		if _is_lesson(quest) and not GameState.quests.is_ready(quest):
-			await _say(quest.accepted_text())
+			await _say_unless_rushed(quest.accepted_text(), quest.taught_key)
 			_play_lesson(quest)
 			return
-		_open_dialogue(quest.accepted_text())
+		_open_dialogue(quest.accepted_text(), quest.taught_key)
 	elif choice == 1:
 		GameState.refuse_quest(quest)
 		_open_dialogue(quest.refused_text())
@@ -698,6 +744,8 @@ func _is_lesson(quest: QuestData) -> bool:
 		FieldStrike.QUEST_ID,
 		FieldAmbush.QUEST_ID,
 		FieldRout.QUEST_ID,
+		PartyLesson.KEEPING_QUEST_ID,
+		PartyLesson.LEAD_QUEST_ID,
 	]
 
 
@@ -716,6 +764,8 @@ func _play_lesson(quest: QuestData) -> void:
 			_play_field_ambush()
 		FieldRout.QUEST_ID:
 			_play_field_rout()
+		PartyLesson.KEEPING_QUEST_ID, PartyLesson.LEAD_QUEST_ID:
+			_play_page_lesson(quest)
 
 
 ## The binding lesson (see [FieldBinding]): a wild Loambuck wanders up to the
@@ -723,7 +773,7 @@ func _play_lesson(quest: QuestData) -> void:
 ## it down and offering it a Binding Scroll.
 func _play_field_binding() -> void:
 	if GameState.party_is_full():
-		_open_dialogue(FieldBinding.PARTY_FULL_LINE)
+		_open_dialogue(FieldBinding.PARTY_FULL_LINE, TAUGHT_PARTY)
 		return
 	var species: CreatureSpecies = Content.get_species(FieldBinding.SPECIES_ID)
 	if species == null:
@@ -754,7 +804,7 @@ func _play_field_mending() -> void:
 	bound.append_array(GameState.party)
 	bound.append_array(GameState.kept)
 	if cast.is_empty() and not FieldMending.roles(bound).is_empty():
-		_open_dialogue(FieldMending.CALL_BACK_LINE)
+		_open_dialogue(FieldMending.CALL_BACK_LINE, TAUGHT_PARTY)
 		return
 	if cast.is_empty():
 		GameState.report_quest_event(QuestObjective.Kind.EVENT, FieldMending.EVENT_ID)
@@ -788,7 +838,7 @@ func _play_field_strike() -> void:
 	# The Scout sees the party rested before the lesson starts.
 	GameState.heal_party()
 	_staging_tutorial = true
-	await _say(FieldStrike.SIGHTING[0])
+	await _say_unless_rushed(FieldStrike.SIGHTING[0], TAUGHT_ATTACK)
 	var quarry: WildCreature = _spawn_lesson_creature(
 		species, FieldStrike.LEVEL, FieldStrike.DISTANCE_CELLS
 	)
@@ -796,7 +846,7 @@ func _play_field_strike() -> void:
 	quarry.refresh_health()
 	await get_tree().create_timer(AMBUSHER_ENTRANCE_SECONDS).timeout
 	for index: int in range(1, FieldStrike.SIGHTING.size()):
-		await _say(FieldStrike.SIGHTING[index])
+		await _say_unless_rushed(FieldStrike.SIGHTING[index], TAUGHT_ATTACK)
 	_staging_tutorial = false
 	_begin_field_lesson(
 		quarry,
@@ -842,7 +892,7 @@ func _play_field_rout() -> void:
 		return
 	GameState.heal_party()
 	_staging_tutorial = true
-	await _say(FieldRout.SIGHTING[0])
+	await _say_unless_rushed(FieldRout.SIGHTING[0], TAUGHT_ATTACK)
 	var spent: WildCreature = _spawn_lesson_creature(
 		species, FieldRout.LEVEL, FieldRout.DISTANCE_CELLS
 	)
@@ -850,7 +900,7 @@ func _play_field_rout() -> void:
 	spent.refresh_health()
 	await get_tree().create_timer(AMBUSHER_ENTRANCE_SECONDS).timeout
 	for index: int in range(1, FieldRout.SIGHTING.size()):
-		await _say(FieldRout.SIGHTING[index])
+		await _say_unless_rushed(FieldRout.SIGHTING[index], TAUGHT_ATTACK)
 	_staging_tutorial = false
 	# Only a swing that puts it down counts: one that leaves it standing has
 	# taught the player the opposite of the lesson.
@@ -891,6 +941,47 @@ func _begin_field_lesson(
 	# battle lessons, this one hands it straight back: walking up to the
 	# quarry, or standing still while it comes, is the whole lesson.
 	_refresh_world_activity()
+	# A player who swung at the Scout's word, before he had finished talking,
+	# gets that swing now there is something standing to take it.
+	if _rush_key == TAUGHT_ATTACK and on_strike:
+		_strike.call_deferred()
+	_rush_key = &""
+
+
+## The party-page lessons (see [PartyLesson]): nothing is staged in the
+## world. The player is held where they stand with the party key as the only
+## one that answers, and the page walks them through the rest.
+func _play_page_lesson(quest: QuestData) -> void:
+	# Patched up first, so no fainted companion greys out the button the
+	# lesson points at.
+	GameState.heal_party()
+	_page_lesson = quest.id
+	_refresh_page_lesson()
+
+
+## The party-page lesson under way, by quest id, or empty.
+func party_lesson() -> StringName:
+	return _page_lesson
+
+
+## Puts the lesson's field instruction up while the page is shut, and ends
+## the lesson once the page has been used the way the Scout asked and shut.
+func _refresh_page_lesson() -> void:
+	if _page_lesson == &"" or field_ui.is_open():
+		return
+	if PartyLesson.step(_page_lesson, false) == PartyLesson.Step.DONE:
+		_end_page_lesson()
+		return
+	field_ui.show_prompt(PartyLesson.OPEN_PROMPT)
+	_refresh_world_activity()
+
+
+func _end_page_lesson() -> void:
+	if _page_lesson == &"":
+		return
+	_page_lesson = &""
+	field_ui.hide_prompt()
+	_refresh_world_activity()
 
 
 ## Whether the open lesson is waiting on this exact creature, and on a blow
@@ -928,6 +1019,8 @@ func _clear_field_lesson() -> void:
 
 ## How tightly a lesson is holding the player right now, or empty.
 func lesson_lock() -> StringName:
+	if _page_lesson != &"":
+		return LOCK_PAGE
 	return _field_lesson.get("lock", &"")
 
 
@@ -940,6 +1033,7 @@ func is_lesson_locked() -> bool:
 ## Takes back a staged creature that is still standing, for a lesson the
 ## player walked away from or is about to be given again.
 func _abandon_field_lesson() -> void:
+	_end_page_lesson()
 	if _field_lesson.is_empty():
 		return
 	var quarry: WildCreature = _staged_creature()
@@ -1009,9 +1103,9 @@ func _spawn_lesson_creature(
 
 ## Puts a line with replies to the player and waits for the answer. The
 ## world pauses with the dialogue open, as it does for any line.
-func _ask(line: String, options: PackedStringArray) -> int:
+func _ask(line: String, options: PackedStringArray, lets_through: StringName = &"") -> int:
 	_set_world_active(false)
-	var reply: int = await dialogue_panel.ask(line, options)
+	var reply: int = await dialogue_panel.ask(line, options, lets_through)
 	_refresh_world_activity()
 	return reply
 
@@ -1069,6 +1163,10 @@ func _report_area_reached() -> void:
 ## creature that survives becomes a battle the player opens ahead on, and one
 ## that does not never sees a battle screen.
 func _strike() -> void:
+	# The Scout teaching this key lets it through his lines: pressing it says
+	# yes to the lesson and swings as soon as there is something to swing at.
+	if dialogue_panel.lets_through(TAUGHT_ATTACK) and not press_through_dialogue(TAUGHT_ATTACK):
+		return
 	# A question is never swung away from, whether or not its replies are on
 	# screen yet: the ask may still have boxes to go.
 	if dialogue_panel.has_question():
@@ -1183,7 +1281,34 @@ func _challenge_boss(creature: WildCreature) -> void:
 		_close_dialogue()
 
 
-## The closest interactable actor the player can touch, or null.
+func _process(_delta: float) -> void:
+	_refresh_talk_prompt()
+
+
+## Shows the talk prompt over the NPC the interact key would reach, and only
+## when pressing it would start a conversation. Wild creatures get no prompt:
+## they are fought, not spoken to.
+func _refresh_talk_prompt() -> void:
+	var target: WorldActor = talk_prompt_target()
+	if target == _prompted_actor:
+		return
+	if is_instance_valid(_prompted_actor):
+		_prompted_actor.set_talk_prompt(false)
+	_prompted_actor = target
+	if target != null:
+		target.set_talk_prompt(true)
+
+
+## The NPC that pressing interact would talk to right now, or null.
+func talk_prompt_target() -> WorldActor:
+	if _world_is_paused() or is_lesson_locked() or nearest_chest_in_reach() != null:
+		return null
+	var actor: WorldActor = nearest_actor_in_reach()
+	if actor == null or actor is WildCreature:
+		return null
+	return actor
+
+
 ## The chest within reach, nearest first. Chests block movement, so at most
 ## one is ever close enough to matter.
 func nearest_chest_in_reach() -> TreasureChest:
@@ -1199,6 +1324,7 @@ func nearest_chest_in_reach() -> TreasureChest:
 	return best
 
 
+## The closest interactable actor the player can touch, or null.
 func nearest_actor_in_reach() -> WorldActor:
 	var best: WorldActor = null
 	var best_distance: float = INF
@@ -1449,8 +1575,8 @@ func _waking_text() -> String:
 	return WOKEN_BY_THE_ROAD_TEXT % GameState.DEFEAT_CURRENCY_PENALTY
 
 
-func _open_dialogue(line: String) -> void:
-	dialogue_panel.show_line(line)
+func _open_dialogue(line: String, lets_through: StringName = &"") -> void:
+	dialogue_panel.show_line(line, lets_through)
 	_refresh_world_activity()
 
 
@@ -1485,7 +1611,7 @@ func _set_world_active(active: bool) -> void:
 	# ambush has to arrive, and the swing has to be the only answer to it.
 	var lock: StringName = lesson_lock()
 	player.movement_enabled = active and lock == &""
-	player.strike_enabled = active and lock != LOCK_STILL
+	player.strike_enabled = active and (lock == &"" or lock == LOCK_ATTACK)
 	partner.following_enabled = active
 	get_tree().call_group(WildCreature.CREATURE_GROUP, &"set_roaming", active)
 	get_tree().call_group(WorldActor.WANDERER_GROUP, &"set_roaming", active)

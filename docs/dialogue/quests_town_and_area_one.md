@@ -94,11 +94,7 @@ I understand. It is no small thing to ask of anyone, whatever the tradition says
 
 <!-- speaker: Scout -->
 
-The Elder sent you up?
-
-Then it is your turn at the altar. Good.
-
-I have walked that road with more champions than I care to count, and I tell every one of them the same thing: the rite comes first, the knight comes second, and the king comes last. We start at the beginning. Take these.
+The Elder sent you? Then it's your turn at the altar. I'll get you ready first. Take these.
 
 ### done_line
 
@@ -130,11 +126,7 @@ The Scout will not let anyone carry the rite up the ruined road on a single part
 
 <!-- speaker: Scout -->
 
-First thing, and do not argue it.
-
-Nobody carries the rite up that road alone. An Emberling alone burns hot and burns out, and everything between here and the altar is older than it is.
-
-You want someone at its back. Loambucks graze the meadow west of this camp. They are slow, but they mend. Bind one.
+Don't go up that road with only one Oathbound. Loambucks can heal their partners in a fight. Let's get you one.
 
 ### accept_option
 
@@ -148,25 +140,25 @@ Not yet.
 
 <!-- speaker: Scout -->
 
-Knock it about a little first. A tired Loambuck takes the scroll far more readily than a fresh one. Don't overdo it, mind.
+Weaken it first, then use a Binding Scroll. A tired one is easier to bind.
 
 ### refused_line
 
 <!-- speaker: Scout -->
 
-Suit yourself. The meadow isn't going anywhere, and neither is the altar.
+Suit yourself. Talk to me when you're ready.
 
 ### reoffer_line
 
 <!-- speaker: Scout -->
 
-Still going it alone? Loambucks, west of here. Bind one.
+Ready to bind a Loambuck?
 
 ### progress_line
 
 <!-- speaker: Scout -->
 
-Any luck in the meadow? West of the camp, in the tall grass.
+Let's try that Loambuck again.
 
 ### continue_option
 
@@ -180,23 +172,19 @@ I'd rather not.
 
 <!-- speaker: Scout -->
 
-Your choice. Don't say I didn't warn you.
+Your choice.
 
 ### complete_line
 
 <!-- speaker: Scout -->
 
-That's a fine one. Look at it, already sniffing your Emberling for scrapes. Keep it close.
-
-Fire will not serve you up there; half of what the dead king left behind is fire already.
-
-Things that grow are the one thing he never had. I'll show you why.
+Good. Keep that Loambuck close. It can heal your Emberling in a fight.
 
 ### done_line
 
 <!-- speaker: Scout -->
 
-A Loambuck at your back is worth three scrolls in your pack.
+A Loambuck at your back is worth three scrolls.
 
 ---
 
@@ -224,13 +212,7 @@ Sending one away and calling it back is done from the party page.
 
 <!-- speaker: Scout -->
 
-Before you get attached to those two, learn the rule.
-
-Three walk with you. Only three, ever; more than that and you are managing a crowd instead of fighting.
-
-But nothing you bind is wasted: whatever will not fit goes down to the paddock at the Hearthside, where it is fed and kept and healed, and it waits there until you send for it.
-
-Open your party page and try it, here, where nothing is chasing you.
+Only three Oathbound can walk with you. Extras wait in the paddock until you call them back. Let me show you.
 
 ### accept_option
 
@@ -244,27 +226,25 @@ Later.
 
 <!-- speaker: Scout -->
 
-Tab opens it, or the party button up top. Pick one of yours and send it to keeping, then call it straight back out.
-
-That is the whole system. Do it once and you will never be afraid to use a scroll again.
+Press Tab to open your party page.
 
 ### refused_line
 
 <!-- speaker: Scout -->
 
-Then you will stand in a meadow full of Oathbound one day with three slots and no idea what to do about it.
+Later, then.
 
 ### reoffer_line
 
 <!-- speaker: Scout -->
 
-Ready to learn where the spare ones go?
+Ready to try the paddock?
 
 ### progress_line
 
 <!-- speaker: Scout -->
 
-Party page. Tab. Send one to keeping, and call it back when you see how it works.
+Press Tab. Send one to keeping, then call it back.
 
 ### continue_option
 
@@ -278,17 +258,13 @@ Not now.
 
 <!-- speaker: Scout -->
 
-When you are ready.
+When you're ready.
 
 ### complete_line
 
 <!-- speaker: Scout -->
 
-That is it. Fed, healed and waiting, and you can trade any of them in or out whenever you like.
-
-Now use your scrolls freely: a full party is no reason to walk past something worth having. Right, back to the fire.
-
-There is a thing your Loambuck can do that nobody has shown you.
+That's it. Bind anything you find; there's always room for it.
 
 ### done_line
 
@@ -320,7 +296,7 @@ The Scout wants to show how a mender fights before the altar road teaches it the
 
 <!-- speaker: Scout -->
 
-Second thing. That road is long and nothing on it waits for you to be ready. Let me show you how a mender fights, before you learn it the hard way. Stay by the fire a moment.
+Next, how to heal in a fight. Stay by the fire a moment.
 
 ### accept_option
 
@@ -334,25 +310,25 @@ Later.
 
 <!-- speaker: Scout -->
 
-Here's the thing most folk get wrong. A healer doesn't only mend itself. It can mend whoever it's sworn to, even one sitting out the fight.
+A healer can mend a partner that's sitting out the fight, not just itself.
 
 ### refused_line
 
 <!-- speaker: Scout -->
 
-Later, then. Don't leave it too long; the bells won't wait on you.
+Later, then.
 
 ### reoffer_line
 
 <!-- speaker: Scout -->
 
-Ready for that lesson now?
+Ready for the healing lesson?
 
 ### progress_line
 
 <!-- speaker: Scout -->
 
-Want to go again? Swap, mend, swap back.
+Again? Swap, mend, swap back.
 
 ### continue_option
 
@@ -366,15 +342,13 @@ Not now.
 
 <!-- speaker: Scout -->
 
-Come find me when you want to try again.
+Talk to me when you want to try again.
 
 ### complete_line
 
 <!-- speaker: Scout -->
 
-See? Your Emberling would have burned out on its own. Swap, mend, swap back. Remember that and the road won't kill you.
-
-Sit down again, though. Mending is what you do after a blow lands, and I would rather teach you the blow.
+See? Swap, mend, swap back. That will keep you alive.
 
 ### done_line
 
@@ -408,13 +382,7 @@ Which one that is can be changed at any time from the party page.
 
 <!-- speaker: Scout -->
 
-One more thing off the page, and it matters more than it sounds.
-
-The one walking at your shoulder is not decoration. It opens every fight, it throws whatever you swing out here, and it wears whatever gets swung at you.
-
-So it should never be whichever one happened to be first. Going somewhere cold and wet?
-
-Put the one that likes cold and wet in front. Open the page and change it.
+The Oathbound walking beside you is your leader. It fights first and takes the hits out here. Let's change who leads.
 
 ### accept_option
 
@@ -428,25 +396,25 @@ Later.
 
 <!-- speaker: Scout -->
 
-Tab, then the front button under whichever one you want leading. Try it. Look at the little one following you afterwards; that is who is in front now.
+Press Tab to open your party page.
 
 ### refused_line
 
 <!-- speaker: Scout -->
 
-Then whoever is first stays first, and one day that will be the wrong one.
+Later, then.
 
 ### reoffer_line
 
 <!-- speaker: Scout -->
 
-Ready to choose who walks in front?
+Ready to change who leads?
 
 ### progress_line
 
 <!-- speaker: Scout -->
 
-Party page, Tab. Put somebody else in front.
+Press Tab and pick a new leader.
 
 ### continue_option
 
@@ -460,15 +428,13 @@ Not now.
 
 <!-- speaker: Scout -->
 
-Your shoulder, your choice.
+Your choice.
 
 ### complete_line
 
 <!-- speaker: Scout -->
 
-There. Do that before every fight you can see coming, and half the fights you cannot.
-
-Right: that is everything the page can teach you. The rest is the field, and the field starts with the key you have not used yet.
+Good. Pick your leader before any fight you can see coming.
 
 ### done_line
 
@@ -502,13 +468,7 @@ Out on the road the first blow is usually the one that decides the fight, and it
 
 <!-- speaker: Scout -->
 
-Third thing, and it is the one that keeps you alive.
-
-You have been standing about waiting for these things to come to you. Don't. Out here you hit first.
-
-Press F and whichever Oathbound walks at your shoulder throws its best blow the way you're facing.
-
-Land it before the fight opens and you start that fight a turn up. Let me find you something to practise on.
+Out here, hit first. Press F and your leader attacks whatever you're facing. Land it before a fight and you get the first turn.
 
 ### accept_option
 
@@ -522,25 +482,25 @@ Later.
 
 <!-- speaker: Scout -->
 
-There's one in the grass down the slope. Walk up on it and hit F. Close enough to touch, mind; your partner has arms, not a bow.
+There's one in the grass. Face it and press F.
 
 ### refused_line
 
 <!-- speaker: Scout -->
 
-Suit yourself. Stand and wait, then, and see how that goes for you.
+Suit yourself.
 
 ### reoffer_line
 
 <!-- speaker: Scout -->
 
-Ready to learn to swing first?
+Ready to learn to hit first?
 
 ### progress_line
 
 <!-- speaker: Scout -->
 
-Get close and press F. That's all there is to it.
+Face it and press F.
 
 ### continue_option
 
@@ -554,19 +514,19 @@ Not now.
 
 <!-- speaker: Scout -->
 
-Fine. It'll be in the grass when you change your mind.
+It'll be there when you're ready.
 
 ### complete_line
 
 <!-- speaker: Scout -->
 
-That's it. See how it came into the fight already bleeding? Do that every time. Now sit back down, because the next lesson is the same one from the wrong end.
+See? It started the fight already hurt, and you moved first. Do that every time.
 
 ### done_line
 
 <!-- speaker: Scout -->
 
-F, and close. Never wait to be swung at.
+Press F first. Never wait to be hit.
 
 ---
 
@@ -594,11 +554,7 @@ A hostile creature that reaches you lands a real blow and takes the first turn o
 
 <!-- speaker: Scout -->
 
-Now the same lesson from the other end, and you will not enjoy it.
-
-Some things out here hunt. They see you, they come, they wind up, and if you are still standing there when they finish winding up, they open the fight with a free blow and the first turn besides.
-
-I would rather you felt that once, here, where I can pick you up afterwards.
+Now the other side. Some creatures hunt you. If one reaches you, it gets a free hit and the first turn. Better to feel that here, where I can patch you up.
 
 ### accept_option
 
@@ -612,25 +568,25 @@ I'd rather not.
 
 <!-- speaker: Scout -->
 
-Stand still. Watch the way it gathers itself before it strikes: that pause is the whole of your warning, and it is long enough to swing or to step back. This once, don't. Take it.
+Stand still and let it hit you. Watch it wind up first: that pause is your warning.
 
 ### refused_line
 
 <!-- speaker: Scout -->
 
-No, nobody wants to. It happens anyway.
+Nobody wants to. It happens anyway.
 
 ### reoffer_line
 
 <!-- speaker: Scout -->
 
-Ready to be knocked about for your own good?
+Ready to take a hit for your own good?
 
 ### progress_line
 
 <!-- speaker: Scout -->
 
-It's coming. Stand and take it, then finish the fight.
+Stand still and let it reach you.
 
 ### continue_option
 
@@ -644,23 +600,19 @@ Not now.
 
 <!-- speaker: Scout -->
 
-Another time, then. It is a cheap lesson here and a dear one up the road.
+Another time, then.
 
 ### complete_line
 
 <!-- speaker: Scout -->
 
-Feel that? It hit before you had a screen to look at, and it moved first on top of it.
-
-That is exactly what you did to the last one. Stay there, we are not done with that key yet.
-
-There is one more thing a good swing does, and it is my favourite thing about it.
+Felt that? It hit first and moved first, just like you did to the last one.
 
 ### done_line
 
 <!-- speaker: Scout -->
 
-Watch for the wind-up. It is the only warning you get.
+Watch for the wind-up. It's your only warning.
 
 ---
 
@@ -688,13 +640,7 @@ The Scout would rather the player learned that now than found it out by accident
 
 <!-- speaker: Scout -->
 
-One more on that key, and this is the part nobody believes until they see it.
-
-If your swing is bigger than what is left of the thing you swing at, there is no battle. None.
-
-It goes down in the grass, you collect what it was carrying, and you keep walking.
-
-That is how a long road gets walked: you do not fight everything on it, you step over most of it.
+One more thing about F. If your hit is bigger than a creature's remaining health, there's no fight at all. It drops, and you still get the rewards.
 
 ### accept_option
 
@@ -708,25 +654,25 @@ Another time.
 
 <!-- speaker: Scout -->
 
-I'll find you something small. Don't feel clever about it; it is half dead already, and that is the whole point. Big swing, little thing, no fight.
+I'll find you something that's nearly beaten.
 
 ### refused_line
 
 <!-- speaker: Scout -->
 
-Then you will fight every last thing between here and the altar, and you will be very tired by the end of it.
+Then you'll fight everything on the road. Your choice.
 
 ### reoffer_line
 
 <!-- speaker: Scout -->
 
-Want to see what a big swing does to a little thing?
+Want to see a fight end before it starts?
 
 ### progress_line
 
 <!-- speaker: Scout -->
 
-It's still down there. Get close and hit it with F; it will not survive it.
+It's nearly beaten. Press F.
 
 ### continue_option
 
@@ -740,23 +686,19 @@ Not now.
 
 <!-- speaker: Scout -->
 
-As you like. The grass is full of them.
+As you like.
 
 ### complete_line
 
 <!-- speaker: Scout -->
 
-No screen, no turns, no scrolls, and your purse is heavier anyway.
-
-Learn to read what is worth a fight and what is worth a swing and this road gets a good deal shorter. Right.
-
-That is everything I know about hitting things. Two errands before you go, and neither of them is a fight.
+No fight, and you still got paid. If something is nearly beaten, just hit it. That's all the fighting I can teach. Two errands, then the road.
 
 ### done_line
 
 <!-- speaker: Scout -->
 
-If it is nearly dead, do not fight it. Swing at it.
+Nearly beaten? Don't fight it. Hit it.
 
 ---
 
@@ -784,11 +726,7 @@ A night at the Hearthside Inn, down through the gate, mends every Oathbound to f
 
 <!-- speaker: Scout -->
 
-Look at the pair of them.
-
-Scorched, footsore and half asleep on their feet. Go back down through the gate and take a bed at the Hearthside; the Innkeeper keeps one for the Order's own and asks nothing for it.
-
-A night there mends your Oathbound to the last scratch, and better than that, it is somewhere to wake up. Go down, sleep, and tell her I sent you.
+Your Oathbound are worn out. Sleep at the Hearthside Inn in town. It's free, it heals everyone, and it's where you'll wake if you're beaten.
 
 ### accept_option
 
@@ -802,13 +740,13 @@ We're fine.
 
 <!-- speaker: Scout -->
 
-Straight back down the road and into the town. The Innkeeper is up by the pond, east side. Talk to her and she'll put you to bed.
+Back down the road into town. The Innkeeper is by the pond, on the east side.
 
 ### refused_line
 
 <!-- speaker: Scout -->
 
-You are not fine. You will be less fine tomorrow.
+You're not fine. Go when you're ready.
 
 ### reoffer_line
 
@@ -834,7 +772,7 @@ I'd rather push on.
 
 <!-- speaker: Scout -->
 
-Stubborn. The offer stands.
+The offer stands.
 
 ### complete_line
 
@@ -1028,9 +966,7 @@ When you are ready, then.
 
 <!-- speaker: Scout -->
 
-There you are, and look at you: fed, rested, and carrying something for the first wound.
-
-That is the whole of what I can hand you at a fire. The rest of it is up that road, and the road is where it starts in earnest.
+There you are, rested and stocked. Now the real work starts.
 
 ### done_line
 
@@ -1064,13 +1000,7 @@ Three offerings go on the altar, and all three have to be carried up the ruined 
 
 <!-- speaker: Scout -->
 
-Now it starts in earnest.
-
-Three offerings go on that altar, and every one of them is carried up the road on foot.
-
-At present the road cannot be walked. Emberlings have taken to it by the ruins and they burn whatever passes.
-
-Drive three of them off and the way up is ours again.
+Now the rite begins. Emberlings are blocking the road near the ruins. Drive off three of them so the offerings can be carried up.
 
 ### accept_option
 
@@ -1084,13 +1014,13 @@ Not right now.
 
 <!-- speaker: Scout -->
 
-They gather up the road toward the ruins. Strike first if you can; they do not wait for you to be ready.
+They're up the road toward the ruins. Hit first if you can.
 
 ### refused_line
 
 <!-- speaker: Scout -->
 
-Then I will sit by my fire a little longer. The seal is not through yet.
+I'll wait by the fire.
 
 ### reoffer_line
 
@@ -1116,35 +1046,25 @@ I can't manage it.
 
 <!-- speaker: Scout -->
 
-No shame in it. They are fierce little things.
+No shame in it.
 
 ### complete_line
 
 <!-- speaker: Scout -->
 
-The road is quiet.
-
-Now the rite itself. Three offerings, and every one has to come out of the living world, because that is the one thing the dead king has none of.
-
-Water first. The Ranger keeps watch on the far side of the pond, north-east of this camp.
-
-Walk up the meadow with the water on your right and you'll find her on the north shore.
-
-She draws the stillwater for the altar, and just now she cannot draw a drop of it. Help her.
+The road is clear. The first offering is water. The Ranger draws it on the north shore of the pond, north-east of here, but something has stopped her. Go and help.
 
 ### done_line
 
 <!-- speaker: Scout -->
 
-The Ranger is north-east of here, on the north shore of the pond. Keep the water on your right as you go up and you can't miss her.
+The Ranger is north-east, on the north shore of the pond. Keep the water on your right.
 
 ### caution_line
 
 <!-- speaker: Scout -->
 
-One thing. Those Emberlings are older and meaner than the one the Elder put in your hands.
-
-Get your partner closer to level %d before you go looking for trouble; the meadow Loambucks are good practice.
+Careful. Those Emberlings are tougher than yours. Get your partner nearer level %d first; the meadow Loambucks are good practice.
 
 ---
 
@@ -1172,11 +1092,7 @@ She keeps watch on the north shore of the pond, north-east of the Scout's camp, 
 
 <!-- speaker: Scout -->
 
-Go on, then, while the road is quiet.
-
-North-east, up the meadow with the water on your right, and you will come out on the north shore.
-
-The Ranger is the one standing in it. Tell her I sent you and do whatever she asks, because without her there is no water, and without water there is no rite.
+Go and see the Ranger. North-east, up the meadow, with the water on your right.
 
 ### accept_option
 
@@ -1190,13 +1106,13 @@ Give me a moment.
 
 <!-- speaker: Scout -->
 
-Water on your right the whole way up. You cannot miss her; she does not sit down.
+You can't miss her.
 
 ### refused_line
 
 <!-- speaker: Scout -->
 
-The pond will still be there. So will she, knee deep and swearing.
+She'll still be there.
 
 ### reoffer_line
 

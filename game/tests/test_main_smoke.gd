@@ -321,6 +321,30 @@ func test_interaction_reach_covers_touching_actors_from_any_side() -> void:
 	assert_null(main_scene.nearest_actor_in_reach(), "Nothing else is within reach there.")
 
 
+func test_talk_prompt_shows_only_next_to_an_npc_outside_dialogue() -> void:
+	var main_scene: Node2D = _load_main()
+	await get_tree().process_frame
+
+	var player: Player = main_scene.get_node("Player")
+	var knight: WorldActor = main_scene.get_node("Area/Knight")
+	player.global_position = knight.global_position + Vector2(2 * WorldArea.GRID_SIZE, 0)
+	await get_tree().process_frame
+	assert_false(knight.is_talk_prompt_shown(), "No prompt out of reach.")
+
+	player.global_position = knight.global_position + Vector2(WorldArea.GRID_SIZE, 0)
+	await get_tree().process_frame
+	assert_true(knight.is_talk_prompt_shown(), "The prompt shows once the knight is in reach.")
+
+	main_scene._open_dialogue("Hello.")
+	await get_tree().process_frame
+	assert_false(knight.is_talk_prompt_shown(), "The prompt hides while dialogue is open.")
+
+	main_scene._close_dialogue()
+	player.global_position = knight.global_position + Vector2(2 * WorldArea.GRID_SIZE, 0)
+	await get_tree().process_frame
+	assert_false(knight.is_talk_prompt_shown(), "Walking away hides the prompt.")
+
+
 func test_dialogue_freezes_the_player_and_every_roaming_creature() -> void:
 	var main_scene: Node2D = _load_main()
 	for _frame: int in 3:

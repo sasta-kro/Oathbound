@@ -38,15 +38,15 @@ const AMBUSH: PackedStringArray = [
 ## Spoken once it has appeared, as the battle opens.
 const AMBUSH_HIT_TEXT := "The wild Emberling scorches %s before you can react!"
 ## After the tutorial battle is won.
-const WON_LINE := "Scout: Ha! That's the way of it. Come here and let me look at the pair of you."
+const WON_LINE := "Scout: That's the way of it. Come back to the fire."
 ## After it is lost. The quest stays active, and talking to the Scout again
 ## replays it.
-const LOST_LINE := "Scout: Easy, easy. I dragged the three of you back to the fire. Talk to me when you're ready to try that again."
+const LOST_LINE := "Scout: Easy. I patched you all up. Talk to me when you want to try again."
 ## When the only one who could play a part is waiting in the paddock. The
 ## quest stays active, and talking to the Scout again replays it.
-const CALL_BACK_LINE := "Scout: Hold on. Your mender is down in the paddock, and I cannot show you a swap with half the pair missing. Open your party page (Tab), call it back out, and come sit by the fire again."
+const CALL_BACK_LINE := "Scout: Your healer is in the paddock. Press Tab, call it back out, then talk to me."
 ## When nobody the player has bound can heal, the lesson is only told.
-const NO_HEALER_LINE := "Scout: Hm. None of yours can mend. Then listen instead: a healer can patch up a partner on the bench, so swap your hurt one out, mend it, and swap it back. Remember that."
+const NO_HEALER_LINE := "Scout: None of yours can heal. Remember this, then: a healer can mend a benched partner. Swap the hurt one out, mend it, swap it back."
 
 
 ## Who plays which part, from [param party]: the healer is the first conscious

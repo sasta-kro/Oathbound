@@ -48,11 +48,9 @@ Mind the two in the glades. You will think you know them. You met the real ones 
 
 <!-- speaker: The Skeleton Lord -->
 
-Another of the little wardens.
-
 Do you know what you are interrupting? I am waiting. I have been waiting on this seat since the hour I reached past the door of the world and took my son back through it.
 
-He is still coming. He has been coming for four hundred years. Put your oath down and wait with me, or put it to use. It makes very little difference which.
+The Skeleton Lord: He is still coming. He has been coming for four hundred years. Put your oath down and wait with me, or put it to use. It makes very little difference which.
 
 ### sealed_line
 
@@ -60,13 +58,11 @@ A crowned thing sits on the barrow at the end of the wood, wrapped in green fire
 
 ### victory_line
 
-<!-- speaker: The Skeleton Lord -->
+The green fire goes out, and the crown slides off his skull.
 
-Ah. There. The green fire goes out of him one thread at a time, and the crown slides off a skull that is only a skull.
+The Skeleton Lord: Not gone... Come back in a hundred years and I will still be waiting on him...
 
-Not gone, he says, as the seat empties. Only set down again. Come back in a hundred years and I will still be waiting on him, and so will whoever they send.
-
-The bells begin to ring somewhere far above, and for once nobody is pulling the rope.
+As the seat empties, bells begin to ring somewhere far above. And for once, nobody is pulling the rope. The tyrant has been slain!
 
 ---
 

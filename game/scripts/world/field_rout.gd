@@ -29,8 +29,8 @@ const DISTANCE_CELLS := 1.5
 
 ## Spoken after the quest is accepted, before it wanders up.
 const SIGHTING: PackedStringArray = [
-	"Scout: There. That one has been in a fight already and lost it...",
-	"Scout: See how little it has left? Hit it from where you stand, and watch what does not happen.",
+	"Scout: There. That one's already been in a fight...",
+	"Scout: It's nearly beaten. Press F and watch.",
 ]
 ## Held on screen while the player closes. [code]%s[/code] is its name.
 const PROMPT := "Press F. The %s has too little left to give you a fight."

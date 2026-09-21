@@ -59,6 +59,12 @@ const DEFAULT_CAUTION_LINE := "They look your Oathbound over. \"Watch yourself o
 @export_multiline var caution_line: String = ""
 
 @export_group("Dialogue")
+## The key a lesson quest teaches: [code]&"attack"[/code] for the strike key
+## (F) or [code]&"party"[/code] for the party page (Tab). While the giver is
+## saying one of this quest's lines, pressing that key goes through the line
+## instead of being ignored: the ask is taken as a yes, the rest of the talk
+## is skipped and the key does its job. Empty for every other quest.
+@export var taught_key: StringName = &""
 ## The ask. Shown with the accept and refuse options.
 @export_multiline var offer_line: String = ""
 @export var accept_option: String = DEFAULT_ACCEPT_OPTION

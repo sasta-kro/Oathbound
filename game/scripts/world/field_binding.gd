@@ -25,17 +25,17 @@ const APPROACH_DISTANCE_CELLS := 1.5
 
 ## Spoken after the quest is accepted, before the Loambuck appears.
 const APPROACH: PackedStringArray = [
-	"Scout: Actually, you're in luck. Hold still. Smell of the fire draws them in...",
-	"Scout: There. A Loambuck, come to see what's cooking. Go on, I'll talk you through it.",
+	"Scout: Wait. Something's coming to the fire...",
+	"Scout: A Loambuck. Go on, I'll talk you through it.",
 ]
 const OPENING_TEXT := "The Loambuck lowers its head at %s."
 ## After it is bound.
-const WON_LINE := "Scout: Ha! Knew you had it in you. Bring the pair of them over here."
+const WON_LINE := "Scout: Knew you had it in you. Come back to the fire."
 ## After the battle ends any other way. The quest stays active, and talking
 ## to the Scout again brings another Loambuck.
-const LOST_LINE := "Scout: That one got away from you. No matter, they come back to the fire. Talk to me when you want another try."
+const LOST_LINE := "Scout: It got away. Talk to me for another try."
 ## When the party has no room for it.
-const PARTY_FULL_LINE := "Scout: Your party's full; there's nowhere for a new Oathbound to go. Bind one when you've room, or bring one you already have."
+const PARTY_FULL_LINE := "Scout: Your party's full. Send one to keeping first (Tab), then talk to me."
 
 
 ## Everything [code]main.gd[/code] needs to run the lesson battle: the guide,

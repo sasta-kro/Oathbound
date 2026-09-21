@@ -51,6 +51,9 @@ var _pages: PackedStringArray = []
 var _page: int = 0
 ## Replies waiting for the last box of the passage. Empty for plain speech.
 var _pending_options: PackedStringArray = []
+## A key the speaker is teaching, let through this passage instead of being
+## ignored (see [member QuestData.taught_key]). Empty for most lines.
+var _lets_through: StringName = &""
 
 func _ready() -> void:
 	panel.theme = OathTheme.make()
@@ -74,8 +77,8 @@ func _ready() -> void:
 	_choices.hide()
 	panel.hide()
 
-func show_line(line: String) -> void:
-	_begin(line, PackedStringArray())
+func show_line(line: String, lets_through: StringName = &"") -> void:
+	_begin(line, PackedStringArray(), lets_through)
 	_reveal()
 
 
@@ -122,7 +125,8 @@ func page_count() -> int:
 
 
 ## Takes the speaker off the passage and breaks the rest into boxes.
-func _begin(line: String, options: PackedStringArray) -> void:
+func _begin(line: String, options: PackedStringArray, lets_through: StringName = &"") -> void:
+	_lets_through = lets_through
 	var parts: PackedStringArray = split_speaker(line)
 	_speaker = parts[0]
 	_pages = pages_of(parts[1])
@@ -179,11 +183,11 @@ func say(line: String) -> void:
 
 ## Shows [param line] with [param options] to reply with and returns the
 ## index chosen. Awaiting it pauses the caller until the player decides.
-func ask(line: String, options: PackedStringArray) -> int:
+func ask(line: String, options: PackedStringArray, lets_through: StringName = &"") -> int:
 	if options.is_empty():
-		show_line(line)
+		show_line(line, lets_through)
 		return -1
-	_begin(line, options)
+	_begin(line, options, lets_through)
 	_reveal()
 	var chosen: int = await choice_made
 	return chosen
@@ -214,6 +218,7 @@ func close() -> void:
 	var was_asking: bool = is_asking()
 	var was_open: bool = is_open()
 	_clear_choices()
+	_lets_through = &""
 	panel.hide()
 	if was_asking:
 		choice_made.emit(-1)
@@ -234,6 +239,25 @@ func is_asking() -> bool:
 ## part-way through the ask.
 func has_question() -> bool:
 	return is_open() and not _pending_options.is_empty()
+
+## Whether [param key] goes through the passage on screen rather than being
+## ignored, because the speaker is teaching it.
+func lets_through(key: StringName) -> bool:
+	return is_open() and key != &"" and key == _lets_through
+
+
+## Settles the question on screen as if [param index] had been picked, from
+## any box of it, and takes the panel down. For a key the speaker is teaching,
+## which says yes by being pressed.
+func answer(index: int) -> void:
+	if not has_question():
+		return
+	_pending_options = PackedStringArray()
+	_lets_through = &""
+	_clear_choices()
+	panel.hide()
+	choice_made.emit(index)
+
 
 func selected_index() -> int:
 	return _selected

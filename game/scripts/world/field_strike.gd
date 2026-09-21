@@ -36,8 +36,8 @@ const DISTANCE_CELLS := 1.5
 
 ## Spoken after the quest is accepted, before the quarry is put in the grass.
 const SIGHTING: PackedStringArray = [
-	"Scout: Hold on. There, down the slope, in the tall grass...",
-	"Scout: A Loambuck, head down and chewing, and it has not seen you. Stay exactly where you are and hit it before it does.",
+	"Scout: Wait. There's a Loambuck in the grass...",
+	"Scout: It hasn't seen you. Press F to hit it first.",
 ]
 ## Held on screen until the swing lands. [code]%s[/code] is the quarry's name.
 const PROMPT := "Press F to strike the %s before it knows you are there."
@@ -47,10 +47,10 @@ const OPENING_TEXT := "Your blow landed before the fight began, so %s takes this
 ## Held over the menus while the opening turn is chosen.
 const LESSON_BANNER := "You swung first out in the grass, so this turn is yours: a strike buys the first move, not just the damage."
 ## After the battle the strike opened is won.
-const WON_LINE := "Scout: That's the whole trick. You spent nothing and it came into that fight already bleeding. Come back to the fire."
+const WON_LINE := "Scout: That's the trick. Come back to the fire."
 ## After it is lost or fled. The quest is already reported by then, since the
 ## swing is what the lesson asked for.
-const LOST_LINE := "Scout: Never mind the rest of it. You landed the blow, and that was the lesson. Come back to the fire."
+const LOST_LINE := "Scout: Never mind the fight. You landed the hit, and that was the lesson. Come back to the fire."
 
 
 ## Leaves [param creature] part-spent, as it wanders up: what the swing does

@@ -182,7 +182,7 @@ func _camp(p: AreaPainter) -> void:
 			"body_color": Color(0.35, 0.6, 0.85, 1),
 			"sprite_frames": load(SCOUT_SPRITE_FRAMES),
 			"facing": &"left",
-			"dialogue_line": "Scout: Follow the road and you will not get lost. It bends past the pond and climbs to the ruins. The altar is at the very end, and the knight is in front of it, same as he always is.",
+			"dialogue_line": "Scout: Follow the road. It passes the pond and climbs to the ruins. The altar is at the end, with the knight in front of it.",
 			"quest_ids": Array[StringName]([
 				&"quest_main_01a_a_second_oath",
 				&"quest_main_01b_room_for_more",

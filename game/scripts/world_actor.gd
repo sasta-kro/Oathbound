@@ -27,6 +27,8 @@ const SIDE_QUEST_MARKER_COLOR := Color("4fa8ff")
 ## and how far it bobs.
 const QUEST_MARKER_HEIGHT: float = 44.0
 const QUEST_MARKER_BOB: float = 4.0
+## Shown under an NPC's feet while the player is close enough to talk.
+const TALK_PROMPT_TEXT := "[E] Talk"
 
 ## Name shown above the placeholder body.
 @export var display_name: String = "NPC"
@@ -65,6 +67,7 @@ const QUEST_MARKER_BOB: float = 4.0
 @export var wander_radius_cells: float = 0.0
 
 var _quest_marker_label: Label
+var _talk_prompt_label: Label
 var _chatter_index: int = 0
 var _home: Vector2
 var _stroll_target: Vector2
@@ -383,6 +386,37 @@ func refresh_quest_marker() -> void:
 		"font_color", MAIN_QUEST_MARKER_COLOR if state.main else SIDE_QUEST_MARKER_COLOR
 	)
 	_quest_marker_label.show()
+
+
+## Shows or hides the "[E] Talk" prompt under this actor's feet.
+func set_talk_prompt(shown: bool) -> void:
+	if not shown:
+		if _talk_prompt_label != null:
+			_talk_prompt_label.hide()
+		return
+	if _talk_prompt_label == null:
+		_talk_prompt_label = _build_talk_prompt_label()
+	_talk_prompt_label.show()
+
+
+func is_talk_prompt_shown() -> bool:
+	return _talk_prompt_label != null and _talk_prompt_label.visible
+
+
+func _build_talk_prompt_label() -> Label:
+	var prompt := Label.new()
+	prompt.name = "TalkPrompt"
+	prompt.text = TALK_PROMPT_TEXT
+	prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	prompt.size = Vector2(80, 20)
+	prompt.position = Vector2(-40, 28)
+	prompt.add_theme_font_size_override("font_size", 13)
+	prompt.add_theme_color_override("font_color", MAIN_QUEST_MARKER_COLOR)
+	prompt.add_theme_color_override("font_outline_color", Color(0.054902, 0.0901961, 0.0509804, 1))
+	prompt.add_theme_constant_override("outline_size", 4)
+	prompt.z_index = 10
+	add_child(prompt)
+	return prompt
 
 
 func quest_marker_text() -> String:

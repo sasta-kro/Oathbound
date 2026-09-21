@@ -35,8 +35,8 @@ const DETECTION_RADIUS := 400.0
 
 ## Spoken after the quest is accepted, before it comes out of the grass.
 const CHARGE: PackedStringArray = [
-	"Scout: Right. Stay exactly where you are, and whatever you feel like doing, don't.",
-	"Scout: There it is. Emberling, and it has already seen you. Watch it gather itself before it hits: that pause is your whole warning. This once, wear it.",
+	"Scout: Stay exactly where you are.",
+	"Scout: An Emberling, and it's seen you. Watch it wind up, then let it hit you.",
 ]
 ## Held on screen while it closes. The player could not move or swing now
 ## even if they wanted to, which is the point: this one is watched, not done.
@@ -47,10 +47,10 @@ const OPENING_TEXT := "It reached you before the fight began, so it takes this t
 ## Held over the menus while the opening turn is chosen.
 const LESSON_BANNER := "It swung first out in the grass, so the first move here is its own. That is what standing still costs: the same thing your own strike buys."
 ## After the battle its ambush opened is won.
-const WON_LINE := "Scout: And you still took it. Good. Now you know both ends of it: land that blow, or be standing somewhere else when it comes. Back to the fire."
+const WON_LINE := "Scout: Good. Now you know both sides: hit first, or don't be there when it swings. Back to the fire."
 ## After it is lost or fled. The quest is already reported by then, since
 ## taking the blow is what the lesson asked for.
-const LOST_LINE := "Scout: Easy. That is what a free blow and the first turn are worth, and now you have felt it from underneath. Come back to the fire."
+const LOST_LINE := "Scout: Easy. That's what a free hit costs. Come back to the fire."
 
 
 ## Everything [code]main.gd[/code] needs for the battle the ambush opens: no

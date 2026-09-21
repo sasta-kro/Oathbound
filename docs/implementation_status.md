@@ -51,7 +51,7 @@ Boss battles disable binding and running. Trainer battles disable binding. The I
 - Overworld companion and overworld strike with rout, wounded entry, and ambush openings.
 - One-versus-one active-creature battles with parties of up to three.
 - Moves, cooldowns, accuracy, priority with turn-order indicators, switching, support moves with ally targeting, item use, binding, running, XP, evolution, abilities, three status conditions, and a damage floor.
-- Guided tutorial battles and scripted field lessons.
+- Guided tutorial battles and scripted field lessons. The Scout's two party-page lessons (keeping and leading) are guided too: the player is held at the fire with only Tab answering, and the page names and highlights one button per step while the other actions stay locked. A key the Scout is teaching (F, Tab) goes through his lines, so pressing it mid-dialogue accepts the lesson and does what the key does.
 - Thirty-two main quests and six side quests with acceptance, refusal, abandonment, progress, completion, rewards, turn-in to a non-giver, a field tracker, and a quest compass with HUD arrow.
 - Boss gating with persistent defeat state, level-cap rewards, sealed doorways, and altar-beacon portals.
 - Items, the satchel, vendors, the inn, chests, and haven-based defeat recovery.

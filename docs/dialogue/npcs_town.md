@@ -148,26 +148,6 @@ SCRIBE
 
 Binding Scrolls, inked by my own hand. Oath-script holds better than any rope. It is the same hand that copies out the rite, for whatever that is worth to you.
 
-### chatter[0]
-
-<!-- speaker: Scribe -->
-
-A worn-down creature listens closer. Weaken it before you offer the scroll.
-
-### chatter[1]
-
-<!-- speaker: Scribe -->
-
-Failed binding? The scroll crumbles, but the lesson stays. Buy another.
-
-### barks[0]
-
-Scrolls! Fresh-inked scrolls!
-
-### barks[1]
-
-Bind your next friend!
-
 ### shop_title
 
 Scribe's Stall
@@ -232,20 +212,6 @@ GUARD
 
 The gate stays open while the sun is up. After dark, knock twice and say your oath. We have kept that rule since before the altar was raised.
 
-### chatter[0]
-
-<!-- speaker: Guard -->
-
-Wild ones don't come past the wall. Mostly. Nothing has ever come past the altar.
-
-### barks[0]
-
-Quiet day.
-
-### barks[1]
-
-Mind the ruins out there.
-
 ---
 
 ## OLD MAN — Town
@@ -263,20 +229,6 @@ OLD MAN
 <!-- speaker: Old Man -->
 
 The dead king has been put back under nine times since this town started keeping count, and the count was already old when we started it.
-
-### chatter[0]
-
-<!-- speaker: Old Man -->
-
-Sit a while. Well water tastes better when you're not rushing, and that altar has waited longer than you have.
-
-### barks[0]
-
-Hmph. Pigeons.
-
-### barks[1]
-
-Back in my day...
 
 ---
 
@@ -296,14 +248,6 @@ FISHER
 
 Nothing biting but leeches. Don't tell the Innkeeper, she thinks I catch the stew.
 
-### barks[0]
-
-Come on, bite...
-
-### barks[1]
-
-Was that a ripple?
-
 ---
 
 ## BARD — Town
@@ -321,20 +265,6 @@ BARD
 <!-- speaker: Bard -->
 
 I'm writing a ballad about the Oathbreaker. Hardest song in the Reach. Nobody can agree on whether it is meant to end sad.
-
-### chatter[0]
-
-<!-- speaker: Bard -->
-
-Every oath has a verse. Yours hasn't been written yet, and his has been sung wrong for a hundred years.
-
-### barks[0]
-
-♪ Oh, the meadow grass was green... ♪
-
-### barks[1]
-
-♪ ...and the scroll held true ♪
 
 ---
 
@@ -354,14 +284,6 @@ KID
 
 I'm faster than an Emberling! Watch! ...Okay, not yet. Soon.
 
-### barks[0]
-
-Can't catch me!
-
-### barks[1]
-
-Race you to the well!
-
 ---
 
 ## VILLAGER — Town
@@ -380,20 +302,6 @@ VILLAGER
 
 The market's busier since the caravan came. Even the Scribe is selling scrolls again.
 
-### chatter[0]
-
-<!-- speaker: Villager -->
-
-If you're heading out, the Apothecary's salves are worth every coin.
-
-### barks[0]
-
-Fresh bread smells lovely today.
-
-### barks[1]
-
-Has anyone seen my cat?
-
 ---
 
 ## FARMER — Town
@@ -411,13 +319,5 @@ FARMER
 <!-- speaker: Farmer -->
 
 Loambucks keep nibbling the hay. Can't blame them, it's good hay.
-
-### barks[0]
-
-Hay won't stack itself.
-
-### barks[1]
-
-Rain's coming, I can feel it.
 
 ---

@@ -448,3 +448,163 @@ func test_leaving_the_area_takes_the_staged_creature_back() -> void:
 
 	assert_true(main._field_lesson.is_empty())
 	assert_false(is_instance_valid(quarry), "The practice creature does not outlive its lesson.")
+
+
+# --- Keys the Scout teaches go through his lines ------------------------------
+
+
+## Finishes everything before [param id] and leaves it waiting to be offered.
+func _ready_to_offer(id: StringName) -> QuestData:
+	var earlier: QuestData = _reach(_quest(id).requires)
+	for objective: QuestObjective in earlier.objectives:
+		for _step: int in objective.required():
+			GameState.quests.report(objective.kind, objective.target)
+	assert_true(GameState.quests.complete(earlier), "%s can be finished." % earlier.id)
+	return _quest(id)
+
+
+func _key(keycode: Key) -> InputEventKey:
+	var event := InputEventKey.new()
+	event.keycode = keycode
+	event.pressed = true
+	return event
+
+
+## Waits out the quarry's entrance and the deferred swing it gets.
+func _await_rushed_swing(main: Node2D) -> void:
+	await wait_seconds(ENTRANCE_WAIT)
+	var waited: int = 0
+	while not main.battle_scene.is_active() and waited < LINE_WAIT_FRAMES:
+		waited += 1
+		await wait_physics_frames(1)
+
+
+func test_pressing_f_on_the_strike_offer_takes_the_lesson_and_swings() -> void:
+	var main: Node2D = _load_main_in_area_one()
+	var quest: QuestData = _ready_to_offer(FieldStrike.QUEST_ID)
+
+	main._offer(quest)
+	await wait_physics_frames(1)
+	assert_true(main.dialogue_panel.has_question(), "The Scout is asking.")
+	assert_true(main.dialogue_panel.lets_through(main.TAUGHT_ATTACK), "His ask is about the attack key.")
+
+	main._strike()
+	await _await_rushed_swing(main)
+
+	assert_true(GameState.quests.is_ready(quest), "Pressing F was a yes, and then the swing itself.")
+	assert_true(main.battle_scene.is_active(), "The swing opened the lesson's battle.")
+	assert_true(main._rush_key == &"", "Nothing is left waiting on a swing.")
+
+
+func test_pressing_f_on_a_sighting_line_skips_to_the_swing() -> void:
+	var main: Node2D = _load_main_in_area_one()
+	var quest: QuestData = _reach(FieldStrike.QUEST_ID)
+
+	main._play_field_strike()
+	await wait_physics_frames(1)
+	assert_true(main.dialogue_panel.lets_through(main.TAUGHT_ATTACK), "The Scout's sighting teaches the key.")
+	main._strike()
+	assert_false(main.dialogue_panel.is_open(), "The rest of his lines are skipped.")
+	await _await_rushed_swing(main)
+
+	assert_true(GameState.quests.is_ready(quest), "The swing waited for the quarry, then landed.")
+
+
+func test_f_is_still_ignored_on_an_ordinary_question() -> void:
+	var main: Node2D = _load_main_in_area_one()
+	main._ask("Fight?", PackedStringArray(["Yes", "No"]))
+	await wait_physics_frames(1)
+	main._strike()
+	assert_true(main.dialogue_panel.has_question(), "A question nobody is teaching is never swung away from.")
+
+
+func test_tab_on_the_paddock_lines_opens_the_page_and_the_lesson() -> void:
+	var main: Node2D = _load_main_in_area_one()
+	GameState.add_to_party(Content.spawn_creature(&"creature_loambuck", 4))
+	var quest: QuestData = _ready_to_offer(KEEPING_QUEST_ID)
+
+	main._offer(quest)
+	await wait_physics_frames(1)
+	main.field_ui._input(_key(KEY_TAB))
+
+	assert_true(GameState.quests.is_active(quest.id), "Tab on the ask was a yes.")
+	assert_eq(main.party_lesson(), KEEPING_QUEST_ID, "The lesson is under way.")
+	assert_true(main.field_ui.is_open(), "And the page it is about is open.")
+	assert_eq(main.field_ui.page, "party")
+
+
+func test_other_menu_keys_stay_shut_on_a_teaching_line() -> void:
+	var main: Node2D = _load_main_in_area_one()
+	var quest: QuestData = _ready_to_offer(KEEPING_QUEST_ID)
+	main._offer(quest)
+	await wait_physics_frames(1)
+	main.field_ui._input(_key(KEY_I))
+	assert_false(main.field_ui.is_open(), "Only the key being taught goes through.")
+	assert_true(main.dialogue_panel.has_question())
+
+
+# --- The party-page lessons ----------------------------------------------------
+
+
+func test_the_paddock_lesson_walks_the_page_one_button_at_a_time() -> void:
+	var main: Node2D = _load_main_in_area_one()
+	GameState.add_to_party(Content.spawn_creature(&"creature_loambuck", 4))
+	var quest: QuestData = _reach(KEEPING_QUEST_ID)
+
+	main._play_lesson(quest)
+	assert_eq(main.lesson_lock(), main.LOCK_PAGE)
+	assert_false(main.player.movement_enabled, "The player is held by the fire.")
+	assert_false(main.player.strike_enabled)
+	assert_eq(PartyLesson.step(quest.id, false), PartyLesson.Step.OPEN_PAGE)
+
+	main.field_ui._input(_key(KEY_J))
+	assert_false(main.field_ui.is_open(), "Other pages stay shut.")
+	main.field_ui._input(_key(KEY_TAB))
+	assert_true(main.field_ui.is_open(), "The party key opens the page.")
+	assert_eq(PartyLesson.step(quest.id, true), PartyLesson.Step.SEND_TO_KEEPING)
+	assert_true(main.field_ui.nav_buttons["satchel"].disabled, "The rest of the book is shut.")
+
+	main.field_ui._send_to_keeping(1)
+	assert_eq(PartyLesson.step(quest.id, true), PartyLesson.Step.CALL_OUT)
+	main.field_ui._call_out(0)
+	assert_eq(PartyLesson.step(quest.id, true), PartyLesson.Step.DONE)
+	assert_true(GameState.quests.is_ready(quest))
+	assert_eq(main.party_lesson(), KEEPING_QUEST_ID, "The lesson holds until the page is shut.")
+
+	main.field_ui.close()
+	assert_eq(main.party_lesson(), &"", "Shutting the page ends it.")
+	assert_eq(main.lesson_lock(), &"")
+	assert_true(main.player.movement_enabled, "The player walks again.")
+
+
+func test_the_lead_lesson_points_at_walk_in_front_only() -> void:
+	var main: Node2D = _load_main_in_area_one()
+	GameState.add_to_party(Content.spawn_creature(&"creature_loambuck", 4))
+	var quest: QuestData = _reach(LEAD_QUEST_ID)
+
+	main._play_lesson(quest)
+	main.field_ui.open_page("party")
+	assert_eq(PartyLesson.step(quest.id, true), PartyLesson.Step.TAKE_LEAD)
+	var keep_buttons: Array = main.field_ui.body.find_children("*", "Button", true, false).filter(
+		func(b: Button) -> bool: return b.text == "Send to keeping"
+	)
+	assert_false(keep_buttons.is_empty())
+	for button: Button in keep_buttons:
+		assert_true(button.disabled, "Keeping is not this lesson.")
+
+	main.field_ui._take_lead(1)
+	assert_true(GameState.quests.is_ready(quest))
+	main.field_ui.close()
+	assert_eq(main.party_lesson(), &"")
+
+
+func test_shutting_the_page_early_leaves_the_lesson_waiting() -> void:
+	var main: Node2D = _load_main_in_area_one()
+	GameState.add_to_party(Content.spawn_creature(&"creature_loambuck", 4))
+	var quest: QuestData = _reach(LEAD_QUEST_ID)
+
+	main._play_lesson(quest)
+	main.field_ui.open_page("party")
+	main.field_ui.close()
+	assert_eq(main.party_lesson(), LEAD_QUEST_ID, "Nothing was done, so the lesson carries on.")
+	assert_eq(main.lesson_lock(), main.LOCK_PAGE)

@@ -179,6 +179,8 @@ func _process(_delta: float) -> void:
 	hud.visible = not world.battle_scene.is_active() and not is_open() and not world.is_in_opening()
 	_aim_arrow()
 	status_panel.visible = hud.visible and not world.dialogue_panel.is_open()
+	# A lesson's standing instruction is about the field, not the open page.
+	_prompt.get_parent().visible = not is_open()
 	quest_tracker.visible = status_panel.visible and _tracker_rows.get_child_count() > 0
 	var lead := GameState.lead_creature()
 	if lead != _lead: _rebuild_status(lead)
@@ -213,11 +215,22 @@ func _aim_arrow() -> void:
 
 func _input(event: InputEvent) -> void:
 	if world.settings_menu.is_open() or world.transition.is_busy(): return
-	if world.battle_scene.is_active() or world.dialogue_panel.is_open(): return
+	if world.battle_scene.is_active(): return
+	if world.dialogue_panel.is_open():
+		# The Scout teaching the party page lets its key through his lines, so
+		# a player who presses it the moment they read it gets the page.
+		if _is_party_key(event) and world.dialogue_panel.lets_through(world.TAUGHT_PARTY):
+			get_viewport().set_input_as_handled()
+			if world.press_through_dialogue(world.TAUGHT_PARTY): open_page("party")
+		return
 	if world.shop_menu != null and world.shop_menu.is_open(): return
 	if world.is_in_opening() or world.is_evolving(): return
-	# A lesson that holds the player to one key holds the menus too.
-	if world.is_lesson_locked(): return
+	# A lesson that holds the player to one key holds the menus too. The
+	# party-page lesson leaves the party key, and the keys that shut the page.
+	if world.is_lesson_locked():
+		if world.lesson_lock() != world.LOCK_PAGE: return
+		var shutting: bool = is_open() and (event.is_action_pressed("cancel") or event.is_action_pressed("open_menu"))
+		if not _is_party_key(event) and not shutting: return
 	var menu_pressed: bool = event.is_action_pressed("open_menu")
 	var back_pressed: bool = is_open() and event.is_action_pressed("cancel")
 	if menu_pressed or back_pressed:
@@ -244,6 +257,10 @@ func _input(event: InputEvent) -> void:
 			if is_open() and page == "quests": close()
 			else: open_page("quests")
 			get_viewport().set_input_as_handled()
+
+## Tab or P, the keys that open the party page.
+func _is_party_key(event: InputEvent) -> bool:
+	return event is InputEventKey and event.pressed and not event.echo and (event.keycode == KEY_TAB or event.keycode == KEY_P)
 
 func _build_sidebar(layout: HBoxContainer) -> void:
 	var sidebar := VBoxContainer.new()
@@ -299,6 +316,9 @@ func _clear(node: Node) -> void:
 		child.queue_free()
 
 func open_page(next: String) -> void:
+	# The party-page lesson keeps the player on the one page it is about,
+	# whichever button or key asked for another.
+	if world.party_lesson() != &"": next = "party"
 	if _page_tween != null: _page_tween.kill()
 	page = next
 	_clear(body)
@@ -309,6 +329,8 @@ func open_page(next: String) -> void:
 		var style := _nav_style(Color("283d37") if selected else Color.TRANSPARENT, OathTheme.GOLD if selected else Color.TRANSPARENT)
 		nav_buttons[key].add_theme_stylebox_override("normal", style)
 		nav_buttons[key].add_theme_color_override("font_color", OathTheme.GOLD if selected else OathTheme.MUTED)
+		# The party-page lesson keeps the player on the one page it is about.
+		nav_buttons[key].disabled = _lesson_step() != PartyLesson.Step.NONE and key != "party"
 	match page:
 		"party": _party()
 		"satchel": _satchel()
@@ -395,7 +417,12 @@ func _saves() -> void:
 	body.add_child(list)
 
 func _party() -> void:
-	_header("YOUR COMPANIONS", "Bound together.", "A shared path. A stronger bond. Choose a companion to see their story.")
+	if _lesson_step() == PartyLesson.Step.NONE:
+		_header("YOUR COMPANIONS", "Bound together.", "A shared path. A stronger bond. Choose a companion to see their story.")
+	else:
+		# The banner takes the title's place, so the paddock row still fits.
+		body.add_child(OathTheme.label("THE SCOUT'S LESSON", 9, OathTheme.GOLD))
+		body.add_child(_lesson_banner(PartyLesson.instruction(_lesson_step())))
 	var row := HBoxContainer.new()
 	row.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	body.add_child(row)
@@ -448,6 +475,7 @@ func _kept_card(creature: CreatureInstance, index: int) -> PanelContainer:
 	call_out.add_theme_font_size_override("font_size", 10)
 	call_out.disabled = GameState.party_is_full()
 	call_out.tooltip_text = "Send a companion to the Hearthside first." if call_out.disabled else "Bring %s back into the party." % creature.display_name()
+	_guide(call_out, PartyLesson.Step.CALL_OUT)
 	card.add_child(call_out)
 	return panel
 
@@ -546,6 +574,7 @@ func _party_card(row: HBoxContainer, creature: CreatureInstance, index: int) -> 
 	card.add_child(OathTheme.label("%d / %d HP%s" % [creature.current_hp, creature.max_hp(), "  ·  Fainted" if creature.is_fainted() else ""], 10, OathTheme.MUTED))
 	var inspect := OathTheme.button("View companion    →", _details.bind(creature))
 	inspect.add_theme_font_size_override("font_size", 10)
+	_guide(inspect, PartyLesson.Step.NONE)
 	card.add_child(inspect)
 	var actions := HBoxContainer.new()
 	actions.add_theme_constant_override("separation", 4)
@@ -559,6 +588,7 @@ func _party_card(row: HBoxContainer, creature: CreatureInstance, index: int) -> 
 		else "A fainted companion cannot lead." if creature.is_fainted()
 		else "Put %s in front: it fights first and takes the blows in the field." % creature.display_name()
 	)
+	_guide(lead, PartyLesson.Step.TAKE_LEAD)
 	actions.add_child(lead)
 	var keep := OathTheme.button("Send to keeping", _send_to_keeping.bind(index))
 	keep.add_theme_font_size_override("font_size", 10)
@@ -569,6 +599,7 @@ func _party_card(row: HBoxContainer, creature: CreatureInstance, index: int) -> 
 		else "The paddock is full." if not GameState.has_keeping_room()
 		else "%s waits at the Hearthside until you want it." % creature.display_name()
 	)
+	_guide(keep, PartyLesson.Step.SEND_TO_KEEPING)
 	actions.add_child(keep)
 	var highlight := func(active: bool):
 		var tween := create_tween()
@@ -674,6 +705,43 @@ func _details(creature: CreatureInstance, specimen: bool = false) -> void:
 		move_box.add_child(OathTheme.paragraph(move.description, 10))
 		if move.cooldown_turns > 0: move_box.add_child(OathTheme.label("Cooldown: %d turns" % move.cooldown_turns, 9, OathTheme.MUTED))
 	_evolution_record(info, creature, specimen)
+
+## The step of the party-page lesson under way, with the page open, or
+## [constant PartyLesson.Step.NONE] when there is no lesson.
+func _lesson_step() -> PartyLesson.Step:
+	return PartyLesson.step(world.party_lesson(), true)
+
+## Fits [param button] to the party-page lesson: pulsing when it is the one
+## the step [param wanted] asks for, shut when it is not. Left alone when no
+## lesson is under way.
+func _guide(button: Button, wanted: PartyLesson.Step) -> void:
+	var step := _lesson_step()
+	if step == PartyLesson.Step.NONE:
+		return
+	if step != wanted:
+		button.disabled = true
+		button.tooltip_text = PartyLesson.NOT_YET_TOOLTIP
+		return
+	if button.disabled:
+		return
+	var style := button.get_theme_stylebox("normal").duplicate() as StyleBoxFlat
+	if style != null:
+		style.border_color = OathTheme.GOLD
+		style.set_border_width_all(2)
+		button.add_theme_stylebox_override("normal", style)
+	button.add_theme_color_override("font_color", OathTheme.GOLD)
+	var pulse := button.create_tween().set_loops()
+	pulse.tween_property(button, "modulate", Color(1.3, 1.2, 0.85), 0.45)
+	pulse.tween_property(button, "modulate", Color.WHITE, 0.45)
+
+## The lesson's instruction over the party page.
+func _lesson_banner(text: String) -> PanelContainer:
+	var banner := PanelContainer.new()
+	banner.add_theme_stylebox_override("panel", OathTheme.box(OathTheme.INK, OathTheme.GOLD, 6, 8))
+	var words := OathTheme.label(text, 12, OathTheme.GOLD)
+	words.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	banner.add_child(words)
+	return banner
 
 func _set_lead(creature: CreatureInstance) -> void:
 	if GameState.set_lead(GameState.party.find(creature)):

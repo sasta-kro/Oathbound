@@ -32,7 +32,7 @@ SCOUT
 
 <!-- speaker: Scout -->
 
-Follow the road and you will not get lost. It bends past the pond and climbs to the ruins. The altar is at the very end, and the knight is in front of it, same as he always is.
+Follow the road. It passes the pond and climbs to the ruins. The altar is at the end, with the knight in front of it.
 
 ---
 

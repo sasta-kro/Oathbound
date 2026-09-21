@@ -182,31 +182,31 @@ The Loambuck lowers its head at %s.
 
 <!-- speaker: Scout -->
 
-Ha! Knew you had it in you. Bring the pair of them over here.
+Knew you had it in you. Come back to the fire.
 
 ### LOST_LINE
 
 <!-- speaker: Scout -->
 
-That one got away from you. No matter, they come back to the fire. Talk to me when you want another try.
+It got away. Talk to me for another try.
 
 ### PARTY_FULL_LINE
 
 <!-- speaker: Scout -->
 
-Your party's full; there's nowhere for a new Oathbound to go. Bind one when you've room, or bring one you already have.
+Your party's full. Send one to keeping first (Tab), then talk to me.
 
 ### APPROACH[0]
 
 <!-- speaker: Scout -->
 
-Actually, you're in luck. Hold still. Smell of the fire draws them in...
+Wait. Something's coming to the fire...
 
 ### APPROACH[1]
 
 <!-- speaker: Scout -->
 
-There. A Loambuck, come to see what's cooking. Go on, I'll talk you through it.
+A Loambuck. Go on, I'll talk you through it.
 
 ---
 
@@ -226,19 +226,25 @@ The wild Emberling scorches %s before you can react!
 
 <!-- speaker: Scout -->
 
-Ha! That's the way of it. Come here and let me look at the pair of you.
+That's the way of it. Come back to the fire.
 
 ### LOST_LINE
 
 <!-- speaker: Scout -->
 
-Easy, easy. I dragged the three of you back to the fire. Talk to me when you're ready to try that again.
+Easy. I patched you all up. Talk to me when you want to try again.
+
+### CALL_BACK_LINE
+
+<!-- speaker: Scout -->
+
+Your healer is in the paddock. Press Tab, call it back out, then talk to me.
 
 ### NO_HEALER_LINE
 
 <!-- speaker: Scout -->
 
-Hm. None of yours can mend. Then listen instead: a healer can patch up a partner on the bench, so swap your hurt one out, mend it, and swap it back. Remember that.
+None of yours can heal. Remember this, then: a healer can mend a benched partner. Swap the hurt one out, mend it, swap it back.
 
 ### AMBUSH[0]
 
@@ -278,25 +284,25 @@ You swung first out in the grass, so this turn is yours: a strike buys the first
 
 <!-- speaker: Scout -->
 
-That's the whole trick. You spent nothing and it came into that fight already bleeding. Come back to the fire.
+That's the trick. Come back to the fire.
 
 ### LOST_LINE
 
 <!-- speaker: Scout -->
 
-Never mind the rest of it. You landed the blow, and that was the lesson. Come back to the fire.
+Never mind the fight. You landed the hit, and that was the lesson. Come back to the fire.
 
 ### SIGHTING[0]
 
 <!-- speaker: Scout -->
 
-Hold on. There, down the slope, in the tall grass...
+Wait. There's a Loambuck in the grass...
 
 ### SIGHTING[1]
 
 <!-- speaker: Scout -->
 
-A Loambuck, head down and chewing, and it has not seen you. Stay exactly where you are and hit it before it does.
+It hasn't seen you. Press F to hit it first.
 
 ---
 
@@ -324,25 +330,25 @@ It swung first out in the grass, so the first move here is its own. That is what
 
 <!-- speaker: Scout -->
 
-And you still took it. Good. Now you know both ends of it: land that blow, or be standing somewhere else when it comes. Back to the fire.
+Good. Now you know both sides: hit first, or don't be there when it swings. Back to the fire.
 
 ### LOST_LINE
 
 <!-- speaker: Scout -->
 
-Easy. That is what a free blow and the first turn are worth, and now you have felt it from underneath. Come back to the fire.
+Easy. That's what a free hit costs. Come back to the fire.
 
 ### CHARGE[0]
 
 <!-- speaker: Scout -->
 
-Right. Stay exactly where you are, and whatever you feel like doing, don't.
+Stay exactly where you are.
 
 ### CHARGE[1]
 
 <!-- speaker: Scout -->
 
-There it is. Emberling, and it has already seen you. Watch it gather itself before it hits: that pause is your whole warning. This once, wear it.
+An Emberling, and it's seen you. Watch it wind up, then let it hit you.
 
 ---
 
@@ -362,13 +368,13 @@ Press F. The %s has too little left to give you a fight.
 
 <!-- speaker: Scout -->
 
-There. That one has been in a fight already and lost it...
+There. That one's already been in a fight...
 
 ### SIGHTING[1]
 
 <!-- speaker: Scout -->
 
-See how little it has left? Hit it from where you stand, and watch what does not happen.
+It's nearly beaten. Press F and watch.
 
 ---
 

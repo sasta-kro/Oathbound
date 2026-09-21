@@ -32,5 +32,5 @@ progress_line = "Apothecary: Out the north gate and up the road. He is at his fi
 continue_option = "On my way."
 abandon_option = "Not yet."
 abandoned_line = "Apothecary: When you are ready, then."
-complete_line = "Scout: There you are, and look at you: fed, rested, and carrying something for the first wound.\n\nThat is the whole of what I can hand you at a fire. The rest of it is up that road, and the road is where it starts in earnest."
+complete_line = "Scout: There you are, rested and stocked. Now the real work starts."
 done_line = "Scout: You came back up. Good. Now the rite."
