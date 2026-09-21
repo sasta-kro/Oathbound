@@ -8,7 +8,7 @@
 [ext_resource type="Resource" uid="uid://xsxyjwvnlftm" path="res://content/creatures/creature_dreadmere.tres" id="6_evo"]
 [ext_resource type="Resource" uid="uid://clfgmuu7pwbi6" path="res://content/abilities/ability_swiftfoot.tres" id="ability_0"]
 [ext_resource type="Resource" path="res://content/abilities/ability_toxic_ward.tres" id="ability_1"]
-[ext_resource type="Resource" path="res://content/moves/move_crimson_surge_01.tres" id="move_crimson_surge"]
+[ext_resource type="Resource" path="res://content/moves/move_poison_wave_01.tres" id="move_poison_wave"]
 [ext_resource type="Resource" path="res://content/moves/move_hex_bolt_01.tres" id="move_hex_bolt"]
 [ext_resource type="Resource" uid="uid://dywchce8ppf42" path="res://content/moves/move_venom_spit_01.tres" id="move_venom_spit"]
 [ext_resource type="Resource" path="res://content/moves/move_water_jet_01.tres" id="move_water_jet"]
@@ -22,10 +22,10 @@ script = ExtResource("2_entry")
 level = 6
 move = ExtResource("move_venom_spit")
 
-[sub_resource type="Resource" id="Learn_crimson_surge_12"]
+[sub_resource type="Resource" id="Learn_poison_wave_12"]
 script = ExtResource("2_entry")
 level = 12
-move = ExtResource("move_crimson_surge")
+move = ExtResource("move_poison_wave")
 
 [sub_resource type="Resource" id="Learn_hex_bolt_17"]
 script = ExtResource("2_entry")
@@ -42,7 +42,7 @@ base_attack = 48
 base_defense = 38
 base_speed = 52
 growth = ExtResource("4_growth")
-learnset = Array[ExtResource("2_entry")]([SubResource("Learn_water_jet_1"), SubResource("Learn_venom_spit_6"), SubResource("Learn_crimson_surge_12"), SubResource("Learn_hex_bolt_17")])
+learnset = Array[ExtResource("2_entry")]([SubResource("Learn_water_jet_1"), SubResource("Learn_venom_spit_6"), SubResource("Learn_poison_wave_12"), SubResource("Learn_hex_bolt_17")])
 evolves_into = ExtResource("6_evo")
 evolution_level = 20
 ability_pool = Array[ExtResource("3_ability")]([ExtResource("ability_0"), ExtResource("ability_1")])

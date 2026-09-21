@@ -10,7 +10,7 @@
 [ext_resource type="Resource" path="res://content/moves/move_ember_01.tres" id="8_70cs6"]
 [ext_resource type="Resource" uid="uid://dpb40bisa8tta" path="res://content/moves/move_war_cry_01.tres" id="9_eh44s"]
 [ext_resource type="Resource" path="res://content/moves/move_flame_burst_01.tres" id="10_1onuu"]
-[ext_resource type="Resource" path="res://content/moves/move_steel_rend_01.tres" id="11_heo28"]
+[ext_resource type="Resource" path="res://content/moves/move_steel_slash_01.tres" id="11_heo28"]
 [ext_resource type="Resource" path="res://content/moves/move_anvil_fall_01.tres" id="12_6jl4x"]
 [ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="13_5rdgt"]
 

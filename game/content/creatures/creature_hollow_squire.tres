@@ -6,7 +6,7 @@
 [ext_resource type="Resource" path="res://content/growth/growth_standard.tres" id="4_growth"]
 [ext_resource type="Resource" uid="uid://x7tfsati8sup" path="res://content/creatures/creature_bulwark.tres" id="5_ga8lv"]
 [ext_resource type="SpriteFrames" uid="uid://dntf5qeyxrtpt" path="res://content/sprites/creature_hollow_squire_battle.tres" id="5_sprite"]
-[ext_resource type="Resource" path="res://content/moves/move_iron_jab_01.tres" id="9_4eivt"]
+[ext_resource type="Resource" path="res://content/moves/move_iron_stab_01.tres" id="9_4eivt"]
 [ext_resource type="Resource" uid="uid://hy2bjnv2kuj3" path="res://content/abilities/ability_stonewall.tres" id="ability_0"]
 [ext_resource type="Resource" uid="uid://clfgmuu7pwbi6" path="res://content/abilities/ability_swiftfoot.tres" id="ability_1"]
 [ext_resource type="Resource" uid="uid://yy88er3s78cw" path="res://content/moves/move_guard_stance_01.tres" id="move_guard_stance"]

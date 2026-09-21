@@ -8,7 +8,7 @@
 [ext_resource type="SpriteFrames" uid="uid://b2oti1clskbs7" path="res://content/sprites/creature_gloomgaze_battle.tres" id="5_sprite"]
 [ext_resource type="Resource" path="res://content/abilities/ability_toxic_ward.tres" id="ability_0"]
 [ext_resource type="Resource" path="res://content/abilities/ability_thick_hide.tres" id="ability_1"]
-[ext_resource type="Resource" uid="uid://c3rxxapydl0ab" path="res://content/moves/move_dread_gaze_01.tres" id="move_dread_gaze"]
+[ext_resource type="Resource" uid="uid://c3rxxapydl0ab" path="res://content/moves/move_weakening_gaze_01.tres" id="move_weakening_gaze"]
 [ext_resource type="Resource" path="res://content/moves/move_gust_01.tres" id="move_gust"]
 [ext_resource type="Resource" path="res://content/moves/move_hex_bolt_01.tres" id="move_hex_bolt"]
 [ext_resource type="Resource" path="res://content/moves/move_water_jet_01.tres" id="move_water_jet"]
@@ -17,10 +17,10 @@
 script = ExtResource("2_entry")
 move = ExtResource("move_gust")
 
-[sub_resource type="Resource" id="Learn_dread_gaze_5"]
+[sub_resource type="Resource" id="Learn_weakening_gaze_5"]
 script = ExtResource("2_entry")
 level = 5
-move = ExtResource("move_dread_gaze")
+move = ExtResource("move_weakening_gaze")
 
 [sub_resource type="Resource" id="Learn_hex_bolt_11"]
 script = ExtResource("2_entry")
@@ -41,7 +41,7 @@ base_hp = 48
 base_defense = 44
 base_speed = 42
 growth = ExtResource("4_growth")
-learnset = Array[ExtResource("2_entry")]([SubResource("Learn_gust_1"), SubResource("Learn_dread_gaze_5"), SubResource("Learn_hex_bolt_11"), SubResource("Learn_water_jet_16")])
+learnset = Array[ExtResource("2_entry")]([SubResource("Learn_gust_1"), SubResource("Learn_weakening_gaze_5"), SubResource("Learn_hex_bolt_11"), SubResource("Learn_water_jet_16")])
 evolves_into = ExtResource("5_chjyk")
 evolution_level = 30
 ability_pool = Array[ExtResource("3_ability")]([ExtResource("ability_0"), ExtResource("ability_1")])

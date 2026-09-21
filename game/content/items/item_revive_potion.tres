@@ -4,9 +4,9 @@
 
 [resource]
 script = ExtResource("1_item")
-id = &"item_hearty_tonic"
-display_name = "Hearty Tonic"
-description = "Thick, bitter and strong. Restores a companion to full HP."
-effect = 0
-amount = 100
-price = 55
+id = &"item_revive_potion"
+display_name = "Revive Potion"
+description = "A warm ember in a stoppered vial. Revives a fainted companion with half its HP."
+effect = 1
+amount = 50
+price = 90

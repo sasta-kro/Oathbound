@@ -9,7 +9,7 @@
 [ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_rcppd"]
 [ext_resource type="Resource" path="res://content/moves/move_gust_01.tres" id="7_phx3n"]
 [ext_resource type="Resource" path="res://content/moves/move_hex_bolt_01.tres" id="8_begwr"]
-[ext_resource type="Resource" uid="uid://c3rxxapydl0ab" path="res://content/moves/move_dread_gaze_01.tres" id="9_sols2"]
+[ext_resource type="Resource" uid="uid://c3rxxapydl0ab" path="res://content/moves/move_weakening_gaze_01.tres" id="9_sols2"]
 [ext_resource type="Resource" path="res://content/moves/move_water_jet_01.tres" id="10_8k3ci"]
 [ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="11_g7r5r"]
 

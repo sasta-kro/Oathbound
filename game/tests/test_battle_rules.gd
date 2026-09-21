@@ -45,7 +45,7 @@ func test_a_defence_that_outweighs_the_attack_still_lets_the_floor_through() -> 
 func test_a_move_that_does_no_damage_at_all_does_none() -> void:
 	var attacker := _plain_battler(LOAMBUCK, BattleTeam.Side.PLAYER)
 	var defender := _plain_battler(LOAMBUCK, BattleTeam.Side.ENEMY)
-	var mend: MoveData = Content.get_move(&"move_mend_01")
+	var mend: MoveData = Content.get_move(&"move_earthy_heal_01")
 	assert_eq(BattleRules.damage(mend, attacker, defender, Content.type_chart), 0)
 
 

@@ -5,8 +5,8 @@
 
 [resource]
 script = ExtResource("1_fedni")
-id = &"move_verdant_bloom_01"
-display_name = "Verdant Bloom"
+id = &"move_healing_bloom_01"
+display_name = "Healing Bloom"
 description = "The user sheds blossoms over an ally, closing its wounds."
 type = 4
 cooldown_turns = 4

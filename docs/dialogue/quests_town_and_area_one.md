@@ -820,9 +820,9 @@ Before you go back up to him.
 
 Your satchel is empty; I checked it while you slept, and no, I am not sorry.
 
-Take those coins across to the Apothecary and buy a Herb Salve off her, one at least.
+Take those coins across to the Apothecary and buy a Healing Herb off her, one at least.
 
-A salve is a mend you can use when nothing in your party knows how, and up on that road there is no fire and no bed, only what you carried out of my door.
+A healing herb is a heal you can use when nothing in your party knows how, and up on that road there is no fire and no bed, only what you carried out of my door.
 
 ### accept_option
 

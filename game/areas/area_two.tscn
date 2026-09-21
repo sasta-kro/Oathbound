@@ -211,7 +211,7 @@ position = Vector2(858, 805)
 display_name = "THE QUARTERMASTER"
 sprite_frames = ExtResource("9_tq63f")
 dialogue_line = "The Quartermaster:  Coin is coin, even down here. I buy off the ones who come back and sell to the ones going on, and I have stopped asking which of you is which. Take the salve. Take two."
-shop_stock = Array[StringName]([&"item_herb_salve", &"item_hearty_tonic", &"item_ember_draught", &"item_clearwater_vial"])
+shop_stock = Array[StringName]([&"item_healing_herb", &"item_full_heal_root", &"item_revive_potion", &"item_cleansing_water"])
 shop_title = "Deepmarket Stall"
 
 [node name="Sealwright" parent="Actors" unique_id=1034998784 instance=ExtResource("4_6lfkq")]
@@ -219,7 +219,7 @@ position = Vector2(1260, 840)
 display_name = "THE SEALWRIGHT"
 sprite_frames = ExtResource("8_ffk3y")
 dialogue_line = "The Sealwright: Scrolls, cut down here, from the seal-iron the Gravewright brings up. They hold as well as anything your Order prints upstairs, and they cost less, because there is nobody left to pay."
-shop_stock = Array[StringName]([&"item_binding_scroll", &"item_clearwater_vial"])
+shop_stock = Array[StringName]([&"item_binding_scroll", &"item_cleansing_water"])
 shop_title = "Sealwright's Bench"
 
 [node name="Lamplighter" parent="Actors" unique_id=993589856 instance=ExtResource("4_6lfkq")]
@@ -588,7 +588,7 @@ position = Vector2(-1620, 1224)
 [node name="ChestNorthwest" parent="Chests" unique_id=1038839725 instance=ExtResource("28_tq63f")]
 position = Vector2(-1332, -1272)
 chest_id = &"chest_two_northwest"
-item_ids = Array[StringName]([&"item_hearty_tonic", &"item_herb_salve"])
+item_ids = Array[StringName]([&"item_full_heal_root", &"item_healing_herb"])
 item_counts = Array[int]([2, 2])
 opened_line = "Somebody's kit, packed for a climb back up that never happened."
 
@@ -608,7 +608,7 @@ opened_line = "The Sealwright waves a hand at the crate by the fire. Take them. 
 position = Vector2(1380, -984)
 chest_id = &"chest_two_kings_hall"
 coins = 90
-item_ids = Array[StringName]([&"item_ember_draught"])
+item_ids = Array[StringName]([&"item_revive_potion"])
 item_counts = Array[int]([1])
 opened_line = "A champion's pack, set down against the wall of the hall and never picked up again."
 
@@ -616,7 +616,7 @@ opened_line = "A champion's pack, set down against the wall of the hall and neve
 position = Vector2(286, 118)
 chest_id = &"chest_mid_east"
 binding_scrolls = 2
-item_ids = Array[StringName]([&"item_ember_draught"])
+item_ids = Array[StringName]([&"item_revive_potion"])
 item_counts = Array[int]([1])
 opened_line = "The Sealwright waves a hand at the crate by the fire. Take them. You will need them below more than I need the coin."
 

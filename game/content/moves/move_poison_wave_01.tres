@@ -5,12 +5,15 @@
 
 [resource]
 script = ExtResource("1_move")
-id = &"move_brine_fang_01"
-display_name = "Brine Fang"
-description = "A bite dripping with cold seawater. Quick and dependable."
+id = &"move_poison_wave_01"
+display_name = "Poison Wave"
+description = "A rush of tainted blood that may poison the target."
 type = 2
-power = 25
+power = 30
 accuracy = 95
-cooldown_turns = 0
+cooldown_turns = 1
 priority = 0
+status = 1
+status_chance = 20
+status_duration_turns = 3
 vfx = ExtResource("2_vfx")

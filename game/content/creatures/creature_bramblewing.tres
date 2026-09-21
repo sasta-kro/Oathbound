@@ -8,7 +8,7 @@
 [ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_g5ded"]
 [ext_resource type="Resource" path="res://content/moves/move_vine_lash_01.tres" id="7_l5qa2"]
 [ext_resource type="Resource" path="res://content/moves/move_spore_cloud_01.tres" id="8_ntmjm"]
-[ext_resource type="Resource" path="res://content/moves/move_thorn_volley_01.tres" id="9_e2s1r"]
+[ext_resource type="Resource" path="res://content/moves/move_thorn_rain_01.tres" id="9_e2s1r"]
 [ext_resource type="Resource" path="res://content/moves/move_gale_slash_01.tres" id="10_tid7w"]
 [ext_resource type="Resource" path="res://content/moves/move_overgrowth_01.tres" id="11_armmr"]
 [ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="12_xy7bk"]

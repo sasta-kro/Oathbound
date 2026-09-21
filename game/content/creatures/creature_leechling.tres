@@ -8,8 +8,8 @@
 [ext_resource type="SpriteFrames" uid="uid://cjptfan17micr" path="res://content/sprites/creature_leechling_battle.tres" id="5_sprite"]
 [ext_resource type="Resource" path="res://content/abilities/ability_toxic_ward.tres" id="ability_0"]
 [ext_resource type="Resource" path="res://content/abilities/ability_bloodthirst.tres" id="ability_1"]
-[ext_resource type="Resource" path="res://content/moves/move_crimson_surge_01.tres" id="move_crimson_surge"]
-[ext_resource type="Resource" uid="uid://c3rxxapydl0ab" path="res://content/moves/move_dread_gaze_01.tres" id="move_dread_gaze"]
+[ext_resource type="Resource" path="res://content/moves/move_poison_wave_01.tres" id="move_poison_wave"]
+[ext_resource type="Resource" uid="uid://c3rxxapydl0ab" path="res://content/moves/move_weakening_gaze_01.tres" id="move_weakening_gaze"]
 [ext_resource type="Resource" uid="uid://dywchce8ppf42" path="res://content/moves/move_venom_spit_01.tres" id="move_venom_spit"]
 [ext_resource type="Resource" path="res://content/moves/move_water_jet_01.tres" id="move_water_jet"]
 
@@ -22,15 +22,15 @@ script = ExtResource("2_entry")
 level = 5
 move = ExtResource("move_venom_spit")
 
-[sub_resource type="Resource" id="Learn_crimson_surge_11"]
+[sub_resource type="Resource" id="Learn_poison_wave_11"]
 script = ExtResource("2_entry")
 level = 11
-move = ExtResource("move_crimson_surge")
+move = ExtResource("move_poison_wave")
 
-[sub_resource type="Resource" id="Learn_dread_gaze_16"]
+[sub_resource type="Resource" id="Learn_weakening_gaze_16"]
 script = ExtResource("2_entry")
 level = 16
-move = ExtResource("move_dread_gaze")
+move = ExtResource("move_weakening_gaze")
 
 [resource]
 script = ExtResource("1_species")
@@ -41,7 +41,7 @@ base_hp = 48
 base_attack = 42
 base_speed = 50
 growth = ExtResource("4_growth")
-learnset = Array[ExtResource("2_entry")]([SubResource("Learn_water_jet_1"), SubResource("Learn_venom_spit_5"), SubResource("Learn_crimson_surge_11"), SubResource("Learn_dread_gaze_16")])
+learnset = Array[ExtResource("2_entry")]([SubResource("Learn_water_jet_1"), SubResource("Learn_venom_spit_5"), SubResource("Learn_poison_wave_11"), SubResource("Learn_weakening_gaze_16")])
 evolves_into = ExtResource("5_ad44k")
 evolution_level = 18
 ability_pool = Array[ExtResource("3_ability")]([ExtResource("ability_0"), ExtResource("ability_1")])

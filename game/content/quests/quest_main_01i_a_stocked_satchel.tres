@@ -6,9 +6,9 @@
 [sub_resource type="Resource" id="Objective_buy"]
 script = ExtResource("2_objective")
 kind = 4
-target = &"bought_item_herb_salve"
+target = &"bought_item_healing_herb"
 count = 1
-description = "Buy a Herb Salve at the Apothecary's counter in the town"
+description = "Buy a Healing Herb at the Apothecary's counter in the town"
 
 [resource]
 script = ExtResource("1_quest")
@@ -22,9 +22,9 @@ requires = &"quest_main_01h_a_bed_at_the_hearthside"
 objectives = Array[ExtResource("2_objective")]([SubResource("Objective_buy")])
 reward_currency = 25
 reward_xp = 10
-reward_item = &"item_clearwater_vial"
+reward_item = &"item_cleansing_water"
 reward_item_count = 1
-offer_line = "Innkeeper: Before you go back up to him.\n\nYour satchel is empty; I checked it while you slept, and no, I am not sorry.\n\nTake those coins across to the Apothecary and buy a Herb Salve off her, one at least.\n\nA salve is a mend you can use when nothing in your party knows how, and up on that road there is no fire and no bed, only what you carried out of my door."
+offer_line = "Innkeeper: Before you go back up to him.\n\nYour satchel is empty; I checked it while you slept, and no, I am not sorry.\n\nTake those coins across to the Apothecary and buy a Healing Herb off her, one at least.\n\nA healing herb is a heal you can use when nothing in your party knows how, and up on that road there is no fire and no bed, only what you carried out of my door."
 accept_option = "I'll stock up."
 refuse_option = "I'll keep my coins."
 accepted_line = "Innkeeper: Her counter is over on the west side, by the stalls. Talk to her, look at what is on the shelf, and buy the salve. Twenty coins, and it has bought better people than you another hour."

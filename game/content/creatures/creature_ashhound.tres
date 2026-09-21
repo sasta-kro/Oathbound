@@ -10,7 +10,7 @@
 [ext_resource type="Resource" path="res://content/abilities/ability_bloodthirst.tres" id="ability_1"]
 [ext_resource type="Resource" path="res://content/moves/move_ash_fang_01.tres" id="move_ash_fang"]
 [ext_resource type="Resource" path="res://content/moves/move_flame_burst_01.tres" id="move_flame_burst"]
-[ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_quake_step_01.tres" id="move_quake_step"]
+[ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_ground_slam_01.tres" id="move_ground_slam"]
 [ext_resource type="Resource" uid="uid://dpb40bisa8tta" path="res://content/moves/move_war_cry_01.tres" id="move_war_cry"]
 
 [sub_resource type="Resource" id="Learn_ash_fang_1"]
@@ -27,10 +27,10 @@ script = ExtResource("2_entry")
 level = 12
 move = ExtResource("move_flame_burst")
 
-[sub_resource type="Resource" id="Learn_quake_step_18"]
+[sub_resource type="Resource" id="Learn_ground_slam_18"]
 script = ExtResource("2_entry")
 level = 18
-move = ExtResource("move_quake_step")
+move = ExtResource("move_ground_slam")
 
 [resource]
 script = ExtResource("1_species")
@@ -41,7 +41,7 @@ base_attack = 56
 base_defense = 34
 base_speed = 64
 growth = ExtResource("4_growth")
-learnset = Array[ExtResource("2_entry")]([SubResource("Learn_ash_fang_1"), SubResource("Learn_war_cry_6"), SubResource("Learn_flame_burst_12"), SubResource("Learn_quake_step_18")])
+learnset = Array[ExtResource("2_entry")]([SubResource("Learn_ash_fang_1"), SubResource("Learn_war_cry_6"), SubResource("Learn_flame_burst_12"), SubResource("Learn_ground_slam_18")])
 evolves_into = ExtResource("5_5f3cq")
 evolution_level = 30
 ability_pool = Array[ExtResource("3_ability")]([ExtResource("ability_0"), ExtResource("ability_1")])

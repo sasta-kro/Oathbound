@@ -7,24 +7,24 @@
 [ext_resource type="SpriteFrames" uid="uid://cntcra3xv4c2w" path="res://content/sprites/creature_brinehound_battle.tres" id="5_sprite"]
 [ext_resource type="Resource" uid="uid://clfgmuu7pwbi6" path="res://content/abilities/ability_swiftfoot.tres" id="ability_0"]
 [ext_resource type="Resource" path="res://content/abilities/ability_bloodthirst.tres" id="ability_1"]
-[ext_resource type="Resource" path="res://content/moves/move_brine_fang_01.tres" id="move_brine_fang"]
-[ext_resource type="Resource" path="res://content/moves/move_crimson_surge_01.tres" id="move_crimson_surge"]
+[ext_resource type="Resource" path="res://content/moves/move_wave_strike_01.tres" id="move_wave_strike"]
+[ext_resource type="Resource" path="res://content/moves/move_poison_wave_01.tres" id="move_poison_wave"]
 [ext_resource type="Resource" path="res://content/moves/move_tide_crash_01.tres" id="move_tide_crash"]
 [ext_resource type="Resource" uid="uid://dpb40bisa8tta" path="res://content/moves/move_war_cry_01.tres" id="move_war_cry"]
 
-[sub_resource type="Resource" id="Learn_brine_fang_1"]
+[sub_resource type="Resource" id="Learn_wave_strike_1"]
 script = ExtResource("2_entry")
-move = ExtResource("move_brine_fang")
+move = ExtResource("move_wave_strike")
 
 [sub_resource type="Resource" id="Learn_war_cry_6"]
 script = ExtResource("2_entry")
 level = 6
 move = ExtResource("move_war_cry")
 
-[sub_resource type="Resource" id="Learn_crimson_surge_12"]
+[sub_resource type="Resource" id="Learn_poison_wave_12"]
 script = ExtResource("2_entry")
 level = 12
-move = ExtResource("move_crimson_surge")
+move = ExtResource("move_poison_wave")
 
 [sub_resource type="Resource" id="Learn_tide_crash_18"]
 script = ExtResource("2_entry")
@@ -41,6 +41,6 @@ base_attack = 54
 base_defense = 36
 base_speed = 62
 growth = ExtResource("4_growth")
-learnset = Array[ExtResource("2_entry")]([SubResource("Learn_brine_fang_1"), SubResource("Learn_war_cry_6"), SubResource("Learn_crimson_surge_12"), SubResource("Learn_tide_crash_18")])
+learnset = Array[ExtResource("2_entry")]([SubResource("Learn_wave_strike_1"), SubResource("Learn_war_cry_6"), SubResource("Learn_poison_wave_12"), SubResource("Learn_tide_crash_18")])
 ability_pool = Array[ExtResource("3_ability")]([ExtResource("ability_0"), ExtResource("ability_1")])
 battle_sprite = ExtResource("5_sprite")

@@ -262,7 +262,7 @@ func _services(p: AreaPainter) -> void:
 			"barks": PackedStringArray(["Salves and tonics!", "Mind your wounds, traveller."]),
 			"shop_title": "Apothecary",
 			"quest_ids": _ids([&"quest_main_01j_the_road_is_waiting"]),
-			"shop_stock": _ids([&"item_herb_salve", &"item_hearty_tonic", &"item_ember_draught", &"item_clearwater_vial"]),
+			"shop_stock": _ids([&"item_healing_herb", &"item_full_heal_root", &"item_revive_potion", &"item_cleansing_water"]),
 		}
 	)
 

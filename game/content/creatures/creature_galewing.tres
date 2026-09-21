@@ -9,7 +9,7 @@
 [ext_resource type="Resource" path="res://content/moves/move_gust_01.tres" id="7_f1f6a"]
 [ext_resource type="Resource" path="res://content/moves/move_stone_toss_01.tres" id="8_xor1c"]
 [ext_resource type="Resource" path="res://content/moves/move_gale_slash_01.tres" id="9_fok1g"]
-[ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_quake_step_01.tres" id="10_p8gbg"]
+[ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_ground_slam_01.tres" id="10_p8gbg"]
 [ext_resource type="Resource" path="res://content/moves/move_reaping_scythe_01.tres" id="11_3deey"]
 [ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="12_ikwqy"]
 

@@ -1,23 +1,21 @@
-[gd_resource type="Resource" script_class="MoveData" format=3 uid="uid://daefgomic14u8"]
+[gd_resource type="Resource" script_class="MoveData" format=3 uid="uid://c3rxxapydl0ab"]
 
 [ext_resource type="Script" uid="uid://bq5p2dxnovb0r" path="res://scripts/creatures/move_data.gd" id="1_move"]
-[ext_resource type="Resource" path="res://content/vfx/vfx_ring_earth.tres" id="2_vfx"]
+[ext_resource type="Resource" path="res://content/vfx/vfx_motes_wind.tres" id="2_vfx"]
 [ext_resource type="Script" uid="uid://c8yppijv6s6vv" path="res://scripts/creatures/stat_modifier.gd" id="3_modifier"]
 
 [sub_resource type="Resource" id="Modifier_0"]
 script = ExtResource("3_modifier")
-stat = 2
 target = 1
-percent = -20
+percent = -25
 duration_turns = 3
 
 [resource]
 script = ExtResource("1_move")
-id = &"move_oath_sunder_01"
-display_name = "Oath Sunder"
-description = "The Oathbreaker's cleaving strike. It shatters the target's guard."
-type = 1
-power = 50
+id = &"move_weakening_gaze_01"
+display_name = "Weakening Gaze"
+description = "A stare so cold the target's strength drains away for a few turns."
+type = 3
 accuracy = 90
 cooldown_turns = 3
 stat_modifiers = Array[ExtResource("3_modifier")]([SubResource("Modifier_0")])

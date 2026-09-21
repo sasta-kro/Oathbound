@@ -7,7 +7,7 @@
 [ext_resource type="SpriteFrames" uid="uid://baecs2lp7u6bi" path="res://content/sprites/creature_ironhorn_battle.tres" id="5_sprite"]
 [ext_resource type="Resource" path="res://content/abilities/ability_thick_hide.tres" id="ability_0"]
 [ext_resource type="Resource" path="res://content/abilities/ability_bloodthirst.tres" id="ability_1"]
-[ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_quake_step_01.tres" id="move_quake_step"]
+[ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_ground_slam_01.tres" id="move_ground_slam"]
 [ext_resource type="Resource" path="res://content/moves/move_shield_bash_01.tres" id="move_shield_bash"]
 [ext_resource type="Resource" path="res://content/moves/move_stone_toss_01.tres" id="move_stone_toss"]
 [ext_resource type="Resource" uid="uid://dpb40bisa8tta" path="res://content/moves/move_war_cry_01.tres" id="move_war_cry"]
@@ -21,10 +21,10 @@ script = ExtResource("2_entry")
 level = 7
 move = ExtResource("move_war_cry")
 
-[sub_resource type="Resource" id="Learn_quake_step_13"]
+[sub_resource type="Resource" id="Learn_ground_slam_13"]
 script = ExtResource("2_entry")
 level = 13
-move = ExtResource("move_quake_step")
+move = ExtResource("move_ground_slam")
 
 [sub_resource type="Resource" id="Learn_shield_bash_18"]
 script = ExtResource("2_entry")
@@ -41,7 +41,7 @@ base_attack = 66
 base_defense = 50
 base_speed = 34
 growth = ExtResource("4_growth")
-learnset = Array[ExtResource("2_entry")]([SubResource("Learn_stone_toss_1"), SubResource("Learn_war_cry_7"), SubResource("Learn_quake_step_13"), SubResource("Learn_shield_bash_18")])
+learnset = Array[ExtResource("2_entry")]([SubResource("Learn_stone_toss_1"), SubResource("Learn_war_cry_7"), SubResource("Learn_ground_slam_13"), SubResource("Learn_shield_bash_18")])
 ability_pool = Array[ExtResource("3_ability")]([ExtResource("ability_0"), ExtResource("ability_1")])
 base_bind_chance = 0.3
 battle_sprite = ExtResource("5_sprite")

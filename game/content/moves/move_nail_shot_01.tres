@@ -5,8 +5,8 @@
 
 [resource]
 script = ExtResource("1_ys310")
-id = &"move_rivet_shot_01"
-display_name = "Rivet Shot"
+id = &"move_nail_shot_01"
+display_name = "Nail Shot"
 description = "A hot rivet flicked at the target before it can move."
 type = 6
 power = 20

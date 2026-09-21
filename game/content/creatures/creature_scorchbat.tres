@@ -8,7 +8,7 @@
 [ext_resource type="Resource" path="res://content/abilities/ability_windrider.tres" id="ability_0"]
 [ext_resource type="Resource" uid="uid://clfgmuu7pwbi6" path="res://content/abilities/ability_swiftfoot.tres" id="ability_1"]
 [ext_resource type="Resource" path="res://content/moves/move_ash_fang_01.tres" id="move_ash_fang"]
-[ext_resource type="Resource" uid="uid://c3rxxapydl0ab" path="res://content/moves/move_dread_gaze_01.tres" id="move_dread_gaze"]
+[ext_resource type="Resource" uid="uid://c3rxxapydl0ab" path="res://content/moves/move_weakening_gaze_01.tres" id="move_weakening_gaze"]
 [ext_resource type="Resource" path="res://content/moves/move_gale_slash_01.tres" id="move_gale_slash"]
 [ext_resource type="Resource" path="res://content/moves/move_gust_01.tres" id="move_gust"]
 
@@ -26,10 +26,10 @@ script = ExtResource("2_entry")
 level = 12
 move = ExtResource("move_gale_slash")
 
-[sub_resource type="Resource" id="Learn_dread_gaze_16"]
+[sub_resource type="Resource" id="Learn_weakening_gaze_16"]
 script = ExtResource("2_entry")
 level = 16
-move = ExtResource("move_dread_gaze")
+move = ExtResource("move_weakening_gaze")
 
 [resource]
 script = ExtResource("1_species")
@@ -43,7 +43,7 @@ base_attack = 46
 base_defense = 32
 base_speed = 66
 growth = ExtResource("4_growth")
-learnset = Array[ExtResource("2_entry")]([SubResource("Learn_gust_1"), SubResource("Learn_ash_fang_5"), SubResource("Learn_gale_slash_12"), SubResource("Learn_dread_gaze_16")])
+learnset = Array[ExtResource("2_entry")]([SubResource("Learn_gust_1"), SubResource("Learn_ash_fang_5"), SubResource("Learn_gale_slash_12"), SubResource("Learn_weakening_gaze_16")])
 ability_pool = Array[ExtResource("3_ability")]([ExtResource("ability_0"), ExtResource("ability_1")])
 base_bind_chance = 0.5
 battle_sprite = ExtResource("5_sprite")

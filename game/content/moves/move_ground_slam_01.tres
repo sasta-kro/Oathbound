@@ -6,8 +6,8 @@
 
 [resource]
 script = ExtResource("1_move")
-id = &"move_quake_step_01"
-display_name = "Quake Step"
+id = &"move_ground_slam_01"
+display_name = "Ground Slam"
 description = "A ground-splitting stomp that can leave the target reeling."
 type = 1
 power = 35

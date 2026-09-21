@@ -8,7 +8,7 @@
 [ext_resource type="Resource" path="res://content/growth/growth_standard.tres" id="5_kqmdc"]
 [ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_a8die"]
 [ext_resource type="Resource" path="res://content/moves/move_ember_01.tres" id="7_elkc3"]
-[ext_resource type="Resource" uid="uid://c3rxxapydl0ab" path="res://content/moves/move_dread_gaze_01.tres" id="8_54mlr"]
+[ext_resource type="Resource" uid="uid://c3rxxapydl0ab" path="res://content/moves/move_weakening_gaze_01.tres" id="8_54mlr"]
 [ext_resource type="Resource" path="res://content/moves/move_flame_burst_01.tres" id="9_1y3wy"]
 [ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="10_erdjw"]
 

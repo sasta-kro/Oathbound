@@ -6,7 +6,7 @@ extends GutTest
 
 const SCRATCH_DIR := "user://gut_scratch/test_field_lessons"
 const AREA_ONE := "res://areas/area_one.tscn"
-const SALVE := &"item_herb_salve"
+const SALVE := &"item_healing_herb"
 const KEEPING_QUEST_ID := &"quest_main_01b_room_for_more"
 const LEAD_QUEST_ID := &"quest_main_01d_who_walks_in_front"
 const BED_QUEST_ID := &"quest_main_01h_a_bed_at_the_hearthside"

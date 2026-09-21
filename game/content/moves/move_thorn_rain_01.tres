@@ -5,8 +5,8 @@
 
 [resource]
 script = ExtResource("1_7yitl")
-id = &"move_thorn_volley_01"
-display_name = "Thorn Volley"
+id = &"move_thorn_rain_01"
+display_name = "Thorn Rain"
 description = "A spray of hardened thorns loosed all at once."
 type = 4
 power = 35

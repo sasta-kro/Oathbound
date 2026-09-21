@@ -4,10 +4,10 @@ extends GutTest
 
 const EMBERLING := &"creature_emberling"
 const LOAMBUCK := &"creature_loambuck"
-const SALVE := &"item_herb_salve"
-const TONIC := &"item_hearty_tonic"
-const DRAUGHT := &"item_ember_draught"
-const CLEARWATER := &"item_clearwater_vial"
+const SALVE := &"item_healing_herb"
+const TONIC := &"item_full_heal_root"
+const DRAUGHT := &"item_revive_potion"
+const CLEARWATER := &"item_cleansing_water"
 const SCROLL := &"item_binding_scroll"
 const TOWN := "res://areas/town.tscn"
 
@@ -224,7 +224,7 @@ func test_buying_a_salve_stocks_the_satchel_quest_and_pays_an_item() -> void:
 	assert_true(GameState.quests.is_ready(quest), "The Apothecary's counter is the lesson.")
 	var lines: PackedStringArray = GameState.complete_quest(quest)
 	assert_eq(GameState.item_count(CLEARWATER), 1)
-	assert_true("+1 Clearwater Vial" in lines)
+	assert_true("+1 Cleansing Water" in lines)
 
 
 func test_buying_scrolls_earns_a_free_one() -> void:

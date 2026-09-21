@@ -4,9 +4,9 @@
 
 [resource]
 script = ExtResource("1_item")
-id = &"item_herb_salve"
-display_name = "Herb Salve"
-description = "A tin of crushed moss and marigold. Restores 40% of a companion's HP."
+id = &"item_full_heal_root"
+display_name = "Full Heal Root"
+description = "Thick, bitter and strong. Restores a companion to full HP."
 effect = 0
-amount = 40
-price = 20
+amount = 100
+price = 55

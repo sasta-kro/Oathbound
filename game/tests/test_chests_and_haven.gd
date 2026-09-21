@@ -8,7 +8,7 @@ const AREA_TWO := "res://areas/area_two.tscn"
 const AREA_THREE := "res://areas/area_three.tscn"
 const TOWN := "res://areas/town.tscn"
 const TEST_ID := &"chest_test_one"
-const TONIC := &"item_hearty_tonic"
+const TONIC := &"item_full_heal_root"
 
 var _original_dir: String
 

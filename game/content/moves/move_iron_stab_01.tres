@@ -5,8 +5,8 @@
 
 [resource]
 script = ExtResource("1_2367p")
-id = &"move_iron_jab_01"
-display_name = "Iron Jab"
+id = &"move_iron_stab_01"
+display_name = "Iron Stab"
 description = "A short, hard strike with a metal limb."
 type = 6
 power = 20

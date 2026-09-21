@@ -8,7 +8,7 @@
 [ext_resource type="Resource" path="res://content/abilities/ability_broken_oath.tres" id="ability_0"]
 [ext_resource type="Resource" path="res://content/moves/move_hellfire_beam_01.tres" id="move_hellfire_beam"]
 [ext_resource type="Resource" path="res://content/moves/move_lance_thrust_01.tres" id="move_lance_thrust"]
-[ext_resource type="Resource" uid="uid://daefgomic14u8" path="res://content/moves/move_oath_sunder_01.tres" id="move_oath_sunder"]
+[ext_resource type="Resource" uid="uid://daefgomic14u8" path="res://content/moves/move_oathbreaker_01.tres" id="move_oathbreaker"]
 [ext_resource type="Resource" path="res://content/moves/move_shield_bash_01.tres" id="move_shield_bash"]
 
 [sub_resource type="Resource" id="Learn_shield_bash_1"]
@@ -25,10 +25,10 @@ script = ExtResource("2_entry")
 level = 12
 move = ExtResource("move_hellfire_beam")
 
-[sub_resource type="Resource" id="Learn_oath_sunder_18"]
+[sub_resource type="Resource" id="Learn_oathbreaker_18"]
 script = ExtResource("2_entry")
 level = 18
-move = ExtResource("move_oath_sunder")
+move = ExtResource("move_oathbreaker")
 
 [resource]
 script = ExtResource("1_species")
@@ -41,7 +41,7 @@ base_hp = 96
 base_attack = 54
 base_defense = 52
 growth = ExtResource("4_growth")
-learnset = Array[ExtResource("2_entry")]([SubResource("Learn_shield_bash_1"), SubResource("Learn_lance_thrust_6"), SubResource("Learn_hellfire_beam_12"), SubResource("Learn_oath_sunder_18")])
+learnset = Array[ExtResource("2_entry")]([SubResource("Learn_shield_bash_1"), SubResource("Learn_lance_thrust_6"), SubResource("Learn_hellfire_beam_12"), SubResource("Learn_oathbreaker_18")])
 ability_pool = Array[ExtResource("3_ability")]([ExtResource("ability_0")])
 base_bind_chance = 0.05
 battle_sprite = ExtResource("3_sprite")

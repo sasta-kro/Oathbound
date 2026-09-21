@@ -489,7 +489,7 @@ func test_ai_prefers_the_super_effective_move() -> void:
 	var engine := _start(_wild([[RILLFIN, 5]], CINDERCLAW, 20), ALWAYS)
 	var action := engine.ai.choose_action(engine)
 	assert_eq(action.kind, BattleAction.Kind.MOVE)
-	assert_eq(action.move.id, &"move_quake_step_01", "Earth beats Water; Fire does not.")
+	assert_eq(action.move.id, &"move_ground_slam_01", "Earth beats Water; Fire does not.")
 
 
 func test_ai_never_picks_a_move_on_cooldown() -> void:

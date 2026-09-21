@@ -8,7 +8,7 @@
 [ext_resource type="Resource" uid="uid://02m72303u1c0" path="res://content/creatures/creature_galewing.tres" id="5_lrfr0"]
 [ext_resource type="Resource" path="res://content/moves/move_stone_toss_01.tres" id="5_stone_toss"]
 [ext_resource type="Resource" path="res://content/moves/move_gale_slash_01.tres" id="6_gale_slash"]
-[ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_quake_step_01.tres" id="7_quake_step"]
+[ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_ground_slam_01.tres" id="7_ground_slam"]
 [ext_resource type="Resource" uid="uid://clfgmuu7pwbi6" path="res://content/abilities/ability_swiftfoot.tres" id="8_swiftfoot"]
 [ext_resource type="Resource" path="res://content/abilities/ability_windrider.tres" id="9_windrider"]
 [ext_resource type="SpriteFrames" uid="uid://bbnmc2dtbyy27" path="res://content/sprites/creature_gustpip_battle.tres" id="10_battle_sprite"]
@@ -27,10 +27,10 @@ script = ExtResource("2_entry")
 level = 13
 move = ExtResource("6_gale_slash")
 
-[sub_resource type="Resource" id="Learn_quake_step_19"]
+[sub_resource type="Resource" id="Learn_ground_slam_19"]
 script = ExtResource("2_entry")
 level = 19
-move = ExtResource("7_quake_step")
+move = ExtResource("7_ground_slam")
 
 [resource]
 script = ExtResource("1_species")
@@ -42,7 +42,7 @@ base_attack = 42
 base_defense = 38
 base_speed = 58
 growth = ExtResource("3_growth")
-learnset = Array[ExtResource("2_entry")]([SubResource("Learn_gust_1"), SubResource("Learn_stone_toss_7"), SubResource("Learn_gale_slash_13"), SubResource("Learn_quake_step_19")])
+learnset = Array[ExtResource("2_entry")]([SubResource("Learn_gust_1"), SubResource("Learn_stone_toss_7"), SubResource("Learn_gale_slash_13"), SubResource("Learn_ground_slam_19")])
 evolves_into = ExtResource("5_lrfr0")
 evolution_level = 16
 ability_pool = Array[ExtResource("1_3vj6k")]([ExtResource("8_swiftfoot"), ExtResource("9_windrider")])

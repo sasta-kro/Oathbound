@@ -5,8 +5,8 @@ extends GutTest
 const SCENE: PackedScene = preload("res://scenes/battle_scene.tscn")
 const EMBERLING := &"creature_emberling"
 const LOAMBUCK := &"creature_loambuck"
-const MEND := &"move_mend_01"
-const BOLSTER := &"move_bolster_01"
+const MEND := &"move_earthy_heal_01"
+const BOLSTER := &"move_rally_01"
 const ALWAYS := 0.0
 
 
@@ -49,7 +49,7 @@ func test_loambuck_is_a_healer_and_buffer() -> void:
 	var young: CreatureInstance = Content.spawn_creature(LOAMBUCK, 3)
 	assert_true(young.knows_move(_mend()), "A wild Loambuck can already mend.")
 	var grown: CreatureInstance = Content.spawn_creature(LOAMBUCK, 5)
-	assert_true(grown.knows_move(Content.get_move(BOLSTER)), "Bolster comes at level 5.")
+	assert_true(grown.knows_move(Content.get_move(BOLSTER)), "Rally comes at level 5.")
 	assert_true(_mend().targets_ally())
 	assert_true(_mend().heals())
 	assert_eq(_mend().validate(), [] as Array[String])
@@ -243,11 +243,11 @@ func test_the_battle_screen_only_offers_what_the_lesson_wants() -> void:
 	scene.press_entry(1)
 	await wait_frames(2)
 
-	assert_string_contains(scene.guide_text(), "Mend")
+	assert_string_contains(scene.guide_text(), "Earthy Heal")
 	scene.press_entry(0)
 	assert_eq(scene.current_menu(), BattleScene.Menu.MOVES)
 	var labels: PackedStringArray = scene.menu_labels()
-	scene.press_entry(labels.find("Mend"))
+	scene.press_entry(labels.find("Earthy Heal"))
 	assert_eq(scene.current_menu(), BattleScene.Menu.TARGET, "A support move asks who it is for.")
 	scene.press_entry(1)
 	assert_eq(scene.current_menu(), BattleScene.Menu.TARGET, "The healer itself is held back.")

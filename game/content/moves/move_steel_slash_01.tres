@@ -5,8 +5,8 @@
 
 [resource]
 script = ExtResource("1_ucg0g")
-id = &"move_steel_rend_01"
-display_name = "Steel Rend"
+id = &"move_steel_slash_01"
+display_name = "Steel Slash"
 description = "A tearing blow with an edge of hammered steel."
 type = 6
 power = 35

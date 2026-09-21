@@ -6,9 +6,9 @@
 [sub_resource type="Resource" id="Objective_1"]
 script = ExtResource("2_objective")
 kind = 4
-target = &"used_item_herb_salve"
+target = &"used_item_healing_herb"
 count = 1
-description = "Use a Herb Salve on a hurt companion"
+description = "Use a Healing Herb on a hurt companion"
 
 [resource]
 script = ExtResource("1_quest")

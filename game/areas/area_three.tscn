@@ -536,7 +536,7 @@ color = Color(0.68, 0.7, 0.78, 1)
 [node name="ChestWestGlade" parent="Chests" unique_id=1132885798 instance=ExtResource("21_s1vsy")]
 position = Vector2(-456, -24)
 chest_id = &"chest_three_west_glade"
-item_ids = Array[StringName]([&"item_ember_draught"])
+item_ids = Array[StringName]([&"item_revive_potion"])
 item_counts = Array[int]([1])
 opened_line = "The household knight was standing over a champion's pack. Whoever carried it got this far and no further."
 
@@ -550,7 +550,7 @@ opened_line = "Scrolls, still dry after all this time, in a case cut from seal-i
 position = Vector2(312, -840)
 chest_id = &"chest_three_barrow"
 coins = 240
-item_ids = Array[StringName]([&"item_hearty_tonic"])
+item_ids = Array[StringName]([&"item_full_heal_root"])
 item_counts = Array[int]([2])
 opened_line = "The king's own, heaped behind the seat and never once spent."
 

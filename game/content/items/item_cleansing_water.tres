@@ -4,8 +4,8 @@
 
 [resource]
 script = ExtResource("1_item")
-id = &"item_clearwater_vial"
-display_name = "Clearwater Vial"
+id = &"item_cleansing_water"
+display_name = "Cleansing Water"
 description = "Spring water blessed at the well. Clears poison, burns and stun. Battle only."
 effect = 2
 price = 25

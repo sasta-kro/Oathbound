@@ -55,7 +55,7 @@ static func stage() -> Dictionary:
 ## Readies [param config] for the lesson: no running, its blows softened, it
 ## only attacks (it never mends itself back out of reach of the scroll), and
 ## the scroll always takes. Its moves are left alone: once bound it is the
-## player's healer, and the next lesson needs its Mend.
+## player's healer, and the next lesson needs its Earthy Heal.
 static func prepare(config: BattleConfig, _enemy: CreatureInstance, lead_name: String) -> void:
 	config.can_run = false
 	config.enemy_attacks_only = true

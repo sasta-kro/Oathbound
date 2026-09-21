@@ -4,9 +4,9 @@
 
 [resource]
 script = ExtResource("1_item")
-id = &"item_ember_draught"
-display_name = "Rekindling Draught"
-description = "A warm ember in a stoppered vial. Revives a fainted companion with half its HP."
-effect = 1
-amount = 50
-price = 90
+id = &"item_healing_herb"
+display_name = "Healing Herb"
+description = "A tin of crushed moss and marigold. Restores 40% of a companion's HP."
+effect = 0
+amount = 40
+price = 20

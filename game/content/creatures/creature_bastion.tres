@@ -9,9 +9,9 @@
 [ext_resource type="Resource" path="res://content/moves/move_stone_toss_01.tres" id="7_ym2vt"]
 [ext_resource type="Resource" path="res://content/moves/move_shield_bash_01.tres" id="8_xtd63"]
 [ext_resource type="Resource" uid="uid://yy88er3s78cw" path="res://content/moves/move_guard_stance_01.tres" id="9_6jgfu"]
-[ext_resource type="Resource" path="res://content/moves/move_iron_jab_01.tres" id="10_6ekvl"]
-[ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_quake_step_01.tres" id="11_aa2js"]
-[ext_resource type="Resource" path="res://content/moves/move_steel_rend_01.tres" id="12_t033o"]
+[ext_resource type="Resource" path="res://content/moves/move_iron_stab_01.tres" id="10_6ekvl"]
+[ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_ground_slam_01.tres" id="11_aa2js"]
+[ext_resource type="Resource" path="res://content/moves/move_steel_slash_01.tres" id="12_t033o"]
 [ext_resource type="Resource" path="res://content/moves/move_anvil_fall_01.tres" id="13_85flm"]
 [ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="14_7a1uh"]
 

@@ -7,7 +7,7 @@
 [ext_resource type="SpriteFrames" uid="uid://bl3417ktfi8sx" path="res://content/sprites/creature_wispflame_battle.tres" id="5_sprite"]
 [ext_resource type="Resource" path="res://content/abilities/ability_ember_body.tres" id="ability_0"]
 [ext_resource type="Resource" path="res://content/abilities/ability_hellborn.tres" id="ability_1"]
-[ext_resource type="Resource" uid="uid://c3rxxapydl0ab" path="res://content/moves/move_dread_gaze_01.tres" id="move_dread_gaze"]
+[ext_resource type="Resource" uid="uid://c3rxxapydl0ab" path="res://content/moves/move_weakening_gaze_01.tres" id="move_weakening_gaze"]
 [ext_resource type="Resource" path="res://content/moves/move_ember_01.tres" id="move_ember"]
 [ext_resource type="Resource" path="res://content/moves/move_gust_01.tres" id="move_gust"]
 [ext_resource type="Resource" path="res://content/moves/move_hellfire_beam_01.tres" id="move_hellfire_beam"]
@@ -26,10 +26,10 @@ script = ExtResource("2_entry")
 level = 13
 move = ExtResource("move_hellfire_beam")
 
-[sub_resource type="Resource" id="Learn_dread_gaze_17"]
+[sub_resource type="Resource" id="Learn_weakening_gaze_17"]
 script = ExtResource("2_entry")
 level = 17
-move = ExtResource("move_dread_gaze")
+move = ExtResource("move_weakening_gaze")
 
 [resource]
 script = ExtResource("1_species")
@@ -41,7 +41,7 @@ base_hp = 48
 base_attack = 60
 base_speed = 66
 growth = ExtResource("4_growth")
-learnset = Array[ExtResource("2_entry")]([SubResource("Learn_ember_1"), SubResource("Learn_gust_5"), SubResource("Learn_hellfire_beam_13"), SubResource("Learn_dread_gaze_17")])
+learnset = Array[ExtResource("2_entry")]([SubResource("Learn_ember_1"), SubResource("Learn_gust_5"), SubResource("Learn_hellfire_beam_13"), SubResource("Learn_weakening_gaze_17")])
 ability_pool = Array[ExtResource("3_ability")]([ExtResource("ability_0"), ExtResource("ability_1")])
 base_bind_chance = 0.3
 battle_sprite = ExtResource("5_sprite")

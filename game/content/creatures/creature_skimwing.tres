@@ -8,7 +8,7 @@
 [ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_7377x"]
 [ext_resource type="Resource" path="res://content/moves/move_water_jet_01.tres" id="7_sg8o8"]
 [ext_resource type="Resource" path="res://content/moves/move_gust_01.tres" id="8_bxhv2"]
-[ext_resource type="Resource" path="res://content/moves/move_brine_fang_01.tres" id="9_lwlul"]
+[ext_resource type="Resource" path="res://content/moves/move_wave_strike_01.tres" id="9_lwlul"]
 [ext_resource type="Resource" path="res://content/moves/move_gale_slash_01.tres" id="10_58h6k"]
 [ext_resource type="Resource" path="res://content/moves/move_tide_crash_01.tres" id="11_i1n0m"]
 [ext_resource type="Script" uid="uid://tkke01g3n7s7" path="res://scripts/creatures/creature_species.gd" id="12_2y25e"]

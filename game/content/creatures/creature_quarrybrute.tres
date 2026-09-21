@@ -8,7 +8,7 @@
 [ext_resource type="Script" uid="uid://dgdvannr5qcv2" path="res://scripts/creatures/learnset_entry.gd" id="6_47hyb"]
 [ext_resource type="Resource" path="res://content/moves/move_stone_toss_01.tres" id="7_hyu7w"]
 [ext_resource type="Resource" uid="uid://yy88er3s78cw" path="res://content/moves/move_guard_stance_01.tres" id="8_trtyx"]
-[ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_quake_step_01.tres" id="9_tf1yw"]
+[ext_resource type="Resource" uid="uid://c7an140epmuxh" path="res://content/moves/move_ground_slam_01.tres" id="9_tf1yw"]
 [ext_resource type="Resource" path="res://content/moves/move_shield_bash_01.tres" id="10_17mjl"]
 [ext_resource type="Resource" uid="uid://dpb40bisa8tta" path="res://content/moves/move_war_cry_01.tres" id="11_rest8"]
 [ext_resource type="Resource" path="res://content/moves/move_anvil_fall_01.tres" id="12_004eq"]
