@@ -61,9 +61,11 @@ const FINAL_BOSS_TEXT := "The rite closes over him. The king sleeps."
 const EVENT_BOUGHT_ITEM := "bought_%s"
 const EVENT_USED_ITEM := "used_%s"
 const EVENT_RESTED_AT_INN := &"rested_at_inn"
-## Reported the first time an Oathbound is sent to the paddock or called back
-## out of it, for the lesson that teaches the keeping (Specification 9.3).
+## Reported when an Oathbound is sent to the paddock, and when one is called
+## back out of it, for the lesson that teaches the keeping (Specification 9.3).
+## The lesson asks for both, so it never ends with a companion left behind.
 const EVENT_KEPT_AN_OATHBOUND := &"kept_an_oathbound"
+const EVENT_CALLED_BACK_AN_OATHBOUND := &"called_back_an_oathbound"
 ## Reported when the player changes which Oathbound walks in front.
 const EVENT_CHANGED_LEAD := &"changed_lead"
 ## Provisional defeat penalty (Specification 20.1).
@@ -486,7 +488,7 @@ func call_out_of_keeping(index: int) -> bool:
 	kept.remove_at(index)
 	party.append(creature)
 	party_changed.emit()
-	report_quest_event(QuestObjective.Kind.EVENT, EVENT_KEPT_AN_OATHBOUND)
+	report_quest_event(QuestObjective.Kind.EVENT, EVENT_CALLED_BACK_AN_OATHBOUND)
 	return true
 
 

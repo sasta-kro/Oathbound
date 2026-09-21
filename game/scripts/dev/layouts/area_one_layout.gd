@@ -294,17 +294,17 @@ func _meadow(p: AreaPainter) -> void:
 
 
 func _creatures(p: AreaPainter) -> void:
-	p.add_spawn_zone("LoambuckMeadow", Vector2i(9, 31), _zone("loambuck", 3.0, 3, 2, 4, NEUTRAL, ["sproutling", "thornimp"]))
+	_add_zones(p, "LoambuckMeadow", Vector2i(9, 31), "loambuck", 3.0, 3, 2, 4, NEUTRAL, ["sproutling", "thornimp"])
 	# Levels climb along the quest path: den, pit, wood, graves, then the knight.
-	p.add_spawn_zone("EmberlingDen", Vector2i(20, 19), _zone("emberling", 2.5, 2, 4, 6, HOSTILE, ["flicker"]))
-	p.add_spawn_zone("ShardHollow", Vector2i(28, 20), _zone("rimeshard", 2.5, 2, 3, 5, NEUTRAL, ["tuskcalf", "gravelimp"]))
-	p.add_spawn_zone("TidePool", Vector2i(30, 26), _zone("rillfin", 3.0, 2, 4, 6, NEUTRAL, ["skimwing"]))
-	p.add_spawn_zone("GaleRise", Vector2i(21, 9), _zone("gustpip", 3.0, 2, 6, 8, HOSTILE, ["hexling", "dustmote"]))
-	p.add_spawn_zone("CinderRuins", Vector2i(33, 15), _zone("cinderclaw", 2.0, 1, 6, 7, HOSTILE, ["rivetimp"]))
-	p.add_spawn_zone("SlagPit", Vector2i(42, 19), _zone("slagling", 3.0, 2, 6, 8, NEUTRAL, ["mercurite"]))
-	p.add_spawn_zone("LeechShallows", Vector2i(44, 26), _zone("leechling", 2.5, 2, 6, 8, NEUTRAL, ["blightmaw"]))
-	p.add_spawn_zone("BatWood", Vector2i(9, 17), _zone("scorchbat", 3.0, 2, 8, 9, HOSTILE, ["leafwing", "wraithling"]))
-	p.add_spawn_zone("SquireGraves", Vector2i(31, 6), _zone("hollow_squire", 2.0, 2, 9, 11, HOSTILE, ["gravehound"]))
+	_add_zones(p, "EmberlingDen", Vector2i(20, 19), "emberling", 2.5, 2, 4, 6, HOSTILE, ["flicker"])
+	_add_zones(p, "ShardHollow", Vector2i(28, 20), "rimeshard", 2.5, 2, 3, 5, NEUTRAL, ["tuskcalf", "gravelimp"])
+	_add_zones(p, "TidePool", Vector2i(30, 26), "rillfin", 3.0, 2, 4, 6, NEUTRAL, ["skimwing"])
+	_add_zones(p, "GaleRise", Vector2i(21, 9), "gustpip", 3.0, 2, 6, 8, HOSTILE, ["hexling", "dustmote"])
+	_add_zones(p, "CinderRuins", Vector2i(33, 15), "cinderclaw", 2.0, 1, 6, 7, HOSTILE, ["rivetimp"])
+	_add_zones(p, "SlagPit", Vector2i(42, 19), "slagling", 3.0, 2, 6, 8, NEUTRAL, ["mercurite"])
+	_add_zones(p, "LeechShallows", Vector2i(44, 26), "leechling", 2.5, 2, 6, 8, NEUTRAL, ["blightmaw"])
+	_add_zones(p, "BatWood", Vector2i(9, 17), "scorchbat", 3.0, 2, 8, 9, HOSTILE, ["leafwing", "wraithling"])
+	_add_zones(p, "SquireGraves", Vector2i(31, 6), "hollow_squire", 2.0, 2, 9, 11, HOSTILE, ["gravehound"])
 	# The Area 1 boss in front of the altar. It only accepts a challenge while
 	# the Warden's last quest is under way, and stays beaten once it falls.
 	p.add_creature(
@@ -335,20 +335,31 @@ func _creatures(p: AreaPainter) -> void:
 	)
 
 
-## [param also] lists content ids ("sproutling") of the species mixed into the
-## zone next to its own.
-func _zone(
-	species: String, radius: float, max_alive: int, level_min: int, level_max: int, disposition: int, also: Array = []
-) -> Dictionary:
-	var also_spawns: Array[CreatureSpecies] = []
-	for id: String in also:
-		also_spawns.append(load("res://content/creatures/creature_%s.tres" % id))
-	return {
+## One zone for [param species] and one more, overlapping it, for each
+## content id ("sproutling") in [param also]: a zone holds a single species so
+## a quest that counts it is never starved.
+func _add_zones(
+	p: AreaPainter,
+	zone_name: String,
+	cell: Vector2i,
+	species: String,
+	radius: float,
+	max_alive: int,
+	level_min: int,
+	level_max: int,
+	disposition: int,
+	also: Array = [],
+) -> void:
+	var properties: Dictionary = {
 		"species": load(SPECIES[species]),
-		"also_spawns": also_spawns,
 		"radius_in_cells": radius,
 		"max_alive": max_alive,
 		"level_min": level_min,
 		"level_max": level_max,
 		"disposition": disposition,
 	}
+	p.add_spawn_zone(zone_name, cell, properties)
+	for id: String in also:
+		var extra: Dictionary = properties.duplicate()
+		extra["species"] = load("res://content/creatures/creature_%s.tres" % id)
+		p.add_spawn_zone("%s_%s" % [zone_name, id], cell, extra)

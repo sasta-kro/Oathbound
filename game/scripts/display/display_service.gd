@@ -42,11 +42,15 @@ var _settings_loaded: bool = false
 
 func _ready() -> void:
 	var window: Window = get_window()
+	window.size_changed.connect(_on_window_size_changed)
+	# In a browser the page owns the canvas size. Forcing a window size there
+	# desyncs the drawn frame from mouse input, so leave it to the canvas.
+	if _is_web():
+		return
 	window.min_size = _minimum_window_size(window)
 	_apply_saved_settings(window)
 	_settings_loaded = true
 	_windowed_size = window.size
-	window.size_changed.connect(_on_window_size_changed)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -73,8 +77,9 @@ func set_fullscreen(enabled: bool) -> void:
 		window.mode = Window.MODE_FULLSCREEN
 	else:
 		window.mode = Window.MODE_WINDOWED
-		window.size = _windowed_size
-		_center_on_screen(window)
+		if not _is_web():
+			window.size = _windowed_size
+			_center_on_screen(window)
 
 	_save_settings()
 	display_changed.emit()
@@ -83,6 +88,8 @@ func set_fullscreen(enabled: bool) -> void:
 ## Resizes the window to an exact multiple of the logical viewport. Values that
 ## do not fit the current screen fall back to the largest multiple that does.
 func set_window_scale(scale: int) -> void:
+	if _is_web():
+		return
 	var window: Window = get_window()
 	var requested_scale: int = clampi(scale, 1, largest_window_scale())
 	if is_fullscreen():
@@ -97,7 +104,7 @@ func set_window_scale(scale: int) -> void:
 ## Current windowed scale, or [constant CUSTOM_WINDOW_SCALE] when the window
 ## is fullscreen or sized to something other than a whole multiple.
 func window_scale() -> int:
-	if is_fullscreen():
+	if is_fullscreen() or _is_web():
 		return CUSTOM_WINDOW_SCALE
 	var window_size: Vector2i = get_window().size
 	if window_size.x % BASE_VIEWPORT_SIZE.x != 0 or window_size.y % BASE_VIEWPORT_SIZE.y != 0:
@@ -109,8 +116,11 @@ func window_scale() -> int:
 
 
 ## Every whole viewport multiple the current screen can display, smallest first.
+## Empty in a browser, where the page decides the canvas size.
 func available_window_scales() -> PackedInt32Array:
 	var scales: PackedInt32Array = PackedInt32Array()
+	if _is_web():
+		return scales
 	for scale: int in range(1, largest_window_scale() + 1):
 		scales.append(scale)
 	return scales
@@ -193,3 +203,7 @@ func _center_on_screen(window: Window) -> void:
 	if usable_rectangle.size.x <= 0 or usable_rectangle.size.y <= 0:
 		return
 	window.position = usable_rectangle.position + (usable_rectangle.size - window.size) / 2
+
+
+func _is_web() -> bool:
+	return OS.has_feature("web")

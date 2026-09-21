@@ -119,7 +119,6 @@ func test_the_errands_are_handed_in_where_they_happen() -> void:
 
 func test_each_lesson_waits_on_the_one_thing_it_teaches() -> void:
 	var waits: Dictionary = {
-		KEEPING_QUEST_ID: GameState.EVENT_KEPT_AN_OATHBOUND,
 		LEAD_QUEST_ID: GameState.EVENT_CHANGED_LEAD,
 		FieldStrike.QUEST_ID: FieldStrike.EVENT_ID,
 		FieldAmbush.QUEST_ID: FieldAmbush.EVENT_ID,
@@ -133,6 +132,19 @@ func test_each_lesson_waits_on_the_one_thing_it_teaches() -> void:
 		var objective: QuestObjective = quest.objectives[0]
 		assert_eq(objective.kind, QuestObjective.Kind.EVENT, "%s is reported by the world." % id)
 		assert_eq(objective.target, waits[id])
+
+
+## The paddock lesson asks for the round trip, so nobody finishes it with a
+## companion still waiting in keeping.
+func test_the_paddock_lesson_waits_on_sending_away_and_calling_back() -> void:
+	var targets: Array[StringName] = []
+	for objective: QuestObjective in _quest(KEEPING_QUEST_ID).objectives:
+		assert_eq(objective.kind, QuestObjective.Kind.EVENT)
+		targets.append(objective.target)
+	assert_eq(
+		targets,
+		[GameState.EVENT_KEPT_AN_OATHBOUND, GameState.EVENT_CALLED_BACK_AN_OATHBOUND] as Array[StringName],
+	)
 
 
 func test_a_night_at_the_inn_and_a_salve_finish_the_two_errands() -> void:

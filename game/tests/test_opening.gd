@@ -125,6 +125,18 @@ func test_the_prologue_reads_page_by_page() -> void:
 	assert_eq(prologue.current_page(), 1)
 
 
+func test_a_blank_line_in_the_prologue_starts_a_new_box() -> void:
+	var prologue: Control = autofree((load(PROLOGUE_SCENE) as PackedScene).instantiate())
+	add_child(prologue)
+	var boxes: int = 0
+	for entry: String in GameOpening.PROLOGUE:
+		boxes += DialoguePanel.pages_of(entry).size()
+	assert_gt(boxes, GameOpening.PROLOGUE.size(), "Some entries are written as several boxes.")
+	assert_eq(prologue._pages.size(), boxes)
+	for page: String in prologue._pages:
+		assert_false(page.contains("\n\n"), "No box holds a blank line.")
+
+
 # --- Quest marks --------------------------------------------------------------
 
 

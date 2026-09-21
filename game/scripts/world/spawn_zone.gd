@@ -10,8 +10,8 @@ extends Node2D
 ## [member respawn_seconds] after it is defeated or bound.
 ##
 ## Density is the pair (radius, max_alive): "three Emberlings in this circle".
-## A zone can also mix in [member also_spawns]; [member species] stays the
-## common one, so a quest that counts it is never starved.
+## One zone holds one species, so a quest that counts it is never starved. To
+## mix species in one spot, overlap several zones.
 
 ## Relayed from every creature this zone spawns, so the main scene can start
 ## hostile encounters without tracking individual creatures.
@@ -34,12 +34,6 @@ const EDITOR_LABEL_SIZE: int = 14
 		species = value
 		queue_redraw()
 		update_configuration_warnings()
-## Other species that turn up in this zone. Each spawn is [member species]
-## half the time and one of these, picked evenly, otherwise.
-@export var also_spawns: Array[CreatureSpecies] = []:
-	set(value):
-		also_spawns = value
-		queue_redraw()
 ## Radius of the zone in map cells.
 @export_range(1.0, 30.0, 0.5) var radius_in_cells: float = 4.0:
 	set(value):
@@ -125,30 +119,22 @@ func _spawn_one() -> bool:
 	var cell_position: Vector2 = _find_free_position()
 	if cell_position == Vector2.INF:
 		return false
-	var picked: CreatureSpecies = _pick_species()
 	var creature: WildCreature = CREATURE_SCENE.instantiate()
 	creature.configure(
-		picked,
+		species,
 		_rng.randi_range(mini(level_min, level_max), maxi(level_min, level_max)),
 		global_position,
 		radius(),
 		disposition,
 		detection_radius_in_cells * WorldArea.GRID_SIZE,
 	)
-	creature.name = "%s_%d" % [picked.id, _alive.size()]
+	creature.name = "%s_%d" % [species.id, _alive.size()]
 	creature.defeated.connect(_on_creature_defeated)
 	creature.reached_player.connect(creature_reached_player.emit)
 	add_child(creature)
 	creature.global_position = cell_position
 	_alive.append(creature)
 	return true
-
-
-func _pick_species() -> CreatureSpecies:
-	var others: Array = also_spawns.filter(func(other: CreatureSpecies) -> bool: return other != null)
-	if others.is_empty() or _rng.randf() < 0.5:
-		return species
-	return others[_rng.randi_range(0, others.size() - 1)] as CreatureSpecies
 
 
 ## A random free cell center inside the circle, or Vector2.INF when every
@@ -229,8 +215,7 @@ func _area() -> WorldArea:
 func _species_label() -> String:
 	if species == null:
 		return "(no species)"
-	var extra: int = also_spawns.size() - also_spawns.count(null)
-	return species.display_name if extra == 0 else "%s +%d" % [species.display_name, extra]
+	return species.display_name
 
 
 func _get_configuration_warnings() -> PackedStringArray:

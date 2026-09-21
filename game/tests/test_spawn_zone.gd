@@ -112,33 +112,12 @@ func test_zone_without_species_spawns_nothing() -> void:
 	assert_eq(zone.alive_count(), 0)
 
 
-func test_a_mixed_zone_keeps_its_own_species_common_and_skips_empty_rows() -> void:
-	var zone: SpawnZone = autofree(SPAWN_ZONE_SCENE.instantiate())
-	var other: CreatureSpecies = load("res://content/creatures/creature_flicker.tres")
-	zone.species = SPECIES
-	var also: Array[CreatureSpecies] = [other, null]
-	zone.also_spawns = also
-	zone._rng.seed = 7
-	var own: int = 0
-	for _roll: int in 400:
-		var picked: CreatureSpecies = zone._pick_species()
-		assert_not_null(picked, "An empty also_spawns row is never picked.")
-		if picked == SPECIES:
-			own += 1
-		elif picked != other:
-			fail_test("Picked a species the zone does not list.")
-	assert_between(own, 160, 240, "The zone's own species is about half of every spawn.")
-
-
 func test_every_catchable_species_lives_somewhere_in_the_wild_or_evolves_from_one() -> void:
 	var wild: Dictionary = {}
 	for area: String in ["area_one", "area_two", "area_three"]:
 		var root: Node = (load("res://areas/%s.tscn" % area) as PackedScene).instantiate()
 		for zone: Node in root.find_children("*", "SpawnZone", true, false):
 			wild[(zone as SpawnZone).species] = true
-			for species: CreatureSpecies in (zone as SpawnZone).also_spawns:
-				assert_not_null(species, "%s/%s lists an empty species." % [area, zone.name])
-				wild[species] = true
 		root.free()
 	var reachable: Dictionary = wild.duplicate()
 	for species: CreatureSpecies in wild:

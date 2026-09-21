@@ -149,8 +149,12 @@ func test_using_the_paddock_finishes_the_lesson_about_it() -> void:
 	assert_false(GameState.quests.is_ready(quest))
 
 	assert_true(GameState.send_to_keeping(1))
+	assert_false(GameState.quests.is_ready(quest), "Sending one away is only half the lesson.")
 
-	assert_true(GameState.quests.is_ready(quest), "Sending one away is the lesson.")
+	assert_true(GameState.call_out_of_keeping(0))
+
+	assert_true(GameState.quests.is_ready(quest), "Calling it back finishes the lesson.")
+	assert_eq(GameState.party.size(), 2, "Nobody is left behind in the paddock.")
 
 
 func test_changing_the_lead_finishes_the_lesson_about_it() -> void:

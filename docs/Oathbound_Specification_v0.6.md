@@ -285,7 +285,7 @@ There are **no random grass/terrain encounters** in the current MVP.
 
 All wild encounters originate from visible creatures in the overworld. Creature spawns may appear dynamically within valid spawn regions, including visible pop-ins.
 
-**[Implemented]** `SpawnZone` circles keep a species populated (radius, max alive, level range, disposition, detection radius, respawn delay). A zone can also mix in other species through `also_spawns`; its own species stays half of every spawn, so kill objectives that count it are never starved; single `WildCreature`s can be placed by hand and do not respawn. See `docs/map_authoring.md`.
+**[Implemented]** `SpawnZone` circles keep a species populated (radius, max alive, level range, disposition, detection radius, respawn delay). Each zone holds exactly one species, so kill objectives that count it are never starved; mixed spots overlap several zones; single `WildCreature`s can be placed by hand and do not respawn. See `docs/map_authoring.md`.
 
 ### 7.2 Spawn Rules
 

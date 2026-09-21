@@ -756,9 +756,19 @@ func _play_field_binding() -> void:
 ## The support-move lesson (see [FieldMending]): a wild Emberling bursts
 ## out of the grass by the Scout's camp, and the battle that follows walks the
 ## player through switching to their healer, mending the striker on the bench
-## and switching back. With no healer in the party the lesson is only told.
+## and switching back. When the pair is split between the party and the
+## paddock the player is asked to call the missing one back; with no healer
+## bound at all the lesson is only told.
 func _play_field_mending() -> void:
+	# The Scout sees the party rested first, so a fainted mender still teaches.
+	GameState.heal_party()
 	var cast: Dictionary = FieldMending.roles(GameState.party)
+	var bound: Array[CreatureInstance] = []
+	bound.append_array(GameState.party)
+	bound.append_array(GameState.kept)
+	if cast.is_empty() and not FieldMending.roles(bound).is_empty():
+		_open_dialogue(FieldMending.CALL_BACK_LINE)
+		return
 	if cast.is_empty():
 		GameState.report_quest_event(QuestObjective.Kind.EVENT, FieldMending.EVENT_ID)
 		_open_dialogue(FieldMending.NO_HEALER_LINE)

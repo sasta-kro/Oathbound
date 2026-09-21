@@ -16,8 +16,9 @@ extends RefCounted
 ## and the town sends one of its own up to make it hold again. It has been
 ## done many times and will be done many more.
 
-## The prologue, one page per entry. [constant PROLOGUE_CREATURE_PAGE] is the
-## page the starter's art first appears on.
+## The prologue, one entry per beat. A blank line inside an entry starts a new
+## box, as in field dialogue. [constant PROLOGUE_CREATURE_PAGE] is the entry
+## the starter's art first appears on.
 const PROLOGUE: PackedStringArray = [
 	"Ah, there you are. Sit a moment, and let an old man tell it the way it was told to him. Every child of this town hears it once. You are hearing it the day it becomes yours.",
 	"This is the Verdant Reach. Green hills, old roads, and more wild creatures than there are stars over the lake.",

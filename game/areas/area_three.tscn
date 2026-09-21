@@ -435,7 +435,16 @@ metadata/_custom_type_script = "uid://t6wailbr6pn0"
 [node name="Spawn_barrow_knight" parent="SpawnZones" unique_id=629181993 instance=ExtResource("13_1wrjt")]
 position = Vector2(-19, 484)
 species = ExtResource("roster_rot_07")
-also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_nature_07")])
+radius_in_cells = 3.0
+max_alive = 2
+level_min = 30
+level_max = 32
+disposition = 1
+
+[node name="Spawn_elderbough" type="Node2D" parent="SpawnZones" unique_id=579402028 instance=ExtResource("13_1wrjt")]
+position = Vector2(24, 600)
+script = ExtResource("14_fttk7")
+species = ExtResource("roster_nature_07")
 radius_in_cells = 3.0
 max_alive = 2
 level_min = 30
@@ -446,7 +455,16 @@ detection_radius_in_cells = 2.0
 [node name="Spawn_gloomgaze" parent="SpawnZones" unique_id=834324370 instance=ExtResource("13_1wrjt")]
 position = Vector2(-159, 248)
 species = ExtResource("16_3ukpy")
-also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_wind_09")])
+radius_in_cells = 3.0
+max_alive = 2
+level_min = 32
+level_max = 34
+disposition = 1
+
+[node name="Spawn_stormeye" type="Node2D" parent="SpawnZones" unique_id=1454258844 instance=ExtResource("13_1wrjt")]
+position = Vector2(-120, 312)
+script = ExtResource("14_fttk7")
+species = ExtResource("roster_wind_09")
 radius_in_cells = 3.0
 max_alive = 2
 level_min = 32
@@ -456,7 +474,16 @@ disposition = 1
 [node name="Spawn_bulwark" parent="SpawnZones" unique_id=869435333 instance=ExtResource("13_1wrjt")]
 position = Vector2(24, -72)
 species = ExtResource("17_y3va1")
-also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_steel_01")])
+radius_in_cells = 3.0
+max_alive = 2
+level_min = 34
+level_max = 36
+disposition = 1
+
+[node name="Spawn_bastion" type="Node2D" parent="SpawnZones" unique_id=1447402586 instance=ExtResource("13_1wrjt")]
+position = Vector2(24, -72)
+script = ExtResource("14_fttk7")
+species = ExtResource("roster_steel_01")
 radius_in_cells = 3.0
 max_alive = 2
 level_min = 34
@@ -466,7 +493,26 @@ disposition = 1
 [node name="Spawn_cinderhulk" parent="SpawnZones" unique_id=899032803 instance=ExtResource("13_1wrjt")]
 position = Vector2(24, -360)
 species = ExtResource("18_eioro")
-also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_fire_09"), ExtResource("roster_steel_07")])
+radius_in_cells = 2.5
+max_alive = 2
+level_min = 36
+level_max = 38
+disposition = 1
+
+[node name="Spawn_hellmaw" type="Node2D" parent="SpawnZones" unique_id=1351976312 instance=ExtResource("13_1wrjt")]
+position = Vector2(24, -360)
+script = ExtResource("14_fttk7")
+species = ExtResource("roster_fire_09")
+radius_in_cells = 2.5
+max_alive = 2
+level_min = 36
+level_max = 38
+disposition = 1
+
+[node name="Spawn_forgehorn" type="Node2D" parent="SpawnZones" unique_id=2135189460 instance=ExtResource("13_1wrjt")]
+position = Vector2(24, -360)
+script = ExtResource("14_fttk7")
+species = ExtResource("roster_steel_07")
 radius_in_cells = 2.5
 max_alive = 2
 level_min = 36

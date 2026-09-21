@@ -1,5 +1,7 @@
-[gd_resource type="FontVariation" load_steps=2 format=3]
+[gd_resource type="FontVariation" load_steps=3 format=3]
 [ext_resource type="FontFile" path="res://assets/ui/fonts/Manrope.ttf" id="1"]
+[ext_resource type="FontFile" path="res://assets/ui/fonts/DejaVuSans.ttf" id="2"]
 [resource]
 base_font = ExtResource("1")
+fallbacks = Array[Font]([ExtResource("2")])
 variation_opentype = { 2003265652: 500.0 }

@@ -24,18 +24,14 @@ static var _areas: Dictionary = {}
 ## Where [param log]'s most pressing quest wants the player to walk, as
 ## {"actor": id} or {"area": scene path}: whoever takes the quest in once it
 ## is ready, whoever it says to go and talk to, or the area it says to reach.
-## The story comes before side errands. Empty when the next step is not a
-## walk at all (a fight, a purchase, a night's sleep).
+## An errand handed in to somebody other than its giver (a night's sleep, a
+## purchase) happens at that somebody, so it points at them from the start.
+## Only the story is pointed at: side errands are the player's to find their
+## own way through. Empty when the next step is not a walk at all (a fight).
 static func destination(log: QuestLog) -> Dictionary:
-	var active: Array[QuestData] = log.active_quests()
-	var ordered: Array[QuestData] = []
-	for quest: QuestData in active:
-		if quest.is_main():
-			ordered.append(quest)
-	for quest: QuestData in active:
+	for quest: QuestData in log.active_quests():
 		if not quest.is_main():
-			ordered.append(quest)
-	for quest: QuestData in ordered:
+			continue
 		if log.is_ready(quest):
 			return {"actor": quest.turn_in_actor()}
 		for index: int in quest.objectives.size():
@@ -47,6 +43,9 @@ static func destination(log: QuestLog) -> Dictionary:
 					return {"actor": objective.target}
 				QuestObjective.Kind.REACH:
 					return {"area": String(objective.target)}
+				QuestObjective.Kind.EVENT:
+					if quest.turn_in != &"":
+						return {"actor": quest.turn_in}
 			break
 	return {}
 

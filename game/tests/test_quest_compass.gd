@@ -45,12 +45,23 @@ func test_nothing_is_pointed_at_with_no_quests() -> void:
 
 func test_a_finished_quest_points_at_whoever_takes_it_in() -> void:
 	var quest: QuestData = _accept(BED_QUEST_ID)
-	assert_eq(QuestCompass.target_actor(_log), &"", "A night's sleep is not a walk to somebody.")
+	assert_eq(QuestCompass.target_actor(_log), &"innkeeper", "The bed is at the inn, so walk there first.")
 
 	_log.report(QuestObjective.Kind.EVENT, GameState.EVENT_RESTED_AT_INN)
 
 	assert_true(_log.is_ready(quest))
 	assert_eq(QuestCompass.target_actor(_log), &"innkeeper", "The bed is reported at the bed.")
+
+
+func test_an_errand_done_at_somebody_points_at_them_before_it_is_done() -> void:
+	_accept(&"quest_main_01i_a_stocked_satchel")
+	assert_eq(QuestCompass.target_actor(_log), &"apothecary", "The salve is bought at her counter.")
+
+
+## A fight with nobody to hand it in to is not a walk anywhere.
+func test_a_lesson_fought_where_it_is_given_is_not_pointed_at() -> void:
+	_accept(&"quest_main_01e_strike_first")
+	assert_eq(QuestCompass.target_actor(_log), &"")
 
 
 func test_an_errand_to_go_and_see_somebody_points_at_them() -> void:
@@ -69,6 +80,45 @@ func test_the_main_story_is_pointed_at_before_a_side_errand() -> void:
 	_accept(&"quest_main_01j_the_road_is_waiting")
 
 	assert_eq(QuestCompass.target_actor(_log), &"scout")
+
+
+## Side errands are the player's to find: the arrow never points at them,
+## even when one is ready and nothing else is under way.
+func test_a_side_errand_is_never_pointed_at() -> void:
+	var side: QuestData = _quest(&"quest_side_leaf_hat")
+	_log.accept(side)
+	for objective: QuestObjective in side.objectives:
+		for _step: int in objective.required():
+			_log.report(objective.kind, objective.target)
+	assert_true(_log.is_ready(side))
+
+	assert_eq(QuestCompass.destination(_log), {})
+
+
+## The Innkeeper is marked from the moment the bed is promised, not only
+## once the player has already found her and slept.
+func test_the_innkeeper_is_marked_before_the_night_is_slept() -> void:
+	_accept(BED_QUEST_ID)
+	var town: Node = autofree((load(TOWN) as PackedScene).instantiate())
+	var innkeeper: WorldActor = town.get_node("Actors/Innkeeper")
+
+	assert_eq(
+		innkeeper.quest_marker(_log, Content),
+		{"marker": WorldActor.QuestMarker.AVAILABLE, "main": true},
+	)
+
+
+## The salve is bought at the Apothecary's counter, so she is marked too; the
+## Merchant sells nothing and is not part of the errand.
+func test_the_apothecary_is_marked_before_the_salve_is_bought() -> void:
+	_accept(&"quest_main_01i_a_stocked_satchel")
+	var town: Node = autofree((load(TOWN) as PackedScene).instantiate())
+
+	assert_eq(
+		town.get_node("Actors/Apothecary").quest_marker(_log, Content),
+		{"marker": WorldActor.QuestMarker.AVAILABLE, "main": true},
+	)
+	assert_eq(town.get_node("Actors/Merchant").quest_marker(_log, Content).main, false)
 
 
 # --- Which way that is --------------------------------------------------------

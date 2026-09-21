@@ -22,6 +22,11 @@ const FADE_IN_SECONDS: float = 1.0
 const FADE_OUT_SECONDS: float = 0.9
 
 var _page: int = -1
+## Every box the Elder speaks. An entry of [constant GameOpening.PROLOGUE]
+## with blank lines in it is several boxes, the same rule field dialogue uses.
+var _pages: PackedStringArray = []
+## The box the starter's art first appears on, the first of its entry.
+var _creature_page: int = 0
 var _stage: Control
 var _elder: AnimatedSprite2D
 var _creature: Control
@@ -31,6 +36,7 @@ var _leaving: bool = false
 
 
 func _ready() -> void:
+	_paginate()
 	theme = OathTheme.make()
 	var backdrop := ColorRect.new()
 	backdrop.color = BACKDROP_COLOR
@@ -77,6 +83,8 @@ func _build_text_box() -> PanelContainer:
 	panel.offset_right = -42
 	panel.offset_top = -135
 	panel.offset_bottom = -36
+	# Long pages grow the box upward, keeping its bottom edge on screen.
+	panel.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	var margin := MarginContainer.new()
 	for side: String in ["left", "right"]:
 		margin.add_theme_constant_override("margin_" + side, 20)
@@ -147,15 +155,22 @@ func current_page() -> int:
 
 func _next_page() -> void:
 	_page += 1
-	if _page >= GameOpening.PROLOGUE.size():
+	if _page >= _pages.size():
 		_leave()
 		return
-	if _page == GameOpening.PROLOGUE_CREATURE_PAGE:
+	if _page == _creature_page:
 		_bring_on_creature()
-	_text.text = GameOpening.PROLOGUE[_page]
+	_text.text = _pages[_page]
 	_text.visible_ratio = 0.0
 	_typing = create_tween()
 	_typing.tween_property(_text, "visible_ratio", 1.0, _text.text.length() / CHARACTERS_PER_SECOND)
+
+
+func _paginate() -> void:
+	for entry: int in GameOpening.PROLOGUE.size():
+		if entry == GameOpening.PROLOGUE_CREATURE_PAGE:
+			_creature_page = _pages.size()
+		_pages.append_array(DialoguePanel.pages_of(GameOpening.PROLOGUE[entry]))
 
 
 func _bring_on_creature() -> void:

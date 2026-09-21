@@ -138,9 +138,11 @@ var _knockback: Vector2 = Vector2.ZERO
 ## damage persists. See [method encounter_instance].
 var _encounter: CreatureInstance
 ## World-sized copies of the shared presets, made once rather than per hit.
-@onready var _world_hit_vfx: VfxPreset = HIT_VFX.scaled(WORLD_VFX_SCALE)
-@onready var _world_hit_sparks_vfx: VfxPreset = HIT_SPARKS_VFX.scaled(WORLD_VFX_SCALE)
-@onready var _world_defeat_vfx: VfxPreset = DEFEAT_VFX.scaled(WORLD_VFX_SCALE)
+## Built in [method _ready] outside the editor: VfxPreset is not a tool script,
+## so in the editor the presets are placeholders without [method VfxPreset.scaled].
+var _world_hit_vfx: VfxPreset
+var _world_hit_sparks_vfx: VfxPreset
+var _world_defeat_vfx: VfxPreset
 ## Set while the creature is playing its death beat, during which it is no
 ## longer a valid encounter but has not left the map yet.
 var _routed: bool = false
@@ -154,6 +156,9 @@ func _ready() -> void:
 	_refresh_presentation()
 	if Engine.is_editor_hint():
 		return
+	_world_hit_vfx = HIT_VFX.scaled(WORLD_VFX_SCALE)
+	_world_hit_sparks_vfx = HIT_SPARKS_VFX.scaled(WORLD_VFX_SCALE)
+	_world_defeat_vfx = DEFEAT_VFX.scaled(WORLD_VFX_SCALE)
 	add_to_group(CREATURE_GROUP)
 	if is_boss() and visual != null:
 		visual.scale *= BOSS_ART_SCALE

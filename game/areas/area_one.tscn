@@ -211,15 +211,39 @@ barks = PackedStringArray()
 [node name="LoambuckMeadow" parent="SpawnZones" unique_id=1184172636 instance=ExtResource("10_uyjoe")]
 position = Vector2(-744, 648)
 species = ExtResource("12_4dj51")
-also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_nature_02"), ExtResource("roster_nature_04")])
 radius_in_cells = 3.0
+level_min = 2
+level_max = 4
+
+[node name="LoambuckMeadow_sproutling" parent="SpawnZones" unique_id=795425564 instance=ExtResource("10_uyjoe")]
+position = Vector2(-744, 648)
+species = ExtResource("roster_nature_02")
+radius_in_cells = 3.0
+max_alive = 2
+level_min = 2
+level_max = 4
+
+[node name="LoambuckMeadow_thornimp" parent="SpawnZones" unique_id=2135525362 instance=ExtResource("10_uyjoe")]
+position = Vector2(-744, 648)
+species = ExtResource("roster_nature_04")
+radius_in_cells = 3.0
+max_alive = 2
 level_min = 2
 level_max = 4
 
 [node name="EmberlingDen" parent="SpawnZones" unique_id=499736332 instance=ExtResource("10_uyjoe")]
 position = Vector2(-325, 45)
 species = ExtResource("13_vysno")
-also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_fire_08")])
+radius_in_cells = 2.5
+max_alive = 2
+level_min = 4
+level_max = 6
+disposition = 1
+detection_radius_in_cells = 2.5
+
+[node name="EmberlingDen_flicker" parent="SpawnZones" unique_id=423946139 instance=ExtResource("10_uyjoe")]
+position = Vector2(-325, 45)
+species = ExtResource("roster_fire_08")
 radius_in_cells = 2.5
 max_alive = 2
 level_min = 4
@@ -230,14 +254,32 @@ detection_radius_in_cells = 2.5
 [node name="ShardHollow" parent="SpawnZones" unique_id=1621558350 instance=ExtResource("10_uyjoe")]
 position = Vector2(168, 120)
 species = ExtResource("14_35qre")
-also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_earth_08"), ExtResource("roster_earth_10")])
+radius_in_cells = 2.5
+max_alive = 2
+
+[node name="ShardHollow_tuskcalf" parent="SpawnZones" unique_id=947876999 instance=ExtResource("10_uyjoe")]
+position = Vector2(168, 120)
+species = ExtResource("roster_earth_08")
+radius_in_cells = 2.5
+max_alive = 2
+
+[node name="ShardHollow_gravelimp" parent="SpawnZones" unique_id=1497871144 instance=ExtResource("10_uyjoe")]
+position = Vector2(168, 120)
+species = ExtResource("roster_earth_10")
 radius_in_cells = 2.5
 max_alive = 2
 
 [node name="TidePool" parent="SpawnZones" unique_id=738828910 instance=ExtResource("10_uyjoe")]
 position = Vector2(282, 430)
 species = ExtResource("15_auc5g")
-also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_water_09")])
+radius_in_cells = 2.5
+max_alive = 2
+level_min = 4
+level_max = 6
+
+[node name="TidePool_skimwing" parent="SpawnZones" unique_id=203694312 instance=ExtResource("10_uyjoe")]
+position = Vector2(282, 430)
+species = ExtResource("roster_water_09")
 radius_in_cells = 2.5
 max_alive = 2
 level_min = 4
@@ -246,7 +288,26 @@ level_max = 6
 [node name="GaleRise" parent="SpawnZones" unique_id=1898788742 instance=ExtResource("10_uyjoe")]
 position = Vector2(-466, -658)
 species = ExtResource("16_dupcp")
-also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_wind_08"), ExtResource("roster_earth_12")])
+radius_in_cells = 3.0
+max_alive = 2
+level_min = 6
+level_max = 8
+disposition = 1
+detection_radius_in_cells = 2.0
+
+[node name="GaleRise_hexling" parent="SpawnZones" unique_id=255555737 instance=ExtResource("10_uyjoe")]
+position = Vector2(-466, -658)
+species = ExtResource("roster_wind_08")
+radius_in_cells = 3.0
+max_alive = 2
+level_min = 6
+level_max = 8
+disposition = 1
+detection_radius_in_cells = 2.0
+
+[node name="GaleRise_dustmote" parent="SpawnZones" unique_id=1863673106 instance=ExtResource("10_uyjoe")]
+position = Vector2(-466, -658)
+species = ExtResource("roster_earth_12")
 radius_in_cells = 3.0
 max_alive = 2
 level_min = 6
@@ -257,9 +318,17 @@ detection_radius_in_cells = 2.0
 [node name="CinderRuins" parent="SpawnZones" unique_id=1590475738 instance=ExtResource("10_uyjoe")]
 position = Vector2(408, -120)
 species = ExtResource("9_fq0iv")
-also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_steel_04")])
 radius_in_cells = 2.0
 max_alive = 1
+level_min = 6
+level_max = 7
+disposition = 1
+
+[node name="CinderRuins_rivetimp" parent="SpawnZones" unique_id=1250797845 instance=ExtResource("10_uyjoe")]
+position = Vector2(408, -120)
+species = ExtResource("roster_steel_04")
+radius_in_cells = 2.0
+max_alive = 2
 level_min = 6
 level_max = 7
 disposition = 1
@@ -267,7 +336,14 @@ disposition = 1
 [node name="SlagPit" parent="SpawnZones" unique_id=11616764 instance=ExtResource("10_uyjoe")]
 position = Vector2(945, 116)
 species = ExtResource("20_slagling")
-also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_steel_02")])
+radius_in_cells = 3.0
+max_alive = 2
+level_min = 6
+level_max = 8
+
+[node name="SlagPit_mercurite" parent="SpawnZones" unique_id=302142728 instance=ExtResource("10_uyjoe")]
+position = Vector2(945, 116)
+species = ExtResource("roster_steel_02")
 radius_in_cells = 3.0
 max_alive = 2
 level_min = 6
@@ -276,7 +352,14 @@ level_max = 8
 [node name="LeechShallows" parent="SpawnZones" unique_id=1476864210 instance=ExtResource("10_uyjoe")]
 position = Vector2(805, 532)
 species = ExtResource("21_leechling")
-also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_rot_02")])
+radius_in_cells = 2.0
+max_alive = 2
+level_min = 6
+level_max = 8
+
+[node name="LeechShallows_blightmaw" parent="SpawnZones" unique_id=885310972 instance=ExtResource("10_uyjoe")]
+position = Vector2(805, 532)
+species = ExtResource("roster_rot_02")
 radius_in_cells = 2.0
 max_alive = 2
 level_min = 6
@@ -285,7 +368,26 @@ level_max = 8
 [node name="BatWood" parent="SpawnZones" unique_id=2049975087 instance=ExtResource("10_uyjoe")]
 position = Vector2(-722, -182)
 species = ExtResource("22_scorchbat")
-also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_nature_06"), ExtResource("roster_rot_04")])
+radius_in_cells = 3.5
+max_alive = 2
+level_min = 8
+level_max = 9
+disposition = 1
+detection_radius_in_cells = 3.0
+
+[node name="BatWood_leafwing" parent="SpawnZones" unique_id=1351527726 instance=ExtResource("10_uyjoe")]
+position = Vector2(-722, -182)
+species = ExtResource("roster_nature_06")
+radius_in_cells = 3.5
+max_alive = 2
+level_min = 8
+level_max = 9
+disposition = 1
+detection_radius_in_cells = 3.0
+
+[node name="BatWood_wraithling" parent="SpawnZones" unique_id=224551738 instance=ExtResource("10_uyjoe")]
+position = Vector2(-722, -182)
+species = ExtResource("roster_rot_04")
 radius_in_cells = 3.5
 max_alive = 2
 level_min = 8
@@ -296,7 +398,15 @@ detection_radius_in_cells = 3.0
 [node name="SquireGraves" parent="SpawnZones" unique_id=297527182 instance=ExtResource("10_uyjoe")]
 position = Vector2(312, -552)
 species = ExtResource("23_squire")
-also_spawns = Array[ExtResource("roster_species")]([ExtResource("roster_rot_08")])
+radius_in_cells = 2.0
+max_alive = 2
+level_min = 9
+level_max = 11
+disposition = 1
+
+[node name="SquireGraves_gravehound" parent="SpawnZones" unique_id=2053574602 instance=ExtResource("10_uyjoe")]
+position = Vector2(312, -552)
+species = ExtResource("roster_rot_08")
 radius_in_cells = 2.0
 max_alive = 2
 level_min = 9

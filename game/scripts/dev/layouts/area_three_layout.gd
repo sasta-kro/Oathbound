@@ -425,23 +425,22 @@ func _cast(p: AreaPainter) -> void:
 		properties["item_ids"] = ids
 		properties["item_counts"] = counts
 		p.add_chest(entry["name"], entry["cell"], properties)
+	# One zone per species; the row's extra ids get their own zones on the
+	# same spot, so a quest that counts one species is never starved.
 	for row: Array in SPAWNS:
-		var also_spawns: Array[CreatureSpecies] = []
-		for id: String in row[6]:
-			also_spawns.append(load(SPECIES % id))
-		p.add_spawn_zone(
-			"Spawn_%s" % row[0],
-			row[1],
-			{
-				"species": load(SPECIES % row[0]),
-				"also_spawns": also_spawns,
-				"radius_in_cells": row[2],
-				"max_alive": row[3],
-				"level_min": row[4],
-				"level_max": row[5],
-				"disposition": HOSTILE,
-			},
-		)
+		for id: String in [row[0]] + row[6]:
+			p.add_spawn_zone(
+				"Spawn_%s" % id,
+				row[1],
+				{
+					"species": load(SPECIES % id),
+					"radius_in_cells": row[2],
+					"max_alive": row[3],
+					"level_min": row[4],
+					"level_max": row[5],
+					"disposition": HOSTILE,
+				},
+			)
 	for elite: Dictionary in ELITES:
 		p.add_creature(
 			elite["name"],

@@ -1,6 +1,0 @@
-[gd_scene format=3 uid="uid://16gg24nbhagr"]
-
-[ext_resource type="Script" path="res://temp/move_learn_preview.gd" id="1"]
-
-[node name="Preview" type="Node" unique_id=2083376059]
-script = ExtResource("1")

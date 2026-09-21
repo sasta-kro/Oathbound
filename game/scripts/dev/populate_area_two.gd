@@ -382,23 +382,22 @@ func _ready() -> void:
 		actors.add_child(actor)
 		actor.owner = area
 
+	# One zone per species; the row's extra ids get their own zones on the
+	# same spot, so a quest that counts one species is never starved.
 	for row: Array in SPAWNS:
-		var zone := SPAWN_SCENE.instantiate()
-		zone.name = "Spawn_%s" % row[0]
-		zone.position = _cell_to_world(ground, _settled_cell(row[1], floors, blocked))
-		zone.set("species", load(SPECIES % row[0]))
-		var also_spawns: Array[CreatureSpecies] = []
-		for id: String in row[7]:
-			also_spawns.append(load(SPECIES % id))
-		zone.set("also_spawns", also_spawns)
-		zone.set("radius_in_cells", row[2])
-		zone.set("max_alive", row[3])
-		zone.set("level_min", row[4])
-		zone.set("level_max", row[5])
-		if row[6]:
-			zone.set("disposition", 1)
-		spawns.add_child(zone)
-		zone.owner = area
+		for id: String in [row[0]] + row[7]:
+			var zone := SPAWN_SCENE.instantiate()
+			zone.name = "Spawn_%s" % id
+			zone.position = _cell_to_world(ground, _settled_cell(row[1], floors, blocked))
+			zone.set("species", load(SPECIES % id))
+			zone.set("radius_in_cells", row[2])
+			zone.set("max_alive", row[3])
+			zone.set("level_min", row[4])
+			zone.set("level_max", row[5])
+			if row[6]:
+				zone.set("disposition", 1)
+			spawns.add_child(zone)
+			zone.owner = area
 
 	var boss_marker := markers.get_node_or_null("Boss") as Marker2D
 	if boss_marker != null:

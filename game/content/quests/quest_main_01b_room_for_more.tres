@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="QuestData" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="QuestData" load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/quests/quest_data.gd" id="1_quest"]
 [ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_objective"]
@@ -8,7 +8,14 @@ script = ExtResource("2_objective")
 kind = 4
 target = &"kept_an_oathbound"
 count = 1
-description = "Open your party page (Tab) and send one Oathbound to keeping, or call one back"
+description = "Open your party page (Tab) and send one Oathbound to keeping"
+
+[sub_resource type="Resource" id="Objective_call_back"]
+script = ExtResource("2_objective")
+kind = 4
+target = &"called_back_an_oathbound"
+count = 1
+description = "Call it back out of keeping"
 
 [resource]
 script = ExtResource("1_quest")
@@ -18,7 +25,7 @@ kind = 0
 summary = "Three Oathbound walk with you and no more, but nothing you bind is ever turned away: whatever will not fit walks down to the Hearthside and waits in the paddock until you send for it.\n\nSending one away and calling it back is done from the party page."
 giver = &"scout"
 requires = &"quest_main_01a_a_second_oath"
-objectives = Array[ExtResource("2_objective")]([SubResource("Objective_keep")])
+objectives = Array[ExtResource("2_objective")]([SubResource("Objective_keep"), SubResource("Objective_call_back")])
 reward_currency = 20
 reward_binding_scrolls = 1
 reward_xp = 10
@@ -28,7 +35,7 @@ refuse_option = "Later."
 accepted_line = "Scout: Tab opens it, or the party button up top. Pick one of yours and send it to keeping, then call it straight back out.\n\nThat is the whole system. Do it once and you will never be afraid to use a scroll again."
 refused_line = "Scout: Then you will stand in a meadow full of Oathbound one day with three slots and no idea what to do about it."
 reoffer_line = "Scout: Ready to learn where the spare ones go?"
-progress_line = "Scout: Party page. Tab. Send one to keeping, and call it back when you see how it works."
+progress_line = "Scout: Party page. Tab. Send one to keeping, then call it back out. Both halves, or you will leave a friend in the paddock."
 continue_option = "I'll try it now."
 abandon_option = "Not now."
 abandoned_line = "Scout: When you are ready."

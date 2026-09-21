@@ -6,3 +6,4 @@ CLAUDE.md
 __pycache__/
 *.py[cod]
 .mcp.json
+builds/

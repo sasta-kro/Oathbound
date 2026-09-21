@@ -333,7 +333,8 @@ func next_small_talk() -> String:
 
 ## What this actor's mark should show, as
 ## [code]{marker: QuestMarker, main: bool}[/code]. Every quest the actor gives
-## counts, and so does any active quest that asks the player to talk to them.
+## counts, and so does any active quest that asks the player to talk to them
+## or is handed in to them.
 ## A main quest outranks a side quest, and a turn-in outranks an offer, so an
 ## NPC with a story beat always shows it in the story colour.
 func quest_marker(log: QuestLog, registry: Node) -> Dictionary:
@@ -353,6 +354,10 @@ func quest_marker(log: QuestLog, registry: Node) -> Dictionary:
 				continue
 			if not log.is_objective_done(quest, index):
 				best = _stronger_marker(best, QuestMarker.AVAILABLE, quest.is_main())
+		# An errand handed in to this actor rather than its giver (a bed, a
+		# purchase) is done at their door, so they are marked from the start.
+		if quest.turn_in == me and quest.turn_in != quest.giver and not log.is_ready(quest):
+			best = _stronger_marker(best, QuestMarker.AVAILABLE, quest.is_main())
 	return best
 
 
