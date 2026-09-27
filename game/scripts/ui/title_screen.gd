@@ -90,6 +90,14 @@ func _ready() -> void:
 	add_child(caption)
 	caption.add_child(OathTheme.label("I  /  THE VERDANT REACH", 10, OathTheme.GOLD))
 	caption.add_child(OathTheme.heading("Where the wild remembers.", 24))
+	var authors := OathTheme.label("A GAME BY  MIN KHAUNG KYAW SWAR  ·  SAI AIKE SHWE TUN AUNG  ·  EKATERINA KAZAKOVA", 9, OathTheme.MUTED)
+	authors.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	authors.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
+	authors.offset_left = -650
+	authors.offset_top = -26
+	authors.offset_right = -50
+	authors.offset_bottom = -12
+	add_child(authors)
 	$SettingsMenu.closed.connect(func(): if start != null: start.grab_focus())
 
 ## The left column: the journey buttons, or the slot picker when loading.

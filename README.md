@@ -2,6 +2,12 @@
 
 Oathbound is a small top-down 2D creature-collecting RPG built with Godot 4.7.2. Wild creatures roam the overworld in plain sight instead of hiding in random encounters, the first blow struck on the field decides how each battle opens, and new companions are bound to the party with oath scrolls. A complete story run takes roughly 40 to 60 minutes.
 
+## Team
+
+- Min Khaung Kyaw Swar
+- Sai Aike Shwe Tun Aung
+- Ekaterina Kazakova
+
 ## Repository structure
 
 ```text
@@ -118,3 +124,56 @@ area on load.
 Specification v0.6 section 21.1 describes this model; v0.4 asked for a single
 autosave slot, and manual slots were added on request.
 
+
+## Credits
+
+Oathbound uses third-party art, music and sound. Per-folder `SOURCE.md` files
+under `game/assets/` record which file came from where.
+
+### Music
+
+All tracks are CC0 1.0 from OpenGameArt.org, used unedited.
+
+| Track | Used for | Author | Source |
+|---|---|---|---|
+| Fantasy Orchestral Theme | Title screen | Joth | https://opengameart.org/content/fantasy-orchestral-theme |
+| Town Theme RPG | Town | cynicmusic ([cynicmusic.com](https://cynicmusic.com), [pixelsphere.org](https://pixelsphere.org)) | https://opengameart.org/content/town-theme-rpg |
+| The Field Of Dreams | Field areas | pauliuw | https://opengameart.org/content/the-field-of-dreams |
+| Battle Theme A | Battles | cynicmusic | https://opengameart.org/content/battle-theme-a |
+
+### Sound effects
+
+All CC0 1.0 unless noted.
+
+| Pack | Used for | Author | Source |
+|---|---|---|---|
+| Impact Sounds | Hit sounds | Kenney | https://kenney.nl/assets/impact-sounds |
+| Magic Spell SFX | Bind attempt, bind success | JaggedStone | https://opengameart.org/content/magic-spell-sfx |
+| 80 CC0 RPG SFX | Bind fail, faint | rubberduck | https://opengameart.org/content/80-cc0-rpg-sfx |
+| Boss victory jingle | Boss victory | Original, made for Oathbound | n/a |
+
+### Art
+
+| Asset | Used for | Author | Source / license |
+|---|---|---|---|
+| Pixel Art Top Down - Basic | Town and field tiles, plants, props | Cainos | https://cainos.itch.io/pixel-art-top-down-basic |
+| The Fan-tasy Tileset (Free) | Meadow terrain, roads, water, buildings, trees, street props | Ventilatore | https://ventilatore.itch.io/the-fantasy-tileset |
+| Free Undead Tileset Top Down Pixel Art | Ruins, graves, dead wood | Free Game Assets (CraftPix.net) | https://free-game-assets.itch.io/free-undead-tileset-top-down-pixel-art |
+| Rogue Fantasy Catacombs | Area Two catacomb tiles, torches, candles, spikes | Szadi art | https://szadiart.itch.io/rogue-fantasy-catacombs |
+| Character pack | Player hero and all NPCs | superretroworld | https://gif-superretroworld.itch.io/character-pack |
+| Tiny RPG Character Asset Pack 02 | All creature sprites, including the recoloured variants | Zerie | https://zerie.itch.io/tiny-rpg-character-asset-pack-02 |
+
+`verdant_sanctum.svg`, the HUD icons and the boss victory jingle were made for
+Oathbound.
+
+### Fonts
+
+Both under the SIL Open Font License; license files are in `game/assets/ui/fonts/`.
+
+- Cormorant Garamond: https://github.com/google/fonts/tree/main/ofl/cormorantgaramond
+- Manrope: https://github.com/google/fonts/tree/main/ofl/manrope
+
+### Tools
+
+- [Godot Engine](https://godotengine.org) 4.7.2 (MIT)
+- [GUT](https://github.com/bitwes/Gut), the Godot Unit Test framework (MIT)

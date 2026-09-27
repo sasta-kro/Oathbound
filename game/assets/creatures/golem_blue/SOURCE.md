@@ -1,8 +1,8 @@
 # Golem_Blue
 
 Source: `assets/sprites/monster/golem_blue`, copied here because Godot can only
-import files under the project root. Pack name and licence are not recorded in
-the drop; fill them in before release.
+import files under the project root. Pack: Tiny RPG Character Asset Pack 02 by
+Zerie, https://zerie.itch.io/tiny-rpg-character-asset-pack-02.
 
 The source frames are 90x64 with the golem standing on the bottom edge. They
 are re-padded to 90x90 by `tools/pack_golem_frames.py` so the body sits in the
